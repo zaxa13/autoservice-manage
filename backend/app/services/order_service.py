@@ -1,0 +1,234 @@
+from sqlalchemy.orm import Session
+from sqlalchemy import func
+from datetime import datetime
+from decimal import Decimal
+from app.models.order import Order, OrderStatus, OrderWork, OrderPart
+from app.models.warehouse import WarehouseItem, WarehouseTransaction, TransactionType
+from app.schemas.order import OrderCreate, OrderUpdate
+from app.core.exceptions import NotFoundException, BadRequestException
+
+
+def generate_order_number(db: Session) -> str:
+    """Генерация уникального номера заказ-наряда"""
+    today = datetime.now().strftime("%Y%m%d")
+    last_order = db.query(Order).filter(Order.number.like(f"ORD-{today}-%")).order_by(Order.number.desc()).first()
+    
+    if last_order:
+        last_num = int(last_order.number.split("-")[-1])
+        new_num = last_num + 1
+    else:
+        new_num = 1
+    
+    return f"ORD-{today}-{new_num:04d}"
+
+
+def create_order(db: Session, order_create: OrderCreate, employee_id: int) -> Order:
+    """Создание заказ-наряда"""
+    order_number = generate_order_number(db)
+    
+    # Расчет общей суммы
+    total_amount = Decimal(0)
+    
+    # Создание заказ-наряда
+    order = Order(
+        number=order_number,
+        vehicle_id=order_create.vehicle_id,
+        employee_id=employee_id,
+        mechanic_id=order_create.mechanic_id,
+        status=OrderStatus.NEW,
+        total_amount=0,
+        paid_amount=0,
+        recommendations=order_create.recommendations,
+        comments=order_create.comments
+    )
+    db.add(order)
+    db.flush()
+    
+    # Добавление работ
+    for work_data in order_create.order_works:
+        # Расчет с учетом скидки
+        discount = work_data.discount or Decimal(0)
+        price_with_discount = work_data.price * (1 - discount / 100)
+        work_total = price_with_discount * work_data.quantity
+        total_amount += work_total
+        order_work = OrderWork(
+            order_id=order.id,
+            work_id=work_data.work_id,
+            work_name=work_data.work_name,
+            quantity=work_data.quantity,
+            price=work_data.price,
+            discount=discount,
+            total=work_total
+        )
+        db.add(order_work)
+    
+    # Добавление запчастей
+    for part_data in order_create.order_parts:
+        # Расчет с учетом скидки
+        discount = part_data.discount or Decimal(0)
+        price_with_discount = part_data.price * (1 - discount / 100)
+        part_total = price_with_discount * part_data.quantity
+        total_amount += part_total
+        order_part = OrderPart(
+            order_id=order.id,
+            part_id=part_data.part_id,
+            part_name=part_data.part_name,
+            article=part_data.article,
+            quantity=part_data.quantity,
+            price=part_data.price,
+            discount=discount,
+            total=part_total
+        )
+        db.add(order_part)
+    
+    order.total_amount = total_amount
+    db.commit()
+    db.refresh(order)
+    return order
+
+
+def update_order(db: Session, order_id: int, order_update: OrderUpdate) -> Order:
+    """Обновление заказ-наряда"""
+    order = db.query(Order).filter(Order.id == order_id).first()
+    if not order:
+        raise NotFoundException("Заказ-наряд не найден")
+    
+    if order_update.mechanic_id is not None:
+        order.mechanic_id = order_update.mechanic_id
+    
+    if order_update.recommendations is not None:
+        order.recommendations = order_update.recommendations
+    
+    if order_update.comments is not None:
+        order.comments = order_update.comments
+    
+    # Обработка оплаты: paid_amount - это сумма нового платежа, который добавляется к текущему
+    if order_update.paid_amount is not None:
+        payment_amount = Decimal(str(order_update.paid_amount))
+        if payment_amount < 0:
+            raise BadRequestException("Сумма платежа не может быть отрицательной")
+        
+        # Добавляем новый платеж к уже оплаченной сумме
+        order.paid_amount = (order.paid_amount or Decimal(0)) + payment_amount
+        
+        # Если после добавления оплаты сумма равна или превышает общую сумму, устанавливаем статус PAID
+        if order.paid_amount >= order.total_amount - Decimal('0.01'):  # Допускаем небольшую погрешность
+            if order.status != OrderStatus.COMPLETED and order.status != OrderStatus.CANCELLED:
+                order.status = OrderStatus.PAID
+                if not order.completed_at:
+                    order.completed_at = datetime.utcnow()
+    
+    if order_update.status is not None:
+        order.status = order_update.status
+        if order_update.status == OrderStatus.READY_FOR_PAYMENT or order_update.status == OrderStatus.PAID:
+            if not order.completed_at:
+                order.completed_at = datetime.utcnow()
+    
+    # Обновление работ и запчастей
+    if order_update.order_works is not None:
+        # Удаляем старые работы
+        db.query(OrderWork).filter(OrderWork.order_id == order_id).delete()
+        # Добавляем новые
+        total_amount = Decimal(0)
+        for work_data in order_update.order_works:
+            # Расчет с учетом скидки
+            discount = work_data.discount or Decimal(0)
+            price_with_discount = work_data.price * (1 - discount / 100)
+            work_total = price_with_discount * work_data.quantity
+            total_amount += work_total
+            order_work = OrderWork(
+                order_id=order.id,
+                work_id=work_data.work_id,
+                work_name=work_data.work_name,
+                quantity=work_data.quantity,
+                price=work_data.price,
+                discount=discount,
+                total=work_total
+            )
+            db.add(order_work)
+        
+        # Пересчитываем общую сумму
+        parts_total = db.query(func.sum(OrderPart.total)).filter(OrderPart.order_id == order_id).scalar() or Decimal(0)
+        order.total_amount = total_amount + parts_total
+    
+    if order_update.order_parts is not None:
+        # Удаляем старые запчасти
+        db.query(OrderPart).filter(OrderPart.order_id == order_id).delete()
+        # Добавляем новые
+        total_amount = Decimal(0)
+        for part_data in order_update.order_parts:
+            # Расчет с учетом скидки
+            discount = part_data.discount or Decimal(0)
+            price_with_discount = part_data.price * (1 - discount / 100)
+            part_total = price_with_discount * part_data.quantity
+            total_amount += part_total
+            order_part = OrderPart(
+                order_id=order.id,
+                part_id=part_data.part_id,
+                part_name=part_data.part_name,
+                article=part_data.article,
+                quantity=part_data.quantity,
+                price=part_data.price,
+                discount=discount,
+                total=part_total
+            )
+            db.add(order_part)
+        
+        # Пересчитываем общую сумму
+        works_total = db.query(func.sum(OrderWork.total)).filter(OrderWork.order_id == order_id).scalar() or Decimal(0)
+        order.total_amount = total_amount + works_total
+    
+    db.commit()
+    db.refresh(order)
+    return order
+
+
+def complete_order(db: Session, order_id: int, employee_id: int) -> Order:
+    """Закрытие заказ-наряда (заказ должен быть в статусе "готов к оплате" или "оплачен")"""
+    order = db.query(Order).filter(Order.id == order_id).first()
+    if not order:
+        raise NotFoundException("Заказ-наряд не найден")
+    
+    if order.status == OrderStatus.COMPLETED:
+        raise BadRequestException("Заказ-наряд уже завершен")
+    
+    # Проверяем, что заказ готов к завершению (готов к оплате или оплачен)
+    if order.status != OrderStatus.READY_FOR_PAYMENT and order.status != OrderStatus.PAID:
+        raise BadRequestException("Заказ-наряд можно завершить только если он готов к оплате или оплачен")
+    
+    # Если запчасти еще не списаны (статус READY_FOR_PAYMENT), списываем их
+    if order.status == OrderStatus.READY_FOR_PAYMENT:
+        # Списываем запчасти со склада (только те, которые связаны с базой запчастей)
+        for order_part in order.order_parts:
+            # Пропускаем запчасти, добавленные вручную (без part_id)
+            if not order_part.part_id:
+                continue
+                
+            warehouse_item = db.query(WarehouseItem).filter(WarehouseItem.part_id == order_part.part_id).first()
+            if not warehouse_item:
+                raise BadRequestException(f"Запчасть {order_part.part_id} отсутствует на складе")
+            
+            if warehouse_item.quantity < order_part.quantity:
+                raise BadRequestException(f"Недостаточно запчасти {order_part.part_id} на складе")
+            
+            # Уменьшаем количество на складе
+            warehouse_item.quantity -= order_part.quantity
+            
+            # Создаем транзакцию расхода
+            transaction = WarehouseTransaction(
+                warehouse_item_id=warehouse_item.id,
+                transaction_type=TransactionType.OUTGOING,
+                quantity=order_part.quantity,
+                price=order_part.price,
+                order_id=order.id,
+                employee_id=employee_id
+            )
+            db.add(transaction)
+    
+    order.status = OrderStatus.COMPLETED
+    if not order.completed_at:
+        order.completed_at = datetime.utcnow()
+    db.commit()
+    db.refresh(order)
+    return order
+
