@@ -9,6 +9,7 @@ from app.models.warehouse import WarehouseItem, WarehouseTransaction, Transactio
 from app.models.salary import Salary, SalaryStatus
 from app.models.payment import Payment, PaymentMethod, PaymentStatus
 from app.models.integration import IntegrationLog, IntegrationType
+from app.models.appointment import Appointment
 
 __all__ = [
     "User",
@@ -32,5 +33,6 @@ __all__ = [
     "PaymentStatus",
     "IntegrationLog",
     "IntegrationType",
+    "Appointment",
 ]
 

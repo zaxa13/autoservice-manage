@@ -18,4 +18,5 @@ class Vehicle(Base):
 
     customer = relationship("Customer", back_populates="vehicles")
     orders = relationship("Order", back_populates="vehicle")
+    appointments = relationship("Appointment", back_populates="vehicle")
 

@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, Query, HTTPException, status
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from typing import List, Optional
 from app.database import get_db
 from app.dependencies import get_current_user
@@ -49,15 +50,32 @@ def search_vehicle_by_license_plate(
 
 @router.get("/search/by-vin", response_model=VehicleSchema)
 def search_vehicle_by_vin(
-    vin: str = Query(..., min_length=17, max_length=17, description="VIN номер (17 символов)"),
+    vin: str = Query(..., min_length=6, max_length=17, description="VIN номер (6 последних символов или полный 17-символьный)"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Поиск транспортного средства по VIN номеру"""
+    """Поиск транспортного средства по VIN номеру (по последним 6 символам или полному 17-символьному номеру)"""
     from sqlalchemy.orm import joinedload
     # Приводим к верхнему регистру для поиска
     vin_normalized = vin.strip().upper()
-    vehicle = db.query(Vehicle).options(joinedload(Vehicle.customer)).filter(Vehicle.vin == vin_normalized).first()
+    
+    # Определяем тип поиска по длине входной строки
+    if len(vin_normalized) == 17:
+        # Поиск по полному VIN номеру
+        vehicle = db.query(Vehicle).options(joinedload(Vehicle.customer)).filter(
+            Vehicle.vin == vin_normalized
+        ).first()
+    elif len(vin_normalized) == 6:
+        # Поиск по последним 6 символам VIN номера
+        # Используем SUBSTR для извлечения последних 6 символов
+        vehicle = db.query(Vehicle).options(joinedload(Vehicle.customer)).filter(
+            func.substr(Vehicle.vin, -6) == vin_normalized
+        ).first()
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="VIN номер должен содержать либо 6 последних символов, либо полный 17-символьный номер"
+        )
     
     if not vehicle:
         raise HTTPException(

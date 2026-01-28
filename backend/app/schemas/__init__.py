@@ -14,6 +14,7 @@ from app.schemas.warehouse import (
 )
 from app.schemas.salary import Salary, SalaryCreate, SalaryUpdate, SalaryCalculate
 from app.schemas.payment import Payment, PaymentCreate, PaymentYooKassaCreate
+from app.schemas.appointment import Appointment, AppointmentCreate, AppointmentUpdate
 
 __all__ = [
     "User", "UserCreate", "UserUpdate", "UserInDB", "Token",
@@ -28,5 +29,6 @@ __all__ = [
     "WarehouseTransaction", "WarehouseTransactionCreate",
     "Salary", "SalaryCreate", "SalaryUpdate", "SalaryCalculate",
     "Payment", "PaymentCreate", "PaymentYooKassaCreate",
+    "Appointment", "AppointmentCreate", "AppointmentUpdate",
 ]
 

@@ -1,6 +1,7 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials, OAuth2PasswordBearer
 from sqlalchemy.orm import Session
+from typing import Optional
 from app.database import get_db
 from app.models.user import User
 from app.core.security import decode_access_token
@@ -16,8 +17,8 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login", auto_error=F
 
 
 def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
-    token_oauth: str = Depends(oauth2_scheme),
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(bearer_scheme),
+    token_oauth: Optional[str] = Depends(oauth2_scheme),
     db: Session = Depends(get_db)
 ) -> User:
     """Зависимость для получения текущего аутентифицированного пользователя"""
@@ -27,15 +28,17 @@ def get_current_user(
         headers={"WWW-Authenticate": "Bearer"},
     )
     
-    # Получаем токен из любого источника
+    # Получаем токен из любого источника (HTTPBearer имеет приоритет)
     token = None
-    if credentials:
+    if credentials is not None and hasattr(credentials, 'credentials'):
         token = credentials.credentials
+        logger.debug("Токен получен из HTTPBearer")
     elif token_oauth:
         token = token_oauth
+        logger.debug("Токен получен из OAuth2PasswordBearer")
     
     if not token:
-        logger.warning("Токен не предоставлен")
+        logger.warning("Токен не предоставлен: credentials=%s, token_oauth=%s", credentials, token_oauth)
         raise credentials_exception
     
     # Декодируем токен

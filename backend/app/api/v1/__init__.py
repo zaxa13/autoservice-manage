@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api.v1 import auth, users, orders, vehicles, customers, works, parts, warehouse, employees, salary, payments, integrations
+from app.api.v1 import auth, users, orders, vehicles, customers, works, parts, warehouse, employees, salary, payments, integrations, appointments
 
 api_router = APIRouter()
 
@@ -15,4 +15,5 @@ api_router.include_router(employees.router, prefix="/employees", tags=["employee
 api_router.include_router(salary.router, prefix="/salary", tags=["salary"])
 api_router.include_router(payments.router, prefix="/payments", tags=["payments"])
 api_router.include_router(integrations.router, prefix="/integrations", tags=["integrations"])
+api_router.include_router(appointments.router, prefix="/appointments", tags=["appointments"])
 
