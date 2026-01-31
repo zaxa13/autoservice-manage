@@ -162,3 +162,38 @@ export interface OrderStatusInfo {
   value: string
   label: string
 }
+
+export interface Appointment {
+  id: number
+  date: string  // YYYY-MM-DD format
+  time: string  // HH:MM format
+  customer_name: string
+  customer_phone: string
+  description?: string
+  vehicle_id?: number
+  employee_id?: number
+  created_at: string
+  updated_at?: string
+  vehicle?: Vehicle
+  employee?: Employee
+}
+
+export interface AppointmentCreate {
+  date: string  // YYYY-MM-DD format
+  time: string  // HH:MM format
+  customer_name: string
+  customer_phone: string
+  description?: string
+  vehicle_id?: number
+  employee_id?: number
+}
+
+export interface AppointmentUpdate {
+  date?: string
+  time?: string
+  customer_name?: string
+  customer_phone?: string
+  description?: string
+  vehicle_id?: number
+  employee_id?: number
+}

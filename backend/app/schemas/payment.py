@@ -12,13 +12,19 @@ class PaymentBase(BaseModel):
 
 
 class PaymentCreate(PaymentBase):
-    pass
+    """Создание платежа (наличные/карта/другое)."""
 
 
 class PaymentYooKassaCreate(BaseModel):
     order_id: int
     amount: Decimal
     return_url: Optional[str] = None
+
+
+class PaymentCancel(BaseModel):
+    """Запрос на отмену платежа."""
+
+    amount: Optional[Decimal] = None  # если None - отмена всей суммы
 
 
 class Payment(PaymentBase):

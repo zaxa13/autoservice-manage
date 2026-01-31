@@ -147,7 +147,8 @@ def update_order(db: Session, order_id: int, order_update: OrderUpdate) -> Order
             )
             db.add(order_work)
         
-        # Пересчитываем общую сумму
+        # Пересчитываем общую сумму по текущим данным (работы + запчасти),
+        # чтобы избежать рассинхрона, если что-то изменилось отдельно
         parts_total = db.query(func.sum(OrderPart.total)).filter(OrderPart.order_id == order_id).scalar() or Decimal(0)
         order.total_amount = total_amount + parts_total
     
@@ -174,10 +175,17 @@ def update_order(db: Session, order_id: int, order_update: OrderUpdate) -> Order
             )
             db.add(order_part)
         
-        # Пересчитываем общую сумму
+        # Пересчитываем общую сумму по текущим данным (работы + запчасти),
+        # чтобы избежать рассинхрона, если что-то изменилось отдельно
         works_total = db.query(func.sum(OrderWork.total)).filter(OrderWork.order_id == order_id).scalar() or Decimal(0)
         order.total_amount = total_amount + works_total
-    
+
+    # Финальный пересчет общей суммы из БД на случай сложных сценариев,
+    # когда менялись и работы, и запчасти, и могли быть нестандартные сочетания полей
+    works_total_final = db.query(func.sum(OrderWork.total)).filter(OrderWork.order_id == order_id).scalar() or Decimal(0)
+    parts_total_final = db.query(func.sum(OrderPart.total)).filter(OrderPart.order_id == order_id).scalar() or Decimal(0)
+    order.total_amount = works_total_final + parts_total_final
+
     db.commit()
     db.refresh(order)
     return order

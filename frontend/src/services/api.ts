@@ -29,6 +29,8 @@ api.interceptors.request.use(
       const token = localStorage.getItem('access_token')
       if (token) {
         config.headers.Authorization = `Bearer ${token}`
+      } else {
+        console.warn(`Token not found for protected endpoint: ${config.url}`)
       }
     }
     
@@ -44,6 +46,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     // Возвращаем ошибку для обработки в компонентах
+    // PrivateRoute и компоненты сами обрабатывают ошибки 401
     return Promise.reject(error)
   }
 )

@@ -1,211 +1,158 @@
-import { useState, useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
-  Container,
-  Paper,
-  TextField,
-  Button,
-  Typography,
-  Box,
-  CircularProgress,
-  InputLabel,
-} from '@mui/material'
-import { useAuthStore } from '../store/authStore'
+  Container, Paper, TextField, Button, Typography,
+  Box, CircularProgress, InputAdornment, Alert, Fade
+} from '@mui/material';
+import { PersonOutline, LockOutlined, GarageRounded } from '@mui/icons-material';
+import { useAuthStore } from '../store/authStore';
 
 export default function Login() {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [usernameFilled, setUsernameFilled] = useState(false)
-  const [passwordFilled, setPasswordFilled] = useState(false)
-  const usernameInputRef = useRef<HTMLInputElement>(null)
-  const passwordInputRef = useRef<HTMLInputElement>(null)
-  const navigate = useNavigate()
-  const { login: loginUser, isAuthenticated } = useAuthStore()
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { login: loginUser, isAuthenticated } = useAuthStore();
 
-  // Если уже авторизован, перенаправляем на главную
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/', { replace: true })
+      navigate('/', { replace: true });
     }
-  }, [isAuthenticated, navigate])
-
-  // Проверка автозаполнения после монтирования компонента
-  useEffect(() => {
-    // Функция проверки и обновления состояния для автозаполненных полей
-    const checkAutofill = () => {
-      if (usernameInputRef.current) {
-        const inputValue = usernameInputRef.current.value
-        // Проверяем, есть ли значение в поле (автозаполнение уже произошло)
-        if (inputValue && inputValue.length > 0) {
-          setUsernameFilled(true)
-          setUsername(inputValue)
-        }
-      }
-      if (passwordInputRef.current) {
-        const inputValue = passwordInputRef.current.value
-        if (inputValue && inputValue.length > 0) {
-          setPasswordFilled(true)
-          setPassword(inputValue)
-        }
-      }
-    }
-
-    // Несколько проверок с задержками, так как автозаполнение может произойти с задержкой
-    const timeouts = [
-      setTimeout(checkAutofill, 100),
-      setTimeout(checkAutofill, 300),
-      setTimeout(checkAutofill, 500),
-      setTimeout(checkAutofill, 1000),
-    ]
-
-    // Также проверяем при событии animationstart (браузеры используют анимацию для автозаполнения)
-    const handleAnimationStart = (e: AnimationEvent) => {
-      if (e.animationName === 'onAutoFillStart' || e.animationName.includes('autofill')) {
-        checkAutofill()
-      }
-    }
-
-    document.addEventListener('animationstart', handleAnimationStart)
-
-    return () => {
-      timeouts.forEach(timeout => clearTimeout(timeout))
-      document.removeEventListener('animationstart', handleAnimationStart)
-    }
-  }, [])
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
-    
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
     try {
-      await loginUser(username, password)
-      // Навигация произойдет автоматически через useEffect
+      await loginUser(username, password);
     } catch (err: any) {
-      const errorMessage = err.response?.data?.detail || err.message || 'Ошибка входа'
-      setError(errorMessage)
+      const errorMessage = err.response?.data?.detail || err.message || 'Ошибка входа';
+      setError(errorMessage);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <Container maxWidth="sm">
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '100vh',
-        }}
-      >
-        <Paper elevation={3} sx={{ p: 4, width: '100%' }}>
-          <Typography variant="h4" component="h1" gutterBottom align="center">
-            Автосервис
-          </Typography>
-          <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 3 }}>
-            Вход в систему
-          </Typography>
-          
-          <form onSubmit={handleSubmit}>
-            <TextField
-              fullWidth
-              label="Имя пользователя"
-              value={username}
-              onChange={(e) => {
-                setUsername(e.target.value)
-                setUsernameFilled(e.target.value.length > 0)
-              }}
-              onFocus={() => setUsernameFilled(true)}
-              onBlur={(e) => setUsernameFilled(e.target.value.length > 0)}
-              inputRef={usernameInputRef}
-              margin="normal"
-              required
-              autoComplete="username"
-              InputLabelProps={{
-                shrink: true,
-              }}
-              sx={{
-                '& .MuiInputBase-input:-webkit-autofill': {
-                  WebkitBoxShadow: '0 0 0 1000px white inset !important',
-                  WebkitTextFillColor: 'rgba(0, 0, 0, 0.87) !important',
-                  transition: 'background-color 5000s ease-in-out 0s',
-                },
-                '& .MuiInputBase-input:-webkit-autofill:hover': {
-                  WebkitBoxShadow: '0 0 0 1000px white inset !important',
-                  WebkitTextFillColor: 'rgba(0, 0, 0, 0.87) !important',
-                },
-                '& .MuiInputBase-input:-webkit-autofill:focus': {
-                  WebkitBoxShadow: '0 0 0 1000px white inset !important',
-                  WebkitTextFillColor: 'rgba(0, 0, 0, 0.87) !important',
-                },
-                '& .MuiInputBase-input:-webkit-autofill:active': {
-                  WebkitBoxShadow: '0 0 0 1000px white inset !important',
-                  WebkitTextFillColor: 'rgba(0, 0, 0, 0.87) !important',
-                },
-              }}
-            />
-            <TextField
-              fullWidth
-              label="Пароль"
-              type="password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value)
-                setPasswordFilled(e.target.value.length > 0)
-              }}
-              onFocus={() => setPasswordFilled(true)}
-              onBlur={(e) => setPasswordFilled(e.target.value.length > 0)}
-              inputRef={passwordInputRef}
-              margin="normal"
-              required
-              autoComplete="current-password"
-              InputLabelProps={{
-                shrink: true,
-              }}
-              sx={{
-                '& .MuiInputBase-input:-webkit-autofill': {
-                  WebkitBoxShadow: '0 0 0 1000px white inset !important',
-                  WebkitTextFillColor: 'rgba(0, 0, 0, 0.87) !important',
-                  transition: 'background-color 5000s ease-in-out 0s',
-                },
-                '& .MuiInputBase-input:-webkit-autofill:hover': {
-                  WebkitBoxShadow: '0 0 0 1000px white inset !important',
-                  WebkitTextFillColor: 'rgba(0, 0, 0, 0.87) !important',
-                },
-                '& .MuiInputBase-input:-webkit-autofill:focus': {
-                  WebkitBoxShadow: '0 0 0 1000px white inset !important',
-                  WebkitTextFillColor: 'rgba(0, 0, 0, 0.87) !important',
-                },
-                '& .MuiInputBase-input:-webkit-autofill:active': {
-                  WebkitBoxShadow: '0 0 0 1000px white inset !important',
-                  WebkitTextFillColor: 'rgba(0, 0, 0, 0.87) !important',
-                },
-              }}
-            />
-            
-            {error && (
-              <Typography color="error" sx={{ mt: 2 }}>
-                {error}
+    <Box
+      sx={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        // Современный градиент на фоне
+        background: 'radial-gradient(circle at 2% 10%, rgba(79, 70, 229, 0.05) 0%, transparent 50%), radial-gradient(circle at 98% 90%, rgba(16, 185, 129, 0.05) 0%, transparent 50%), #F8FAFC',
+      }}
+    >
+      <Container maxWidth="xs">
+        <Fade in={true} timeout={800}>
+          <Box>
+            {/* Логотип и заголовок */}
+            <Box sx={{ textAlign: 'center', mb: 4 }}>
+              <Box sx={{
+                width: 64, height: 64, bgcolor: 'primary.main',
+                borderRadius: '20px', display: 'inline-flex',
+                alignItems: 'center', justifyContent: 'center',
+                boxShadow: '0 8px 16px rgba(79, 70, 229, 0.24)',
+                mb: 2
+              }}>
+                <GarageRounded sx={{ color: '#fff', fontSize: 32 }} />
+              </Box>
+              <Typography variant="h4" sx={{ fontWeight: 800, color: 'text.primary', mb: 1 }}>
+                AUTO.WORKS
               </Typography>
-            )}
-            
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              disabled={loading}
-              sx={{ mt: 3, mb: 2 }}
-            >
-              {loading ? <CircularProgress size={24} /> : 'Войти'}
-            </Button>
-          </form>
-        </Paper>
-      </Box>
-    </Container>
-  )
-}
+              <Typography variant="body1" color="text.secondary">
+                Система управления автосервисом
+              </Typography>
+            </Box>
 
+            <Paper
+              elevation={0}
+              sx={{
+                p: 4,
+                borderRadius: '24px',
+                border: '1px solid',
+                borderColor: 'divider',
+                boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)'
+              }}
+            >
+              <Typography variant="h6" sx={{ mb: 3, fontWeight: 700 }}>
+                Вход в аккаунт
+              </Typography>
+
+              <form onSubmit={handleSubmit}>
+                <TextField
+                  fullWidth
+                  label="Имя пользователя"
+                  placeholder="admin"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  margin="normal"
+                  required
+                  autoComplete="username"
+                  // Иконка внутри поля
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <PersonOutline sx={{ color: 'text.secondary' }} />
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{ mb: 2 }}
+                />
+
+                <TextField
+                  fullWidth
+                  label="Пароль"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  margin="normal"
+                  required
+                  autoComplete="current-password"
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <LockOutlined sx={{ color: 'text.secondary' }} />
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{ mb: 3 }}
+                />
+
+                {error && (
+                  <Alert severity="error" sx={{ mb: 3, borderRadius: '12px' }}>
+                    {error}
+                  </Alert>
+                )}
+
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  size="large"
+                  disabled={loading}
+                  sx={{
+                    py: 1.5,
+                    fontSize: '1rem',
+                    borderRadius: '12px',
+                  }}
+                >
+                  {loading ? <CircularProgress size={26} color="inherit" /> : 'Войти в систему'}
+                </Button>
+              </form>
+            </Paper>
+
+            <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 4 }}>
+              © {new Date().getFullYear()} AUTO.WORKS CRM. Все права защищены.
+            </Typography>
+          </Box>
+        </Fade>
+      </Container>
+    </Box>
+  );
+}
