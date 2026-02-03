@@ -22,6 +22,7 @@ class User(Base):
     role = Column(Enum(UserRole), nullable=False, default=UserRole.MECHANIC)
     employee_id = Column(Integer, ForeignKey("employees.id"), nullable=True, unique=True)
     is_active = Column(Boolean, default=True)
+    password_must_be_changed = Column(Boolean, default=False, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 

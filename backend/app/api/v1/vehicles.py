@@ -1,16 +1,25 @@
 from fastapi import APIRouter, Depends, Query, HTTPException, status
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import func
 from typing import List, Optional
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.models.user import User
 from app.models.vehicle import Vehicle
+from app.models.vehicle_brand import VehicleBrand, VehicleModel
 from app.schemas.vehicle import Vehicle as VehicleSchema, VehicleCreate, VehicleUpdate
 from app.core.exceptions import NotFoundException
 from app.core.permissions import require_manager_or_admin
 
 router = APIRouter()
+
+
+def _vehicle_query(db: Session):
+    return db.query(Vehicle).options(
+        joinedload(Vehicle.customer),
+        joinedload(Vehicle.brand),
+        joinedload(Vehicle.vehicle_model),
+    )
 
 
 @router.get("/", response_model=List[VehicleSchema])
@@ -21,8 +30,7 @@ def get_vehicles(
     current_user: User = Depends(get_current_user)
 ):
     """Получение списка транспортных средств"""
-    from sqlalchemy.orm import joinedload
-    vehicles = db.query(Vehicle).options(joinedload(Vehicle.customer)).offset(skip).limit(limit).all()
+    vehicles = _vehicle_query(db).offset(skip).limit(limit).all()
     return vehicles
 
 
@@ -33,10 +41,8 @@ def search_vehicle_by_license_plate(
     current_user: User = Depends(get_current_user)
 ):
     """Поиск транспортного средства по государственному номеру"""
-    from sqlalchemy.orm import joinedload
-    # Приводим к верхнему регистру и убираем пробелы для поиска
     license_plate_normalized = license_plate.strip().upper().replace(' ', '')
-    vehicle = db.query(Vehicle).options(joinedload(Vehicle.customer)).filter(
+    vehicle = _vehicle_query(db).filter(
         Vehicle.license_plate.ilike(f"%{license_plate_normalized}%")
     ).first()
     
@@ -54,23 +60,12 @@ def search_vehicle_by_vin(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Поиск транспортного средства по VIN номеру (по последним 6 символам или полному 17-символьному номеру)"""
-    from sqlalchemy.orm import joinedload
-    # Приводим к верхнему регистру для поиска
+    """Поиск транспортного средства по VIN номеру"""
     vin_normalized = vin.strip().upper()
-    
-    # Определяем тип поиска по длине входной строки
     if len(vin_normalized) == 17:
-        # Поиск по полному VIN номеру
-        vehicle = db.query(Vehicle).options(joinedload(Vehicle.customer)).filter(
-            Vehicle.vin == vin_normalized
-        ).first()
+        vehicle = _vehicle_query(db).filter(Vehicle.vin == vin_normalized).first()
     elif len(vin_normalized) == 6:
-        # Поиск по последним 6 символам VIN номера
-        # Используем SUBSTR для извлечения последних 6 символов
-        vehicle = db.query(Vehicle).options(joinedload(Vehicle.customer)).filter(
-            func.substr(Vehicle.vin, -6) == vin_normalized
-        ).first()
+        vehicle = _vehicle_query(db).filter(func.substr(Vehicle.vin, -6) == vin_normalized).first()
     else:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -92,8 +87,7 @@ def get_vehicle(
     current_user: User = Depends(get_current_user)
 ):
     """Получение транспортного средства по ID"""
-    from sqlalchemy.orm import joinedload
-    vehicle = db.query(Vehicle).options(joinedload(Vehicle.customer)).filter(Vehicle.id == vehicle_id).first()
+    vehicle = _vehicle_query(db).filter(Vehicle.id == vehicle_id).first()
     if not vehicle:
         raise NotFoundException("Транспортное средство не найдено")
     return vehicle
@@ -106,20 +100,23 @@ def create_vehicle(
     current_user: User = Depends(require_manager_or_admin)
 ):
     """Создание транспортного средства"""
-    from sqlalchemy.orm import joinedload
-    # Проверяем, существует ли customer
     from app.models.customer import Customer
     customer = db.query(Customer).filter(Customer.id == vehicle_create.customer_id).first()
     if not customer:
         raise NotFoundException("Клиент не найден")
-    
-    vehicle = Vehicle(**vehicle_create.dict())
+    brand = db.query(VehicleBrand).filter(VehicleBrand.id == vehicle_create.brand_id).first()
+    if not brand:
+        raise NotFoundException("Марка не найдена")
+    model = db.query(VehicleModel).filter(VehicleModel.id == vehicle_create.model_id).first()
+    if not model:
+        raise NotFoundException("Модель не найдена")
+    if model.brand_id != brand.id:
+        raise HTTPException(status_code=400, detail="Модель не принадлежит указанной марке")
+    vehicle = Vehicle(**vehicle_create.model_dump())
     db.add(vehicle)
     db.commit()
     db.refresh(vehicle)
-    
-    # Загружаем customer для ответа
-    vehicle = db.query(Vehicle).options(joinedload(Vehicle.customer)).filter(Vehicle.id == vehicle.id).first()
+    vehicle = _vehicle_query(db).filter(Vehicle.id == vehicle.id).first()
     return vehicle
 
 
@@ -131,27 +128,29 @@ def update_vehicle(
     current_user: User = Depends(require_manager_or_admin)
 ):
     """Обновление транспортного средства"""
-    from sqlalchemy.orm import joinedload
     from app.models.customer import Customer
-    
     vehicle = db.query(Vehicle).filter(Vehicle.id == vehicle_id).first()
     if not vehicle:
         raise NotFoundException("Транспортное средство не найдено")
-    
-    update_data = vehicle_update.dict(exclude_unset=True)
-    
-    # Если обновляется customer_id, проверяем существование customer
+    update_data = vehicle_update.model_dump(exclude_unset=True)
     if 'customer_id' in update_data:
         customer = db.query(Customer).filter(Customer.id == update_data['customer_id']).first()
         if not customer:
             raise NotFoundException("Клиент не найден")
-    
+    if 'brand_id' in update_data:
+        brand = db.query(VehicleBrand).filter(VehicleBrand.id == update_data['brand_id']).first()
+        if not brand:
+            raise NotFoundException("Марка не найдена")
+    if 'model_id' in update_data:
+        model = db.query(VehicleModel).filter(VehicleModel.id == update_data['model_id']).first()
+        if not model:
+            raise NotFoundException("Модель не найдена")
+        brand_id = update_data.get('brand_id', vehicle.brand_id)
+        if model.brand_id != brand_id:
+            raise HTTPException(status_code=400, detail="Модель не принадлежит указанной марке")
     for field, value in update_data.items():
         setattr(vehicle, field, value)
-    
     db.commit()
-    
-    # Загружаем customer для ответа
-    vehicle = db.query(Vehicle).options(joinedload(Vehicle.customer)).filter(Vehicle.id == vehicle_id).first()
+    vehicle = _vehicle_query(db).filter(Vehicle.id == vehicle_id).first()
     return vehicle
 

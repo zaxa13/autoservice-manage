@@ -16,9 +16,7 @@ UPDATE orders SET status = 'COMPLETED' WHERE status = 'completed';
 SELECT 'Обновлено на COMPLETED: ' || changes() as result;
 
 UPDATE orders SET status = 'CANCELLED' WHERE status = 'cancelled';
-SELECT 'Обновлено на CANCELLED: ' || changes() as result;
-
--- Выводим финальные статусы после обновления
+SELECT 'Обновлено на CANCELLED: ' || changes() as result;-- Выводим финальные статусы после обновления
 SELECT '';
 SELECT 'Статусы ПОСЛЕ обновления:' as info;
 SELECT status, COUNT(*) as count FROM orders GROUP BY status;SELECT 'Готово! Все статусы приведены к формату enum (верхний регистр)' as result;

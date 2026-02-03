@@ -1,0 +1,162 @@
+{
+  "brands": [
+    {
+      "name": "Audi",
+      "models": ["A1","A3", "A4", "A5", "A6", "A7", "A8",
+      "Q3", "Q5", "Q7", "Q8", "TT"]
+    },
+    {
+      "name": "BMW",
+      "models": ["1-seria", "2-seria", "3-seria", "5-seria", "7-seria",
+      "X1", "X2", "X3", "X4", "X5", "X6", "X7"]
+    },
+    {
+      "name": "Chevrolet",
+      "models": [
+        "Aveo", "Captiva", "Cruze", "Epica", "Lacetti", "Lanos",
+        "Orlando", "Tahoe"
+      ]
+    },
+    {
+      "name": "Citroen",
+      "models": [
+        "Berlingo", "C3", "C4", "C5"
+      ]
+    },
+    {
+      "name": "Ford",
+      "models": [
+      "C-Max", "Explorer", "Fiesta", "Focus", "Fusion", "Galaxy",
+        "Kuga", "Mondeo", "Mustang", "S-Max"
+    ]
+    },
+    {
+      "name": "Geely",
+      "models": ["Atlas", "Atlas Pro", "Cityray", "Coolray", "Emgrand",
+        "Monjaro", "Okavango", "Tugella"]
+    },
+    {
+      "name": "Haval",
+      "models": ["Dargo", "Jolion", "H6", "F7", "F7x", "H9", "H3", "H5", "H7",
+      "H9", "M6"]
+    },
+    {
+      "name": "Honda",
+      "models": [
+        "Accord", "Civic", "CR-V", "HR-V", "Fit", "Pilot"
+      ]
+    },
+    {
+      "name": "Hyundai",
+      "models": [
+        "Accent", "Creta", "Elantra", "Getz", "Grand Starex", "IX35", "Pallisade",
+        "Santa Fe", "Solaris", "Sonata", "Tucson", "IX55"
+      ]
+    },
+    {
+      "name": "KIA",
+      "models": [
+        "Carnival", "Ceed", "Cerato", "K5", "Optima", "Picanto", "Rio", "Sorento",
+        "Soul", "Spectra", "Sportage"
+      ]
+    },
+    {
+      "name": "Land Rover",
+      "models": [
+        "Defender", "Discovery", "Freelander", "Range Rover", "Range Rover Evoque",
+        "Range Rover Sport"
+      ]
+    },
+    {
+      "name": "Lexus",
+      "models": [
+        "ES", "GS", "GX", "IS", "LM", "LS", "LX", "RX", "NX", "UX"
+      ]
+    },
+    {
+      "name": "Mazda",
+      "models": [
+        "3", "5", "6", "323", "626", "CX-30", "CX-5", "CX-50", "CX-7", "CX-9", "MPV"
+      ]
+    },
+    {
+      "name": "Mercedes-Benz",
+      "models": [
+        "C-class", "A-class", "B-class", "E-class", "S-class",
+        "GL", "ML", "G-class", "GLA", "GLC", "GLS", "M-class", "V-class", "GLK",
+        "CLA", "CLC"
+      ]
+    },
+    {
+      "name": "Mitsubishi",
+      "models": [
+        "ASX", "Carisma", "Colt", "Galant", "L200", "Lancer", "Pajero", "Pajero Sport",
+        "Outlander"
+      ]
+    },
+    {
+      "name": "Nissan",
+      "models": [
+        "Almera", "Almera Classic", "Juke", "Murano", "Note", "Pathfinder",
+        "Primera", "Qashqai", "Teanna", "Tiida", "X-Trail"
+      ]
+    },
+    {
+      "name": "Opel",
+      "models": [
+        "Antara", "Astra", "Combo", "Corsa", "Insignia", "Meriva", "Mokka",
+        "Omega", "Vectra", "Vivaro", "Zafira"
+      ]
+    },
+    {
+      "name": "Peugeot",
+      "models": [
+        "206", "207", "208", "3008", "307", "308", "406", "407", "408",
+        "5008", "Partner"
+      ]
+    },
+    {
+      "name": "Porsche",
+      "models" : [
+        "911", "Boxter", "Cayenne", "Cayman", "Macan", "Panamera"
+      ]
+    },
+    {
+      "name": "Renault",
+      "models": [
+        "Arkana", "Duster", "Fluence", "Kangoo", "Kaptur", "Laguna", "Logan",
+        "Megane", "Sandero", "Scenic", "Symbol"
+      ]
+    },
+    {
+      "name": "Skoda",
+      "models": [
+        "Fabia", "Felicia", "Karoq", "Kodiaq", "Octavia", "Rapid", "Roomster",
+        "Superb","Yeti"
+      ]
+    },
+    {
+      "name": "Toyota",
+      "models": ["Camry", "Corolla", "RAV4", "Land Cruiser", "Prius", "Alphard",
+        "Aurus", "Avensis", "HighLander", "Land Cruiser Prado", "Prius"
+      ]
+    },
+    {
+      "name": "Volkswagen",
+      "models": ["Polo", "Golf", "Passat", "Tiguan", "T-Roc",
+        "Caddy", "Caravella", "Transporter", "Jetta", "Multivan", "Polo",
+        "Teramont", "Touareg"
+      ]
+    },
+    {
+      "name": "Volvo",
+      "models": [
+        "C30", "S40", "S60", "S80", "S90", "V40", "V70", "XC40", "XC60", "XC90", "XC70"
+      ]
+    },
+    {
+      "name": "Lada",
+      "models": ["Vesta", "Granta", "Niva Legend", "Largus", "Kalina","Priora"]
+    }
+    ]
+}

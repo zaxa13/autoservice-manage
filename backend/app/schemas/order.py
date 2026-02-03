@@ -95,8 +95,8 @@ class Order(OrderBase):
 
 
 class OrderDetail(Order):
-    vehicle: Vehicle  # Переопределяем как обязательное (в Order оно опциональное)
-    employee: Employee
+    vehicle: Optional[Vehicle] = None  # None если vehicle удалён
+    employee: Optional[Employee] = None  # None если employee удалён
     mechanic: Optional[Employee] = None  # Переопределяем явно
     order_works: List[OrderWork] = []
     order_parts: List[OrderPart] = []

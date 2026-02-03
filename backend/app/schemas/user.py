@@ -26,11 +26,21 @@ class UserInDB(UserBase):
     id: int
     is_active: bool
     employee_id: Optional[int] = None
+    password_must_be_changed: bool = False
     created_at: datetime
     updated_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True
+
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str
+
+
+class ResetPasswordRequest(BaseModel):
+    new_password: str
 
 
 class User(UserInDB):

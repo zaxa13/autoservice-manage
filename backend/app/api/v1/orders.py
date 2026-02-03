@@ -6,7 +6,7 @@ from decimal import Decimal
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.models.user import User, UserRole
-from app.models.order import Order, OrderStatus
+from app.models.order import Order, OrderStatus, OrderWork, OrderPart
 from app.models.payment import Payment, PaymentStatus
 from app.schemas.order import Order as OrderSchema, OrderCreate, OrderUpdate, OrderDetail
 from app.schemas.payment import Payment as PaymentSchema, PaymentCreate, PaymentCancel
@@ -60,7 +60,11 @@ def get_orders(
     from app.models.vehicle import Vehicle
     
     query = db.query(Order).options(
-        joinedload(Order.vehicle).joinedload(Vehicle.customer),
+        joinedload(Order.vehicle).options(
+            joinedload(Vehicle.customer),
+            joinedload(Vehicle.brand),
+            joinedload(Vehicle.vehicle_model),
+        ),
         joinedload(Order.mechanic)
     )
     
@@ -100,8 +104,20 @@ def get_order(
 ):
     """Получение заказ-наряда по ID"""
     from sqlalchemy import func
+    from sqlalchemy.orm import joinedload
+    from app.models.vehicle import Vehicle
 
-    order = db.query(Order).filter(Order.id == order_id).first()
+    order = db.query(Order).options(
+        joinedload(Order.vehicle).options(
+            joinedload(Vehicle.customer),
+            joinedload(Vehicle.brand),
+            joinedload(Vehicle.vehicle_model),
+        ),
+        joinedload(Order.employee),
+        joinedload(Order.mechanic),
+        joinedload(Order.order_works).joinedload(OrderWork.work),
+        joinedload(Order.order_parts).joinedload(OrderPart.part),
+    ).filter(Order.id == order_id).first()
     if not order:
         raise NotFoundException("Заказ-наряд не найден")
     

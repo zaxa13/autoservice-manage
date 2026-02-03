@@ -5,8 +5,9 @@ from typing import Annotated, Optional
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.models.user import User, UserRole
-from app.schemas.user import UserCreate, User as UserSchema
+from app.schemas.user import UserCreate, User as UserSchema, ChangePasswordRequest
 from app.services.auth_service import authenticate_user, create_user, create_token
+from app.core.security import verify_password, get_password_hash
 from app.core.security import decode_access_token
 import logging
 
@@ -36,6 +37,29 @@ def login(
 def get_current_user_info(current_user: Annotated[User, Depends(get_current_user)]):
     """Получение информации о текущем пользователе"""
     return current_user
+
+
+@router.post("/change-password")
+def change_password(
+    data: ChangePasswordRequest,
+    current_user: Annotated[User, Depends(get_current_user)],
+    db: Session = Depends(get_db),
+):
+    """
+    Смена пароля текущего пользователя.
+    Требует ввод текущего пароля. Доступно любому авторизованному пользователю.
+    После успешной смены снимает флаг password_must_be_changed.
+    """
+    if not verify_password(data.current_password, current_user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Неверный текущий пароль",
+        )
+    current_user.password_hash = get_password_hash(data.new_password)
+    current_user.password_must_be_changed = False
+    db.commit()
+    db.refresh(current_user)
+    return {"message": "Пароль успешно изменён", "user": current_user}
 
 
 @router.post("/register", response_model=UserSchema)

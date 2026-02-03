@@ -8,6 +8,7 @@
    - [Auth - Аутентификация](#auth---аутентификация)
    - [Users - Пользователи](#users---пользователи)
    - [Vehicles - Транспортные средства](#vehicles---транспортные-средства)
+   - [Vehicle Brands - Марки и модели автомобилей](#vehicle-brands---марки-и-модели-автомобилей)
    - [Orders - Заказ-наряды](#orders---заказ-наряды)
    - [Works - Виды работ](#works---виды-работ)
    - [Parts - Запчасти](#parts---запчасти)
@@ -121,10 +122,35 @@ curl -X POST "http://localhost:8000/api/v1/auth/login" \
   "role": "admin",
   "is_active": true,
   "employee_id": 1,
+  "password_must_be_changed": false,
   "created_at": "2024-01-01T00:00:00Z",
   "updated_at": null
 }
 ```
+
+**Примечание:** Если `password_must_be_changed: true`, фронтенд должен показать форму смены пароля (например, модальное окно) и не давать пользователю продолжать работу до смены пароля.
+
+---
+
+### POST `/api/v1/auth/change-password`
+**Описание:** Смена пароля текущего пользователя. Требует ввод текущего пароля.
+
+**Права доступа:** Любой авторизованный пользователь
+
+**Параметры запроса (Body):**
+```json
+{
+  "current_password": "старый_пароль",
+  "new_password": "новый_пароль"
+}
+```
+
+**Ответ:** `{ "message": "Пароль успешно изменён", "user": { ... } }`
+
+**Особенности:** После успешной смены снимается флаг `password_must_be_changed`.
+
+**Возможные ошибки:**
+- `400 Bad Request` - Неверный текущий пароль
 
 ---
 
@@ -263,6 +289,27 @@ curl -X POST "http://localhost:8000/api/v1/auth/login" \
 
 ---
 
+### POST `/api/v1/users/{user_id}/reset-password`
+**Описание:** Сброс пароля пользователя. Админ выставляет временный пароль; пользователь должен сменить его при следующем входе.
+
+**Права доступа:** ADMIN
+
+**Параметры запроса (Path):**
+- `user_id` (integer, required) - ID пользователя
+
+**Параметры запроса (Body):**
+```json
+{
+  "new_password": "12345"
+}
+```
+
+**Ответ:** `{ "message": "Пароль сброшен. Пользователь должен сменить его при следующем входе." }`
+
+**Особенности:** Устанавливает `password_must_be_changed: true`. Фронтенд при следующем входе пользователя покажет форму смены пароля.
+
+---
+
 ## Vehicles - Транспортные средства
 
 ### GET `/api/v1/vehicles/`
@@ -281,12 +328,14 @@ curl -X POST "http://localhost:8000/api/v1/auth/login" \
     "id": 1,
     "vin": "1HGBH41JXMN109186",
     "license_plate": "А123БВ777",
-    "brand": "Toyota",
-    "model": "Camry",
+    "brand_id": 1,
+    "model_id": 5,
+    "brand": { "id": 1, "name": "Toyota" },
+    "model": { "id": 5, "name": "Camry" },
     "year": 2020,
-    "owner_name": "Иванов Иван Иванович",
-    "owner_phone": "+79001234567",
-    "owner_email": "ivanov@example.com",
+    "mileage": 150000,
+    "customer_id": 1,
+    "customer": { "id": 1, "full_name": "Иванов Иван Иванович", "phone": "+79001234567", "email": "..." },
     "created_at": "2024-01-01T00:00:00Z"
   }
 ]
@@ -302,21 +351,7 @@ curl -X POST "http://localhost:8000/api/v1/auth/login" \
 **Параметры запроса (Path):**
 - `vehicle_id` (integer, required) - ID транспортного средства
 
-**Ответ:**
-```json
-{
-  "id": 1,
-  "vin": "1HGBH41JXMN109186",
-  "license_plate": "А123БВ777",
-  "brand": "Toyota",
-  "model": "Camry",
-  "year": 2020,
-  "owner_name": "Иванов Иван Иванович",
-  "owner_phone": "+79001234567",
-  "owner_email": "ivanov@example.com",
-  "created_at": "2024-01-01T00:00:00Z"
-}
-```
+**Ответ:** Аналогично элементу списка выше (brand_id, model_id, brand, model, customer).
 
 **Возможные ошибки:**
 - `404 Not Found` - Транспортное средство не найдено
@@ -333,40 +368,28 @@ curl -X POST "http://localhost:8000/api/v1/auth/login" \
 {
   "vin": "1HGBH41JXMN109186",
   "license_plate": "А123БВ777",
-  "brand": "Toyota",
-  "model": "Camry",
+  "brand_id": 1,
+  "model_id": 5,
   "year": 2020,
-  "owner_name": "Иванов Иван Иванович",
-  "owner_phone": "+79001234567",
-  "owner_email": "ivanov@example.com"
+  "mileage": 150000,
+  "customer_id": 1
 }
 ```
 
 **Поля:**
 - `vin` (string, optional) - VIN номер (уникальный)
 - `license_plate` (string, optional) - Государственный номер
-- `brand` (string, required) - Марка автомобиля
-- `model` (string, required) - Модель автомобиля
+- `brand_id` (integer, required) - ID марки из справочника (GET /vehicle-brands/)
+- `model_id` (integer, required) - ID модели из справочника (POST /vehicle-brands/models)
 - `year` (integer, optional) - Год выпуска
-- `owner_name` (string, required) - ФИО владельца
-- `owner_phone` (string, required) - Телефон владельца
-- `owner_email` (string, optional) - Email владельца
+- `mileage` (integer, optional) - Пробег в км
+- `customer_id` (integer, required) - ID клиента
 
-**Ответ:**
-```json
-{
-  "id": 1,
-  "vin": "1HGBH41JXMN109186",
-  "license_plate": "А123БВ777",
-  "brand": "Toyota",
-  "model": "Camry",
-  "year": 2020,
-  "owner_name": "Иванов Иван Иванович",
-  "owner_phone": "+79001234567",
-  "owner_email": "ivanov@example.com",
-  "created_at": "2024-01-01T00:00:00Z"
-}
-```
+**Ответ:** Объект vehicle с brand и model для отображения.
+
+**Возможные ошибки:**
+- `404 Not Found` - Клиент, марка или модель не найдена
+- `400 Bad Request` - Модель не принадлежит указанной марке
 
 ---
 
@@ -381,30 +404,159 @@ curl -X POST "http://localhost:8000/api/v1/auth/login" \
 **Параметры запроса (Body):**
 ```json
 {
-  "brand": "Honda",
-  "model": "Accord",
-  "owner_phone": "+79007654321"
+  "brand_id": 2,
+  "model_id": 8,
+  "year": 2021,
+  "mileage": 160000,
+  "customer_id": 2
 }
 ```
 
-**Поля (все опциональны):**
-- `vin`, `license_plate`, `brand`, `model`, `year`, `owner_name`, `owner_phone`, `owner_email`
+**Поля (все опциональны):** `vin`, `license_plate`, `brand_id`, `model_id`, `year`, `mileage`, `customer_id`
+
+**Ответ:** Обновлённый объект vehicle.
+
+---
+
+## Vehicle Brands - Марки и модели автомобилей
+
+Модуль для работы со справочником марок и моделей автомобилей. Используется для автодополнения при выборе марки/модели в формах (например, при создании транспортного средства).
+
+### POST `/api/v1/vehicle-brands/import`
+**Описание:** Импорт марок и моделей автомобилей. Полностью заменяет существующие данные новыми из запроса.
+
+**Права доступа:** MANAGER, ADMIN
+
+**Параметры запроса (Body):**
+```json
+{
+  "brands": [
+    {
+      "name": "Toyota",
+      "models": ["Camry", "Corolla", "RAV4", "Land Cruiser", "Prius"]
+    },
+    {
+      "name": "Volkswagen",
+      "models": ["Polo", "Golf", "Passat", "Tiguan", "T-Roc"]
+    },
+    {
+      "name": "Haval",
+      "models": ["Jolion", "H6", "F7", "F7x", "H9"]
+    }
+  ]
+}
+```
+
+**Пример запроса (curl):**
+```bash
+curl -X POST "http://localhost:8000/api/v1/vehicle-brands/import" \
+  -H "Authorization: Bearer <access_token>" \
+  -H "Content-Type: application/json" \
+  -d '{"brands":[{"name":"Toyota","models":["Camry","Corolla"]},{"name":"Lada","models":["Vesta","Granta"]}]}'
+```
 
 **Ответ:**
 ```json
 {
-  "id": 1,
-  "vin": "1HGBH41JXMN109186",
-  "license_plate": "А123БВ777",
-  "brand": "Honda",
-  "model": "Accord",
-  "year": 2020,
-  "owner_name": "Иванов Иван Иванович",
-  "owner_phone": "+79007654321",
-  "owner_email": "ivanov@example.com",
-  "created_at": "2024-01-01T00:00:00Z"
+  "message": "Данные успешно импортированы",
+  "brands_count": 3
 }
 ```
+
+---
+
+### GET `/api/v1/vehicle-brands/`
+**Описание:** Получение списка всех марок автомобилей с id (для передачи в заказ-наряд)
+
+**Права доступа:** Требуется авторизация (любая роль)
+
+**Параметры запроса:** Нет
+
+**Ответ:**
+```json
+{
+  "brands": [
+    { "id": 1, "name": "Audi" },
+    { "id": 2, "name": "BMW" },
+    { "id": 3, "name": "Toyota" },
+    { "id": 4, "name": "Volkswagen" }
+  ]
+}
+```
+
+**Пример для фронтенда (fetch/axios):**
+```javascript
+const response = await fetch('/api/v1/vehicle-brands/', {
+  headers: { 'Authorization': `Bearer ${accessToken}` }
+});
+const { brands } = await response.json();
+// brands = [{ id: 1, name: "Audi" }, { id: 2, name: "BMW" }, ...]
+```
+
+---
+
+### POST `/api/v1/vehicle-brands/models`
+**Описание:** Получение списка моделей по марке (id или название). Возвращает id и name каждой модели — для передачи в заказ-наряд.
+
+**Права доступа:** Требуется авторизация (любая роль)
+
+**Параметры запроса (Body):** один из вариантов
+```json
+{ "brand": "Toyota" }
+```
+или
+```json
+{ "brand_id": 3 }
+```
+
+**Ответ:**
+```json
+{
+  "models": [
+    { "id": 1, "name": "Camry" },
+    { "id": 2, "name": "Corolla" },
+    { "id": 3, "name": "RAV4" },
+    { "id": 4, "name": "Land Cruiser" },
+    { "id": 5, "name": "Prius" }
+  ]
+}
+```
+
+**Возможные ошибки:**
+- `400 Bad Request` - Не указаны brand или brand_id
+- `404 Not Found` - Марка не найдена
+
+**Пример для фронтенда (fetch/axios):**
+```javascript
+// По id марки (предпочтительно — уже есть после GET /vehicle-brands/)
+const loadModels = async (brandId) => {
+  const response = await fetch('/api/v1/vehicle-brands/models', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ brand_id: brandId })
+  });
+  const { models } = await response.json();
+  return models;  // [{ id: 1, name: "Camry" }, ...]
+};
+```
+
+---
+
+### Рекомендации для фронтенд-разработчика
+
+1. **Инициализация справочника:** При первом запуске или в настройках администратор вызывает `POST /vehicle-brands/import` с полным списком марок и моделей.
+
+2. **Форма выбора марки/модели:**
+   - При загрузке формы вызвать `GET /vehicle-brands/` — получить массив `{ id, name }` для выпадающего списка марок.
+   - При выборе марки вызвать `POST /vehicle-brands/models` с `{ "brand_id": selectedBrandId }` — получить массив `{ id, name }` моделей.
+   - В заказ-наряд передавать `brand_id` и `model_id`, а не строки — это обеспечивает целостность данных.
+
+3. **Автокомплит:** Можно использовать `GET /vehicle-brands/` и `POST /vehicle-brands/models` для реализации автодополнения при вводе марки и модели в текстовые поля.
+
+4. **Авторизация:** Все эндпоинты требуют JWT-токен в заголовке `Authorization: Bearer <token>`.
 
 ---
 

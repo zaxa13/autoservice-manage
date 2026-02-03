@@ -10,6 +10,7 @@ from app.models.salary import Salary, SalaryStatus
 from app.models.payment import Payment, PaymentMethod, PaymentStatus
 from app.models.integration import IntegrationLog, IntegrationType
 from app.models.appointment import Appointment
+from app.models.vehicle_brand import VehicleBrand, VehicleModel
 
 __all__ = [
     "User",
@@ -34,5 +35,7 @@ __all__ = [
     "IntegrationLog",
     "IntegrationType",
     "Appointment",
+    "VehicleBrand",
+    "VehicleModel",
 ]
 

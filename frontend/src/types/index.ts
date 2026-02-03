@@ -126,13 +126,26 @@ export interface CustomerCreate {
   notes?: string
 }
 
+export interface BrandRef {
+  id: number
+  name: string
+}
+
+export interface ModelRef {
+  id: number
+  name: string
+}
+
 export interface Vehicle {
   id: number
   vin?: string
   license_plate?: string
-  brand: string
-  model: string
+  brand_id: number
+  model_id: number
+  brand?: BrandRef
+  model?: ModelRef
   year?: number
+  mileage?: number  // Пробег в км
   customer_id: number
   customer?: Customer
   created_at?: string
@@ -141,9 +154,10 @@ export interface Vehicle {
 export interface VehicleCreate {
   vin?: string
   license_plate?: string
-  brand: string
-  model: string
+  brand_id: number
+  model_id: number
   year?: number
+  mileage?: number  // Пробег в км
   customer_id: number
 }
 

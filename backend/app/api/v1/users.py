@@ -4,8 +4,9 @@ from typing import List, Annotated
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.models.user import User
-from app.schemas.user import User as UserSchema, UserUpdate
+from app.schemas.user import User as UserSchema, UserUpdate, ResetPasswordRequest
 from app.core.permissions import require_admin
+from app.core.security import get_password_hash
 
 router = APIRouter()
 
@@ -64,4 +65,26 @@ def update_user(
     db.commit()
     db.refresh(user)
     return user
+
+
+@router.post("/{user_id}/reset-password")
+def reset_user_password(
+    user_id: int,
+    data: ResetPasswordRequest,
+    current_user: Annotated[User, Depends(require_admin)],
+    db: Session = Depends(get_db),
+):
+    """
+    Сброс пароля пользователя (только для администратора).
+    Устанавливает новый пароль и флаг password_must_be_changed.
+    Пользователь при следующем входе должен сменить пароль.
+    """
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        from app.core.exceptions import NotFoundException
+        raise NotFoundException("Пользователь не найден")
+    user.password_hash = get_password_hash(data.new_password)
+    user.password_must_be_changed = True
+    db.commit()
+    return {"message": "Пароль сброшен. Пользователь должен сменить его при следующем входе."}
 
