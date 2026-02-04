@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from typing import Optional, List
 from datetime import datetime
 from decimal import Decimal
@@ -7,6 +7,14 @@ from app.schemas.vehicle import Vehicle
 from app.schemas.employee import Employee
 from app.schemas.work import Work
 from app.schemas.part import Part
+
+
+def _normalize_article(v: Optional[str]) -> Optional[str]:
+    """Обрезка пробелов по краям, верхний регистр, удаление всех пробелов внутри."""
+    if v is None:
+        return None
+    s = v.strip().upper().replace(" ", "")
+    return s if s else None
 
 
 class OrderWorkBase(BaseModel):
@@ -34,10 +42,15 @@ class OrderWork(OrderWorkBase):
 class OrderPartBase(BaseModel):
     part_id: Optional[int] = None  # Nullable для ручного ввода
     part_name: Optional[str] = None  # Название запчасти при ручном вводе
-    article: Optional[str] = None  # Артикул запчасти
+    article: Optional[str] = None  # Артикул запчасти (при сохранении: обрезка пробелов, верхний регистр)
     quantity: int = 1
     price: Decimal
     discount: Optional[Decimal] = 0  # Скидка в процентах
+
+    @field_validator("article")
+    @classmethod
+    def normalize_article(cls, v: Optional[str]) -> Optional[str]:
+        return _normalize_article(v)
 
 
 class OrderPartCreate(OrderPartBase):

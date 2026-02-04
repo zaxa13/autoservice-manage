@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.models.user import User
@@ -16,11 +16,16 @@ router = APIRouter()
 def get_parts(
     skip: int = 0,
     limit: int = 100,
+    search: Optional[str] = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Получение списка запчастей"""
-    parts = db.query(Part).offset(skip).limit(limit).all()
+    """Получение списка запчастей. search — поиск по артикулу (part_number). Запрос нормализуется так же, как артикул при сохранении: обрезка пробелов, верхний регистр, без пробелов внутри."""
+    q = db.query(Part)
+    if search and search.strip():
+        term = search.strip().upper().replace(" ", "")
+        q = q.filter(Part.part_number.ilike(f"%{term}%"))
+    parts = q.offset(skip).limit(limit).all()
     return parts
 
 

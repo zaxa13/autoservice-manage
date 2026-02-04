@@ -58,6 +58,8 @@ def update_user(
         user.role = user_update.role
     if user_update.is_active is not None:
         user.is_active = user_update.is_active
+    if user_update.employee_id is not None:
+        user.employee_id = user_update.employee_id
     if user_update.password is not None:
         from app.core.security import get_password_hash
         user.password_hash = get_password_hash(user_update.password)

@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     # ДЕФОЛТНОЕ ЗНАЧЕНИЕ используется если SECRET_KEY не указан в .env или переменных окружения
     SECRET_KEY: str = "kBvn-wNzil142Y5KmOgzzh_bXfLfs3MUB_YI-McZ388"
     ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 720  # 12 часов (720 минут)
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440  # 24 часа
     
     # Redis
     REDIS_URL: str = "redis://localhost:6379/0"

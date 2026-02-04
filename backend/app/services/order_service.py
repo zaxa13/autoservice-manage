@@ -192,7 +192,7 @@ def update_order(db: Session, order_id: int, order_update: OrderUpdate) -> Order
 
 
 def complete_order(db: Session, order_id: int, employee_id: int) -> Order:
-    """Закрытие заказ-наряда (заказ должен быть в статусе "готов к оплате" или "оплачен")"""
+    """Закрытие заказ-наряда. Разрешено только при статусе «Оплачен». Списываем запчасти со склада только при оплате."""
     order = db.query(Order).filter(Order.id == order_id).first()
     if not order:
         raise NotFoundException("Заказ-наряд не найден")
@@ -200,29 +200,40 @@ def complete_order(db: Session, order_id: int, employee_id: int) -> Order:
     if order.status == OrderStatus.COMPLETED:
         raise BadRequestException("Заказ-наряд уже завершен")
     
-    # Проверяем, что заказ готов к завершению (готов к оплате или оплачен)
-    if order.status != OrderStatus.READY_FOR_PAYMENT and order.status != OrderStatus.PAID:
-        raise BadRequestException("Заказ-наряд можно завершить только если он готов к оплате или оплачен")
+    # Завершать можно только оплаченный заказ (списание только после оплаты)
+    if order.status != OrderStatus.PAID:
+        raise BadRequestException(
+            "Завершить заказ можно только после полной оплаты. Статус «Готов к оплате» не гарантирует оплату."
+        )
     
-    # Если запчасти еще не списаны (статус READY_FOR_PAYMENT), списываем их
-    if order.status == OrderStatus.READY_FOR_PAYMENT:
-        # Списываем запчасти со склада (только те, которые связаны с базой запчастей)
+    # Проверяем наличие всех запчастей на складе перед списанием
+    already_written = db.query(WarehouseTransaction).filter(
+        WarehouseTransaction.order_id == order.id,
+        WarehouseTransaction.transaction_type == TransactionType.OUTGOING,
+    ).first() is not None
+    
+    if not already_written:
+        missing = []
         for order_part in order.order_parts:
-            # Пропускаем запчасти, добавленные вручную (без part_id)
             if not order_part.part_id:
                 continue
-                
             warehouse_item = db.query(WarehouseItem).filter(WarehouseItem.part_id == order_part.part_id).first()
+            label = order_part.article or order_part.part_name or str(order_part.part_id)
             if not warehouse_item:
-                raise BadRequestException(f"Запчасть {order_part.part_id} отсутствует на складе")
-            
-            if warehouse_item.quantity < order_part.quantity:
-                raise BadRequestException(f"Недостаточно запчасти {order_part.part_id} на складе")
-            
-            # Уменьшаем количество на складе
+                missing.append(f"{label}: отсутствует на складе")
+            elif warehouse_item.quantity < order_part.quantity:
+                need = order_part.quantity - warehouse_item.quantity
+                missing.append(f"{label}: не хватает {need} шт. (на складе {warehouse_item.quantity})")
+        if missing:
+            raise BadRequestException(
+                "Нельзя завершить заказ: недостаточно запчастей на складе. " + "; ".join(missing)
+            )
+        # Списываем запчасти (только при статусе PAID)
+        for order_part in order.order_parts:
+            if not order_part.part_id:
+                continue
+            warehouse_item = db.query(WarehouseItem).filter(WarehouseItem.part_id == order_part.part_id).first()
             warehouse_item.quantity -= order_part.quantity
-            
-            # Создаем транзакцию расхода
             transaction = WarehouseTransaction(
                 warehouse_item_id=warehouse_item.id,
                 transaction_type=TransactionType.OUTGOING,

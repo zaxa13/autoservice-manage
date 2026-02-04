@@ -10,8 +10,11 @@ from app.schemas.order import (
 )
 from app.schemas.warehouse import (
     WarehouseItem, WarehouseItemCreate, WarehouseItemUpdate,
-    WarehouseTransaction, WarehouseTransactionCreate
+    WarehouseTransaction, WarehouseTransactionCreate, WarehouseTransactionList,
+    WarehouseAdjustmentCreate,
 )
+from app.schemas.supplier import Supplier, SupplierCreate, SupplierUpdate
+from app.schemas.receipt import ReceiptDocument, ReceiptDocumentCreate, ReceiptDocumentUpdate, ReceiptLine, ReceiptLineCreate
 from app.schemas.salary import Salary, SalaryCreate, SalaryUpdate, SalaryCalculate
 from app.schemas.payment import Payment, PaymentCreate, PaymentYooKassaCreate
 from app.schemas.appointment import Appointment, AppointmentCreate, AppointmentUpdate
@@ -26,7 +29,11 @@ __all__ = [
     "Order", "OrderCreate", "OrderUpdate", "OrderWorkCreate", "OrderPartCreate",
     "OrderDetail", "OrderWork", "OrderPart",
     "WarehouseItem", "WarehouseItemCreate", "WarehouseItemUpdate",
-    "WarehouseTransaction", "WarehouseTransactionCreate",
+    "WarehouseTransaction", "WarehouseTransactionCreate", "WarehouseTransactionList",
+    "WarehouseAdjustmentCreate",
+    "Supplier", "SupplierCreate", "SupplierUpdate",
+    "ReceiptDocument", "ReceiptDocumentCreate", "ReceiptDocumentUpdate",
+    "ReceiptLine", "ReceiptLineCreate",
     "Salary", "SalaryCreate", "SalaryUpdate", "SalaryCalculate",
     "Payment", "PaymentCreate", "PaymentYooKassaCreate",
     "Appointment", "AppointmentCreate", "AppointmentUpdate",

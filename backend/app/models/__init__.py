@@ -5,7 +5,15 @@ from app.models.vehicle import Vehicle
 from app.models.work import Work
 from app.models.part import Part
 from app.models.order import Order, OrderStatus, OrderWork, OrderPart
-from app.models.warehouse import WarehouseItem, WarehouseTransaction, TransactionType
+from app.models.supplier import Supplier
+from app.models.warehouse import (
+    WarehouseItem,
+    WarehouseTransaction,
+    TransactionType,
+    ReceiptDocument,
+    ReceiptLine,
+    ReceiptStatus,
+)
 from app.models.salary import Salary, SalaryStatus
 from app.models.payment import Payment, PaymentMethod, PaymentStatus
 from app.models.integration import IntegrationLog, IntegrationType
@@ -24,9 +32,13 @@ __all__ = [
     "OrderStatus",
     "OrderWork",
     "OrderPart",
+    "Supplier",
     "WarehouseItem",
     "WarehouseTransaction",
     "TransactionType",
+    "ReceiptDocument",
+    "ReceiptLine",
+    "ReceiptStatus",
     "Salary",
     "SalaryStatus",
     "Payment",

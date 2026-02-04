@@ -19,6 +19,7 @@ class UserUpdate(BaseModel):
     email: Optional[EmailStr] = None
     role: Optional[UserRole] = None
     is_active: Optional[bool] = None
+    employee_id: Optional[int] = None
     password: Optional[str] = None
 
 
