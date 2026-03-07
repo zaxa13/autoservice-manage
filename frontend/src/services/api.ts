@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { useAuthStore } from '../store/authStore'
 
 // Используем относительный путь для работы с Vite прокси
 // Vite проксирует /api на http://localhost:8000
@@ -41,12 +42,14 @@ api.interceptors.request.use(
   }
 )
 
-// Interceptor для обработки ошибок
+// При 401 (токен истёк или невалиден) выходим и редирект на логин
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Возвращаем ошибку для обработки в компонентах
-    // PrivateRoute и компоненты сами обрабатывают ошибки 401
+    if (error.response?.status === 401) {
+      useAuthStore.getState().logout()
+      window.location.href = '/login'
+    }
     return Promise.reject(error)
   }
 )

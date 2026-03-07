@@ -2,6 +2,11 @@ import { create } from 'zustand'
 import api from '../services/api'
 import { User } from '../types'
 
+function getStoredToken(): string | null {
+  if (typeof window === 'undefined') return null
+  return localStorage.getItem('access_token')
+}
+
 interface AuthState {
   user: User | null
   isAuthenticated: boolean
@@ -13,7 +18,8 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
-  isAuthenticated: false,
+  // При открытии новой вкладки или рефреше восстанавливаем сессию из localStorage
+  isAuthenticated: !!getStoredToken(),
   
   login: async (username: string, password: string) => {
     const params = new URLSearchParams()
@@ -30,10 +36,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       throw new Error('Неверный формат ответа от сервера')
     }
     
-    // Сохраняем токен
     localStorage.setItem('access_token', response.data.access_token)
-    
-    // Устанавливаем состояние аутентификации
     set({ isAuthenticated: true })
   },
   

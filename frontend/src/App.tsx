@@ -12,6 +12,8 @@ import Dashboard from './pages/Dashboard'
 import Appointments from './pages/Appointments'
 import Orders from './pages/Orders'
 import Warehouse from './pages/Warehouse'
+import SupplierReconciliation from './pages/SupplierReconciliation'
+import Suppliers from './pages/Suppliers'
 import Employees from './pages/Employees'
 import Salary from './pages/Salary'
 
@@ -71,6 +73,22 @@ function AppRoutes() {
         element={
           <PrivateRoute>
             <Warehouse />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/supplier-reconciliation"
+        element={
+          <PrivateRoute>
+            <SupplierReconciliation />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/suppliers"
+        element={
+          <PrivateRoute>
+            <Suppliers />
           </PrivateRoute>
         }
       />

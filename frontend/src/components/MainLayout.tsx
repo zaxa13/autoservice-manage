@@ -21,7 +21,9 @@ import {
   LockRounded,
   Visibility,
   VisibilityOff,
-  VpnKeyRounded
+  VpnKeyRounded,
+  BalanceRounded,
+  LocalShippingRounded
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
@@ -42,6 +44,8 @@ const menuItems = [
   { text: 'Записи', icon: <EventNoteRounded />, path: '/appointments' },
   { text: 'Заказ-наряды', icon: <AssignmentRounded />, path: '/orders' },
   { text: 'Склад', icon: <InventoryRounded />, path: '/warehouse' },
+  { text: 'Сверка по поставщику', icon: <BalanceRounded />, path: '/supplier-reconciliation' },
+  { text: 'Поставщики', icon: <LocalShippingRounded />, path: '/suppliers' },
   { text: 'Сотрудники', icon: <PeopleAltRounded />, path: '/employees' },
   { text: 'Зарплата', icon: <AccountBalanceWalletRounded />, path: '/salary' },
 ];

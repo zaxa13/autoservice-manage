@@ -100,11 +100,108 @@ export interface Work {
 export interface Part {
   id: number
   name: string
-  part_number?: string
+  part_number: string  // обязателен в БД
   brand?: string
   price: number
+  purchase_price_last?: number
   unit: string
   category: 'engine' | 'transmission' | 'suspension' | 'brakes' | 'electrical' | 'body' | 'consumables' | 'other'
+}
+
+export interface WarehouseItem {
+  id: number
+  part_id: number
+  quantity: number
+  min_quantity: number
+  location?: string
+  last_updated: string
+  part: Part
+}
+
+export type TransactionType = 'incoming' | 'outgoing' | 'adjustment'
+
+export interface WarehouseTransaction {
+  id: number
+  warehouse_item_id: number
+  transaction_type: TransactionType
+  quantity: number
+  price?: number
+  order_id?: number
+  receipt_id?: number
+  employee_id: number
+  created_at: string
+}
+
+export interface WarehouseTransactionList extends WarehouseTransaction {
+  part?: Part
+  order_number?: string
+  receipt_number?: string
+  employee_name?: string
+}
+
+export interface Supplier {
+  id: number
+  name: string
+  inn?: string
+  kpp?: string
+  legal_address?: string
+  contact?: string
+  bank_name?: string
+  bik?: string
+  bank_account?: string
+  correspondent_account?: string
+}
+
+export interface ReceiptLine {
+  id: number
+  receipt_id: number
+  part_id: number
+  quantity: number
+  purchase_price: number
+  sale_price: number
+  part?: Part
+}
+
+export interface ReceiptDocument {
+  id: number
+  number: string
+  document_date: string
+  supplier_id?: number
+  supplier_document_number?: string
+  supplier_document_date?: string
+  status: 'draft' | 'posted'
+  created_at: string
+  supplier?: Supplier
+  lines: ReceiptLine[]
+  total_amount?: number
+}
+
+export interface ReceiptLineCreate {
+  part_id: number
+  quantity: number
+  purchase_price: number
+  sale_price: number
+}
+
+export interface ReceiptDocumentCreate {
+  document_date: string
+  supplier_id?: number
+  supplier_document_number?: string
+  supplier_document_date?: string
+  lines: ReceiptLineCreate[]
+}
+
+/** Отчёт по приходу от поставщика за период (сверка). */
+export interface SupplierReceiptsReport {
+  receipts: ReceiptDocument[]
+  total_count: number
+  total_amount: number
+}
+
+export interface WarehouseAdjustmentCreate {
+  warehouse_item_id: number
+  quantity_delta: number
+  reason?: string
 }
 
 export interface Customer {
@@ -177,6 +274,24 @@ export interface OrderStatusInfo {
   label: string
 }
 
+export interface AppointmentPost {
+  id: number
+  name: string
+  max_slots: number
+  slot_times?: string[]  // слоты по времени: ["09:00", "11:00", ...]
+  color?: string
+  sort_order: number
+  created_at: string
+}
+
+export interface AppointmentPostCreate {
+  name: string
+  max_slots: number
+  slot_times?: string[]
+  color?: string
+  sort_order?: number
+}
+
 export interface Appointment {
   id: number
   date: string  // YYYY-MM-DD format
@@ -186,6 +301,8 @@ export interface Appointment {
   description?: string
   vehicle_id?: number
   employee_id?: number
+  post_id?: number
+  sort_order?: number
   created_at: string
   updated_at?: string
   vehicle?: Vehicle
@@ -200,6 +317,8 @@ export interface AppointmentCreate {
   description?: string
   vehicle_id?: number
   employee_id?: number
+  post_id?: number
+  sort_order?: number
 }
 
 export interface AppointmentUpdate {
@@ -210,4 +329,6 @@ export interface AppointmentUpdate {
   description?: string
   vehicle_id?: number
   employee_id?: number
+  post_id?: number
+  sort_order?: number
 }
