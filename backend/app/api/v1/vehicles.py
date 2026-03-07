@@ -26,11 +26,15 @@ def _vehicle_query(db: Session):
 def get_vehicles(
     skip: int = 0,
     limit: int = 100,
+    customer_id: Optional[int] = Query(None, description="Фильтр по клиенту"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
     """Получение списка транспортных средств"""
-    vehicles = _vehicle_query(db).offset(skip).limit(limit).all()
+    query = _vehicle_query(db)
+    if customer_id is not None:
+        query = query.filter(Vehicle.customer_id == customer_id)
+    vehicles = query.offset(skip).limit(limit).all()
     return vehicles
 
 

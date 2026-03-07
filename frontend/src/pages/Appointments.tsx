@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   Container,
   Typography,
@@ -17,19 +18,28 @@ import {
   Card,
   CardContent,
   alpha,
-  Grid,
+  Chip,
+  Menu,
+  MenuItem,
+  Tooltip,
+  Divider,
+  InputAdornment,
+  Collapse,
 } from '@mui/material'
 import {
   AddRounded,
   DeleteOutlineRounded,
   CalendarMonthRounded,
-  AccessTimeRounded,
   PersonOutlineRounded,
   PhoneEnabledRounded,
-  DescriptionOutlined,
   AddCircleOutlineRounded,
   EditRounded,
   DeleteRounded,
+  ReceiptLongRounded,
+  DirectionsCarRounded,
+  SearchRounded,
+  CheckCircleRounded,
+  ArrowForwardIosRounded,
 } from '@mui/icons-material'
 import {
   DndContext,
@@ -48,22 +58,46 @@ import {
   AppointmentCreate,
   AppointmentPost,
   AppointmentPostCreate,
+  AppointmentStatus,
+  Customer,
+  Vehicle,
+  OrderCreate,
 } from '../types'
 import { format } from 'date-fns'
 import { ru } from 'date-fns/locale'
 
-const POST_COLORS = [
-  '#6366F1', // indigo
-  '#22C55E', // green
-  '#F59E0B', // amber
-  '#EC4899', // pink
-  '#14B8A6', // teal
-  '#8B5CF6', // violet
-]
+// ─── Статусы ──────────────────────────────────────────────────────────────────
+
+const STATUS_CONFIG: Record<AppointmentStatus, { label: string; color: string }> = {
+  scheduled: { label: 'Записан',      color: '#3B82F6' },
+  confirmed: { label: 'Подтверждён',  color: '#14B8A6' },
+  waiting:   { label: 'Ожидаем авто', color: '#F59E0B' },
+  arrived:   { label: 'Авто на СТО',  color: '#10B981' },
+  in_work:   { label: 'В работе',     color: '#8B5CF6' },
+  ready:     { label: 'Готов',        color: '#22C55E' },
+  completed: { label: 'Завершён',     color: '#94A3B8' },
+  no_show:   { label: 'Не явился',    color: '#F97316' },
+  cancelled: { label: 'Отменён',      color: '#EF4444' },
+}
+
+// Следующий логический статус (для быстрого продвижения)
+const STATUS_NEXT: Partial<Record<AppointmentStatus, AppointmentStatus>> = {
+  scheduled: 'confirmed',
+  confirmed: 'waiting',
+  waiting:   'arrived',
+  arrived:   'in_work',
+  in_work:   'ready',
+  ready:     'completed',
+}
+
+const ALL_STATUSES = Object.keys(STATUS_CONFIG) as AppointmentStatus[]
+
+// ─── Цвета постов (для шапки колонки) ─────────────────────────────────────────
+
+const POST_COLORS = ['#6366F1', '#22C55E', '#F59E0B', '#EC4899', '#14B8A6', '#8B5CF6']
 
 const DEFAULT_SLOT_HOURS = '9, 11, 13, 15, 17'
 
-/** "9, 11, 13, 15, 17" -> ["09:00", "11:00", "13:00", "15:00", "17:00"] */
 function parseSlotTimes(input: string): string[] {
   return input
     .split(/[,;\s]+/)
@@ -77,13 +111,11 @@ function parseSlotTimes(input: string): string[] {
     .filter((t): t is string => t !== null)
 }
 
-/** ["09:00", "11:00"] -> "9, 11" для поля ввода */
 function formatSlotTimesForInput(slotTimes: string[] | undefined): string {
   if (!slotTimes?.length) return ''
   return slotTimes
     .map((t) => {
-      const h = t.substring(0, 2)
-      const n = parseInt(h, 10)
+      const n = parseInt(t.substring(0, 2), 10)
       return Number.isNaN(n) ? t : String(n)
     })
     .join(', ')
@@ -93,7 +125,6 @@ function getPostColor(post: AppointmentPost, index: number): string {
   return post.color || POST_COLORS[index % POST_COLORS.length]
 }
 
-/** Нормализуем время к HH:MM для сравнения */
 function timeToHHMM(t: string | undefined): string {
   if (!t) return ''
   const s = t.toString().trim()
@@ -101,18 +132,104 @@ function timeToHHMM(t: string | undefined): string {
   return s
 }
 
-// Карточка записи (для списка и для drag overlay)
+function vehicleLabel(v?: Vehicle): string {
+  if (!v) return ''
+  const brand = v.brand?.name ?? ''
+  const model = v.model?.name ?? ''
+  const plate = v.license_plate ? ` · ${v.license_plate}` : ''
+  return `${brand} ${model}${plate}`.trim()
+}
+
+// ─── Чип статуса ─────────────────────────────────────────────────────────────
+
+function StatusChip({
+  status,
+  onChange,
+  size = 'small',
+}: {
+  status: AppointmentStatus
+  onChange?: (s: AppointmentStatus) => void
+  size?: 'small' | 'medium'
+}) {
+  const [anchor, setAnchor] = useState<null | HTMLElement>(null)
+  const cfg = STATUS_CONFIG[status]
+
+  const handleClick = (e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation()
+    if (onChange) setAnchor(e.currentTarget)
+  }
+
+  return (
+    <>
+      <Chip
+        label={cfg.label}
+        size={size}
+        onClick={onChange ? handleClick : undefined}
+        sx={{
+          bgcolor: alpha(cfg.color, 0.15),
+          color: cfg.color,
+          fontWeight: 700,
+          fontSize: '0.68rem',
+          height: 20,
+          cursor: onChange ? 'pointer' : 'default',
+          '& .MuiChip-label': { px: 1 },
+        }}
+      />
+      {onChange && (
+        <Menu
+          anchorEl={anchor}
+          open={Boolean(anchor)}
+          onClose={() => setAnchor(null)}
+          onClick={(e) => e.stopPropagation()}
+          PaperProps={{ sx: { borderRadius: 2, minWidth: 180 } }}
+        >
+          {ALL_STATUSES.map((s) => {
+            const c = STATUS_CONFIG[s]
+            return (
+              <MenuItem
+                key={s}
+                selected={s === status}
+                onClick={() => { onChange(s); setAnchor(null) }}
+                sx={{ gap: 1.5 }}
+              >
+                <Box
+                  sx={{
+                    width: 10, height: 10, borderRadius: '50%',
+                    bgcolor: c.color, flexShrink: 0,
+                  }}
+                />
+                <Typography variant="body2">{c.label}</Typography>
+                {s === status && <CheckCircleRounded sx={{ ml: 'auto', fontSize: 16, color: c.color }} />}
+              </MenuItem>
+            )
+          })}
+        </Menu>
+      )}
+    </>
+  )
+}
+
+// ─── Карточка записи ──────────────────────────────────────────────────────────
+
 function AppointmentCard({
   item,
   onDelete,
-  color,
+  postColor,
   isDragging,
+  onStatusChange,
+  onCreateOrder,
 }: {
   item: Appointment
   onDelete: (id: number) => void
-  color: string
+  postColor: string
   isDragging?: boolean
+  onStatusChange?: (id: number, status: AppointmentStatus) => void
+  onCreateOrder?: (item: Appointment) => void
 }) {
+  const statusCfg = STATUS_CONFIG[item.status ?? 'scheduled']
+  const nextStatus = STATUS_NEXT[item.status ?? 'scheduled']
+  const vLabel = vehicleLabel(item.vehicle)
+
   return (
     <Card
       elevation={0}
@@ -120,52 +237,111 @@ function AppointmentCard({
         borderRadius: 2,
         border: '1px solid',
         borderColor: 'divider',
-        borderLeft: `4px solid ${color}`,
+        borderLeft: `4px solid ${statusCfg.color}`,
+        bgcolor: alpha(statusCfg.color, 0.04),
         opacity: isDragging ? 0.6 : 1,
         transition: 'box-shadow 0.2s',
-        '&:hover': { boxShadow: 2 },
+        '&:hover': { boxShadow: 3 },
       }}
     >
       <CardContent sx={{ py: 1.5, px: 2, '&:last-child': { pb: 1.5 } }}>
-        <Stack direction="row" alignItems="flex-start" justifyContent="space-between" spacing={1}>
-          <Box sx={{ minWidth: 0 }}>
-            <Typography variant="subtitle2" sx={{ fontWeight: 700, color }}>
-              {item.time?.toString().substring(0, 5)}
+        {/* Строка 1: время + статус + кнопки */}
+        <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={0.5} sx={{ mb: 0.5 }}>
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 800, color: postColor, minWidth: 36 }}>
+              {timeToHHMM(item.time)}
             </Typography>
-            <Typography variant="body2" sx={{ fontWeight: 600 }}>
-              {item.customer_name}
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              {item.customer_phone}
-              {item.description ? ` · ${item.description}` : ''}
-            </Typography>
-          </Box>
-          <IconButton
-            size="small"
-            color="error"
-            onClick={(e) => {
-              e.stopPropagation()
-              onDelete(item.id)
-            }}
-            sx={{ mt: -0.5, mr: -0.5 }}
-          >
-            <DeleteOutlineRounded fontSize="small" />
-          </IconButton>
+            <StatusChip
+              status={item.status ?? 'scheduled'}
+              onChange={onStatusChange ? (s) => onStatusChange(item.id, s) : undefined}
+            />
+          </Stack>
+          <Stack direction="row" spacing={0} sx={{ mr: -0.5 }}>
+            {nextStatus && onStatusChange && (
+              <Tooltip title={`→ ${STATUS_CONFIG[nextStatus].label}`}>
+                <IconButton
+                  size="small"
+                  onClick={(e) => { e.stopPropagation(); onStatusChange(item.id, nextStatus) }}
+                  sx={{ color: STATUS_CONFIG[nextStatus].color, p: 0.5 }}
+                >
+                  <ArrowForwardIosRounded sx={{ fontSize: 13 }} />
+                </IconButton>
+              </Tooltip>
+            )}
+            {onCreateOrder && (
+              <Tooltip title={item.vehicle_id ? 'Создать заказ-наряд' : 'Привяжите автомобиль для создания наряда'}>
+                <span>
+                  <IconButton
+                    size="small"
+                    disabled={!item.vehicle_id}
+                    onClick={(e) => { e.stopPropagation(); onCreateOrder(item) }}
+                    sx={{ color: 'primary.main', p: 0.5 }}
+                  >
+                    <ReceiptLongRounded sx={{ fontSize: 16 }} />
+                  </IconButton>
+                </span>
+              </Tooltip>
+            )}
+            <IconButton
+              size="small"
+              color="error"
+              onClick={(e) => { e.stopPropagation(); onDelete(item.id) }}
+              sx={{ p: 0.5 }}
+            >
+              <DeleteOutlineRounded sx={{ fontSize: 16 }} />
+            </IconButton>
+          </Stack>
         </Stack>
+
+        {/* Строка 2: имя клиента */}
+        <Typography variant="body2" sx={{ fontWeight: 600, lineHeight: 1.3 }}>
+          {item.customer_name}
+        </Typography>
+
+        {/* Строка 3: телефон */}
+        <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+          {item.customer_phone}
+        </Typography>
+
+        {/* Строка 4: автомобиль (если есть) */}
+        {vLabel && (
+          <Stack direction="row" alignItems="center" spacing={0.5} sx={{ mt: 0.5 }}>
+            <DirectionsCarRounded sx={{ fontSize: 13, color: 'text.secondary' }} />
+            <Typography variant="caption" color="text.secondary">
+              {vLabel}
+            </Typography>
+          </Stack>
+        )}
+
+        {/* Строка 5: комментарий */}
+        {item.description && (
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ display: 'block', mt: 0.25, fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+          >
+            {item.description}
+          </Typography>
+        )}
       </CardContent>
     </Card>
   )
 }
 
-// Draggable обёртка для карточки
+// ─── Draggable обёртка ────────────────────────────────────────────────────────
+
 function DraggableCard({
   item,
   postColor,
   onDelete,
+  onStatusChange,
+  onCreateOrder,
 }: {
   item: Appointment
   postColor: string
   onDelete: (id: number) => void
+  onStatusChange: (id: number, status: AppointmentStatus) => void
+  onCreateOrder: (item: Appointment) => void
 }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `appointment-${item.id}`,
@@ -173,12 +349,20 @@ function DraggableCard({
   })
   return (
     <Box ref={setNodeRef} {...listeners} {...attributes} sx={{ mb: 1 }}>
-      <AppointmentCard item={item} onDelete={onDelete} color={postColor} isDragging={isDragging} />
+      <AppointmentCard
+        item={item}
+        onDelete={onDelete}
+        postColor={postColor}
+        isDragging={isDragging}
+        onStatusChange={onStatusChange}
+        onCreateOrder={onCreateOrder}
+      />
     </Box>
   )
 }
 
-// Ячейка-слот: при drop запись получает время этого слота и отображается в этой ячейке
+// ─── Ячейка слота ─────────────────────────────────────────────────────────────
+
 function SlotCell({
   postId,
   slotTime,
@@ -213,7 +397,8 @@ function SlotCell({
   )
 }
 
-// Колонка поста: при наличии слотов каждый слот — отдельная droppable-ячейка
+// ─── Колонка поста ────────────────────────────────────────────────────────────
+
 function PostColumn({
   post,
   appointments,
@@ -223,6 +408,8 @@ function PostColumn({
   onEditPost,
   onDeletePost,
   onDelete,
+  onStatusChange,
+  onCreateOrder,
 }: {
   post: AppointmentPost
   appointments: Appointment[]
@@ -232,6 +419,8 @@ function PostColumn({
   onEditPost?: (post: AppointmentPost) => void
   onDeletePost?: (post: AppointmentPost) => void
   onDelete: (id: number) => void
+  onStatusChange: (id: number, status: AppointmentStatus) => void
+  onCreateOrder: (item: Appointment) => void
 }) {
   const slotTimes = post.slot_times && post.slot_times.length > 0 ? post.slot_times : null
   const canAdd = appointments.length < post.max_slots
@@ -247,8 +436,8 @@ function PostColumn({
       ref={hasSlotDroppables ? undefined : setNodeRef}
       variant="outlined"
       sx={{
-        minWidth: 280,
-        maxWidth: 280,
+        minWidth: 290,
+        maxWidth: 290,
         display: 'flex',
         flexDirection: 'column',
         borderRadius: 2,
@@ -259,6 +448,7 @@ function PostColumn({
         transition: 'border-color 0.2s, background-color 0.2s',
       }}
     >
+      {/* Шапка поста */}
       <Box
         sx={{
           py: 1.5,
@@ -277,7 +467,7 @@ function PostColumn({
             {post.name}
           </Typography>
           <Typography variant="caption" color="text.secondary">
-            {appointments.length} / {post.max_slots}
+            {appointments.length} / {post.max_slots} записей
           </Typography>
         </Box>
         {canEditDelete && (
@@ -291,6 +481,8 @@ function PostColumn({
           </Stack>
         )}
       </Box>
+
+      {/* Тело колонки */}
       <Box sx={{ p: 1.5, flex: 1, minHeight: 120 }}>
         {slotTimes ? (
           <>
@@ -308,6 +500,8 @@ function PostColumn({
                       item={appointmentAtSlot}
                       postColor={postColor}
                       onDelete={onDelete}
+                      onStatusChange={onStatusChange}
+                      onCreateOrder={onCreateOrder}
                     />
                   ) : post.id > 0 && onAddRecordForSlot ? (
                     <Button
@@ -324,13 +518,11 @@ function PostColumn({
                 </SlotCell>
               )
             })}
-            {/* Записи, не попавшие ни в один слот (например после перетаскивания с другого поста) */}
+            {/* Записи не попавшие ни в один слот */}
             {(() => {
               const matchedIds = new Set(
                 slotTimes
-                  .map((slotTime) =>
-                    appointments.find((a) => timeToHHMM(a.time) === slotTime)?.id
-                  )
+                  .map((slotTime) => appointments.find((a) => timeToHHMM(a.time) === slotTime)?.id)
                   .filter((id): id is number => id != null)
               )
               const unmatched = appointments.filter((a) => !matchedIds.has(a.id))
@@ -346,6 +538,8 @@ function PostColumn({
                       item={item}
                       postColor={postColor}
                       onDelete={onDelete}
+                      onStatusChange={onStatusChange}
+                      onCreateOrder={onCreateOrder}
                     />
                   ))}
                 </Box>
@@ -360,6 +554,8 @@ function PostColumn({
                 item={item}
                 postColor={postColor}
                 onDelete={onDelete}
+                onStatusChange={onStatusChange}
+                onCreateOrder={onCreateOrder}
               />
             ))}
             {canAdd && post.id > 0 && (
@@ -381,12 +577,373 @@ function PostColumn({
   )
 }
 
+// ─── Поиск клиента/авто в диалоге ─────────────────────────────────────────────
+
+type SearchResult =
+  | { type: 'customer'; customer: Customer; vehicles: Vehicle[] }
+  | { type: 'vehicle'; vehicle: Vehicle; customer: Customer }
+  | null
+
+function ClientSearchField({
+  onFound,
+}: {
+  onFound: (result: SearchResult) => void
+}) {
+  const [query, setQuery] = useState('')
+  const [searching, setSearching] = useState(false)
+  const [result, setResult] = useState<SearchResult>(null)
+  const [notFound, setNotFound] = useState(false)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const search = useCallback(async (q: string) => {
+    const trimmed = q.trim()
+    if (trimmed.length < 3) {
+      setResult(null)
+      setNotFound(false)
+      return
+    }
+    setSearching(true)
+    setNotFound(false)
+
+    // Определяем тип поиска: гос.номер (буквы+цифры) или телефон
+    const isPlate = /[а-яА-ЯёЁa-zA-Z]/.test(trimmed) && /\d/.test(trimmed) && !trimmed.startsWith('+') && !trimmed.startsWith('7') && !trimmed.startsWith('8')
+
+    try {
+      if (isPlate) {
+        const res = await api.get('/vehicles/search/by-license-plate', { params: { license_plate: trimmed } })
+        const vehicle: Vehicle = res.data
+        const customer = vehicle.customer!
+        setResult({ type: 'vehicle', vehicle, customer })
+      } else {
+        const res = await api.get<Customer[]>('/customers/search/by-phone', { params: { phone: trimmed } })
+        if (res.data.length === 0) {
+          setNotFound(true)
+          setResult(null)
+        } else {
+          const customer = res.data[0]
+          const vehiclesRes = await api.get<Vehicle[]>('/vehicles/', { params: { customer_id: customer.id } })
+          setResult({ type: 'customer', customer, vehicles: vehiclesRes.data })
+        }
+      }
+    } catch {
+      setNotFound(true)
+      setResult(null)
+    } finally {
+      setSearching(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (timerRef.current) clearTimeout(timerRef.current)
+    timerRef.current = setTimeout(() => search(query), 600)
+    return () => { if (timerRef.current) clearTimeout(timerRef.current) }
+  }, [query, search])
+
+  const handleUse = () => {
+    if (result) {
+      onFound(result)
+      setResult(null)
+      setQuery('')
+    }
+  }
+
+  return (
+    <Box>
+      <TextField
+        fullWidth
+        size="small"
+        label="Поиск по телефону или гос. номеру"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="+7 999 … или А123ВС"
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <SearchRounded sx={{ color: 'text.secondary', fontSize: 18 }} />
+            </InputAdornment>
+          ),
+          endAdornment: searching ? (
+            <InputAdornment position="end">
+              <CircularProgress size={16} />
+            </InputAdornment>
+          ) : undefined,
+        }}
+      />
+      <Collapse in={Boolean(result) || notFound}>
+        <Box sx={{ mt: 1 }}>
+          {notFound && (
+            <Typography variant="caption" color="text.secondary">
+              Клиент не найден — можно заполнить вручную
+            </Typography>
+          )}
+          {result && (
+            <Paper
+              variant="outlined"
+              sx={{ p: 1.5, borderRadius: 2, bgcolor: alpha('#10B981', 0.06), borderColor: '#10B981' }}
+            >
+              <Stack direction="row" alignItems="center" justifyContent="space-between">
+                <Box>
+                  {result.type === 'customer' && (
+                    <>
+                      <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                        {result.customer.full_name}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {result.customer.phone}
+                        {result.vehicles.length > 0
+                          ? ` · ${result.vehicles.map(v => vehicleLabel(v)).join(', ')}`
+                          : ' · нет автомобилей'}
+                      </Typography>
+                    </>
+                  )}
+                  {result.type === 'vehicle' && (
+                    <>
+                      <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                        {vehicleLabel(result.vehicle)}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {result.customer.full_name} · {result.customer.phone}
+                      </Typography>
+                    </>
+                  )}
+                </Box>
+                <Button size="small" variant="contained" onClick={handleUse} sx={{ ml: 1, flexShrink: 0 }}>
+                  Использовать
+                </Button>
+              </Stack>
+            </Paper>
+          )}
+        </Box>
+      </Collapse>
+    </Box>
+  )
+}
+
+// ─── Диалог новой записи ──────────────────────────────────────────────────────
+
+function AppointmentDialog({
+  open,
+  onClose,
+  initialForm,
+  onSave,
+  saving,
+}: {
+  open: boolean
+  onClose: () => void
+  initialForm: AppointmentCreate
+  onSave: (form: AppointmentCreate) => void
+  saving: boolean
+}) {
+  const [form, setForm] = useState<AppointmentCreate>(initialForm)
+  const [customerVehicles, setCustomerVehicles] = useState<Vehicle[]>([])
+
+  useEffect(() => {
+    setForm(initialForm)
+    setCustomerVehicles([])
+  }, [open, initialForm])
+
+  const handleSearchFound = (result: SearchResult) => {
+    if (!result) return
+    if (result.type === 'customer') {
+      setForm((f) => ({
+        ...f,
+        customer_name: result.customer.full_name,
+        customer_phone: result.customer.phone,
+        vehicle_id: result.vehicles.length === 1 ? result.vehicles[0].id : f.vehicle_id,
+      }))
+      setCustomerVehicles(result.vehicles)
+    } else if (result.type === 'vehicle') {
+      setForm((f) => ({
+        ...f,
+        customer_name: result.customer.full_name,
+        customer_phone: result.customer.phone,
+        vehicle_id: result.vehicle.id,
+      }))
+      setCustomerVehicles([result.vehicle])
+    }
+  }
+
+  const canSave = Boolean(form.customer_name?.trim() && form.customer_phone?.trim())
+
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: 2 } }}>
+      <DialogTitle>Новая запись</DialogTitle>
+      <DialogContent>
+        <Stack spacing={2} sx={{ mt: 1 }}>
+          {/* Поиск клиента */}
+          <ClientSearchField onFound={handleSearchFound} />
+
+          <Divider />
+
+          {/* Время */}
+          <TextField
+            fullWidth
+            label="Время"
+            type="time"
+            value={form.time}
+            onChange={(e) => setForm((f) => ({ ...f, time: e.target.value }))}
+            InputLabelProps={{ shrink: true }}
+            size="small"
+          />
+
+          {/* Имя */}
+          <TextField
+            fullWidth
+            label="Имя клиента *"
+            value={form.customer_name}
+            onChange={(e) => setForm((f) => ({ ...f, customer_name: e.target.value }))}
+            size="small"
+            InputProps={{
+              startAdornment: <InputAdornment position="start"><PersonOutlineRounded sx={{ color: 'text.secondary', fontSize: 18 }} /></InputAdornment>,
+            }}
+          />
+
+          {/* Телефон */}
+          <TextField
+            fullWidth
+            label="Телефон *"
+            value={form.customer_phone}
+            onChange={(e) => setForm((f) => ({ ...f, customer_phone: e.target.value }))}
+            size="small"
+            InputProps={{
+              startAdornment: <InputAdornment position="start"><PhoneEnabledRounded sx={{ color: 'text.secondary', fontSize: 18 }} /></InputAdornment>,
+            }}
+          />
+
+          {/* Автомобиль */}
+          {customerVehicles.length > 0 && (
+            <Box>
+              <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
+                Автомобили клиента
+              </Typography>
+              <Stack direction="row" flexWrap="wrap" gap={0.75}>
+                {customerVehicles.map((v) => (
+                  <Chip
+                    key={v.id}
+                    label={vehicleLabel(v) || `Авто #${v.id}`}
+                    size="small"
+                    variant={form.vehicle_id === v.id ? 'filled' : 'outlined'}
+                    color={form.vehicle_id === v.id ? 'primary' : 'default'}
+                    icon={<DirectionsCarRounded />}
+                    onClick={() => setForm((f) => ({ ...f, vehicle_id: v.id }))}
+                    sx={{ cursor: 'pointer' }}
+                  />
+                ))}
+              </Stack>
+            </Box>
+          )}
+
+          {/* Статус */}
+          <Box>
+            <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
+              Статус
+            </Typography>
+            <Stack direction="row" flexWrap="wrap" gap={0.75}>
+              {ALL_STATUSES.map((s) => {
+                const c = STATUS_CONFIG[s]
+                return (
+                  <Chip
+                    key={s}
+                    label={c.label}
+                    size="small"
+                    onClick={() => setForm((f) => ({ ...f, status: s }))}
+                    sx={{
+                      bgcolor: form.status === s ? alpha(c.color, 0.2) : undefined,
+                      color: form.status === s ? c.color : 'text.secondary',
+                      fontWeight: form.status === s ? 700 : 400,
+                      border: '1px solid',
+                      borderColor: form.status === s ? c.color : 'divider',
+                      cursor: 'pointer',
+                    }}
+                  />
+                )
+              })}
+            </Stack>
+          </Box>
+
+          {/* Комментарий */}
+          <TextField
+            fullWidth
+            label="Комментарий"
+            multiline
+            rows={2}
+            value={form.description || ''}
+            onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+            size="small"
+          />
+        </Stack>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>Отмена</Button>
+        <Button variant="contained" onClick={() => onSave(form)} disabled={saving || !canSave}>
+          {saving ? <CircularProgress size={24} /> : 'Записать'}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  )
+}
+
+// ─── Панель статистики по статусам ────────────────────────────────────────────
+
+const STATS_STATUSES: AppointmentStatus[] = ['scheduled', 'confirmed', 'waiting', 'arrived', 'in_work', 'ready']
+
+function StatusStatsBar({
+  appointments,
+  filter,
+  onFilter,
+}: {
+  appointments: Appointment[]
+  filter: AppointmentStatus | null
+  onFilter: (s: AppointmentStatus | null) => void
+}) {
+  const total = appointments.length
+
+  return (
+    <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mb: 2 }}>
+      <Chip
+        label={`Все (${total})`}
+        size="small"
+        variant={filter === null ? 'filled' : 'outlined'}
+        onClick={() => onFilter(null)}
+        sx={{ fontWeight: filter === null ? 700 : 400 }}
+      />
+      {STATS_STATUSES.map((s) => {
+        const count = appointments.filter((a) => a.status === s).length
+        const c = STATUS_CONFIG[s]
+        if (count === 0 && filter !== s) return null
+        return (
+          <Chip
+            key={s}
+            label={`${c.label} (${count})`}
+            size="small"
+            onClick={() => onFilter(filter === s ? null : s)}
+            sx={{
+              bgcolor: filter === s ? alpha(c.color, 0.2) : undefined,
+              color: filter === s ? c.color : count > 0 ? c.color : 'text.disabled',
+              fontWeight: filter === s ? 700 : 400,
+              border: '1px solid',
+              borderColor: filter === s ? c.color : count > 0 ? alpha(c.color, 0.4) : 'divider',
+              cursor: 'pointer',
+            }}
+          />
+        )
+      })}
+    </Stack>
+  )
+}
+
+// ─── Главная страница ─────────────────────────────────────────────────────────
+
 export default function Appointments() {
+  const navigate = useNavigate()
+
   const [selectedDate, setSelectedDate] = useState<string>(format(new Date(), 'yyyy-MM-dd'))
   const [posts, setPosts] = useState<AppointmentPost[]>([])
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [statusFilter, setStatusFilter] = useState<AppointmentStatus | null>(null)
+
   const [openRecordDialog, setOpenRecordDialog] = useState(false)
   const [openPostDialog, setOpenPostDialog] = useState(false)
   const [activeAppointment, setActiveAppointment] = useState<Appointment | null>(null)
@@ -397,8 +954,9 @@ export default function Appointments() {
     customer_name: '',
     customer_phone: '',
     description: '',
+    status: 'scheduled',
   })
-  const [selectedPostIdForNew, setSelectedPostIdForNew] = useState<number | null>(null)
+  const [savingRecord, setSavingRecord] = useState(false)
 
   const [postForm, setPostForm] = useState<AppointmentPostCreate>({
     name: 'Пост 1',
@@ -410,7 +968,11 @@ export default function Appointments() {
   const [deletePostConfirm, setDeletePostConfirm] = useState<AppointmentPost | null>(null)
   const [deletingPost, setDeletingPost] = useState(false)
   const [savingPost, setSavingPost] = useState(false)
-  const [savingRecord, setSavingRecord] = useState(false)
+
+  const [creatingOrder, setCreatingOrder] = useState(false)
+  const [orderCreated, setOrderCreated] = useState<{ number: string; id: number } | null>(null)
+
+  // ─── Загрузка данных ───────────────────────────────────────────────────────
 
   const fetchPosts = useCallback(async () => {
     try {
@@ -425,9 +987,7 @@ export default function Appointments() {
     setLoading(true)
     setError('')
     try {
-      const res = await api.get<Appointment[]>('/appointments/', {
-        params: { date: selectedDate },
-      })
+      const res = await api.get<Appointment[]>('/appointments/', { params: { date: selectedDate } })
       setAppointments(res.data)
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Ошибка загрузки записей')
@@ -436,26 +996,54 @@ export default function Appointments() {
     }
   }, [selectedDate])
 
-  useEffect(() => {
-    fetchPosts()
-  }, [fetchPosts])
+  useEffect(() => { fetchPosts() }, [fetchPosts])
+  useEffect(() => { fetchAppointments() }, [fetchAppointments])
 
-  useEffect(() => {
-    fetchAppointments()
-  }, [fetchAppointments])
+  // ─── Фильтрация ───────────────────────────────────────────────────────────
+
+  const filteredAppointments = statusFilter
+    ? appointments.filter((a) => a.status === statusFilter)
+    : appointments
 
   const appointmentsByPost = (postId: number | null) =>
-    appointments
+    filteredAppointments
       .filter((a) => (a.post_id ?? null) === postId)
       .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
 
+  // ─── Статус ───────────────────────────────────────────────────────────────
+
+  const handleStatusChange = async (id: number, status: AppointmentStatus) => {
+    // Оптимистичное обновление
+    setAppointments((prev) => prev.map((a) => a.id === id ? { ...a, status } : a))
+    try {
+      await api.put(`/appointments/${id}`, { status })
+    } catch {
+      setError('Ошибка смены статуса')
+      fetchAppointments()
+    }
+  }
+
+  // ─── Создание заказ-наряда ────────────────────────────────────────────────
+
+  const handleCreateOrder = async (item: Appointment) => {
+    if (!item.vehicle_id) return
+    setCreatingOrder(true)
+    try {
+      const payload: OrderCreate = { vehicle_id: item.vehicle_id, order_works: [], order_parts: [] }
+      const res = await api.post('/orders/', payload)
+      setOrderCreated({ number: res.data.number, id: res.data.id })
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Ошибка создания заказ-наряда')
+    } finally {
+      setCreatingOrder(false)
+    }
+  }
+
+  // ─── Управление постами ───────────────────────────────────────────────────
+
   const handleOpenEditPost = (post: AppointmentPost) => {
     setEditingPostId(post.id)
-    setPostForm({
-      name: post.name,
-      max_slots: post.max_slots,
-      sort_order: post.sort_order,
-    })
+    setPostForm({ name: post.name, max_slots: post.max_slots, sort_order: post.sort_order })
     setPostFormSlotTimesInput(formatSlotTimesForInput(post.slot_times ?? []))
     setOpenPostDialog(true)
   }
@@ -465,10 +1053,7 @@ export default function Appointments() {
     setSavingPost(true)
     try {
       const slot_times = parseSlotTimes(postFormSlotTimesInput)
-      const payload = {
-        ...postForm,
-        slot_times: slot_times.length > 0 ? slot_times : undefined,
-      }
+      const payload = { ...postForm, slot_times: slot_times.length > 0 ? slot_times : undefined }
       if (editingPostId !== null) {
         await api.put(`/appointment-posts/${editingPostId}`, payload)
       } else {
@@ -500,43 +1085,29 @@ export default function Appointments() {
     }
   }
 
-  const handleOpenAddRecord = (postId: number) => {
-    setSelectedPostIdForNew(postId)
-    setRecordForm({
-      date: selectedDate,
-      time: '09:00',
-      customer_name: '',
-      customer_phone: '',
-      description: '',
-      post_id: postId,
-      sort_order: appointmentsByPost(postId).length,
-    })
-    setOpenRecordDialog(true)
-  }
+  // ─── Управление записями ──────────────────────────────────────────────────
 
-  const handleOpenAddRecordForSlot = (postId: number, slotTime: string) => {
-    setSelectedPostIdForNew(postId)
+  const handleOpenAddRecord = (postId: number, slotTime?: string) => {
     const post = posts.find((p) => p.id === postId)
-    const slotIndex = post?.slot_times?.indexOf(slotTime) ?? 0
+    const slotIndex = slotTime && post?.slot_times ? post.slot_times.indexOf(slotTime) : appointmentsByPost(postId).length
     setRecordForm({
       date: selectedDate,
-      time: slotTime.length === 5 ? slotTime : `${slotTime.padStart(2, '0')}:00`,
+      time: slotTime ?? '09:00',
       customer_name: '',
       customer_phone: '',
       description: '',
+      status: 'scheduled',
       post_id: postId,
       sort_order: slotIndex,
     })
     setOpenRecordDialog(true)
   }
 
-  const handleSaveRecord = async () => {
-    if (!recordForm.customer_name?.trim() || !recordForm.customer_phone?.trim()) return
+  const handleSaveRecord = async (form: AppointmentCreate) => {
     setSavingRecord(true)
     try {
-      await api.post('/appointments/', recordForm)
+      await api.post('/appointments/', form)
       setOpenRecordDialog(false)
-      setSelectedPostIdForNew(null)
       fetchAppointments()
     } catch {
       setError('Ошибка при сохранении записи')
@@ -555,6 +1126,8 @@ export default function Appointments() {
     }
   }
 
+  // ─── Drag & Drop ──────────────────────────────────────────────────────────
+
   const handleDragStart = (event: DragStartEvent) => {
     const data = event.active.data.current
     if (data?.appointment) setActiveAppointment(data.appointment)
@@ -572,7 +1145,9 @@ export default function Appointments() {
     const targetPost = targetPostId === 0 ? null : posts.find((p) => p.id === targetPostId)
     const targetPosts = appointmentsByPost(targetPostId === 0 ? null : targetPostId)
     if (targetPost && !targetSlotTime && targetPosts.length >= targetPost.max_slots) return
-    const slotIndex = targetSlotTime && targetPost ? targetPost.slot_times?.indexOf(targetSlotTime) ?? 0 : targetPosts.length
+    const slotIndex = targetSlotTime && targetPost
+      ? targetPost.slot_times?.indexOf(targetSlotTime) ?? 0
+      : targetPosts.length
     const displaced = targetSlotTime && targetPost
       ? appointmentsByPost(targetPostId).find((a) => timeToHHMM(a.time) === targetSlotTime)
       : null
@@ -596,49 +1171,55 @@ export default function Appointments() {
     }
   }
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
-  )
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }))
+
+  // ─── Рендер ───────────────────────────────────────────────────────────────
 
   return (
     <Container maxWidth={false} sx={{ maxWidth: 1600 }}>
-      <Box sx={{ mb: 3 }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-          <Typography variant="h5" sx={{ fontWeight: 700 }}>
-            Записи
-          </Typography>
-          <Button
-            variant="contained"
-            startIcon={<AddRounded />}
-            onClick={() => {
-              setEditingPostId(null)
-              setPostForm({
-                name: `Пост ${posts.length + 1}`,
-                max_slots: 5,
-                sort_order: posts.length,
-              })
-              setPostFormSlotTimesInput(DEFAULT_SLOT_HOURS)
-              setOpenPostDialog(true)
-            }}
-          >
-            Создать пост
-          </Button>
-        </Stack>
-        <Paper sx={{ p: 2, borderRadius: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
-          <CalendarMonthRounded sx={{ color: 'primary.main' }} />
-          <TextField
-            type="date"
-            variant="standard"
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
-            InputProps={{ disableUnderline: true }}
-            sx={{ '& input': { fontWeight: 700, fontSize: '1rem' } }}
-          />
-          <Typography variant="body2" color="text.secondary">
-            {format(new Date(selectedDate), 'd MMMM yyyy', { locale: ru })}
-          </Typography>
-        </Paper>
-      </Box>
+      {/* Заголовок */}
+      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+        <Typography variant="h5" sx={{ fontWeight: 700 }}>
+          Записи
+        </Typography>
+        <Button
+          variant="contained"
+          startIcon={<AddRounded />}
+          onClick={() => {
+            setEditingPostId(null)
+            setPostForm({ name: `Пост ${posts.length + 1}`, max_slots: 5, sort_order: posts.length })
+            setPostFormSlotTimesInput(DEFAULT_SLOT_HOURS)
+            setOpenPostDialog(true)
+          }}
+        >
+          Создать пост
+        </Button>
+      </Stack>
+
+      {/* Панель даты */}
+      <Paper sx={{ p: 2, borderRadius: 2, display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+        <CalendarMonthRounded sx={{ color: 'primary.main' }} />
+        <TextField
+          type="date"
+          variant="standard"
+          value={selectedDate}
+          onChange={(e) => setSelectedDate(e.target.value)}
+          InputProps={{ disableUnderline: true }}
+          sx={{ '& input': { fontWeight: 700, fontSize: '1rem' } }}
+        />
+        <Typography variant="body2" color="text.secondary">
+          {format(new Date(selectedDate + 'T00:00:00'), 'd MMMM yyyy', { locale: ru })}
+        </Typography>
+      </Paper>
+
+      {/* Статистика по статусам */}
+      {appointments.length > 0 && (
+        <StatusStatsBar
+          appointments={appointments}
+          filter={statusFilter}
+          onFilter={setStatusFilter}
+        />
+      )}
 
       {error && (
         <Alert severity="error" onClose={() => setError('')} sx={{ mb: 2 }}>
@@ -660,11 +1241,7 @@ export default function Appointments() {
           </Button>
         </Paper>
       ) : (
-        <DndContext
-          sensors={sensors}
-          onDragStart={handleDragStart}
-          onDragEnd={handleDragEnd}
-        >
+        <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
           <Box sx={{ display: 'flex', gap: 2, overflowX: 'auto', pb: 2 }}>
             {posts.map((post, idx) => (
               <PostColumn
@@ -675,12 +1252,14 @@ export default function Appointments() {
                 onAddRecord={() => handleOpenAddRecord(post.id)}
                 onAddRecordForSlot={
                   post.slot_times?.length
-                    ? (slotTime) => handleOpenAddRecordForSlot(post.id, slotTime)
+                    ? (slotTime) => handleOpenAddRecord(post.id, slotTime)
                     : undefined
                 }
                 onEditPost={handleOpenEditPost}
                 onDeletePost={(p) => setDeletePostConfirm(p)}
                 onDelete={handleDeleteRecord}
+                onStatusChange={handleStatusChange}
+                onCreateOrder={handleCreateOrder}
               />
             ))}
             {appointmentsByPost(null).length > 0 && (
@@ -691,17 +1270,19 @@ export default function Appointments() {
                 postColor="#94A3B8"
                 onAddRecord={() => {}}
                 onDelete={handleDeleteRecord}
+                onStatusChange={handleStatusChange}
+                onCreateOrder={handleCreateOrder}
               />
             )}
           </Box>
 
           <DragOverlay>
             {activeAppointment ? (
-              <Box sx={{ width: 272 }}>
+              <Box sx={{ width: 282 }}>
                 <AppointmentCard
                   item={activeAppointment}
                   onDelete={() => {}}
-                  color={(() => {
+                  postColor={(() => {
                     const p = posts.find((x) => x.id === activeAppointment.post_id)
                     return p ? getPostColor(p, posts.indexOf(p)) : '#6366F1'
                   })()}
@@ -713,13 +1294,19 @@ export default function Appointments() {
         </DndContext>
       )}
 
-      {/* Диалог создания/редактирования поста */}
+      {/* ─── Диалог новой записи ─────────────────────────────────────────── */}
+      <AppointmentDialog
+        open={openRecordDialog}
+        onClose={() => setOpenRecordDialog(false)}
+        initialForm={recordForm}
+        onSave={handleSaveRecord}
+        saving={savingRecord}
+      />
+
+      {/* ─── Диалог создания/редактирования поста ────────────────────────── */}
       <Dialog
         open={openPostDialog}
-        onClose={() => {
-          setOpenPostDialog(false)
-          setEditingPostId(null)
-        }}
+        onClose={() => { setOpenPostDialog(false); setEditingPostId(null) }}
         maxWidth="xs"
         fullWidth
         PaperProps={{ sx: { borderRadius: 2 } }}
@@ -753,90 +1340,73 @@ export default function Appointments() {
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button
-            onClick={() => {
-              setOpenPostDialog(false)
-              setEditingPostId(null)
-            }}
-          >
-            Отмена
-          </Button>
+          <Button onClick={() => { setOpenPostDialog(false); setEditingPostId(null) }}>Отмена</Button>
           <Button variant="contained" onClick={handleSavePost} disabled={savingPost || !postForm.name.trim()}>
             {savingPost ? <CircularProgress size={24} /> : editingPostId !== null ? 'Сохранить' : 'Создать'}
           </Button>
         </DialogActions>
       </Dialog>
 
-      {/* Подтверждение удаления поста */}
+      {/* ─── Подтверждение удаления поста ────────────────────────────────── */}
       <Dialog open={deletePostConfirm !== null} onClose={() => !deletingPost && setDeletePostConfirm(null)}>
         <DialogTitle>Удалить пост?</DialogTitle>
         <DialogContent>
           {deletePostConfirm && (
             <Typography>
-              Пост «{deletePostConfirm.name}» будет удалён. Записи на этот пост останутся в системе, но перестанут
-              быть привязаны к посту (появятся в колонке «Без поста»).
+              Пост «{deletePostConfirm.name}» будет удалён. Записи останутся в системе, но перейдут в колонку «Без поста».
             </Typography>
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDeletePostConfirm(null)} disabled={deletingPost}>
-            Отмена
-          </Button>
-          <Button
-            variant="contained"
-            color="error"
-            onClick={handleDeletePostConfirm}
-            disabled={deletingPost}
-          >
+          <Button onClick={() => setDeletePostConfirm(null)} disabled={deletingPost}>Отмена</Button>
+          <Button variant="contained" color="error" onClick={handleDeletePostConfirm} disabled={deletingPost}>
             {deletingPost ? <CircularProgress size={24} /> : 'Удалить'}
           </Button>
         </DialogActions>
       </Dialog>
 
-      {/* Диалог новой записи */}
-      <Dialog open={openRecordDialog} onClose={() => setOpenRecordDialog(false)} maxWidth="xs" fullWidth PaperProps={{ sx: { borderRadius: 2 } }}>
-        <DialogTitle>Новая запись</DialogTitle>
+      {/* ─── Диалог "Заказ-наряд создан" ─────────────────────────────────── */}
+      <Dialog open={Boolean(orderCreated)} onClose={() => setOrderCreated(null)} maxWidth="xs" fullWidth PaperProps={{ sx: { borderRadius: 2 } }}>
+        <DialogTitle>Заказ-наряд создан</DialogTitle>
         <DialogContent>
-          <Stack spacing={2} sx={{ mt: 1 }}>
-            <TextField
-              fullWidth
-              label="Время"
-              type="time"
-              value={recordForm.time}
-              onChange={(e) => setRecordForm((p) => ({ ...p, time: e.target.value }))}
-              InputLabelProps={{ shrink: true }}
-            />
-            <TextField
-              fullWidth
-              label="Имя клиента"
-              value={recordForm.customer_name}
-              onChange={(e) => setRecordForm((p) => ({ ...p, customer_name: e.target.value }))}
-              InputProps={{ startAdornment: <PersonOutlineRounded sx={{ mr: 1, color: 'text.secondary' }} /> }}
-            />
-            <TextField
-              fullWidth
-              label="Телефон"
-              value={recordForm.customer_phone}
-              onChange={(e) => setRecordForm((p) => ({ ...p, customer_phone: e.target.value }))}
-              InputProps={{ startAdornment: <PhoneEnabledRounded sx={{ mr: 1, color: 'text.secondary' }} /> }}
-            />
-            <TextField
-              fullWidth
-              label="Комментарий"
-              multiline
-              rows={2}
-              value={recordForm.description || ''}
-              onChange={(e) => setRecordForm((p) => ({ ...p, description: e.target.value }))}
-            />
-          </Stack>
+          {orderCreated && (
+            <Stack spacing={2} alignItems="center" sx={{ py: 1 }}>
+              <CheckCircleRounded sx={{ fontSize: 56, color: '#22C55E' }} />
+              <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                #{orderCreated.number}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" textAlign="center">
+                Заказ-наряд успешно создан. Перейти к нему для добавления работ и запчастей?
+              </Typography>
+            </Stack>
+          )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenRecordDialog(false)}>Отмена</Button>
-          <Button variant="contained" onClick={handleSaveRecord} disabled={savingRecord}>
-            {savingRecord ? <CircularProgress size={24} /> : 'Записать'}
+          <Button onClick={() => setOrderCreated(null)}>Закрыть</Button>
+          <Button
+            variant="contained"
+            startIcon={<ReceiptLongRounded />}
+            onClick={() => { setOrderCreated(null); navigate('/orders') }}
+          >
+            Перейти к нарядам
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* ─── Индикатор создания наряда ───────────────────────────────────── */}
+      {creatingOrder && (
+        <Box
+          sx={{
+            position: 'fixed', bottom: 24, right: 24,
+            bgcolor: 'background.paper', borderRadius: 2,
+            boxShadow: 4, px: 3, py: 2,
+            display: 'flex', alignItems: 'center', gap: 1.5,
+          }}
+        >
+          <CircularProgress size={20} />
+          <Typography variant="body2">Создаём заказ-наряд…</Typography>
+        </Box>
+      )}
     </Container>
   )
 }

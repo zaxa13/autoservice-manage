@@ -1,16 +1,24 @@
 from fastapi import APIRouter, Depends, Query, HTTPException, status
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from typing import List, Optional
 from datetime import date
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.models.user import User
 from app.models.appointment import Appointment
+from app.models.vehicle import Vehicle
 from app.schemas.appointment import Appointment as AppointmentSchema, AppointmentCreate, AppointmentUpdate
 from app.core.exceptions import NotFoundException
 from app.core.permissions import require_manager_or_admin
 
 router = APIRouter()
+
+
+def _appointment_query(db: Session):
+    return db.query(Appointment).options(
+        joinedload(Appointment.vehicle).joinedload(Vehicle.brand),
+        joinedload(Appointment.vehicle).joinedload(Vehicle.vehicle_model),
+    )
 
 
 @router.get("/", response_model=List[AppointmentSchema])
@@ -22,13 +30,21 @@ def get_appointments(
     current_user: User = Depends(get_current_user)
 ):
     """Получение списка записей"""
-    query = db.query(Appointment)
-    
-    # Фильтр по дате, если указана
+    query = _appointment_query(db)
+
     if appointment_date:
         query = query.filter(Appointment.date == appointment_date)
-    
-    appointments = query.order_by(Appointment.date, Appointment.time).offset(skip).limit(limit).all()
+
+    appointments = (
+        query.order_by(
+            Appointment.post_id.asc(),
+            Appointment.sort_order.asc(),
+            Appointment.time.asc(),
+        )
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
     return appointments
 
 
@@ -39,7 +55,7 @@ def get_appointment(
     current_user: User = Depends(get_current_user)
 ):
     """Получение записи по ID"""
-    appointment = db.query(Appointment).filter(Appointment.id == appointment_id).first()
+    appointment = _appointment_query(db).filter(Appointment.id == appointment_id).first()
     if not appointment:
         raise NotFoundException("Запись не найдена")
     return appointment
@@ -56,6 +72,7 @@ def create_appointment(
     db.add(appointment)
     db.commit()
     db.refresh(appointment)
+    appointment = _appointment_query(db).filter(Appointment.id == appointment.id).first()
     return appointment
 
 
@@ -66,17 +83,17 @@ def update_appointment(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_manager_or_admin)
 ):
-    """Обновление записи"""
+    """Обновление записи (в т.ч. post_id, sort_order при drag-drop, status)."""
     appointment = db.query(Appointment).filter(Appointment.id == appointment_id).first()
     if not appointment:
         raise NotFoundException("Запись не найдена")
-    
+
     update_data = appointment_update.dict(exclude_unset=True)
     for field, value in update_data.items():
         setattr(appointment, field, value)
-    
+
     db.commit()
-    db.refresh(appointment)
+    appointment = _appointment_query(db).filter(Appointment.id == appointment_id).first()
     return appointment
 
 
@@ -90,7 +107,7 @@ def delete_appointment(
     appointment = db.query(Appointment).filter(Appointment.id == appointment_id).first()
     if not appointment:
         raise NotFoundException("Запись не найдена")
-    
+
     db.delete(appointment)
     db.commit()
     return None

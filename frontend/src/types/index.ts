@@ -274,6 +274,17 @@ export interface OrderStatusInfo {
   label: string
 }
 
+export type AppointmentStatus =
+  | 'scheduled'   // Записан
+  | 'confirmed'   // Подтверждён
+  | 'waiting'     // Ожидаем авто
+  | 'arrived'     // Авто на СТО
+  | 'in_work'     // В работе
+  | 'ready'       // Готов к выдаче
+  | 'completed'   // Завершён
+  | 'no_show'     // Не явился
+  | 'cancelled'   // Отменён
+
 export interface AppointmentPost {
   id: number
   name: string
@@ -299,6 +310,7 @@ export interface Appointment {
   customer_name: string
   customer_phone: string
   description?: string
+  status: AppointmentStatus
   vehicle_id?: number
   employee_id?: number
   post_id?: number
@@ -315,6 +327,7 @@ export interface AppointmentCreate {
   customer_name: string
   customer_phone: string
   description?: string
+  status?: AppointmentStatus
   vehicle_id?: number
   employee_id?: number
   post_id?: number
@@ -327,6 +340,7 @@ export interface AppointmentUpdate {
   customer_name?: string
   customer_phone?: string
   description?: string
+  status?: AppointmentStatus
   vehicle_id?: number
   employee_id?: number
   post_id?: number
