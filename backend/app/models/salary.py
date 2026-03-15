@@ -22,7 +22,7 @@ class Salary(Base):
     bonus = Column(Numeric(10, 2), nullable=False, default=0)
     penalty = Column(Numeric(10, 2), nullable=False, default=0)
     total = Column(Numeric(10, 2), nullable=False, default=0)
-    status = Column(Enum(SalaryStatus), nullable=False, default=SalaryStatus.DRAFT)
+    status = Column(Enum(SalaryStatus, values_callable=lambda obj: [e.value for e in obj]), nullable=False, default=SalaryStatus.DRAFT)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     paid_at = Column(DateTime(timezone=True), nullable=True)
 

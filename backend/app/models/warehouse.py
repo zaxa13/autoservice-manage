@@ -26,7 +26,7 @@ class ReceiptDocument(Base):
     supplier_id = Column(Integer, ForeignKey("suppliers.id"), nullable=True)
     supplier_document_number = Column(String, nullable=True)
     supplier_document_date = Column(Date, nullable=True)
-    status = Column(Enum(ReceiptStatus), nullable=False, default=ReceiptStatus.DRAFT)
+    status = Column(Enum(ReceiptStatus, values_callable=lambda obj: [e.value for e in obj]), nullable=False, default=ReceiptStatus.DRAFT)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     supplier = relationship("Supplier", back_populates="receipt_documents")
@@ -75,7 +75,7 @@ class WarehouseTransaction(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     warehouse_item_id = Column(Integer, ForeignKey("warehouse_items.id"), nullable=False)
-    transaction_type = Column(Enum(TransactionType), nullable=False)
+    transaction_type = Column(Enum(TransactionType, values_callable=lambda obj: [e.value for e in obj]), nullable=False)
     quantity = Column(Numeric(10, 2), nullable=False)
     price = Column(Numeric(10, 2), nullable=True)
     order_id = Column(Integer, ForeignKey("orders.id"), nullable=True)

@@ -61,7 +61,7 @@ def create_token(user: User) -> str:
     """Создание JWT токена для пользователя"""
     access_token_expires = timedelta(minutes=app_settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.username},  # Используем username вместо id
+        data={"sub": user.username, "role": user.role.value},
         expires_delta=access_token_expires
     )
     logger.info(f"Token created for username: {user.username}, user_id: {user.id}")

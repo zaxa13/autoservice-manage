@@ -178,6 +178,43 @@ def post_receipt_document(db: Session, receipt_id: int, employee_id: int) -> Rec
     return receipt
 
 
+def get_supplier_receipts_report(
+    db: Session,
+    supplier_id: int,
+    date_from: date | None = None,
+    date_to: date | None = None,
+) -> dict:
+    """Отчёт по приходным накладным поставщика за период (по document_date)."""
+    from sqlalchemy.orm import joinedload
+    from app.models.supplier import Supplier
+
+    supplier = db.query(Supplier).filter(Supplier.id == supplier_id).first()
+    if not supplier:
+        raise NotFoundException("Поставщик не найден")
+
+    q = (
+        db.query(ReceiptDocument)
+        .options(
+            joinedload(ReceiptDocument.lines).joinedload(ReceiptLine.part),
+            joinedload(ReceiptDocument.supplier),
+        )
+        .filter(ReceiptDocument.supplier_id == supplier_id)
+    )
+    if date_from is not None:
+        q = q.filter(ReceiptDocument.document_date >= date_from)
+    if date_to is not None:
+        q = q.filter(ReceiptDocument.document_date <= date_to)
+    q = q.order_by(ReceiptDocument.document_date.asc(), ReceiptDocument.id.asc())
+    receipts = q.all()
+
+    total_amount = sum((r.total_amount or Decimal(0)) for r in receipts)
+    return {
+        "receipts": receipts,
+        "total_count": len(receipts),
+        "total_amount": total_amount,
+    }
+
+
 def get_transactions(
     db: Session,
     date_from: date | None = None,

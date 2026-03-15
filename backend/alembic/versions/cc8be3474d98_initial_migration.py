@@ -21,7 +21,7 @@ def upgrade() -> None:
     op.create_table('employees',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('full_name', sa.String(), nullable=False),
-    sa.Column('position', sa.Enum('ADMIN', 'MANAGER', 'MECHANIC', name='employeeposition'), nullable=False),
+    sa.Column('position', sa.Enum('admin', 'manager', 'mechanic', name='employeeposition'), nullable=False),
     sa.Column('phone', sa.String(), nullable=True),
     sa.Column('email', sa.String(), nullable=True),
     sa.Column('hire_date', sa.Date(), nullable=False),
@@ -36,7 +36,7 @@ def upgrade() -> None:
 
     op.create_table('integration_logs',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('integration_type', sa.Enum('YOOKASSA', 'SMS', 'EMAIL', 'PARTS_SUPPLIER', 'GIBDD', name='integrationtype'), nullable=False),
+    sa.Column('integration_type', sa.Enum('yookassa', 'sms', 'email', 'parts_supplier', 'gibdd', name='integrationtype'), nullable=False),
     sa.Column('status', sa.String(), nullable=False),
     sa.Column('request_data', sa.Text(), nullable=True),
     sa.Column('response_data', sa.Text(), nullable=True),
@@ -53,7 +53,7 @@ def upgrade() -> None:
     sa.Column('brand', sa.String(), nullable=True),
     sa.Column('price', sa.Numeric(precision=10, scale=2), nullable=False),
     sa.Column('unit', sa.String(), nullable=False),
-    sa.Column('category', sa.Enum('ENGINE', 'TRANSMISSION', 'SUSPENSION', 'BRAKES', 'ELECTRICAL', 'BODY', 'CONSUMABLES', 'OTHER', name='partcategory'), nullable=False),
+    sa.Column('category', sa.Enum('engine', 'transmission', 'suspension', 'brakes', 'electrical', 'body', 'consumables', 'other', name='partcategory'), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     with op.batch_alter_table('parts', schema=None) as batch_op:
@@ -84,7 +84,7 @@ def upgrade() -> None:
     sa.Column('description', sa.String(), nullable=True),
     sa.Column('price', sa.Numeric(precision=10, scale=2), nullable=False),
     sa.Column('duration_minutes', sa.Integer(), nullable=False),
-    sa.Column('category', sa.Enum('DIAGNOSTICS', 'REPAIR', 'MAINTENANCE', 'BODY_WORK', 'PAINTING', 'OTHER', name='workcategory'), nullable=False),
+    sa.Column('category', sa.Enum('diagnostics', 'repair', 'maintenance', 'body_work', 'painting', 'other', name='workcategory'), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     with op.batch_alter_table('works', schema=None) as batch_op:
@@ -96,7 +96,7 @@ def upgrade() -> None:
     sa.Column('vehicle_id', sa.Integer(), nullable=False),
     sa.Column('employee_id', sa.Integer(), nullable=False),
     sa.Column('mechanic_id', sa.Integer(), nullable=True),
-    sa.Column('status', sa.Enum('NEW', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED', name='orderstatus'), nullable=False),
+    sa.Column('status', sa.Enum('new', 'estimation', 'in_progress', 'ready_for_payment', 'paid', 'completed', 'cancelled', name='orderstatus'), nullable=False),
     sa.Column('total_amount', sa.Numeric(precision=10, scale=2), nullable=False),
     sa.Column('paid_amount', sa.Numeric(precision=10, scale=2), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
@@ -119,7 +119,7 @@ def upgrade() -> None:
     sa.Column('bonus', sa.Numeric(precision=10, scale=2), nullable=False),
     sa.Column('penalty', sa.Numeric(precision=10, scale=2), nullable=False),
     sa.Column('total', sa.Numeric(precision=10, scale=2), nullable=False),
-    sa.Column('status', sa.Enum('DRAFT', 'CALCULATED', 'PAID', name='salarystatus'), nullable=False),
+    sa.Column('status', sa.Enum('draft', 'calculated', 'paid', name='salarystatus'), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
     sa.Column('paid_at', sa.DateTime(timezone=True), nullable=True),
     sa.ForeignKeyConstraint(['employee_id'], ['employees.id'], ),
@@ -133,7 +133,7 @@ def upgrade() -> None:
     sa.Column('username', sa.String(), nullable=False),
     sa.Column('email', sa.String(), nullable=False),
     sa.Column('password_hash', sa.String(), nullable=False),
-    sa.Column('role', sa.Enum('ADMIN', 'MANAGER', 'MECHANIC', 'ACCOUNTANT', name='userrole'), nullable=False),
+    sa.Column('role', sa.Enum('admin', 'manager', 'mechanic', 'accountant', name='userrole'), nullable=False),
     sa.Column('employee_id', sa.Integer(), nullable=True),
     sa.Column('is_active', sa.Boolean(), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
@@ -207,7 +207,7 @@ def upgrade() -> None:
     op.create_table('warehouse_transactions',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('warehouse_item_id', sa.Integer(), nullable=False),
-    sa.Column('transaction_type', sa.Enum('INCOMING', 'OUTGOING', 'ADJUSTMENT', name='transactiontype'), nullable=False),
+    sa.Column('transaction_type', sa.Enum('incoming', 'outgoing', 'adjustment', name='transactiontype'), nullable=False),
     sa.Column('quantity', sa.Numeric(precision=10, scale=2), nullable=False),
     sa.Column('price', sa.Numeric(precision=10, scale=2), nullable=True),
     sa.Column('order_id', sa.Integer(), nullable=True),

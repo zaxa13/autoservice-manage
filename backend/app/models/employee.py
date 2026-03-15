@@ -16,7 +16,7 @@ class Employee(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     full_name = Column(String, nullable=False)
-    position = Column(Enum(EmployeePosition), nullable=False)
+    position = Column(Enum(EmployeePosition, values_callable=lambda obj: [e.value for e in obj]), nullable=False)
     phone = Column(String, nullable=True)
     email = Column(String, nullable=True)
     hire_date = Column(Date, nullable=False)

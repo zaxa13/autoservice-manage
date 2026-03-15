@@ -19,7 +19,7 @@ class User(Base):
     username = Column(String, unique=True, index=True, nullable=False)
     email = Column(String, unique=True, index=True, nullable=False)
     password_hash = Column(String, nullable=False)
-    role = Column(Enum(UserRole), nullable=False, default=UserRole.MECHANIC)
+    role = Column(Enum(UserRole, values_callable=lambda obj: [e.value for e in obj]), nullable=False, default=UserRole.MECHANIC)
     employee_id = Column(Integer, ForeignKey("employees.id"), nullable=True, unique=True)
     is_active = Column(Boolean, default=True)
     password_must_be_changed = Column(Boolean, default=False, nullable=False)

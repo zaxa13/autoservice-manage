@@ -5,6 +5,7 @@ from sqlalchemy.sql import func
 from app.database import Base
 
 
+
 class AppointmentStatus(str, enum.Enum):
     SCHEDULED = "scheduled"      # Записан
     CONFIRMED = "confirmed"      # Подтверждён
@@ -30,6 +31,7 @@ class Appointment(Base):
     vehicle_id = Column(Integer, ForeignKey("vehicles.id"), nullable=True)
     employee_id = Column(Integer, ForeignKey("employees.id"), nullable=True)
     post_id = Column(Integer, ForeignKey("appointment_posts.id"), nullable=True)
+    order_id = Column(Integer, ForeignKey("orders.id"), nullable=True)
     sort_order = Column(Integer, nullable=False, default=0)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
@@ -37,3 +39,4 @@ class Appointment(Base):
     vehicle = relationship("Vehicle", back_populates="appointments")
     employee = relationship("Employee")
     post = relationship("AppointmentPost", back_populates="appointments")
+    order = relationship("Order", foreign_keys=[order_id])

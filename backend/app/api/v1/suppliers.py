@@ -43,7 +43,17 @@ def create_supplier(
     current_user: User = Depends(require_manager_or_admin),
 ):
     """Создание поставщика."""
-    s = Supplier(name=payload.name, inn=payload.inn, contact=payload.contact)
+    s = Supplier(
+        name=payload.name,
+        inn=payload.inn,
+        kpp=payload.kpp,
+        legal_address=payload.legal_address,
+        contact=payload.contact,
+        bank_name=payload.bank_name,
+        bik=payload.bik,
+        bank_account=payload.bank_account,
+        correspondent_account=payload.correspondent_account,
+    )
     db.add(s)
     db.commit()
     db.refresh(s)
@@ -65,8 +75,20 @@ def update_supplier(
         s.name = payload.name
     if payload.inn is not None:
         s.inn = payload.inn
+    if payload.kpp is not None:
+        s.kpp = payload.kpp
+    if payload.legal_address is not None:
+        s.legal_address = payload.legal_address
     if payload.contact is not None:
         s.contact = payload.contact
+    if payload.bank_name is not None:
+        s.bank_name = payload.bank_name
+    if payload.bik is not None:
+        s.bik = payload.bik
+    if payload.bank_account is not None:
+        s.bank_account = payload.bank_account
+    if payload.correspondent_account is not None:
+        s.correspondent_account = payload.correspondent_account
     db.commit()
     db.refresh(s)
     return s

@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import Optional
 from datetime import date, time as time_type, datetime
 from enum import Enum
@@ -17,27 +17,32 @@ class AppointmentStatus(str, Enum):
 
 
 class BrandRef(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     name: str
-
-    class Config:
-        from_attributes = True
 
 
 class ModelRef(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     name: str
 
-    class Config:
-        from_attributes = True
-
 
 class AppointmentVehicleInfo(BaseModel):
+    model_config = ConfigDict(from_attributes=True, protected_namespaces=())
+
     id: int
     license_plate: Optional[str] = None
     brand: Optional[BrandRef] = None
     model: Optional[ModelRef] = None
     year: Optional[int] = None
+
+
+class OrderRef(BaseModel):
+    id: int
+    number: str
 
     class Config:
         from_attributes = True
@@ -53,6 +58,7 @@ class AppointmentBase(BaseModel):
     vehicle_id: Optional[int] = None
     employee_id: Optional[int] = None
     post_id: Optional[int] = None
+    order_id: Optional[int] = None
     sort_order: Optional[int] = None
 
 
@@ -70,6 +76,7 @@ class AppointmentUpdate(BaseModel):
     vehicle_id: Optional[int] = None
     employee_id: Optional[int] = None
     post_id: Optional[int] = None
+    order_id: Optional[int] = None
     sort_order: Optional[int] = None
 
 
@@ -78,6 +85,7 @@ class Appointment(AppointmentBase):
     created_at: datetime
     updated_at: Optional[datetime] = None
     vehicle: Optional[AppointmentVehicleInfo] = None
+    order: Optional[OrderRef] = None
 
     class Config:
         from_attributes = True

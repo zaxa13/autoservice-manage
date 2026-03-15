@@ -5,10 +5,21 @@ from app.database import Base
 
 class WorkCategory(str, enum.Enum):
     DIAGNOSTICS = "diagnostics"
-    REPAIR = "repair"
+    ENGINE = "engine"
+    TRANSMISSION = "transmission"
+    SUSPENSION = "suspension"
+    BRAKES = "brakes"
+    ELECTRICAL = "electrical"
+    COOLING = "cooling"
+    FUEL_SYSTEM = "fuel_system"
+    EXHAUST = "exhaust"
+    CLIMATE = "climate"
     MAINTENANCE = "maintenance"
     BODY_WORK = "body_work"
     PAINTING = "painting"
+    TIRE_SERVICE = "tire_service"
+    GLASS = "glass"
+    REPAIR = "repair"
     OTHER = "other"
 
 
@@ -20,5 +31,5 @@ class Work(Base):
     description = Column(String, nullable=True)
     price = Column(Numeric(10, 2), nullable=False)
     duration_minutes = Column(Integer, nullable=False, default=60)
-    category = Column(Enum(WorkCategory), nullable=False, default=WorkCategory.OTHER)
+    category = Column(Enum(WorkCategory, values_callable=lambda obj: [e.value for e in obj]), nullable=False, default=WorkCategory.OTHER)
 

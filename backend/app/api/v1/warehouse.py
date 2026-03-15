@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import date
@@ -15,7 +16,12 @@ from app.schemas.warehouse import (
     WarehouseTransactionList,
     WarehouseAdjustmentCreate,
 )
-from app.schemas.receipt import ReceiptDocument as ReceiptDocumentSchema, ReceiptDocumentCreate, ReceiptDocumentUpdate
+from app.schemas.receipt import (
+    ReceiptDocument as ReceiptDocumentSchema,
+    ReceiptDocumentCreate,
+    ReceiptDocumentUpdate,
+    SupplierReceiptsReport,
+)
 from app.services.warehouse_service import (
     create_warehouse_item,
     add_incoming_transaction,
@@ -23,6 +29,7 @@ from app.services.warehouse_service import (
     create_receipt_document,
     post_receipt_document,
     get_transactions,
+    get_supplier_receipts_report,
     create_adjustment,
 )
 from app.core.permissions import require_manager_or_admin
@@ -34,13 +41,20 @@ router = APIRouter()
 @router.get("/items", response_model=List[WarehouseItemSchema])
 def get_warehouse_items(
     skip: int = 0,
-    limit: int = 100,
+    limit: int = 500,
+    part_number: Optional[str] = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Получение списка позиций склада"""
+    """Получение списка позиций склада. Поиск по артикулу: пробелы обрезаются, буквы приводятся к верхнему регистру."""
     from app.models.warehouse import WarehouseItem
-    items = db.query(WarehouseItem).offset(skip).limit(limit).all()
+    from app.models.part import Part
+    q = db.query(WarehouseItem).join(Part, WarehouseItem.part_id == Part.id)
+    if part_number is not None:
+        search = part_number.strip().upper()
+        if search:
+            q = q.filter(func.upper(func.trim(Part.part_number)) == search)
+    items = q.order_by(Part.part_number).offset(skip).limit(limit).all()
     return items
 
 
@@ -140,6 +154,23 @@ def adjustment(
             detail="У пользователя не привязан сотрудник"
         )
     return create_adjustment(db, payload, current_user.employee_id)
+
+
+@router.get("/reports/supplier-receipts", response_model=SupplierReceiptsReport)
+def get_supplier_receipts_report_endpoint(
+    supplier_id: int,
+    date_from: Optional[date] = None,
+    date_to: Optional[date] = None,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Отчёт по приходу от поставщика за период (сверка). Период — по дате документа накладной."""
+    data = get_supplier_receipts_report(db, supplier_id=supplier_id, date_from=date_from, date_to=date_to)
+    return SupplierReceiptsReport(
+        receipts=data["receipts"],
+        total_count=data["total_count"],
+        total_amount=data["total_amount"],
+    )
 
 
 @router.get("/receipts", response_model=List[ReceiptDocumentSchema])

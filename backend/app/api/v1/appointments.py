@@ -18,6 +18,7 @@ def _appointment_query(db: Session):
     return db.query(Appointment).options(
         joinedload(Appointment.vehicle).joinedload(Vehicle.brand),
         joinedload(Appointment.vehicle).joinedload(Vehicle.vehicle_model),
+        joinedload(Appointment.order),
     )
 
 

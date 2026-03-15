@@ -57,3 +57,10 @@ class ReceiptDocument(ReceiptDocumentBase):
 
     class Config:
         from_attributes = True
+
+
+class SupplierReceiptsReport(BaseModel):
+    """Отчёт по приходу от поставщика за период."""
+    receipts: List[ReceiptDocument] = []
+    total_count: int = 0
+    total_amount: Decimal = Decimal("0")

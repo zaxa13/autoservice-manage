@@ -1,8 +1,9 @@
 from fastapi import APIRouter
-from app.api.v1 import auth, users, orders, vehicles, customers, works, parts, warehouse, employees, salary, payments, integrations, appointments, vehicle_brands, suppliers
+from app.api.v1 import auth, users, orders, vehicles, customers, works, parts, warehouse, employees, salary, payments, integrations, appointments, appointment_posts, vehicle_brands, suppliers, dashboard, settings_api
 
 api_router = APIRouter()
 
+api_router.include_router(dashboard.router, prefix="/dashboard", tags=["dashboard"])
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
 api_router.include_router(users.router, prefix="/users", tags=["users"])
 api_router.include_router(orders.router, prefix="/orders", tags=["orders"])
@@ -17,5 +18,7 @@ api_router.include_router(salary.router, prefix="/salary", tags=["salary"])
 api_router.include_router(payments.router, prefix="/payments", tags=["payments"])
 api_router.include_router(integrations.router, prefix="/integrations", tags=["integrations"])
 api_router.include_router(appointments.router, prefix="/appointments", tags=["appointments"])
+api_router.include_router(appointment_posts.router, prefix="/appointment-posts", tags=["appointment-posts"])
 api_router.include_router(vehicle_brands.router, prefix="/vehicle-brands", tags=["vehicle-brands"])
+api_router.include_router(settings_api.router, prefix="/settings", tags=["settings"])
 

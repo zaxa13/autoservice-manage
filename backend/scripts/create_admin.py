@@ -11,10 +11,9 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from sqlalchemy.orm import Session
-from app.database import SessionLocal, engine
+from app.database import SessionLocal, engine, Base
 from app.models.user import User, UserRole
 from app.core.security import get_password_hash
-from app.models import Base
 
 
 def create_first_admin():

@@ -1,12 +1,13 @@
 from fastapi import APIRouter, Depends, Query, HTTPException, status
 from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from typing import List, Optional
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.models.user import User
 from app.models.vehicle import Vehicle
 from app.models.vehicle_brand import VehicleBrand, VehicleModel
+from app.models.customer import Customer
 from app.schemas.vehicle import Vehicle as VehicleSchema, VehicleCreate, VehicleUpdate
 from app.core.exceptions import NotFoundException
 from app.core.permissions import require_manager_or_admin
@@ -84,6 +85,39 @@ def search_vehicle_by_vin(
     return vehicle
 
 
+@router.get("/search", response_model=List[VehicleSchema])
+def search_vehicles(
+    q: str = Query(..., min_length=2, description="Номер телефона, VIN или госномер"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Универсальный поиск автомобилей по:
+    - номеру телефона клиента
+    - VIN номеру (полный или 6 последних символов)
+    - государственному номеру
+    """
+    q_normalized = q.strip().upper().replace(" ", "")
+    q_lower = q.strip().lower()
+
+    # Ищем клиентов по номеру телефона (нечёткий поиск)
+    customer_ids_by_phone = [
+        c.id for c in db.query(Customer.id).filter(
+            Customer.phone.ilike(f"%{q_lower}%")
+        ).all()
+    ]
+
+    vehicles = _vehicle_query(db).filter(
+        or_(
+            Vehicle.vin.ilike(f"%{q_normalized}%"),
+            Vehicle.license_plate.ilike(f"%{q_normalized}%"),
+            Vehicle.customer_id.in_(customer_ids_by_phone) if customer_ids_by_phone else False,
+        )
+    ).order_by(Vehicle.id.desc()).limit(50).all()
+
+    return vehicles
+
+
 @router.get("/{vehicle_id}", response_model=VehicleSchema)
 def get_vehicle(
     vehicle_id: int,
@@ -157,4 +191,56 @@ def update_vehicle(
     db.commit()
     vehicle = _vehicle_query(db).filter(Vehicle.id == vehicle_id).first()
     return vehicle
+
+
+@router.get("/{vehicle_id}/history")
+def get_vehicle_history(
+    vehicle_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    История обслуживания автомобиля — все заказ-наряды с работами и запчастями,
+    отсортированные по дате создания (новые первые).
+    """
+    from decimal import Decimal
+    from app.models.order import Order, OrderWork, OrderPart
+    from app.models.payment import Payment, PaymentStatus
+    from app.schemas.order import OrderDetail
+
+    vehicle = db.query(Vehicle).filter(Vehicle.id == vehicle_id).first()
+    if not vehicle:
+        raise NotFoundException("Автомобиль не найден")
+
+    orders = db.query(Order).options(
+        joinedload(Order.vehicle).options(
+            joinedload(Vehicle.customer),
+            joinedload(Vehicle.brand),
+            joinedload(Vehicle.vehicle_model),
+        ),
+        joinedload(Order.employee),
+        joinedload(Order.mechanic),
+        joinedload(Order.order_works).joinedload(OrderWork.work),
+        joinedload(Order.order_parts).joinedload(OrderPart.part),
+    ).filter(Order.vehicle_id == vehicle_id).order_by(Order.created_at.desc()).all()
+
+    result = []
+    for order in orders:
+        total_works = sum((w.total or Decimal("0")) for w in order.order_works)
+        total_parts = sum((p.total or Decimal("0")) for p in order.order_parts)
+        order.total_amount = total_works + total_parts
+
+        paid_amount = (
+            db.query(func.sum(Payment.amount))
+            .filter(
+                Payment.order_id == order.id,
+                Payment.status == PaymentStatus.SUCCEEDED,
+            )
+            .scalar()
+            or Decimal("0")
+        )
+        order.paid_amount = paid_amount
+        result.append(OrderDetail.model_validate(order))
+
+    return result
 

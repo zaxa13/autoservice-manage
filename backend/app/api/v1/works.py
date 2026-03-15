@@ -1,6 +1,6 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.models.user import User
@@ -16,11 +16,15 @@ router = APIRouter()
 def get_works(
     skip: int = 0,
     limit: int = 100,
+    search: Optional[str] = Query(None, description="Поиск по названию работы"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
     """Получение списка видов работ"""
-    works = db.query(Work).offset(skip).limit(limit).all()
+    query = db.query(Work)
+    if search:
+        query = query.filter(Work.name.ilike(f"%{search}%"))
+    works = query.offset(skip).limit(limit).all()
     return works
 
 

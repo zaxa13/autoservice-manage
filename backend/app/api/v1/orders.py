@@ -17,7 +17,7 @@ from app.services.payment_service import (
     cancel_payment,
     cancel_all_payments,
 )
-from app.core.permissions import require_manager_or_admin
+from app.core.permissions import require_manager_or_admin, require_admin
 from app.core.exceptions import NotFoundException, BadRequestException
 
 router = APIRouter()
@@ -269,6 +269,32 @@ def complete_existing_order(
     return order
 
 
+@router.delete("/{order_id}", status_code=204)
+def delete_order(
+    order_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Удаление заказ-наряда (только admin)"""
+    if current_user.role != UserRole.ADMIN:
+        from fastapi import HTTPException, status
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Только администратор может удалять заказы")
+
+    order = db.query(Order).filter(Order.id == order_id).first()
+    if not order:
+        raise NotFoundException("Заказ-наряд не найден")
+
+    # Удаляем связанные платежи
+    db.query(Payment).filter(Payment.order_id == order_id).delete()
+    # Удаляем связь с записями (appointments)
+    from app.models.appointment import Appointment
+    db.query(Appointment).filter(Appointment.order_id == order_id).update({Appointment.order_id: None})
+    # Удаляем заказ (cascade удалит works и parts)
+    db.delete(order)
+    db.commit()
+    return None
+
+
 @router.post("/{order_id}/cancel", response_model=OrderSchema)
 def cancel_order(
     order_id: int,
@@ -339,9 +365,43 @@ def cancel_order_payment(
 def cancel_all_order_payments(
     order_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_manager_or_admin),
+    current_user: User = Depends(require_admin),
 ):
     """Отмена всех оплат по заказ-наряду."""
     order = cancel_all_payments(db, order_id)
     return order
+
+
+@router.put("/{order_id}/payments/{payment_id}", response_model=PaymentSchema)
+def update_order_payment(
+    order_id: int,
+    payment_id: int,
+    payment_update: PaymentCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    """Редактирование платежа (только для админов)."""
+    from app.models.payment import Payment
+    
+    # Проверяем существование заказа
+    order = db.query(Order).filter(Order.id == order_id).first()
+    if not order:
+        raise NotFoundException("Заказ-наряд не найден")
+    
+    # Проверяем существование платежа
+    payment = db.query(Payment).filter(
+        Payment.id == payment_id,
+        Payment.order_id == order_id
+    ).first()
+    if not payment:
+        raise NotFoundException("Платёж не найден")
+    
+    # Обновляем платеж
+    payment.amount = payment_update.amount
+    payment.payment_method = payment_update.payment_method
+    
+    db.commit()
+    db.refresh(payment)
+    
+    return payment
 
