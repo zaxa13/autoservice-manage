@@ -6,7 +6,7 @@ import {
   Alert, Divider, Stack, alpha, AppBar, Toolbar, InputAdornment, Checkbox,
   FormControlLabel, Avatar, Tabs, Tab, Grid, Collapse, MenuItem, FormControl,
   InputLabel, Select, Chip, Tooltip, DialogTitle, DialogContent, DialogContentText, DialogActions,
-  Autocomplete, Snackbar
+  Autocomplete, Snackbar, Popover
 } from '@mui/material';
 import { Search as SearchIcon } from '@mui/icons-material';
 import {
@@ -22,28 +22,48 @@ import { ru } from 'date-fns/locale';
 import api from '../services/api';
 import { Order, OrderCreate, Vehicle, OrderWorkCreate, OrderPartCreate, Employee, OrderStatusInfo, OrderDetail, User, Customer, CustomerCreate, Part, Work } from '../types';
 
+// Категории работ
+const WORK_CATEGORIES: { value: string; label: string; color: string }[] = [
+  { value: 'diagnostics', label: 'Диагностика', color: '#6366f1' },
+  { value: 'engine', label: 'Двигатель', color: '#ef4444' },
+  { value: 'transmission', label: 'КПП', color: '#f97316' },
+  { value: 'suspension', label: 'Подвеска', color: '#eab308' },
+  { value: 'brakes', label: 'Тормоза', color: '#dc2626' },
+  { value: 'electrical', label: 'Электрика', color: '#3b82f6' },
+  { value: 'cooling', label: 'Охлаждение', color: '#06b6d4' },
+  { value: 'fuel_system', label: 'Топливо', color: '#84cc16' },
+  { value: 'exhaust', label: 'Выхлоп', color: '#78716c' },
+  { value: 'climate', label: 'Климат', color: '#0ea5e9' },
+  { value: 'maintenance', label: 'ТО', color: '#22c55e' },
+  { value: 'body_work', label: 'Кузов', color: '#a855f7' },
+  { value: 'painting', label: 'Покраска', color: '#ec4899' },
+  { value: 'tire_service', label: 'Шиномонтаж', color: '#14b8a6' },
+  { value: 'glass', label: 'Стёкла', color: '#64748b' },
+  { value: 'other', label: 'Прочее', color: '#94a3b8' },
+];
+
 // Конфигурация цветов для статусов
 const STATUS_COLORS: Record<string, "default" | "primary" | "secondary" | "error" | "info" | "success" | "warning"> = {
   new: 'default', estimation: 'info', in_progress: 'primary', ready_for_payment: 'warning', paid: 'success', completed: 'success', cancelled: 'error',
 };
 
 const METHOD_ICONS: Record<string, any> = {
-  CASH: <LocalAtmRounded fontSize="small" />,
-  CARD: <CreditCardRounded fontSize="small" />,
-  YOOKASSA: <AccountBalanceWalletRounded fontSize="small" />
+  cash: <LocalAtmRounded fontSize="small" />,
+  card: <CreditCardRounded fontSize="small" />,
+  yookassa: <AccountBalanceWalletRounded fontSize="small" />
 };
 
 const METHOD_LABELS: Record<string, string> = { 
-  CASH: 'Наличные', 
-  CARD: 'Карта', 
-  YOOKASSA: 'ЮKassa' 
+  cash: 'Наличные', 
+  card: 'Карта', 
+  yookassa: 'ЮKassa' 
 };
 const FALLBACK_LABELS: Record<string, string> = { completed: 'Завершен', cancelled: 'Отменен' };
 const PAYMENT_STATUS_LABELS: Record<string, string> = { 
-  SUCCEEDED: 'Проведён', 
-  CANCELLED: 'Отменён', 
-  PENDING: 'В обработке', 
-  FAILED: 'Ошибка' 
+  succeeded: 'Проведён', 
+  cancelled: 'Отменён', 
+  pending: 'В обработке', 
+  failed: 'Ошибка' 
 };
 
 export default function Orders() {
@@ -63,10 +83,18 @@ export default function Orders() {
 
   // --- ПОИСК РАБОТ ИЗ КАТАЛОГА ---
   const [worksSearchQuery, setWorksSearchQuery] = useState('');
-  const [worksSearchResults, setWorksSearchResults] = useState<Work[]>([]);
+  const [worksSearchCategory, setWorksSearchCategory] = useState('');
+  const [allWorks, setAllWorks] = useState<Work[]>([]);
   const [worksSearchLoading, setWorksSearchLoading] = useState(false);
-  const worksSearchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [editingWorkIdx, setEditingWorkIdx] = useState<number | null>(null);
+
+  // --- CREATE ON THE FLY ---
+  const [createPopover, setCreatePopover] = useState<{ anchorEl: HTMLElement; name: string; rowIdx: number } | null>(null);
+  const [createCategory, setCreateCategory] = useState('');
+  const [creatingWork, setCreatingWork] = useState(false);
+  const workRowRefs = useRef<{ [idx: number]: HTMLDivElement | null }>({});
+  const preventBlurReset = useRef(false);
+  const skipNextFocus = useRef(false);
 
   // --- INLINE ПРОБЕГ ---
   const [inlineMileage, setInlineMileage] = useState('');
@@ -105,7 +133,7 @@ export default function Orders() {
   const [openResetConfirm, setOpenResetConfirm] = useState(false);
   const [editingPaymentId, setEditingPaymentId] = useState<number | null>(null);
   const [paymentAmount, setPaymentAmount] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('CASH');
+  const [paymentMethod, setPaymentMethod] = useState('cash');
   const [paidAmountFromServer, setPaidAmountFromServer] = useState(0);
   const [originalPaidAmount, setOriginalPaidAmount] = useState(0);
 
@@ -185,20 +213,26 @@ export default function Orders() {
     return () => window.removeEventListener('keydown', handler);
   }, [openDialog, formData]);
 
-  // Поиск работ из каталога
+  // Загрузка всего каталога работ при открытии диалога
   useEffect(() => {
-    if (editingWorkIdx === null) return;
-    if (worksSearchDebounceRef.current) clearTimeout(worksSearchDebounceRef.current);
-    if (!worksSearchQuery.trim()) { setWorksSearchResults([]); return; }
-    worksSearchDebounceRef.current = setTimeout(() => {
-      setWorksSearchLoading(true);
-      api.get<Work[]>('/works/', { params: { search: worksSearchQuery.trim(), limit: 30 } })
-        .then((r) => setWorksSearchResults(r.data))
-        .catch(() => setWorksSearchResults([]))
-        .finally(() => setWorksSearchLoading(false));
-    }, 300);
-    return () => { if (worksSearchDebounceRef.current) clearTimeout(worksSearchDebounceRef.current); };
-  }, [worksSearchQuery, editingWorkIdx]);
+    if (!openDialog || allWorks.length > 0) return;
+    setWorksSearchLoading(true);
+    api.get<Work[]>('/works/', { params: { limit: 500 } })
+      .then((r) => setAllWorks(r.data))
+      .catch(() => {})
+      .finally(() => setWorksSearchLoading(false));
+  }, [openDialog]);
+
+  // Фильтрация работ клиентски (по категории + поисковой строке)
+  const filteredWorks = useMemo(() => {
+    let result = allWorks;
+    if (worksSearchCategory) result = result.filter(w => w.category === worksSearchCategory);
+    if (worksSearchQuery.trim()) {
+      const q = worksSearchQuery.trim().toLowerCase();
+      result = result.filter(w => w.name.toLowerCase().includes(q) || (w.description || '').toLowerCase().includes(q));
+    }
+    return result;
+  }, [allWorks, worksSearchCategory, worksSearchQuery]);
 
   // Поиск запчастей по артикулу (для строк заказа)
   useEffect(() => {
@@ -280,7 +314,7 @@ export default function Orders() {
 
   const handleOpenDialog = async (order?: Order) => {
     setError(''); setApplyToAll(false); setGlobalDiscount(0);
-    setEditingWorkIdx(null); setWorksSearchQuery(''); setWorksSearchResults([]);
+    setEditingWorkIdx(null); setWorksSearchQuery(''); setWorksSearchCategory('');
     if (order) {
       setEditingOrderId(order.id);
       setSearchingVehicle(true);
@@ -340,11 +374,33 @@ export default function Orders() {
   };
 
   const selectWorkFromCatalog = (idx: number, work: Work) => {
+    skipNextFocus.current = true;
     updateRow('work', idx, 'work_name', work.name);
-    updateRow('work', idx, 'price', work.price);
     setEditingWorkIdx(null);
     setWorksSearchQuery('');
-    setWorksSearchResults([]);
+    setWorksSearchCategory('');
+  };
+
+  const handleCreateWork = async () => {
+    if (!createPopover || !createCategory) return;
+    const { rowIdx, name } = createPopover;
+    setCreatingWork(true);
+    try {
+      const res = await api.post<Work>('/works/', {
+        name,
+        category: createCategory,
+        price: 0,
+        duration_minutes: 60,
+      });
+      setAllWorks(prev => [...prev, res.data]);
+      setCreatePopover(null);
+      setCreateCategory('');
+      selectWorkFromCatalog(rowIdx, res.data);
+    } catch {
+      // silent — пользователь может просто закрыть и использовать freeSolo
+    } finally {
+      setCreatingWork(false);
+    }
   };
 
   const handleSearchVehicle = async () => {
@@ -773,7 +829,7 @@ export default function Orders() {
               <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1.5 }}>
                 <Typography variant="subtitle2" sx={{ fontWeight: 800, display: 'flex', alignItems: 'center', gap: 1 }}><HistoryRounded fontSize="small" color="primary" /> Оплаты: {formatCurrency(paidAmountFromServer)} / {formatCurrency(totals.grand)}</Typography>
                 <Stack direction="row" spacing={1}>
-                  {paidAmountFromServer < totals.grand - 0.01 && <Button variant="contained" color="success" size="small" startIcon={<PaymentRounded />} onClick={() => { setEditingPaymentId(null); setPaymentAmount((totals.grand - paidAmountFromServer).toFixed(0)); setPaymentMethod('CASH'); setOpenPaymentDialog(true); }}>Оплатить</Button>}
+                  {paidAmountFromServer < totals.grand - 0.01 && <Button variant="contained" color="success" size="small" startIcon={<PaymentRounded />} onClick={() => { setEditingPaymentId(null); setPaymentAmount((totals.grand - paidAmountFromServer).toFixed(0)); setPaymentMethod('cash'); setOpenPaymentDialog(true); }}>Оплатить</Button>}
                   {isAdmin && <Button size="small" color="error" startIcon={<RestartAltRounded />} onClick={() => setOpenResetConfirm(true)}>Сбросить всё</Button>}
                 </Stack>
               </Stack>
@@ -785,7 +841,7 @@ export default function Orders() {
                       <TableCell sx={{ border: 'none', py: 0.5 }}>{METHOD_LABELS[p.payment_method]} • {new Date(p.created_at).toLocaleString()}</TableCell>
                       <TableCell sx={{ border: 'none', py: 0.5, fontWeight: 700 }}>{formatCurrency(p.amount)}</TableCell>
                       <TableCell sx={{ border: 'none', py: 0.5 }} align="right">
-                        {isAdmin && p.status === 'SUCCEEDED' && (
+                        {isAdmin && p.status === 'succeeded' && (
                           <>
                             <IconButton size="small" onClick={() => handleEditPayment(p)} title="Редактировать платёж">
                               <EditRounded fontSize="small" />
@@ -808,7 +864,39 @@ export default function Orders() {
 
           <Box><Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1, px: 1 }}><Typography variant="subtitle1" sx={{ fontWeight: 900 }}><BuildCircleRounded fontSize="small" color="primary" sx={{ verticalAlign: 'middle', mr: 1 }} /> Работы</Typography><Button variant="contained" size="small" startIcon={<AddRounded />} onClick={() => addRow('work')}>Добавить</Button></Stack>
             <Stack spacing={1}>{(formData.order_works || []).map((work, idx) => (<Paper key={idx} elevation={0} sx={{ p: 1.5, px: 2, borderRadius: 2, border: '1px solid #E2E8F0', bgcolor: '#fff', '&:hover': { borderColor: 'primary.main' } }}><Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} lg={6}>
+              <Grid item xs={12} lg={6} ref={(el) => { workRowRefs.current[idx] = el as HTMLDivElement | null; }}>
+                {editingWorkIdx === idx && (
+                  <Box sx={{ mb: 0.5, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                    <Chip
+                      label="Все"
+                      size="small"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => setWorksSearchCategory('')}
+                      variant={worksSearchCategory === '' ? 'filled' : 'outlined'}
+                      color={worksSearchCategory === '' ? 'primary' : 'default'}
+                      sx={{ fontWeight: 700, fontSize: '0.7rem', height: 22 }}
+                    />
+                    {WORK_CATEGORIES.map(cat => (
+                      <Chip
+                        key={cat.value}
+                        label={cat.label}
+                        size="small"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => setWorksSearchCategory(worksSearchCategory === cat.value ? '' : cat.value)}
+                        variant={worksSearchCategory === cat.value ? 'filled' : 'outlined'}
+                        sx={{
+                          fontWeight: 700,
+                          fontSize: '0.7rem',
+                          height: 22,
+                          bgcolor: worksSearchCategory === cat.value ? cat.color : 'transparent',
+                          color: worksSearchCategory === cat.value ? '#fff' : cat.color,
+                          borderColor: cat.color,
+                          '&:hover': { bgcolor: cat.color, color: '#fff', opacity: 0.9 },
+                        }}
+                      />
+                    ))}
+                  </Box>
+                )}
                 <Autocomplete
                   freeSolo
                   size="small"
@@ -821,29 +909,68 @@ export default function Orders() {
                       updateRow('work', idx, 'work_name', v);
                     }
                   }}
+                  onFocus={() => {
+                    if (skipNextFocus.current) { skipNextFocus.current = false; return; }
+                    setEditingWorkIdx(idx);
+                  }}
                   onChange={(_: any, option: any) => {
-                    if (option && typeof option !== 'string' && option.id > 0) {
-                      selectWorkFromCatalog(idx, option as Work);
+                    if (!option || typeof option === 'string') return;
+                    if (option.__isCreate) {
+                      preventBlurReset.current = true;
+                      setCreatePopover({ anchorEl: workRowRefs.current[idx]!, name: option.name, rowIdx: idx });
+                      setCreateCategory(worksSearchCategory || '');
+                      return;
+                    }
+                    if (option.id > 0) selectWorkFromCatalog(idx, option as Work);
+                  }}
+                  onBlur={() => {
+                    if (preventBlurReset.current) { preventBlurReset.current = false; return; }
+                    if (editingWorkIdx === idx) {
+                      setEditingWorkIdx(null);
+                      setWorksSearchQuery('');
+                      setWorksSearchCategory('');
                     }
                   }}
-                  onBlur={() => { if (editingWorkIdx === idx) { setEditingWorkIdx(null); setWorksSearchResults([]); } }}
-                  options={editingWorkIdx === idx ? worksSearchResults : []}
+                  options={editingWorkIdx === idx ? filteredWorks : []}
                   getOptionLabel={(opt: any) => typeof opt === 'string' ? opt : opt.name}
-                  renderOption={(props: any, opt: any) => (
-                    <li {...props} key={opt.id}>
-                      <Stack direction="row" justifyContent="space-between" sx={{ width: '100%' }}>
+                  groupBy={(opt: any) => {
+                    if (opt.__isCreate || worksSearchCategory) return '';
+                    const cat = WORK_CATEGORIES.find(c => c.value === opt.category);
+                    return cat ? cat.label : 'Прочее';
+                  }}
+                  renderOption={(props: any, opt: any) => {
+                    if (opt.__isCreate) {
+                      return (
+                        <li {...props} key="__create" onMouseDown={(e: any) => e.preventDefault()}
+                          style={{ borderTop: '1px solid #e2e8f0', marginTop: 4, paddingTop: 8 }}>
+                          <Stack direction="row" alignItems="center" spacing={1}>
+                            <AddRounded fontSize="small" color="primary" />
+                            <Typography variant="body2" color="primary" fontWeight={700}>
+                              Добавить «{opt.name}» в каталог
+                            </Typography>
+                          </Stack>
+                        </li>
+                      );
+                    }
+                    return (
+                      <li {...props} key={opt.id}>
                         <Typography variant="body2">{opt.name}</Typography>
-                        {opt.price !== undefined && <Typography variant="body2" sx={{ fontWeight: 700, color: 'primary.main' }}>{formatCurrency(opt.price)}</Typography>}
-                      </Stack>
-                    </li>
-                  )}
+                      </li>
+                    );
+                  }}
                   loading={worksSearchLoading && editingWorkIdx === idx}
-                  filterOptions={(x: any) => x}
+                  filterOptions={(options: any) => {
+                    const result = [...options];
+                    if (worksSearchQuery.trim() && editingWorkIdx === idx) {
+                      result.push({ __isCreate: true, id: '__create', name: worksSearchQuery.trim() });
+                    }
+                    return result;
+                  }}
                   renderInput={(params: any) => (
                     <TextField
                       {...params}
                       variant="standard"
-                      placeholder="Услуга... (начните вводить для поиска)"
+                      placeholder={editingWorkIdx === idx ? 'Поиск по каталогу или введите вручную...' : 'Услуга...'}
                       InputProps={{ ...params.InputProps, disableUnderline: true, sx: { fontSize: '1rem', fontWeight: 700 } }}
                     />
                   )}
@@ -1000,9 +1127,9 @@ export default function Orders() {
           <FormControl fullWidth>
             <InputLabel>Способ</InputLabel>
             <Select value={paymentMethod} label="Способ" onChange={e => setPaymentMethod(e.target.value)}>
-              <MenuItem value="CASH">Наличные</MenuItem>
-              <MenuItem value="CARD">Карта</MenuItem>
-              <MenuItem value="YOOKASSA">ЮKassa</MenuItem>
+              <MenuItem value="cash">Наличные</MenuItem>
+              <MenuItem value="card">Карта</MenuItem>
+              <MenuItem value="yookassa">ЮKassa</MenuItem>
             </Select>
           </FormControl>
           <Stack direction="row" spacing={1} justifyContent="flex-end">
@@ -1019,6 +1146,54 @@ export default function Orders() {
         <DialogContent><DialogContentText sx={{ color: 'text.primary', fontWeight: 500 }}>Все проведенные платежи по этому заказу будут аннулированы. Продолжить?</DialogContentText></DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}><Button onClick={() => setOpenResetConfirm(false)} variant="outlined" color="inherit">Отмена</Button><Button onClick={handleCancelAllPayments} color="error" variant="contained">Да, сбросить</Button></DialogActions>
       </Dialog>
+
+      {/* Popover: добавить работу в каталог */}
+      <Popover
+        open={!!createPopover}
+        anchorEl={createPopover?.anchorEl}
+        onClose={() => { setCreatePopover(null); setCreateCategory(''); }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+        disableAutoFocus
+        disableEnforceFocus
+        PaperProps={{ sx: { p: 2, width: 320, borderRadius: 2, boxShadow: '0 8px 32px rgba(0,0,0,0.12)' } }}
+      >
+        <Typography variant="subtitle2" fontWeight={800} sx={{ mb: 0.5 }}>
+          Добавить в каталог работ
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          «{createPopover?.name}»
+        </Typography>
+        <FormControl fullWidth size="small" sx={{ mb: 2 }}>
+          <InputLabel>Категория</InputLabel>
+          <Select
+            value={createCategory}
+            label="Категория"
+            onChange={(e) => setCreateCategory(e.target.value)}
+          >
+            {WORK_CATEGORIES.map(cat => (
+              <MenuItem key={cat.value} value={cat.value}>
+                <Box component="span" sx={{ display: 'inline-block', width: 10, height: 10, borderRadius: '50%', bgcolor: cat.color, mr: 1 }} />
+                {cat.label}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <Stack direction="row" spacing={1} justifyContent="flex-end">
+          <Button size="small" onClick={() => { setCreatePopover(null); setCreateCategory(''); }}>
+            Отмена
+          </Button>
+          <Button
+            size="small"
+            variant="contained"
+            disabled={!createCategory || creatingWork}
+            onClick={handleCreateWork}
+            startIcon={creatingWork ? <CircularProgress size={14} /> : <AddRounded />}
+          >
+            Добавить
+          </Button>
+        </Stack>
+      </Popover>
 
       {/* Snackbar при сохранении */}
       <Snackbar

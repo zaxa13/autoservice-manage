@@ -94,7 +94,7 @@ export interface Work {
   description?: string
   price: number
   duration_minutes: number
-  category: 'diagnostics' | 'repair' | 'maintenance' | 'body_work' | 'painting' | 'other'
+  category: 'diagnostics' | 'engine' | 'transmission' | 'suspension' | 'brakes' | 'electrical' | 'cooling' | 'fuel_system' | 'exhaust' | 'climate' | 'maintenance' | 'body_work' | 'painting' | 'tire_service' | 'glass' | 'repair' | 'other'
 }
 
 export interface Part {
