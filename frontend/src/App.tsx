@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
+import { useEffect } from 'react'
 
 // Импорт нашей новой темы и лейаута
 import { theme } from './theme'
@@ -16,6 +17,7 @@ import SupplierReconciliation from './pages/SupplierReconciliation'
 import Suppliers from './pages/Suppliers'
 import Employees from './pages/Employees'
 import Salary from './pages/Salary'
+import Vehicles from './pages/Vehicles'
 
 // Импорт стора
 import { useAuthStore } from './store/authStore'
@@ -26,14 +28,18 @@ import { useAuthStore } from './store/authStore'
  * Если нет — редиректит на логин.
  */
 function PrivateRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated } = useAuthStore()
+  const { isAuthenticated, user, loadUser } = useAuthStore()
   const token = localStorage.getItem('access_token')
+
+  // Загружаем профиль пользователя один раз при первом рендере если его нет
+  useEffect(() => {
+    if (token && !user) loadUser()
+  }, [token, user, loadUser])
 
   if (!token || !isAuthenticated) {
     return <Navigate to="/login" replace />
   }
 
-  // Здесь происходит магия: любая приватная страница оказывается внутри стильного меню
   return <MainLayout>{children}</MainLayout>
 }
 
@@ -105,6 +111,14 @@ function AppRoutes() {
         element={
           <PrivateRoute>
             <Salary />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/vehicles"
+        element={
+          <PrivateRoute>
+            <Vehicles />
           </PrivateRoute>
         }
       />

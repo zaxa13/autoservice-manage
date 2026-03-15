@@ -13,7 +13,7 @@ export interface Order {
   vehicle_id: number
   employee_id: number
   mechanic_id?: number
-  status: 'new' | 'estimation' | 'in_progress' | 'ready_for_payment' | 'paid' | 'cancelled'
+  status: 'new' | 'estimation' | 'in_progress' | 'ready_for_payment' | 'paid' | 'completed' | 'cancelled'
   total_amount: number
   paid_amount: number
   created_at: string
@@ -258,6 +258,10 @@ export interface VehicleCreate {
   customer_id: number
 }
 
+export interface VehicleHistoryOrder extends OrderDetail {
+  // наследует все поля OrderDetail — используется в истории автомобиля
+}
+
 export interface Employee {
   id: number
   full_name: string
@@ -303,6 +307,11 @@ export interface AppointmentPostCreate {
   sort_order?: number
 }
 
+export interface AppointmentOrder {
+  id: number
+  number: string
+}
+
 export interface Appointment {
   id: number
   date: string  // YYYY-MM-DD format
@@ -314,11 +323,13 @@ export interface Appointment {
   vehicle_id?: number
   employee_id?: number
   post_id?: number
+  order_id?: number
   sort_order?: number
   created_at: string
   updated_at?: string
   vehicle?: Vehicle
   employee?: Employee
+  order?: AppointmentOrder
 }
 
 export interface AppointmentCreate {
@@ -344,5 +355,6 @@ export interface AppointmentUpdate {
   vehicle_id?: number
   employee_id?: number
   post_id?: number
+  order_id?: number
   sort_order?: number
 }

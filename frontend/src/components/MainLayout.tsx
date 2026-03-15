@@ -23,7 +23,8 @@ import {
   VisibilityOff,
   VpnKeyRounded,
   BalanceRounded,
-  LocalShippingRounded
+  LocalShippingRounded,
+  DirectionsCarRounded,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
@@ -43,6 +44,7 @@ const menuItems = [
   { text: 'Дашборд', icon: <DashboardRounded />, path: '/' },
   { text: 'Записи', icon: <EventNoteRounded />, path: '/appointments' },
   { text: 'Заказ-наряды', icon: <AssignmentRounded />, path: '/orders' },
+  { text: 'Автомобили', icon: <DirectionsCarRounded />, path: '/vehicles' },
   { text: 'Склад', icon: <InventoryRounded />, path: '/warehouse' },
   { text: 'Сверка по поставщику', icon: <BalanceRounded />, path: '/supplier-reconciliation' },
   { text: 'Поставщики', icon: <LocalShippingRounded />, path: '/suppliers' },

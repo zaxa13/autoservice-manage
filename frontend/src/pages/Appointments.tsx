@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
 import {
   Container,
   Typography,
@@ -40,6 +39,8 @@ import {
   SearchRounded,
   CheckCircleRounded,
   ArrowForwardIosRounded,
+  ExpandMoreRounded,
+  OpenInNewRounded,
 } from '@mui/icons-material'
 import {
   DndContext,
@@ -226,9 +227,17 @@ function AppointmentCard({
   onStatusChange?: (id: number, status: AppointmentStatus) => void
   onCreateOrder?: (item: Appointment) => void
 }) {
+  const [expanded, setExpanded] = useState(false)
   const statusCfg = STATUS_CONFIG[item.status ?? 'scheduled']
   const nextStatus = STATUS_NEXT[item.status ?? 'scheduled']
   const vLabel = vehicleLabel(item.vehicle)
+  const hasOrder = Boolean(item.order_id)
+
+  const createOrderTooltip = hasOrder
+    ? `Заказ-наряд #${item.order?.number ?? item.order_id} уже создан`
+    : item.vehicle_id
+      ? 'Создать заказ-наряд'
+      : 'Привяжите автомобиль для создания наряда'
 
   return (
     <Card
@@ -244,7 +253,7 @@ function AppointmentCard({
         '&:hover': { boxShadow: 3 },
       }}
     >
-      <CardContent sx={{ py: 1.5, px: 2, '&:last-child': { pb: 1.5 } }}>
+      <CardContent sx={{ py: 1.5, px: 2, '&:last-child': { pb: 1 } }}>
         {/* Строка 1: время + статус + кнопки */}
         <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={0.5} sx={{ mb: 0.5 }}>
           <Stack direction="row" alignItems="center" spacing={1}>
@@ -269,13 +278,13 @@ function AppointmentCard({
               </Tooltip>
             )}
             {onCreateOrder && (
-              <Tooltip title={item.vehicle_id ? 'Создать заказ-наряд' : 'Привяжите автомобиль для создания наряда'}>
+              <Tooltip title={createOrderTooltip}>
                 <span>
                   <IconButton
                     size="small"
-                    disabled={!item.vehicle_id}
+                    disabled={!item.vehicle_id || hasOrder}
                     onClick={(e) => { e.stopPropagation(); onCreateOrder(item) }}
-                    sx={{ color: 'primary.main', p: 0.5 }}
+                    sx={{ color: hasOrder ? 'success.main' : 'primary.main', p: 0.5 }}
                   >
                     <ReceiptLongRounded sx={{ fontSize: 16 }} />
                   </IconButton>
@@ -293,17 +302,32 @@ function AppointmentCard({
           </Stack>
         </Stack>
 
-        {/* Строка 2: имя клиента */}
-        <Typography variant="body2" sx={{ fontWeight: 600, lineHeight: 1.3 }}>
-          {item.customer_name}
-        </Typography>
+        {/* Строка 2: имя клиента + кнопка разворота */}
+        <Box
+          onClick={(e) => { e.stopPropagation(); setExpanded((v) => !v) }}
+          sx={{ cursor: 'pointer', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 0.5 }}
+        >
+          <Box>
+            <Typography variant="body2" sx={{ fontWeight: 600, lineHeight: 1.3 }}>
+              {item.customer_name}
+            </Typography>
+            <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+              {item.customer_phone}
+            </Typography>
+          </Box>
+          <ExpandMoreRounded
+            sx={{
+              fontSize: 18,
+              color: 'text.secondary',
+              flexShrink: 0,
+              mt: 0.25,
+              transition: 'transform 0.2s',
+              transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)',
+            }}
+          />
+        </Box>
 
-        {/* Строка 3: телефон */}
-        <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
-          {item.customer_phone}
-        </Typography>
-
-        {/* Строка 4: автомобиль (если есть) */}
+        {/* Автомобиль — всегда видно */}
         {vLabel && (
           <Stack direction="row" alignItems="center" spacing={0.5} sx={{ mt: 0.5 }}>
             <DirectionsCarRounded sx={{ fontSize: 13, color: 'text.secondary' }} />
@@ -313,16 +337,61 @@ function AppointmentCard({
           </Stack>
         )}
 
-        {/* Строка 5: комментарий */}
-        {item.description && (
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            sx={{ display: 'block', mt: 0.25, fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
-          >
-            {item.description}
-          </Typography>
-        )}
+        {/* Разворачиваемая секция */}
+        <Collapse in={expanded} timeout="auto">
+          <Box sx={{ mt: 1, pt: 1, borderTop: '1px solid', borderColor: 'divider' }}>
+
+            {/* Комментарий */}
+            {item.description && (
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ display: 'block', mb: 0.5, fontStyle: 'italic' }}
+              >
+                {item.description}
+              </Typography>
+            )}
+
+            {/* Заказ-наряд */}
+            {item.order ? (
+              <Box
+                component="a"
+                href={`/orders?open=${item.order.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                sx={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 0.5,
+                  mt: 0.5,
+                  px: 1,
+                  py: 0.4,
+                  borderRadius: 1.5,
+                  bgcolor: alpha('#22C55E', 0.1),
+                  border: '1px solid',
+                  borderColor: alpha('#22C55E', 0.3),
+                  color: '#16A34A',
+                  textDecoration: 'none',
+                  cursor: 'pointer',
+                  '&:hover': { bgcolor: alpha('#22C55E', 0.18) },
+                }}
+              >
+                <ReceiptLongRounded sx={{ fontSize: 13 }} />
+                <Typography variant="caption" sx={{ fontWeight: 700 }}>
+                  Наряд #{item.order.number}
+                </Typography>
+                <OpenInNewRounded sx={{ fontSize: 11 }} />
+              </Box>
+            ) : (
+              !item.vehicle_id && (
+                <Typography variant="caption" color="text.disabled" sx={{ display: 'block', mt: 0.5 }}>
+                  Нет автомобиля — наряд недоступен
+                </Typography>
+              )
+            )}
+          </Box>
+        </Collapse>
       </CardContent>
     </Card>
   )
@@ -935,8 +1004,6 @@ function StatusStatsBar({
 // ─── Главная страница ─────────────────────────────────────────────────────────
 
 export default function Appointments() {
-  const navigate = useNavigate()
-
   const [selectedDate, setSelectedDate] = useState<string>(format(new Date(), 'yyyy-MM-dd'))
   const [posts, setPosts] = useState<AppointmentPost[]>([])
   const [appointments, setAppointments] = useState<Appointment[]>([])
@@ -967,10 +1034,11 @@ export default function Appointments() {
   const [editingPostId, setEditingPostId] = useState<number | null>(null)
   const [deletePostConfirm, setDeletePostConfirm] = useState<AppointmentPost | null>(null)
   const [deletingPost, setDeletingPost] = useState(false)
+  const [deleteRecordConfirm, setDeleteRecordConfirm] = useState<number | null>(null)
+  const [deletingRecord, setDeletingRecord] = useState(false)
   const [savingPost, setSavingPost] = useState(false)
 
   const [creatingOrder, setCreatingOrder] = useState(false)
-  const [orderCreated, setOrderCreated] = useState<{ number: string; id: number } | null>(null)
 
   // ─── Загрузка данных ───────────────────────────────────────────────────────
 
@@ -1026,12 +1094,14 @@ export default function Appointments() {
   // ─── Создание заказ-наряда ────────────────────────────────────────────────
 
   const handleCreateOrder = async (item: Appointment) => {
-    if (!item.vehicle_id) return
+    if (!item.vehicle_id || item.order_id) return
     setCreatingOrder(true)
     try {
       const payload: OrderCreate = { vehicle_id: item.vehicle_id, order_works: [], order_parts: [] }
       const res = await api.post('/orders/', payload)
-      setOrderCreated({ number: res.data.number, id: res.data.id })
+      await api.put(`/appointments/${item.id}`, { order_id: res.data.id })
+      fetchAppointments()
+      window.open(`/orders?open=${res.data.id}`, '_blank')
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Ошибка создания заказ-наряда')
     } finally {
@@ -1116,13 +1186,21 @@ export default function Appointments() {
     }
   }
 
-  const handleDeleteRecord = async (id: number) => {
-    if (!window.confirm('Удалить эту запись?')) return
+  const handleDeleteRecord = (id: number) => {
+    setDeleteRecordConfirm(id)
+  }
+
+  const handleDeleteRecordConfirm = async () => {
+    if (deleteRecordConfirm === null) return
+    setDeletingRecord(true)
     try {
-      await api.delete(`/appointments/${id}`)
+      await api.delete(`/appointments/${deleteRecordConfirm}`)
+      setDeleteRecordConfirm(null)
       fetchAppointments()
     } catch {
       setError('Ошибка при удалении')
+    } finally {
+      setDeletingRecord(false)
     }
   }
 
@@ -1365,30 +1443,26 @@ export default function Appointments() {
         </DialogActions>
       </Dialog>
 
-      {/* ─── Диалог "Заказ-наряд создан" ─────────────────────────────────── */}
-      <Dialog open={Boolean(orderCreated)} onClose={() => setOrderCreated(null)} maxWidth="xs" fullWidth PaperProps={{ sx: { borderRadius: 2 } }}>
-        <DialogTitle>Заказ-наряд создан</DialogTitle>
+      {/* ─── Подтверждение удаления записи ───────────────────────────────── */}
+      <Dialog
+        open={deleteRecordConfirm !== null}
+        onClose={() => !deletingRecord && setDeleteRecordConfirm(null)}
+        maxWidth="xs"
+        fullWidth
+        PaperProps={{ sx: { borderRadius: 2 } }}
+      >
+        <DialogTitle>Удалить запись?</DialogTitle>
         <DialogContent>
-          {orderCreated && (
-            <Stack spacing={2} alignItems="center" sx={{ py: 1 }}>
-              <CheckCircleRounded sx={{ fontSize: 56, color: '#22C55E' }} />
-              <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                #{orderCreated.number}
-              </Typography>
-              <Typography variant="body2" color="text.secondary" textAlign="center">
-                Заказ-наряд успешно создан. Перейти к нему для добавления работ и запчастей?
-              </Typography>
-            </Stack>
-          )}
+          <Typography>
+            Запись будет удалена без возможности восстановления.
+          </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOrderCreated(null)}>Закрыть</Button>
-          <Button
-            variant="contained"
-            startIcon={<ReceiptLongRounded />}
-            onClick={() => { setOrderCreated(null); navigate('/orders') }}
-          >
-            Перейти к нарядам
+          <Button onClick={() => setDeleteRecordConfirm(null)} disabled={deletingRecord}>
+            Отмена
+          </Button>
+          <Button variant="contained" color="error" onClick={handleDeleteRecordConfirm} disabled={deletingRecord}>
+            {deletingRecord ? <CircularProgress size={24} /> : 'Удалить'}
           </Button>
         </DialogActions>
       </Dialog>

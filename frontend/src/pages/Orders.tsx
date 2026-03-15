@@ -6,7 +6,7 @@ import {
   Alert, Divider, Stack, alpha, AppBar, Toolbar, InputAdornment, Checkbox,
   FormControlLabel, Avatar, Tabs, Tab, Grid, Collapse, MenuItem, FormControl,
   InputLabel, Select, Chip, Tooltip, DialogTitle, DialogContent, DialogContentText, DialogActions,
-  Autocomplete
+  Autocomplete, Snackbar
 } from '@mui/material';
 import { Search as SearchIcon } from '@mui/icons-material';
 import {
@@ -14,10 +14,13 @@ import {
   BuildCircleRounded, ShoppingBagRounded, PercentRounded, NumbersRounded, BadgeRounded,
   SaveRounded, CommentRounded, EngineeringRounded, PaymentRounded, CheckCircleRounded,
   EditRounded, RestartAltRounded, WarningAmberRounded, HistoryRounded, LocalAtmRounded,
-  CreditCardRounded, AccountBalanceWalletRounded, ContactPhoneRounded, SpeedRounded
+  CreditCardRounded, AccountBalanceWalletRounded, ContactPhoneRounded, SpeedRounded,
+  PhoneRounded, PersonRounded, SearchOffRounded, ContentCopyRounded,
 } from '@mui/icons-material';
+import { formatDistanceToNow } from 'date-fns';
+import { ru } from 'date-fns/locale';
 import api from '../services/api';
-import { Order, OrderCreate, Vehicle, OrderWorkCreate, OrderPartCreate, Employee, OrderStatusInfo, OrderDetail, User, Customer, CustomerCreate, Part } from '../types';
+import { Order, OrderCreate, Vehicle, OrderWorkCreate, OrderPartCreate, Employee, OrderStatusInfo, OrderDetail, User, Customer, CustomerCreate, Part, Work } from '../types';
 
 // Конфигурация цветов для статусов
 const STATUS_COLORS: Record<string, "default" | "primary" | "secondary" | "error" | "info" | "success" | "warning"> = {
@@ -25,11 +28,23 @@ const STATUS_COLORS: Record<string, "default" | "primary" | "secondary" | "error
 };
 
 const METHOD_ICONS: Record<string, any> = {
-  cash: <LocalAtmRounded fontSize="small" />, card: <CreditCardRounded fontSize="small" />, yookassa: <AccountBalanceWalletRounded fontSize="small" />
+  CASH: <LocalAtmRounded fontSize="small" />,
+  CARD: <CreditCardRounded fontSize="small" />,
+  YOOKASSA: <AccountBalanceWalletRounded fontSize="small" />
 };
 
-const METHOD_LABELS: Record<string, string> = { cash: 'Наличные', card: 'Карта', yookassa: 'ЮKassa' };
+const METHOD_LABELS: Record<string, string> = { 
+  CASH: 'Наличные', 
+  CARD: 'Карта', 
+  YOOKASSA: 'ЮKassa' 
+};
 const FALLBACK_LABELS: Record<string, string> = { completed: 'Завершен', cancelled: 'Отменен' };
+const PAYMENT_STATUS_LABELS: Record<string, string> = { 
+  SUCCEEDED: 'Проведён', 
+  CANCELLED: 'Отменён', 
+  PENDING: 'В обработке', 
+  FAILED: 'Ошибка' 
+};
 
 export default function Orders() {
   // --- СОСТОЯНИЯ ОСНОВНОГО СПИСКА ---
@@ -41,6 +56,21 @@ export default function Orders() {
   const [saveLoading, setSaveLoading] = useState(false);
   const [error, setError] = useState('');
   const [selectedStatusFilter, setSelectedStatusFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [deleteOrderConfirm, setDeleteOrderConfirm] = useState<Order | null>(null);
+  const [deletingOrder, setDeletingOrder] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
+  // --- ПОИСК РАБОТ ИЗ КАТАЛОГА ---
+  const [worksSearchQuery, setWorksSearchQuery] = useState('');
+  const [worksSearchResults, setWorksSearchResults] = useState<Work[]>([]);
+  const [worksSearchLoading, setWorksSearchLoading] = useState(false);
+  const worksSearchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [editingWorkIdx, setEditingWorkIdx] = useState<number | null>(null);
+
+  // --- INLINE ПРОБЕГ ---
+  const [inlineMileage, setInlineMileage] = useState('');
+  const [savingMileage, setSavingMileage] = useState(false);
 
   // --- СОСТОЯНИЯ ДИАЛОГА ---
   const [openDialog, setOpenDialog] = useState(false);
@@ -73,9 +103,9 @@ export default function Orders() {
   const [payments, setPayments] = useState<any[]>([]);
   const [openPaymentDialog, setOpenPaymentDialog] = useState(false);
   const [openResetConfirm, setOpenResetConfirm] = useState(false);
-  const [isAdminEditPayment, setIsAdminEditPayment] = useState(false);
+  const [editingPaymentId, setEditingPaymentId] = useState<number | null>(null);
   const [paymentAmount, setPaymentAmount] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('cash');
+  const [paymentMethod, setPaymentMethod] = useState('CASH');
   const [paidAmountFromServer, setPaidAmountFromServer] = useState(0);
   const [originalPaidAmount, setOriginalPaidAmount] = useState(0);
 
@@ -89,6 +119,7 @@ export default function Orders() {
   const [orderPartsSearchLoading, setOrderPartsSearchLoading] = useState(false);
   const [orderPartCache, setOrderPartCache] = useState<(Part | null)[]>([]);
   const orderPartsSearchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [editingPartIdx, setEditingPartIdx] = useState<number | null>(null);
   const [openAddPartOrder, setOpenAddPartOrder] = useState(false);
   const [addPartOrderLineIndex, setAddPartOrderLineIndex] = useState<number | null>(null);
   const [newPartFormOrder, setNewPartFormOrder] = useState({ name: '', part_number: '', brand: '', price: 0, unit: 'шт', category: 'other' as Part['category'] });
@@ -100,7 +131,7 @@ export default function Orders() {
   });
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const openFromUrlDoneRef = useRef(false);
+  const [orderIdFromUrl, setOrderIdFromUrl] = useState<number | null>(null);
 
   const loadInitialData = async () => {
     try {
@@ -118,18 +149,56 @@ export default function Orders() {
   // Открытие заказа по ссылке из другой вкладки (?open=orderId)
   useEffect(() => {
     const openId = searchParams.get('open');
-    if (!openId || loading || openFromUrlDoneRef.current) return;
+    if (!openId) return;
+    
     const id = parseInt(openId, 10);
-    if (!id) return;
-    openFromUrlDoneRef.current = true;
-    const orderFromList = orders.find((o) => o.id === id);
-    if (orderFromList) {
-      handleOpenDialog(orderFromList);
-    } else {
-      api.get(`/orders/${id}`).then((r) => handleOpenDialog(r.data)).catch(() => { openFromUrlDoneRef.current = false; });
-    }
+    if (!id || isNaN(id)) return;
+    
+    // Если уже обрабатывали этот ID - пропускаем
+    if (orderIdFromUrl === id) return;
+
+    setOrderIdFromUrl(id);
+
+    // Очищаем параметр из URL
     setSearchParams({}, { replace: true });
-  }, [loading, orders, searchParams]);
+
+    // Загружаем заказ напрямую по ID
+    api.get(`/orders/${id}`)
+      .then((r) => handleOpenDialog(r.data))
+      .catch((err) => {
+        console.error('Failed to load order:', err);
+        setError('Не удалось загрузить заказ');
+        setOrderIdFromUrl(null);
+      });
+  }, [searchParams, orderIdFromUrl]);
+
+  // Ctrl+S для сохранения
+  useEffect(() => {
+    if (!openDialog) return;
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+        e.preventDefault();
+        handleSave(false);
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [openDialog, formData]);
+
+  // Поиск работ из каталога
+  useEffect(() => {
+    if (editingWorkIdx === null) return;
+    if (worksSearchDebounceRef.current) clearTimeout(worksSearchDebounceRef.current);
+    if (!worksSearchQuery.trim()) { setWorksSearchResults([]); return; }
+    worksSearchDebounceRef.current = setTimeout(() => {
+      setWorksSearchLoading(true);
+      api.get<Work[]>('/works/', { params: { search: worksSearchQuery.trim(), limit: 30 } })
+        .then((r) => setWorksSearchResults(r.data))
+        .catch(() => setWorksSearchResults([]))
+        .finally(() => setWorksSearchLoading(false));
+    }, 300);
+    return () => { if (worksSearchDebounceRef.current) clearTimeout(worksSearchDebounceRef.current); };
+  }, [worksSearchQuery, editingWorkIdx]);
 
   // Поиск запчастей по артикулу (для строк заказа)
   useEffect(() => {
@@ -181,6 +250,7 @@ export default function Orders() {
     const res = await api.get(`/orders/${id}`);
     const d: OrderDetail = res.data;
     setSelectedVehicle(d.vehicle);
+    setInlineMileage(d.vehicle?.mileage?.toString() ?? '');
     setOriginalPaidAmount(Number(d.paid_amount || 0));
     setPaidAmountFromServer(Number(d.paid_amount || 0));
     const parts = (d.order_parts || []).map((p: any) => ({
@@ -203,22 +273,27 @@ export default function Orders() {
     try {
       const res = await api.get(`/orders/${id}/payments`);
       setPayments(res.data || []);
-    } catch (e) { console.error("Ошибка платежей"); }
+    } catch (e) { 
+      console.error("Error loading payments:", e); 
+    }
   };
 
   const handleOpenDialog = async (order?: Order) => {
     setError(''); setApplyToAll(false); setGlobalDiscount(0);
+    setEditingWorkIdx(null); setWorksSearchQuery(''); setWorksSearchResults([]);
     if (order) {
       setEditingOrderId(order.id);
       setSearchingVehicle(true);
       await fetchOrderDetails(order.id);
       await loadOrderPayments(order.id);
       setSearchingVehicle(false);
+      setInlineMileage(order.vehicle?.mileage?.toString() ?? '');
     } else {
       setEditingOrderId(null); setSelectedVehicle(null); setPaidAmountFromServer(0); setOriginalPaidAmount(0); setPayments([]);
       setFormData({ vehicle_id: 0, mechanic_id: undefined, status: 'new', order_works: [], order_parts: [], recommendations: '', comments: '' });
       setOrderPartCache([]);
       setLicensePlateSearch(''); setVinSearch('');
+      setInlineMileage('');
     }
     setOpenDialog(true);
   };
@@ -252,6 +327,24 @@ export default function Orders() {
       setOpenEditVehicleDialog(false);
     } catch (e) { setError('Не удалось обновить автомобиль'); }
     finally { setSaveLoading(false); }
+  };
+
+  const handleUpdateMileage = async () => {
+    if (!selectedVehicle || !inlineMileage) return;
+    setSavingMileage(true);
+    try {
+      await api.put(`/vehicles/${selectedVehicle.id}`, { mileage: Number(inlineMileage) || 0 });
+      setSelectedVehicle({ ...selectedVehicle, mileage: Number(inlineMileage) || 0 });
+    } catch { setError('Не удалось обновить пробег'); }
+    finally { setSavingMileage(false); }
+  };
+
+  const selectWorkFromCatalog = (idx: number, work: Work) => {
+    updateRow('work', idx, 'work_name', work.name);
+    updateRow('work', idx, 'price', work.price);
+    setEditingWorkIdx(null);
+    setWorksSearchQuery('');
+    setWorksSearchResults([]);
   };
 
   const handleSearchVehicle = async () => {
@@ -311,6 +404,7 @@ export default function Orders() {
         loadInitialData();
       } else if (id) {
         await fetchOrderDetails(id);
+        setSaveSuccess(true);
       }
       const list = await api.get('/orders/'); setOrders(list.data || []);
     } catch (err: any) { setError(err.response?.data?.detail || 'Ошибка сохранения'); }
@@ -321,12 +415,38 @@ export default function Orders() {
     if (!editingOrderId) return;
     setSaveLoading(true);
     try {
-      await api.post(`/orders/${editingOrderId}/payments`, { order_id: editingOrderId, amount: parseFloat(paymentAmount), payment_method: paymentMethod });
+      if (editingPaymentId) {
+        // Редактирование существующего платежа
+        await api.put(`/orders/${editingOrderId}/payments/${editingPaymentId}`, {
+          order_id: editingOrderId,
+          amount: parseFloat(paymentAmount),
+          payment_method: paymentMethod
+        });
+      } else {
+        // Создание нового платежа
+        await api.post(`/orders/${editingOrderId}/payments`, {
+          order_id: editingOrderId,
+          amount: parseFloat(paymentAmount),
+          payment_method: paymentMethod
+        });
+      }
       await fetchOrderDetails(editingOrderId);
       await loadOrderPayments(editingOrderId);
-      setOpenPaymentDialog(false); setPaymentAmount('');
-    } catch (e: any) { setError(e.response?.data?.detail || 'Ошибка оплаты'); }
-    finally { setSaveLoading(false); }
+      setOpenPaymentDialog(false);
+      setPaymentAmount('');
+      setEditingPaymentId(null);
+    } catch (e: any) {
+      setError(e.response?.data?.detail || 'Ошибка оплаты');
+    } finally {
+      setSaveLoading(false);
+    }
+  };
+
+  const handleEditPayment = (payment: any) => {
+    setEditingPaymentId(payment.id);
+    setPaymentAmount(payment.amount.toString());
+    setPaymentMethod(payment.payment_method);
+    setOpenPaymentDialog(true);
   };
 
   const handleCancelAllPayments = async () => {
@@ -440,20 +560,66 @@ export default function Orders() {
     }
   };
 
+  const filteredOrders = useMemo(() => {
+    let result = orders;
+    if (selectedStatusFilter !== 'all') result = result.filter(o => o.status === selectedStatusFilter);
+    const q = searchQuery.trim().toLowerCase();
+    if (q) {
+      result = result.filter(o =>
+        o.number?.toLowerCase().includes(q) ||
+        o.vehicle?.license_plate?.toLowerCase().includes(q) ||
+        o.vehicle?.customer?.full_name?.toLowerCase().includes(q) ||
+        o.vehicle?.customer?.phone?.includes(q) ||
+        `${o.vehicle?.brand?.name ?? ''} ${o.vehicle?.model?.name ?? ''}`.toLowerCase().includes(q) ||
+        o.mechanic?.full_name?.toLowerCase().includes(q)
+      );
+    }
+    return result;
+  }, [orders, selectedStatusFilter, searchQuery]);
+
+  const handleDeleteOrder = async () => {
+    if (!deleteOrderConfirm) return;
+    setDeletingOrder(true);
+    try {
+      await api.delete(`/orders/${deleteOrderConfirm.id}`);
+      setDeleteOrderConfirm(null);
+      loadInitialData();
+    } catch (e: any) {
+      setError(e.response?.data?.detail || 'Ошибка удаления заказа');
+    } finally {
+      setDeletingOrder(false);
+    }
+  };
+
   if (loading) return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}><CircularProgress /></Box>;
 
   return (
     <Container maxWidth={false} sx={{ px: { xs: 2, md: 5 }, py: 2 }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 4 }}>
+      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
         <Typography variant="h4" sx={{ fontWeight: 900 }}>Заказ-наряды</Typography>
         <Button variant="contained" size="large" startIcon={<AddRounded />} onClick={() => handleOpenDialog()} sx={{ borderRadius: 3, px: 4 }}>Создать заказ</Button>
       </Stack>
 
+      <TextField
+        fullWidth
+        size="small"
+        placeholder="Поиск по номеру, клиенту, гос.номеру, мастеру..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        InputProps={{
+          startAdornment: <InputAdornment position="start"><SearchIcon fontSize="small" color="action" /></InputAdornment>,
+        }}
+        sx={{ mb: 2, '& .MuiOutlinedInput-root': { borderRadius: 3, bgcolor: '#fff' } }}
+      />
+
       <Box sx={{ mb: 3, borderBottom: '1px solid #E2E8F0' }}>
         <Tabs value={selectedStatusFilter} onChange={(_, v) => setSelectedStatusFilter(v)} variant="scrollable" scrollButtons="auto">
-          <Tab label="Все" value="all" sx={{ fontWeight: 700 }} />
-          {orderStatuses.map(s => <Tab key={s.value} label={s.label} value={s.value} sx={{ fontWeight: 700 }} />)}
-          <Tab label="Завершен" value="completed" sx={{ fontWeight: 700 }} />
+          <Tab label={`Все (${orders.length})`} value="all" sx={{ fontWeight: 700 }} />
+          {orderStatuses.map(s => {
+            const count = orders.filter(o => o.status === s.value).length;
+            return <Tab key={s.value} label={`${s.label} (${count})`} value={s.value} sx={{ fontWeight: 700 }} />;
+          })}
+          <Tab label={`Завершён (${orders.filter(o => o.status === 'completed').length})`} value="completed" sx={{ fontWeight: 700 }} />
         </Tabs>
       </Box>
 
@@ -461,22 +627,66 @@ export default function Orders() {
         <Table>
           <TableHead sx={{ bgcolor: '#F8FAFC' }}>
             <TableRow>
-              <TableCell sx={{ fontWeight: 700 }}>Номер</TableCell><TableCell sx={{ fontWeight: 700 }}>Автомобиль</TableCell>
-              <TableCell sx={{ fontWeight: 700 }}>Мастер</TableCell><TableCell sx={{ fontWeight: 700 }}>Статус</TableCell>
+              <TableCell sx={{ fontWeight: 700 }}>Номер</TableCell>
+              <TableCell sx={{ fontWeight: 700 }}>Автомобиль</TableCell>
+              <TableCell sx={{ fontWeight: 700 }}>Клиент</TableCell>
+              <TableCell sx={{ fontWeight: 700 }}>Мастер</TableCell>
+              <TableCell sx={{ fontWeight: 700 }}>Статус</TableCell>
               <TableCell align="right" sx={{ fontWeight: 700 }}>Сумма</TableCell>
+              <TableCell sx={{ fontWeight: 700 }}>Создан</TableCell>
+              {isAdmin && <TableCell sx={{ fontWeight: 700, width: 48 }} />}
             </TableRow>
           </TableHead>
           <TableBody>
-            {orders.filter(o => selectedStatusFilter === 'all' || o.status === selectedStatusFilter).map(o => (
-              <TableRow key={o.id} hover onClick={() => handleOpenDialog(o)} sx={{ cursor: 'pointer' }}>
+            {filteredOrders.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={isAdmin ? 8 : 7} sx={{ textAlign: 'center', py: 6 }}>
+                  <SearchOffRounded sx={{ fontSize: 40, color: 'text.disabled', mb: 1 }} />
+                  <Typography color="text.secondary">
+                    {searchQuery.trim() ? 'Ничего не найдено' : 'Нет заказов с таким статусом'}
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            ) : filteredOrders.map(o => (
+              <TableRow
+                key={o.id}
+                hover
+                onClick={() => window.open(`/orders?open=${o.id}`, '_blank')}
+                sx={{ cursor: 'pointer' }}
+              >
                 <TableCell sx={{ fontWeight: 600 }}>{o.number}</TableCell>
                 <TableCell>
                   <Typography variant="body2" sx={{ fontWeight: 700 }}>{o.vehicle?.brand?.name} {o.vehicle?.model?.name}</Typography>
-                  <Typography variant="caption" color="text.secondary">({o.vehicle?.license_plate})</Typography>
+                  <Typography variant="caption" color="text.secondary">{o.vehicle?.license_plate}</Typography>
+                </TableCell>
+                <TableCell>
+                  <Typography variant="body2" sx={{ fontWeight: 500 }}>{o.vehicle?.customer?.full_name || '—'}</Typography>
+                  {o.vehicle?.customer?.phone && (
+                    <Typography variant="caption" color="text.secondary">{o.vehicle.customer.phone}</Typography>
+                  )}
                 </TableCell>
                 <TableCell>{o.mechanic?.full_name || '—'}</TableCell>
                 <TableCell><Chip label={getStatusLabel(o.status)} color={STATUS_COLORS[o.status] || 'default'} size="small" sx={{ fontWeight: 700, borderRadius: 1.5 }} /></TableCell>
                 <TableCell align="right" sx={{ fontWeight: 800 }}>{formatCurrency(o.total_amount)}</TableCell>
+                <TableCell>
+                  <Tooltip title={o.created_at ? new Date(o.created_at).toLocaleString('ru-RU') : ''}>
+                    <Typography variant="caption" color="text.secondary">
+                      {o.created_at ? formatDistanceToNow(new Date(o.created_at), { addSuffix: true, locale: ru }) : '—'}
+                    </Typography>
+                  </Tooltip>
+                </TableCell>
+                {isAdmin && (
+                  <TableCell sx={{ px: 0.5 }}>
+                    <IconButton
+                      size="small"
+                      color="error"
+                      onClick={(e) => { e.stopPropagation(); setDeleteOrderConfirm(o); }}
+                      title="Удалить заказ"
+                    >
+                      <DeleteOutlineRounded fontSize="small" />
+                    </IconButton>
+                  </TableCell>
+                )}
               </TableRow>
             ))}
           </TableBody>
@@ -487,7 +697,23 @@ export default function Orders() {
         <AppBar sx={{ position: 'sticky', bgcolor: '#fff', color: 'text.primary', boxShadow: 'none', borderBottom: '1px solid #E2E8F0', zIndex: 1100 }}>
           <Toolbar>
             <IconButton edge="start" onClick={() => setOpenDialog(false)} sx={{ mr: 2 }}><ArrowBackRounded /></IconButton>
-            <Typography variant="h6" sx={{ flex: 1, fontWeight: 800 }}>{editingOrderId ? `Редактирование заказа` : 'Новый заказ-наряд'}</Typography>
+            <Stack direction="row" alignItems="center" spacing={1} sx={{ flex: 1 }}>
+              <Typography variant="h6" sx={{ fontWeight: 800 }}>
+                {editingOrderId
+                  ? `Заказ-наряд #${orders.find(o => o.id === editingOrderId)?.number ?? editingOrderId}`
+                  : 'Новый заказ-наряд'}
+              </Typography>
+              {editingOrderId && (
+                <Tooltip title="Скопировать номер">
+                  <IconButton size="small" onClick={() => {
+                    const num = orders.find(o => o.id === editingOrderId)?.number ?? '';
+                    navigator.clipboard.writeText(num);
+                  }}>
+                    <ContentCopyRounded sx={{ fontSize: 16 }} />
+                  </IconButton>
+                </Tooltip>
+              )}
+            </Stack>
             <Stack direction="row" spacing={2}>
               <Button variant="outlined" size="large" onClick={() => handleSave(false)} disabled={saveLoading} startIcon={<SaveRounded />}>Сохранить</Button>
               {paidAmountFromServer >= totals.grand - 0.01 && totals.grand > 0 && <Button variant="contained" color="success" onClick={() => handleSave(true)} disabled={saveLoading} startIcon={<CheckCircleRounded />}>Завершить заказ</Button>}
@@ -501,11 +727,37 @@ export default function Orders() {
             <Grid item xs={12} md={6}><Paper sx={{ borderRadius: 3, border: '1px solid #E2E8F0', minHeight: 110, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
               {!selectedVehicle ? (<Box><Tabs value={searchTab} onChange={(_, v) => setSearchTab(v)} sx={{ minHeight: 40 }}><Tab label="Гос. номер" sx={{ fontWeight: 700 }} /><Tab label="VIN номер" sx={{ fontWeight: 700 }} /></Tabs>
                 <Stack direction="row" spacing={2} sx={{ p: 2 }}>
-                  <TextField fullWidth size="small" placeholder={searchTab === 0 ? "А000АА77" : "17 символов или последние 6"} label={searchTab === 0 ? "Гос. номер" : "VIN-номер"} value={searchTab === 0 ? licensePlateSearch : vinSearch} onChange={e => searchTab === 0 ? setLicensePlateSearch(e.target.value.toUpperCase()) : setVinSearch(e.target.value.toUpperCase())} />
+                  <TextField fullWidth size="small" placeholder={searchTab === 0 ? "А000АА77" : "17 символов или последние 6"} label={searchTab === 0 ? "Гос. номер" : "VIN-номер"} value={searchTab === 0 ? licensePlateSearch : vinSearch} onChange={e => searchTab === 0 ? setLicensePlateSearch(e.target.value.toUpperCase()) : setVinSearch(e.target.value.toUpperCase())} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleSearchVehicle(); } }} />
                   <Button variant="contained" onClick={handleSearchVehicle} disabled={searchingVehicle}>Найти</Button>
                 </Stack></Box>
               ) : (<Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ px: 3, py: 2, bgcolor: alpha('#4F46E5', 0.02) }}>
-                  <Stack direction="row" spacing={2} alignItems="center"><Avatar sx={{ bgcolor: 'primary.main' }}><DirectionsCarFilledRounded /></Avatar><Box><Typography variant="subtitle1" sx={{ fontWeight: 800 }}>{selectedVehicle.brand?.name} {selectedVehicle.model?.name}</Typography><Typography variant="caption">{selectedVehicle.license_plate} • VIN: {selectedVehicle.vin} • Пробег: {selectedVehicle.mileage || 0} км • {selectedVehicle.customer?.full_name}</Typography></Box></Stack>
+                  <Stack direction="row" spacing={2} alignItems="center"><Avatar sx={{ bgcolor: 'primary.main' }}><DirectionsCarFilledRounded /></Avatar><Box><Typography variant="subtitle1" sx={{ fontWeight: 800 }}>{selectedVehicle.brand?.name} {selectedVehicle.model?.name}</Typography><Typography variant="caption">{selectedVehicle.license_plate} • VIN: {selectedVehicle.vin}</Typography>
+                    <Stack direction="row" alignItems="center" spacing={0.5} sx={{ mt: 0.25 }}>
+                      <SpeedRounded sx={{ fontSize: 14, color: 'text.secondary' }} />
+                      <TextField
+                        variant="standard"
+                        size="small"
+                        placeholder="Пробег"
+                        value={inlineMileage}
+                        onChange={e => setInlineMileage(e.target.value.replace(/\D/g, ''))}
+                        onBlur={() => { if (inlineMileage && Number(inlineMileage) !== selectedVehicle.mileage) handleUpdateMileage(); }}
+                        onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleUpdateMileage(); } }}
+                        InputProps={{ disableUnderline: false, sx: { fontSize: '0.75rem', fontWeight: 600, width: 80 } }}
+                      />
+                      <Typography variant="caption" color="text.secondary">км</Typography>
+                      {savingMileage && <CircularProgress size={12} />}
+                    </Stack>
+                    {selectedVehicle.customer && (
+                      <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mt: 0.5 }}>
+                        <Stack direction="row" spacing={0.5} alignItems="center"><PersonRounded sx={{ fontSize: 14, color: 'text.secondary' }} /><Typography variant="caption" sx={{ fontWeight: 600 }}>{selectedVehicle.customer.full_name}</Typography></Stack>
+                        {selectedVehicle.customer.phone && (
+                          <Stack direction="row" spacing={0.5} alignItems="center">
+                            <PhoneRounded sx={{ fontSize: 14, color: 'text.secondary' }} />
+                            <Typography component="a" href={`tel:${selectedVehicle.customer.phone}`} variant="caption" sx={{ fontWeight: 600, color: 'primary.main', textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }} onClick={(e) => e.stopPropagation()}>{selectedVehicle.customer.phone}</Typography>
+                          </Stack>
+                        )}
+                      </Stack>
+                    )}</Box></Stack>
                   <Stack direction="row" spacing={1}>
                     <Button size="small" variant="outlined" startIcon={<EditRounded />} onClick={handleOpenEditVehicle}>Редактировать</Button>
                     {!editingOrderId && <Button size="small" color="secondary" onClick={() => setSelectedVehicle(null)}>Сменить</Button>}
@@ -521,7 +773,7 @@ export default function Orders() {
               <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1.5 }}>
                 <Typography variant="subtitle2" sx={{ fontWeight: 800, display: 'flex', alignItems: 'center', gap: 1 }}><HistoryRounded fontSize="small" color="primary" /> Оплаты: {formatCurrency(paidAmountFromServer)} / {formatCurrency(totals.grand)}</Typography>
                 <Stack direction="row" spacing={1}>
-                  {paidAmountFromServer < totals.grand - 0.01 && <Button variant="contained" color="success" size="small" startIcon={<PaymentRounded />} onClick={() => { setPaymentAmount((totals.grand - paidAmountFromServer).toFixed(0)); setOpenPaymentDialog(true); }}>Оплатить</Button>}
+                  {paidAmountFromServer < totals.grand - 0.01 && <Button variant="contained" color="success" size="small" startIcon={<PaymentRounded />} onClick={() => { setEditingPaymentId(null); setPaymentAmount((totals.grand - paidAmountFromServer).toFixed(0)); setPaymentMethod('CASH'); setOpenPaymentDialog(true); }}>Оплатить</Button>}
                   {isAdmin && <Button size="small" color="error" startIcon={<RestartAltRounded />} onClick={() => setOpenResetConfirm(true)}>Сбросить всё</Button>}
                 </Stack>
               </Stack>
@@ -533,8 +785,17 @@ export default function Orders() {
                       <TableCell sx={{ border: 'none', py: 0.5 }}>{METHOD_LABELS[p.payment_method]} • {new Date(p.created_at).toLocaleString()}</TableCell>
                       <TableCell sx={{ border: 'none', py: 0.5, fontWeight: 700 }}>{formatCurrency(p.amount)}</TableCell>
                       <TableCell sx={{ border: 'none', py: 0.5 }} align="right">
-                        {isAdmin && p.status === 'succeeded' && <IconButton size="small" color="error" onClick={() => handleCancelSinglePayment(p.id)}><DeleteOutlineRounded fontSize="small" /></IconButton>}
-                        <Chip label={p.status} size="small" variant="outlined" sx={{ ml: 1, fontSize: '0.6rem', height: 20 }} />
+                        {isAdmin && p.status === 'SUCCEEDED' && (
+                          <>
+                            <IconButton size="small" onClick={() => handleEditPayment(p)} title="Редактировать платёж">
+                              <EditRounded fontSize="small" />
+                            </IconButton>
+                            <IconButton size="small" color="error" onClick={() => handleCancelSinglePayment(p.id)} title="Отменить платёж">
+                              <DeleteOutlineRounded fontSize="small" />
+                            </IconButton>
+                          </>
+                        )}
+                        <Chip label={PAYMENT_STATUS_LABELS[p.status] || p.status} size="small" variant="outlined" sx={{ ml: 1, fontSize: '0.6rem', height: 20 }} />
                       </TableCell>
                     </TableRow>
                   ))}
@@ -547,7 +808,47 @@ export default function Orders() {
 
           <Box><Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1, px: 1 }}><Typography variant="subtitle1" sx={{ fontWeight: 900 }}><BuildCircleRounded fontSize="small" color="primary" sx={{ verticalAlign: 'middle', mr: 1 }} /> Работы</Typography><Button variant="contained" size="small" startIcon={<AddRounded />} onClick={() => addRow('work')}>Добавить</Button></Stack>
             <Stack spacing={1}>{(formData.order_works || []).map((work, idx) => (<Paper key={idx} elevation={0} sx={{ p: 1.5, px: 2, borderRadius: 2, border: '1px solid #E2E8F0', bgcolor: '#fff', '&:hover': { borderColor: 'primary.main' } }}><Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} lg={6}><TextField fullWidth variant="standard" placeholder="Услуга..." value={work.work_name} onChange={e => updateRow('work', idx, 'work_name', e.target.value)} InputProps={{ disableUnderline: true, sx: { fontSize: '1rem', fontWeight: 700 } }} /></Grid>
+              <Grid item xs={12} lg={6}>
+                <Autocomplete
+                  freeSolo
+                  size="small"
+                  value={null as any}
+                  inputValue={editingWorkIdx === idx ? worksSearchQuery : (work.work_name || '')}
+                  onInputChange={(_: any, v: string, reason: string) => {
+                    if (reason === 'input') {
+                      setEditingWorkIdx(idx);
+                      setWorksSearchQuery(v);
+                      updateRow('work', idx, 'work_name', v);
+                    }
+                  }}
+                  onChange={(_: any, option: any) => {
+                    if (option && typeof option !== 'string' && option.id > 0) {
+                      selectWorkFromCatalog(idx, option as Work);
+                    }
+                  }}
+                  onBlur={() => { if (editingWorkIdx === idx) { setEditingWorkIdx(null); setWorksSearchResults([]); } }}
+                  options={editingWorkIdx === idx ? worksSearchResults : []}
+                  getOptionLabel={(opt: any) => typeof opt === 'string' ? opt : opt.name}
+                  renderOption={(props: any, opt: any) => (
+                    <li {...props} key={opt.id}>
+                      <Stack direction="row" justifyContent="space-between" sx={{ width: '100%' }}>
+                        <Typography variant="body2">{opt.name}</Typography>
+                        {opt.price !== undefined && <Typography variant="body2" sx={{ fontWeight: 700, color: 'primary.main' }}>{formatCurrency(opt.price)}</Typography>}
+                      </Stack>
+                    </li>
+                  )}
+                  loading={worksSearchLoading && editingWorkIdx === idx}
+                  filterOptions={(x: any) => x}
+                  renderInput={(params: any) => (
+                    <TextField
+                      {...params}
+                      variant="standard"
+                      placeholder="Услуга... (начните вводить для поиска)"
+                      InputProps={{ ...params.InputProps, disableUnderline: true, sx: { fontSize: '1rem', fontWeight: 700 } }}
+                    />
+                  )}
+                />
+              </Grid>
               <Grid item xs={3} lg={1.2}><TextField fullWidth size="small" label="Кол-во" type="number" value={work.quantity} onChange={e => updateRow('work', idx, 'quantity', e.target.value)} /></Grid>
               <Grid item xs={3} lg={1.5}><TextField fullWidth size="small" label="Цена" type="number" value={work.price} onChange={e => updateRow('work', idx, 'price', e.target.value)} InputProps={{ endAdornment: '₽' }} /></Grid>
               <Grid item xs={3} lg={1.2}><TextField fullWidth size="small" label="Скидка" type="number" value={work.discount} onChange={e => updateRow('work', idx, 'discount', e.target.value)} InputProps={{ endAdornment: '%' }} /></Grid>
@@ -621,7 +922,20 @@ export default function Orders() {
             })}</Stack></Box>
 
           <Collapse in={totals.grand > 0}><Paper sx={{ p: 2, px: 4, borderRadius: 3, border: '2px solid', borderColor: 'primary.main', bgcolor: '#fff' }}><Stack direction="row" justifyContent="space-between" alignItems="center"><Stack direction="row" spacing={4}><Box><Typography variant="caption">Работы</Typography><Typography variant="body1" sx={{ fontWeight: 700 }}>{formatCurrency(totals.works)}</Typography></Box><Box><Typography variant="caption">Запчасти</Typography><Typography variant="body1" sx={{ fontWeight: 700 }}>{formatCurrency(totals.parts)}</Typography></Box></Stack><Box sx={{ textAlign: 'right' }}><Typography variant="caption" color="primary" sx={{ fontWeight: 800 }}>ИТОГО</Typography><Typography variant="h4" sx={{ fontWeight: 950 }}>{formatCurrency(totals.grand)}</Typography></Box></Stack></Paper></Collapse>
-          <Paper sx={{ p: 2, borderRadius: 3, border: '1px solid #E2E8F0' }}><Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 800, display: 'flex', alignItems: 'center', gap: 1 }}><CommentRounded fontSize="small" color="action" /> Рекомендации</Typography><TextField fullWidth multiline rows={2} variant="outlined" size="small" value={formData.recommendations} onChange={e => setFormData({...formData, recommendations: e.target.value})} /></Paper>
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={6}>
+              <Paper sx={{ p: 2, borderRadius: 3, border: '1px solid #E2E8F0', height: '100%', transition: 'all 0.2s ease' }}>
+                <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 800, display: 'flex', alignItems: 'center', gap: 1 }}><CommentRounded fontSize="small" color="action" /> Рекомендации</Typography>
+                <TextField fullWidth multiline minRows={2} maxRows={12} variant="outlined" size="small" placeholder="Рекомендации для клиента..." value={formData.recommendations} onChange={e => setFormData({...formData, recommendations: e.target.value})} sx={{ '& .MuiOutlinedInput-root': { transition: 'height 0.15s ease' } }} />
+              </Paper>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Paper sx={{ p: 2, borderRadius: 3, border: '1px solid #E2E8F0', height: '100%', transition: 'all 0.2s ease' }}>
+                <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 800, display: 'flex', alignItems: 'center', gap: 1 }}><EditRounded fontSize="small" color="action" /> Комментарии (внутренние)</Typography>
+                <TextField fullWidth multiline minRows={2} maxRows={12} variant="outlined" size="small" placeholder="Заметки для мастеров и менеджеров..." value={formData.comments} onChange={e => setFormData({...formData, comments: e.target.value})} sx={{ '& .MuiOutlinedInput-root': { transition: 'height 0.15s ease' } }} />
+              </Paper>
+            </Grid>
+          </Grid>
         </Stack></Box>
       </Dialog>
 
@@ -669,13 +983,81 @@ export default function Orders() {
               </Stack></Grid>
         </Grid></DialogContent><DialogActions sx={{ p: 3 }}><Button onClick={() => setOpenAddVehicleDialog(false)}>Отмена</Button><Button variant="contained" onClick={handleCreateVehicle} disabled={!newVehicleData.brand_id || !newVehicleData.model_id || (!selectedCustomer && !newCustomerData.full_name)}>Создать</Button></DialogActions></Dialog>
 
-      <Dialog open={openPaymentDialog} onClose={() => setOpenPaymentDialog(false)} PaperProps={{ sx: { borderRadius: 3, p: 2, width: 340 } }}>
-        <Typography variant="h6" sx={{ mb: 2, fontWeight: 800 }}>Принять оплату</Typography><Stack spacing={2.5}><TextField fullWidth autoFocus type="number" value={paymentAmount} onChange={e => setPaymentAmount(e.target.value)} InputProps={{ endAdornment: '₽' }} /><FormControl fullWidth><InputLabel>Способ</InputLabel><Select value={paymentMethod} label="Способ" onChange={e => setPaymentMethod(e.target.value)}><MenuItem value="cash">Наличные</MenuItem><MenuItem value="card">Карта</MenuItem><MenuItem value="yookassa">ЮKassa</MenuItem></Select></FormControl><Stack direction="row" spacing={1} justifyContent="flex-end"><Button onClick={() => setOpenPaymentDialog(false)}>Отмена</Button><Button variant="contained" color="success" onClick={handleCreatePayment}>Подтвердить</Button></Stack></Stack></Dialog>
+      <Dialog open={openPaymentDialog} onClose={() => { setOpenPaymentDialog(false); setEditingPaymentId(null); setPaymentAmount(''); }} PaperProps={{ sx: { borderRadius: 3, p: 2, width: 340 } }}>
+        <Typography variant="h6" sx={{ mb: 2, fontWeight: 800 }}>
+          {editingPaymentId ? 'Редактировать платёж' : 'Принять оплату'}
+        </Typography>
+        <Stack spacing={2.5}>
+          <TextField 
+            fullWidth 
+            autoFocus 
+            type="number" 
+            label="Сумма"
+            value={paymentAmount} 
+            onChange={e => setPaymentAmount(e.target.value)} 
+            InputProps={{ endAdornment: '₽' }} 
+          />
+          <FormControl fullWidth>
+            <InputLabel>Способ</InputLabel>
+            <Select value={paymentMethod} label="Способ" onChange={e => setPaymentMethod(e.target.value)}>
+              <MenuItem value="CASH">Наличные</MenuItem>
+              <MenuItem value="CARD">Карта</MenuItem>
+              <MenuItem value="YOOKASSA">ЮKassa</MenuItem>
+            </Select>
+          </FormControl>
+          <Stack direction="row" spacing={1} justifyContent="flex-end">
+            <Button onClick={() => { setOpenPaymentDialog(false); setEditingPaymentId(null); setPaymentAmount(''); }}>Отмена</Button>
+            <Button variant="contained" color="success" onClick={handleCreatePayment} disabled={saveLoading}>
+              {saveLoading ? <CircularProgress size={24} /> : (editingPaymentId ? 'Сохранить' : 'Подтвердить')}
+            </Button>
+          </Stack>
+        </Stack>
+      </Dialog>
 
       <Dialog open={openResetConfirm} onClose={() => setOpenResetConfirm(false)} PaperProps={{ sx: { p: 2, maxWidth: 400, borderRadius: 4 } }}>
         <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1.5, fontWeight: 800 }}><WarningAmberRounded color="error" fontSize="large" /> Сброс оплат</DialogTitle>
         <DialogContent><DialogContentText sx={{ color: 'text.primary', fontWeight: 500 }}>Все проведенные платежи по этому заказу будут аннулированы. Продолжить?</DialogContentText></DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}><Button onClick={() => setOpenResetConfirm(false)} variant="outlined" color="inherit">Отмена</Button><Button onClick={handleCancelAllPayments} color="error" variant="contained">Да, сбросить</Button></DialogActions>
+      </Dialog>
+
+      {/* Snackbar при сохранении */}
+      <Snackbar
+        open={saveSuccess}
+        autoHideDuration={2000}
+        onClose={() => setSaveSuccess(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={() => setSaveSuccess(false)} severity="success" variant="filled" sx={{ borderRadius: 2 }}>
+          Заказ-наряд сохранён
+        </Alert>
+      </Snackbar>
+
+      {/* Подтверждение удаления заказа */}
+      <Dialog
+        open={deleteOrderConfirm !== null}
+        onClose={() => !deletingOrder && setDeleteOrderConfirm(null)}
+        maxWidth="xs"
+        fullWidth
+        PaperProps={{ sx: { borderRadius: 3 } }}
+      >
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1.5, fontWeight: 800 }}>
+          <WarningAmberRounded color="error" fontSize="large" /> Удалить заказ-наряд?
+        </DialogTitle>
+        <DialogContent>
+          {deleteOrderConfirm && (
+            <Typography>
+              Заказ-наряд <b>#{deleteOrderConfirm.number}</b> будет удалён вместе со всеми работами, запчастями и платежами. Это действие необратимо.
+            </Typography>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={() => setDeleteOrderConfirm(null)} disabled={deletingOrder} variant="outlined" color="inherit">
+            Отмена
+          </Button>
+          <Button variant="contained" color="error" onClick={handleDeleteOrder} disabled={deletingOrder}>
+            {deletingOrder ? <CircularProgress size={24} /> : 'Удалить'}
+          </Button>
+        </DialogActions>
       </Dialog>
     </Container>
   );
