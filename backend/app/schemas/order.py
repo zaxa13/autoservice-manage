@@ -75,6 +75,7 @@ class OrderBase(BaseModel):
 class OrderCreate(OrderBase):
     recommendations: Optional[str] = None  # Рекомендации
     comments: Optional[str] = None  # Комментарии
+    mileage_at_service: Optional[int] = None
     order_works: List[OrderWorkCreate] = []
     order_parts: List[OrderPartCreate] = []
 
@@ -96,10 +97,9 @@ class Order(OrderBase):
     status: OrderStatus
     total_amount: Decimal
     paid_amount: Decimal
-    # recommendations и comments убраны из базовой схемы - они только в OrderDetail
+    mileage_at_service: Optional[int] = None
     created_at: datetime
     completed_at: Optional[datetime] = None
-    # Опциональные relationships для отображения в списке (загружаются через joinedload)
     vehicle: Optional[Vehicle] = None
     mechanic: Optional[Employee] = None
 

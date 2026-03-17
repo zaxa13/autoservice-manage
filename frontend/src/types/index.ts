@@ -16,10 +16,11 @@ export interface Order {
   status: 'new' | 'estimation' | 'in_progress' | 'ready_for_payment' | 'paid' | 'completed' | 'cancelled'
   total_amount: number
   paid_amount: number
+  mileage_at_service?: number
   created_at: string
   completed_at?: string
-  vehicle?: Vehicle  // Опциональное для отображения в списке
-  mechanic?: Employee  // Опциональное для отображения в списке
+  vehicle?: Vehicle
+  mechanic?: Employee
 }
 
 export interface OrderDetail extends Order {

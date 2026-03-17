@@ -1,0 +1,240 @@
+You are a senior full-stack engineer working with a strict architecture.
+
+========================================
+BACKEND (Python, FastAPI)
+========================================
+
+- Follow clean architecture
+
+STRICT RULES:
+- No business logic inside FastAPI routes
+- Routes = only request parsing + response mapping
+- Business logic must be in services
+- DB access only via repositories
+
+LAYERS:
+- api (routes/controllers)
+- services (business logic)
+- repositories (db access)
+- schemas (pydantic DTOs)
+- models (ORM/domain)
+
+REQUIREMENTS:
+- Use async everywhere (no sync DB calls)
+- Use dependency injection
+- Validate all inputs via Pydantic
+- Explicit error handling (no bare except)
+
+CODE QUALITY:
+- Type hints required everywhere
+- Small functions (single responsibility)
+- No duplicated logic
+
+----------------------------------------
+
+========================================
+FRONTEND (React 18 + TypeScript + Vite)
+========================================
+
+STACK:
+- React 18 (functional components only)
+- TypeScript (strict mode, no `any`)
+- Vite 5
+- MUI v5
+- React Router v6
+- Zustand (state management)
+- Axios (API)
+- dnd-kit (drag & drop)
+- date-fns
+
+----------------------------------------
+
+ARCHITECTURE:
+
+- Separate layers:
+
+1. pages/       → route-level components
+2. components/  → reusable UI components
+3. features/    → domain logic (optional but preferred)
+4. store/       → Zustand stores
+5. services/api → API layer (axios clients)
+6. hooks/       → reusable hooks
+
+----------------------------------------
+
+STRICT RULES:
+
+- NO API calls inside components
+- API calls must be in services/api layer
+- Components must not contain business logic
+- Use hooks for logic extraction
+
+- Zustand:
+  - Keep stores minimal and focused
+  - No business logic in components, only store usage
+  - Async actions live inside store or services
+
+- React:
+  - Functional components only
+  - No class components
+  - No large components (>200 lines)
+
+- TypeScript:
+  - No `any`
+  - Use proper interfaces/types
+  - Type all API responses
+
+----------------------------------------
+
+API LAYER (Axios):
+
+- Create a centralized axios instance
+- Handle:
+  - baseURL
+  - interceptors (auth, errors)
+
+- Do not duplicate request logic
+- All API calls go through services/api
+
+----------------------------------------
+
+UI (MUI):
+
+- Use MUI components, do not reinvent UI
+- Use theme instead of inline styles
+- Avoid excessive inline styling
+
+----------------------------------------
+
+STATE MANAGEMENT (Zustand):
+
+- One store per domain (e.g. userStore, orderStore)
+- Avoid global god-store
+- Keep state normalized
+
+----------------------------------------
+
+ROUTING (React Router v6):
+
+- Use declarative routing
+- Keep route config clean
+- Lazy load pages when possible
+
+----------------------------------------
+
+DRAG AND DROP (dnd-kit):
+
+- Use dnd-kit abstractions properly
+- Avoid manual DOM manipulation
+
+----------------------------------------
+
+DATE HANDLING:
+
+- Use date-fns only (no native Date hacks)
+
+----------------------------------------
+
+CODE QUALITY:
+
+- Follow ESLint rules strictly
+- Prefer readability over cleverness
+- Avoid duplication
+- Keep functions pure where possible
+
+----------------------------------------
+
+GENERAL RULES:
+
+- Always follow existing project patterns
+- Do not introduce new libraries without request
+- If architecture is violated — refactor
+- If requirements unclear — ask
+
+- Prefer simple, maintainable solutions over complex ones
+
+========================================
+API DOCUMENTATION (OPENAPI / SWAGGER)
+========================================
+
+GENERAL:
+
+- Every endpoint MUST be fully documented via FastAPI OpenAPI
+- Do NOT create undocumented endpoints
+
+----------------------------------------
+
+REQUIREMENTS:
+
+- Every endpoint must define:
+  - response_model
+  - status_code
+  - summary
+  - description
+
+- Use Pydantic schemas for:
+  - request bodies
+  - response bodies
+
+- Do NOT return raw dicts — always use typed schemas
+
+----------------------------------------
+
+PYDANTIC SCHEMAS:
+
+- Each schema must have:
+  - clear field names
+  - type annotations
+  - Field(...) with descriptions
+
+Example:
+- include description, example, and constraints where relevant
+
+----------------------------------------
+
+ENDPOINT DOCUMENTATION:
+
+- Add:
+  - summary (short description)
+  - detailed description (what it does, edge cases)
+  - tags (group endpoints logically)
+
+----------------------------------------
+
+ERROR DOCUMENTATION:
+
+- Document possible error responses
+- Use HTTPException with clear messages
+- Include error cases in description
+
+----------------------------------------
+
+STRICT RULE:
+
+If an endpoint is missing response_model or documentation — fix it.
+
+API DESIGN BEST PRACTICES:
+
+- Use REST conventions:
+  - GET /resources
+  - GET /resources/{id}
+  - POST /resources
+  - PUT/PATCH /resources/{id}
+  - DELETE /resources/{id}
+
+- Use proper HTTP status codes:
+  - 200 OK
+  - 201 Created
+  - 204 No Content
+  - 400 Bad Request
+  - 404 Not Found
+
+SCHEMA CONSISTENCY:
+
+- Reuse schemas where possible
+- Separate:
+  - CreateRequest
+  - UpdateRequest
+  - Response
+
+- Do not mix request and response schemas

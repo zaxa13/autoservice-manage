@@ -20,7 +20,7 @@ import {
 import { formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import api from '../services/api';
-import { Order, OrderCreate, Vehicle, OrderWorkCreate, OrderPartCreate, Employee, OrderStatusInfo, OrderDetail, User, Customer, CustomerCreate, Part, Work } from '../types';
+import { Order, OrderCreate, Vehicle, OrderWorkCreate, OrderPartCreate, Employee, OrderStatusInfo, OrderDetail, VehicleHistoryOrder, User, Customer, CustomerCreate, Part, Work } from '../types';
 
 // Категории работ
 const WORK_CATEGORIES: { value: string; label: string; color: string }[] = [
@@ -99,6 +99,12 @@ export default function Orders() {
   // --- INLINE ПРОБЕГ ---
   const [inlineMileage, setInlineMileage] = useState('');
   const [savingMileage, setSavingMileage] = useState(false);
+
+  // --- ИСТОРИЯ ОБСЛУЖИВАНИЯ ---
+  const [openHistoryDialog, setOpenHistoryDialog] = useState(false);
+  const [vehicleHistory, setVehicleHistory] = useState<VehicleHistoryOrder[]>([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
+  const [expandedHistoryId, setExpandedHistoryId] = useState<number | null>(null);
 
   // --- СОСТОЯНИЯ ДИАЛОГА ---
   const [openDialog, setOpenDialog] = useState(false);
@@ -371,6 +377,25 @@ export default function Orders() {
       setSelectedVehicle({ ...selectedVehicle, mileage: Number(inlineMileage) || 0 });
     } catch { setError('Не удалось обновить пробег'); }
     finally { setSavingMileage(false); }
+  };
+
+  const loadVehicleHistory = async (vehicleId: number) => {
+    setLoadingHistory(true);
+    setExpandedHistoryId(null);
+    try {
+      const res = await api.get<VehicleHistoryOrder[]>(`/vehicles/${vehicleId}/history`);
+      setVehicleHistory(res.data || []);
+    } catch {
+      setVehicleHistory([]);
+    } finally {
+      setLoadingHistory(false);
+    }
+  };
+
+  const handleOpenHistory = () => {
+    if (!selectedVehicle) return;
+    setOpenHistoryDialog(true);
+    loadVehicleHistory(selectedVehicle.id);
   };
 
   const selectWorkFromCatalog = (idx: number, work: Work) => {
@@ -815,6 +840,7 @@ export default function Orders() {
                       </Stack>
                     )}</Box></Stack>
                   <Stack direction="row" spacing={1}>
+                    <Button size="small" variant="outlined" color="info" startIcon={<HistoryRounded />} onClick={handleOpenHistory}>История</Button>
                     <Button size="small" variant="outlined" startIcon={<EditRounded />} onClick={handleOpenEditVehicle}>Редактировать</Button>
                     {!editingOrderId && <Button size="small" color="secondary" onClick={() => setSelectedVehicle(null)}>Сменить</Button>}
                   </Stack>
@@ -1194,6 +1220,181 @@ export default function Orders() {
           </Button>
         </Stack>
       </Popover>
+
+      {/* История обслуживания автомобиля */}
+      <Dialog
+        open={openHistoryDialog}
+        onClose={() => setOpenHistoryDialog(false)}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{ sx: { borderRadius: 4, maxHeight: '85vh' } }}
+      >
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1.5, fontWeight: 800, pb: 1 }}>
+          <HistoryRounded color="primary" />
+          История обслуживания
+          {selectedVehicle && (
+            <Chip
+              label={`${selectedVehicle.brand?.name} ${selectedVehicle.model?.name} • ${selectedVehicle.license_plate}`}
+              size="small"
+              sx={{ ml: 1, fontWeight: 600 }}
+            />
+          )}
+        </DialogTitle>
+        <DialogContent dividers sx={{ p: 0 }}>
+          {loadingHistory ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}><CircularProgress /></Box>
+          ) : vehicleHistory.length === 0 ? (
+            <Box sx={{ textAlign: 'center', py: 6 }}>
+              <SearchOffRounded sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} />
+              <Typography color="text.secondary">Нет записей об обслуживании</Typography>
+            </Box>
+          ) : (
+            <Stack spacing={0}>
+              {vehicleHistory.map((h) => {
+                const isExpanded = expandedHistoryId === h.id;
+                const isCurrentOrder = editingOrderId === h.id;
+                return (
+                  <Box
+                    key={h.id}
+                    sx={{
+                      borderBottom: '1px solid',
+                      borderColor: 'divider',
+                      bgcolor: isCurrentOrder ? alpha('#4F46E5', 0.04) : 'transparent',
+                      '&:hover': { bgcolor: alpha('#4F46E5', 0.02) },
+                    }}
+                  >
+                    <Box
+                      sx={{ px: 3, py: 2, cursor: 'pointer' }}
+                      onClick={() => setExpandedHistoryId(isExpanded ? null : h.id)}
+                    >
+                      <Stack direction="row" justifyContent="space-between" alignItems="center">
+                        <Stack direction="row" spacing={2} alignItems="center">
+                          <Box>
+                            <Stack direction="row" spacing={1} alignItems="center">
+                              <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>
+                                #{h.number}
+                              </Typography>
+                              {isCurrentOrder && (
+                                <Chip label="Текущий" size="small" color="primary" sx={{ height: 20, fontSize: '0.65rem', fontWeight: 700 }} />
+                              )}
+                              <Chip
+                                label={getStatusLabel(h.status)}
+                                color={STATUS_COLORS[h.status] || 'default'}
+                                size="small"
+                                sx={{ fontWeight: 700, borderRadius: 1.5, height: 22 }}
+                              />
+                            </Stack>
+                            <Stack direction="row" spacing={2} alignItems="center" sx={{ mt: 0.5 }}>
+                              <Typography variant="caption" color="text.secondary">
+                                {h.created_at ? new Date(h.created_at).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }) : '—'}
+                              </Typography>
+                              {h.mechanic && (
+                                <Typography variant="caption" color="text.secondary">
+                                  <EngineeringRounded sx={{ fontSize: 12, verticalAlign: 'middle', mr: 0.3 }} />
+                                  {h.mechanic.full_name}
+                                </Typography>
+                              )}
+                              {h.mileage_at_service != null && (
+                                <Typography variant="caption" color="text.secondary">
+                                  <SpeedRounded sx={{ fontSize: 12, verticalAlign: 'middle', mr: 0.3 }} />
+                                  {h.mileage_at_service.toLocaleString('ru-RU')} км
+                                </Typography>
+                              )}
+                            </Stack>
+                          </Box>
+                        </Stack>
+                        <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>
+                          {formatCurrency(h.total_amount)}
+                        </Typography>
+                      </Stack>
+                    </Box>
+                    <Collapse in={isExpanded}>
+                      <Box sx={{ px: 3, pb: 2 }}>
+                        {(h.order_works?.length ?? 0) > 0 && (
+                          <Box sx={{ mb: 1.5 }}>
+                            <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.secondary', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                              Работы
+                            </Typography>
+                            <Table size="small" sx={{ mt: 0.5 }}>
+                              <TableBody>
+                                {h.order_works.map((w: any, i: number) => (
+                                  <TableRow key={i} sx={{ '&:last-child td': { border: 0 } }}>
+                                    <TableCell sx={{ py: 0.5, pl: 0, border: 'none' }}>
+                                      <Typography variant="body2">{w.work?.name || w.work_name || '—'}</Typography>
+                                    </TableCell>
+                                    <TableCell align="right" sx={{ py: 0.5, border: 'none', whiteSpace: 'nowrap' }}>
+                                      <Typography variant="body2" sx={{ fontWeight: 600 }}>{formatCurrency(w.total)}</Typography>
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </Box>
+                        )}
+                        {(h.order_parts?.length ?? 0) > 0 && (
+                          <Box>
+                            <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.secondary', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                              Запчасти
+                            </Typography>
+                            <Table size="small" sx={{ mt: 0.5 }}>
+                              <TableBody>
+                                {h.order_parts.map((p: any, i: number) => (
+                                  <TableRow key={i} sx={{ '&:last-child td': { border: 0 } }}>
+                                    <TableCell sx={{ py: 0.5, pl: 0, border: 'none' }}>
+                                      <Typography variant="body2">
+                                        {p.part?.name || p.part_name || '—'}
+                                        {(p.part?.part_number || p.article) && (
+                                          <Typography component="span" variant="caption" color="text.secondary" sx={{ ml: 1 }}>
+                                            {p.part?.part_number || p.article}
+                                          </Typography>
+                                        )}
+                                      </Typography>
+                                    </TableCell>
+                                    <TableCell align="center" sx={{ py: 0.5, border: 'none', whiteSpace: 'nowrap' }}>
+                                      <Typography variant="caption" color="text.secondary">{p.quantity} шт.</Typography>
+                                    </TableCell>
+                                    <TableCell align="right" sx={{ py: 0.5, border: 'none', whiteSpace: 'nowrap' }}>
+                                      <Typography variant="body2" sx={{ fontWeight: 600 }}>{formatCurrency(p.total)}</Typography>
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </Box>
+                        )}
+                        {h.recommendations && (
+                          <Box sx={{ mt: 1.5, p: 1.5, bgcolor: alpha('#f59e0b', 0.06), borderRadius: 1.5 }}>
+                            <Typography variant="caption" sx={{ fontWeight: 700, color: '#b45309' }}>Рекомендации:</Typography>
+                            <Typography variant="body2" sx={{ mt: 0.25 }}>{h.recommendations}</Typography>
+                          </Box>
+                        )}
+                        <Box sx={{ mt: 1.5, textAlign: 'right' }}>
+                          <Button
+                            size="small"
+                            variant="text"
+                            onClick={() => {
+                              setOpenHistoryDialog(false);
+                              window.open(`/orders?open=${h.id}`, '_blank');
+                            }}
+                          >
+                            Открыть заказ-наряд
+                          </Button>
+                        </Box>
+                      </Box>
+                    </Collapse>
+                  </Box>
+                );
+              })}
+            </Stack>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ px: 3, py: 2 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ flex: 1 }}>
+            {vehicleHistory.length > 0 && `Всего визитов: ${vehicleHistory.length}`}
+          </Typography>
+          <Button onClick={() => setOpenHistoryDialog(false)} variant="outlined" color="inherit">Закрыть</Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Snackbar при сохранении */}
       <Snackbar

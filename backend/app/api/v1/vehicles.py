@@ -9,6 +9,7 @@ from app.models.vehicle import Vehicle
 from app.models.vehicle_brand import VehicleBrand, VehicleModel
 from app.models.customer import Customer
 from app.schemas.vehicle import Vehicle as VehicleSchema, VehicleCreate, VehicleUpdate
+from app.schemas.order import OrderDetail
 from app.core.exceptions import NotFoundException
 from app.core.permissions import require_manager_or_admin
 
@@ -193,7 +194,7 @@ def update_vehicle(
     return vehicle
 
 
-@router.get("/{vehicle_id}/history")
+@router.get("/{vehicle_id}/history", response_model=List[OrderDetail])
 def get_vehicle_history(
     vehicle_id: int,
     db: Session = Depends(get_db),
@@ -206,7 +207,6 @@ def get_vehicle_history(
     from decimal import Decimal
     from app.models.order import Order, OrderWork, OrderPart
     from app.models.payment import Payment, PaymentStatus
-    from app.schemas.order import OrderDetail
 
     vehicle = db.query(Vehicle).filter(Vehicle.id == vehicle_id).first()
     if not vehicle:
