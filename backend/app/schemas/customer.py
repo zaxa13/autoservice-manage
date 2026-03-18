@@ -1,14 +1,14 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
 from datetime import datetime
 
 
 class CustomerBase(BaseModel):
-    full_name: str
-    phone: str
-    email: Optional[EmailStr] = None
-    address: Optional[str] = None
-    notes: Optional[str] = None
+    full_name: str = Field(..., min_length=1, description="ФИО клиента")
+    phone: str = Field(..., min_length=5, description="Номер телефона клиента")
+    email: Optional[EmailStr] = Field(None, description="Email клиента")
+    address: Optional[str] = Field(None, description="Адрес клиента")
+    notes: Optional[str] = Field(None, description="Заметки по клиенту")
 
 
 class CustomerCreate(CustomerBase):
@@ -16,17 +16,17 @@ class CustomerCreate(CustomerBase):
 
 
 class CustomerUpdate(BaseModel):
-    full_name: Optional[str] = None
-    phone: Optional[str] = None
-    email: Optional[EmailStr] = None
-    address: Optional[str] = None
-    notes: Optional[str] = None
+    full_name: Optional[str] = Field(None, min_length=1, description="ФИО клиента")
+    phone: Optional[str] = Field(None, min_length=5, description="Номер телефона")
+    email: Optional[EmailStr] = Field(None, description="Email клиента")
+    address: Optional[str] = Field(None, description="Адрес клиента")
+    notes: Optional[str] = Field(None, description="Заметки по клиенту")
 
 
 class Customer(CustomerBase):
-    id: int
-    created_at: datetime
-    updated_at: Optional[datetime] = None
+    id: int = Field(..., description="Уникальный ID клиента")
+    created_at: datetime = Field(..., description="Дата создания")
+    updated_at: Optional[datetime] = Field(None, description="Дата последнего обновления")
 
     class Config:
         from_attributes = True

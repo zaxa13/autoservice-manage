@@ -1,4 +1,5 @@
 from app.models.user import User, UserRole
+from app.models.password_reset import PasswordResetToken
 from app.models.employee import Employee
 from app.models.customer import Customer
 from app.models.vehicle import Vehicle
@@ -25,6 +26,7 @@ from app.models.setting import Setting
 __all__ = [
     "User",
     "UserRole",
+    "PasswordResetToken",
     "Employee",
     "Customer",
     "Vehicle",

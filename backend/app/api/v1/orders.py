@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel
@@ -10,6 +10,7 @@ from app.models.order import Order, OrderStatus, OrderWork, OrderPart
 from app.models.payment import Payment, PaymentStatus
 from app.schemas.order import Order as OrderSchema, OrderCreate, OrderUpdate, OrderDetail
 from app.schemas.payment import Payment as PaymentSchema, PaymentCreate, PaymentCancel
+from app.schemas.responses import LabelValueItem, ErrorResponse
 from app.services.order_service import create_order, update_order, complete_order
 from app.services.payment_service import (
     get_payments_for_order,
@@ -22,19 +23,32 @@ from app.core.exceptions import NotFoundException, BadRequestException
 
 router = APIRouter()
 
+_404 = {404: {"model": ErrorResponse, "description": "Заказ-наряд не найден"}}
+_auth = {401: {"model": ErrorResponse, "description": "Не авторизован"}}
+_write = {**_auth, 403: {"model": ErrorResponse, "description": "Недостаточно прав"}}
+_admin = {**_auth, 403: {"model": ErrorResponse, "description": "Только для администратора"}}
+
 
 class OrderStatusInfo(BaseModel):
     value: str
     label: str
 
 
-@router.get("/statuses", response_model=List[OrderStatusInfo])
+@router.get(
+    "/statuses",
+    response_model=List[OrderStatusInfo],
+    status_code=status.HTTP_200_OK,
+    summary="Статусы заказ-нарядов",
+    description=(
+        "Возвращает список доступных статусов для заказ-нарядов (без COMPLETED — "
+        "он устанавливается только через операцию завершения)."
+    ),
+    responses=_auth,
+)
 def get_order_statuses(
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
-    """Получение списка доступных статусов заказ-нарядов"""
-    # Исключаем COMPLETED из списка - он устанавливается только через кнопку "завершить"
     statuses = [
         OrderStatusInfo(value=OrderStatus.NEW.value, label="Новый"),
         OrderStatusInfo(value=OrderStatus.ESTIMATION.value, label="Проценка"),
@@ -46,38 +60,45 @@ def get_order_statuses(
     return statuses
 
 
-@router.get("/", response_model=List[OrderSchema])
+@router.get(
+    "/",
+    response_model=List[OrderSchema],
+    status_code=status.HTTP_200_OK,
+    summary="Список заказ-нарядов",
+    description=(
+        "Возвращает заказ-наряды с пагинацией. Фильтрация по статусу. "
+        "Механик видит только свои заказы. Суммы пересчитываются на лету."
+    ),
+    responses=_auth,
+)
 def get_orders(
-    skip: int = 0,
-    limit: int = 100,
-    status: Optional[OrderStatus] = None,
+    skip: int = Query(0, ge=0, description="Сколько записей пропустить"),
+    limit: int = Query(100, ge=1, le=500, description="Максимум записей"),
+    status_filter: Optional[OrderStatus] = Query(None, alias="status", description="Фильтр по статусу"),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
-    """Получение списка заказ-нарядов"""
     from sqlalchemy.orm import joinedload
     from sqlalchemy import func
     from app.models.vehicle import Vehicle
-    
+
     query = db.query(Order).options(
         joinedload(Order.vehicle).options(
             joinedload(Vehicle.customer),
             joinedload(Vehicle.brand),
             joinedload(Vehicle.vehicle_model),
         ),
-        joinedload(Order.mechanic)
+        joinedload(Order.mechanic),
     )
-    
-    # Механик видит только свои заказ-наряды
+
     if current_user.role == UserRole.MECHANIC:
         query = query.filter(Order.mechanic_id == current_user.employee_id)
-    
-    if status:
-        query = query.filter(Order.status == status)
-    
+
+    if status_filter:
+        query = query.filter(Order.status == status_filter)
+
     orders = query.order_by(Order.created_at.desc()).offset(skip).limit(limit).all()
 
-    # Пересчитываем суммы для каждого заказа, чтобы список возвращал актуальные данные
     for order in orders:
         total_works = sum((w.total or Decimal("0")) for w in order.order_works)
         total_parts = sum((p.total or Decimal("0")) for p in order.order_parts)
@@ -96,13 +117,23 @@ def get_orders(
     return orders
 
 
-@router.get("/{order_id}", response_model=OrderDetail)
+@router.get(
+    "/{order_id}",
+    response_model=OrderDetail,
+    status_code=status.HTTP_200_OK,
+    summary="Получить заказ-наряд по ID",
+    description=(
+        "Детальная информация по заказ-наряду: работы, запчасти, сотрудники, оплаты. "
+        "Механик видит только свои заказы (403 при чужом). "
+        "Суммы пересчитываются на лету."
+    ),
+    responses={**_auth, 403: {"model": ErrorResponse, "description": "Нет доступа к этому заказу"}, **_404},
+)
 def get_order(
     order_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
-    """Получение заказ-наряда по ID"""
     from sqlalchemy import func
     from sqlalchemy.orm import joinedload
     from app.models.vehicle import Vehicle
@@ -120,23 +151,18 @@ def get_order(
     ).filter(Order.id == order_id).first()
     if not order:
         raise NotFoundException("Заказ-наряд не найден")
-    
-    # Проверка прав доступа для механика
+
     if current_user.role == UserRole.MECHANIC:
         if order.mechanic_id != current_user.employee_id:
-            from fastapi import HTTPException, status
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Нет доступа к этому заказ-наряду"
+                detail="Нет доступа к этому заказ-наряду",
             )
 
-    # Пересчет общей суммы на основе работ и запчастей,
-    # чтобы исключить рассинхрон между total_amount и позициями
     total_works = sum((w.total or Decimal("0")) for w in order.order_works)
     total_parts = sum((p.total or Decimal("0")) for p in order.order_parts)
     order.total_amount = total_works + total_parts
 
-    # Пересчёт оплаченной суммы на основе платежей
     paid_amount = (
         db.query(func.sum(Payment.amount))
         .filter(
@@ -151,106 +177,120 @@ def get_order(
     return order
 
 
-@router.post("/", response_model=OrderSchema)
+@router.post(
+    "/",
+    response_model=OrderSchema,
+    status_code=status.HTTP_201_CREATED,
+    summary="Создать заказ-наряд",
+    description=(
+        "Создание нового заказ-наряда. Номер генерируется автоматически. "
+        "Если у администратора нет привязанного сотрудника — используется системный. "
+        "Доступно менеджеру и администратору."
+    ),
+    responses={**_write, 400: {"model": ErrorResponse, "description": "Нет активных сотрудников / не привязан сотрудник"}},
+)
 def create_new_order(
     order_create: OrderCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_manager_or_admin)
+    current_user: User = Depends(require_manager_or_admin),
 ):
-    """Создание нового заказ-наряда"""
-    # Для администраторов employee_id может быть не задан
-    # В этом случае пытаемся найти или создать системного сотрудника-администратора
     employee_id = current_user.employee_id
-    
+
     if not employee_id and current_user.role == UserRole.ADMIN:
-        # Ищем системного сотрудника-администратора
         from app.models.employee import Employee, EmployeePosition
         system_admin = db.query(Employee).filter(
             Employee.position == EmployeePosition.ADMIN,
-            Employee.is_active == True
+            Employee.is_active == True,
         ).first()
-        
+
         if system_admin:
             employee_id = system_admin.id
         else:
-            # Если нет ни одного администратора-сотрудника, берем первого активного сотрудника
             first_employee = db.query(Employee).filter(Employee.is_active == True).first()
             if first_employee:
                 employee_id = first_employee.id
             else:
-                from fastapi import HTTPException, status
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Не найдено активных сотрудников в системе. Создайте хотя бы одного сотрудника."
+                    detail="Не найдено активных сотрудников в системе. Создайте хотя бы одного сотрудника.",
                 )
     elif not employee_id:
-        from fastapi import HTTPException, status
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="У пользователя не привязан сотрудник"
+            detail="У пользователя не привязан сотрудник",
         )
-    
+
     order = create_order(db, order_create, employee_id)
     return order
 
 
-@router.put("/{order_id}", response_model=OrderSchema)
+@router.put(
+    "/{order_id}",
+    response_model=OrderSchema,
+    status_code=status.HTTP_200_OK,
+    summary="Обновить заказ-наряд",
+    description=(
+        "Обновление заказ-наряда: статус, механик, работы, запчасти, рекомендации, комментарии. "
+        "При передаче списков работ/запчастей они полностью заменяются."
+    ),
+    responses={**_write, **_404},
+)
 def update_existing_order(
     order_id: int,
     order_update: OrderUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_manager_or_admin)
+    current_user: User = Depends(require_manager_or_admin),
 ):
-    """Обновление заказ-наряда"""
     order = update_order(db, order_id, order_update)
     return order
 
 
-@router.post("/{order_id}/complete", response_model=OrderSchema)
+@router.post(
+    "/{order_id}/complete",
+    response_model=OrderSchema,
+    status_code=status.HTTP_200_OK,
+    summary="Завершить заказ-наряд",
+    description=(
+        "Установка статуса COMPLETED и фиксация даты завершения. "
+        "Суммы пересчитываются перед возвратом."
+    ),
+    responses={**_auth, 400: {"model": ErrorResponse, "description": "Нет привязанного сотрудника"}, **_404},
+)
 def complete_existing_order(
     order_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
-    """Завершение заказ-наряда"""
-    # Для администраторов employee_id может быть не задан
-    # В этом случае пытаемся найти системного сотрудника-администратора
     employee_id = current_user.employee_id
-    
+
     if not employee_id and current_user.role == UserRole.ADMIN:
-        # Ищем системного сотрудника-администратора
         from app.models.employee import Employee, EmployeePosition
         system_admin = db.query(Employee).filter(
             Employee.position == EmployeePosition.ADMIN,
-            Employee.is_active == True
+            Employee.is_active == True,
         ).first()
-        
+
         if system_admin:
             employee_id = system_admin.id
         else:
-            # Если нет ни одного администратора-сотрудника, берем первого активного сотрудника
             first_employee = db.query(Employee).filter(Employee.is_active == True).first()
             if first_employee:
                 employee_id = first_employee.id
             else:
-                from fastapi import HTTPException, status
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Не найдено активных сотрудников в системе. Создайте хотя бы одного сотрудника."
+                    detail="Не найдено активных сотрудников в системе. Создайте хотя бы одного сотрудника.",
                 )
     elif not employee_id:
-        from fastapi import HTTPException, status
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="У пользователя не привязан сотрудник"
+            detail="У пользователя не привязан сотрудник",
         )
-    
+
     from sqlalchemy import func
 
     order = complete_order(db, order_id, employee_id)
 
-    # Пересчёт total_amount и paid_amount перед возвратом, чтобы не зависеть от
-    # возможного устаревшего значения в БД
     total_works = sum((w.total or Decimal("0")) for w in order.order_works)
     total_parts = sum((p.total or Decimal("0")) for p in order.order_parts)
     order.total_amount = total_works + total_parts
@@ -269,68 +309,97 @@ def complete_existing_order(
     return order
 
 
-@router.delete("/{order_id}", status_code=204)
+@router.delete(
+    "/{order_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Удалить заказ-наряд",
+    description=(
+        "Полное удаление заказ-наряда вместе с платежами, работами и запчастями. "
+        "Связанные записи (appointments) отвязываются. Только администратор."
+    ),
+    responses={**_admin, **_404},
+)
 def delete_order(
     order_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
-    """Удаление заказ-наряда (только admin)"""
     if current_user.role != UserRole.ADMIN:
-        from fastapi import HTTPException, status
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Только администратор может удалять заказы")
 
     order = db.query(Order).filter(Order.id == order_id).first()
     if not order:
         raise NotFoundException("Заказ-наряд не найден")
 
-    # Удаляем связанные платежи
     db.query(Payment).filter(Payment.order_id == order_id).delete()
-    # Удаляем связь с записями (appointments)
     from app.models.appointment import Appointment
     db.query(Appointment).filter(Appointment.order_id == order_id).update({Appointment.order_id: None})
-    # Удаляем заказ (cascade удалит works и parts)
     db.delete(order)
     db.commit()
     return None
 
 
-@router.post("/{order_id}/cancel", response_model=OrderSchema)
+@router.post(
+    "/{order_id}/cancel",
+    response_model=OrderSchema,
+    status_code=status.HTTP_200_OK,
+    summary="Отменить заказ-наряд",
+    description="Установка статуса CANCELLED. Доступно менеджеру и администратору.",
+    responses={**_write, **_404},
+)
 def cancel_order(
     order_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_manager_or_admin)
+    current_user: User = Depends(require_manager_or_admin),
 ):
-    """Отмена заказ-наряда"""
     order = db.query(Order).filter(Order.id == order_id).first()
     if not order:
         raise NotFoundException("Заказ-наряд не найден")
-    
+
     order.status = OrderStatus.CANCELLED
     db.commit()
     db.refresh(order)
     return order
 
 
-@router.get("/{order_id}/payments", response_model=List[PaymentSchema])
+@router.get(
+    "/{order_id}/payments",
+    response_model=List[PaymentSchema],
+    status_code=status.HTTP_200_OK,
+    summary="Платежи по заказу",
+    description="Возвращает список всех платежей по заказ-наряду.",
+    responses={**_write, **_404},
+)
 def list_order_payments(
     order_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_manager_or_admin),
 ):
-    """Получение списка оплат по заказ-наряду."""
     payments = get_payments_for_order(db, order_id)
     return payments
 
 
-@router.post("/{order_id}/payments", response_model=OrderDetail)
+@router.post(
+    "/{order_id}/payments",
+    response_model=OrderDetail,
+    status_code=status.HTTP_201_CREATED,
+    summary="Создать оплату",
+    description=(
+        "Создание ручной оплаты по заказ-наряду (наличные, карта и т.п.). "
+        "`order_id` в теле запроса должен совпадать с параметром пути."
+    ),
+    responses={
+        **_write,
+        400: {"model": ErrorResponse, "description": "Несовпадение order_id"},
+        **_404,
+    },
+)
 def create_order_payment(
     order_id: int,
     payment_create: PaymentCreate,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_manager_or_admin),
 ):
-    """Создание оплаты по заказ-наряду (наличные/карта и т.п.)."""
     if payment_create.order_id != order_id:
         raise BadRequestException("order_id в запросе и в теле не совпадают")
 
@@ -343,7 +412,14 @@ def create_order_payment(
     return order
 
 
-@router.post("/{order_id}/payments/{payment_id}/cancel", response_model=OrderDetail)
+@router.post(
+    "/{order_id}/payments/{payment_id}/cancel",
+    response_model=OrderDetail,
+    status_code=status.HTTP_200_OK,
+    summary="Отменить платёж",
+    description="Полная или частичная отмена платежа. При `amount: null` — отмена всей суммы.",
+    responses={**_write, **_404},
+)
 def cancel_order_payment(
     order_id: int,
     payment_id: int,
@@ -351,7 +427,6 @@ def cancel_order_payment(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_manager_or_admin),
 ):
-    """Отмена оплаты по заказ-наряду (полная или частичная)."""
     order = cancel_payment(
         db,
         order_id=order_id,
@@ -361,18 +436,34 @@ def cancel_order_payment(
     return order
 
 
-@router.post("/{order_id}/payments/cancel-all", response_model=OrderDetail)
+@router.post(
+    "/{order_id}/payments/cancel-all",
+    response_model=OrderDetail,
+    status_code=status.HTTP_200_OK,
+    summary="Отменить все платежи",
+    description="Отмена всех платежей по заказ-наряду. Только администратор.",
+    responses={**_admin, **_404},
+)
 def cancel_all_order_payments(
     order_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_admin),
 ):
-    """Отмена всех оплат по заказ-наряду."""
     order = cancel_all_payments(db, order_id)
     return order
 
 
-@router.put("/{order_id}/payments/{payment_id}", response_model=PaymentSchema)
+@router.put(
+    "/{order_id}/payments/{payment_id}",
+    response_model=PaymentSchema,
+    status_code=status.HTTP_200_OK,
+    summary="Редактировать платёж",
+    description="Изменение суммы и способа оплаты существующего платежа. Только администратор.",
+    responses={
+        **_admin,
+        404: {"model": ErrorResponse, "description": "Заказ или платёж не найден"},
+    },
+)
 def update_order_payment(
     order_id: int,
     payment_id: int,
@@ -380,28 +471,21 @@ def update_order_payment(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_admin),
 ):
-    """Редактирование платежа (только для админов)."""
-    from app.models.payment import Payment
-    
-    # Проверяем существование заказа
     order = db.query(Order).filter(Order.id == order_id).first()
     if not order:
         raise NotFoundException("Заказ-наряд не найден")
-    
-    # Проверяем существование платежа
+
     payment = db.query(Payment).filter(
         Payment.id == payment_id,
-        Payment.order_id == order_id
+        Payment.order_id == order_id,
     ).first()
     if not payment:
         raise NotFoundException("Платёж не найден")
-    
-    # Обновляем платеж
+
     payment.amount = payment_update.amount
     payment.payment_method = payment_update.payment_method
-    
+
     db.commit()
     db.refresh(payment)
-    
-    return payment
 
+    return payment

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from app.database import get_db
@@ -6,21 +6,35 @@ from app.dependencies import get_current_user
 from app.models.user import User
 from app.models.part import Part
 from app.schemas.part import Part as PartSchema, PartCreate, PartUpdate
+from app.schemas.responses import ErrorResponse
 from app.core.exceptions import NotFoundException
 from app.core.permissions import require_manager_or_admin
 
 router = APIRouter()
 
+_404 = {404: {"model": ErrorResponse, "description": "Запчасть не найдена"}}
+_auth = {401: {"model": ErrorResponse, "description": "Не авторизован"}}
+_write = {**_auth, 403: {"model": ErrorResponse, "description": "Недостаточно прав"}}
 
-@router.get("/", response_model=List[PartSchema])
+
+@router.get(
+    "/",
+    response_model=List[PartSchema],
+    status_code=status.HTTP_200_OK,
+    summary="Список запчастей",
+    description=(
+        "Возвращает справочник запчастей с пагинацией. "
+        "Поиск по артикулу: нормализуется (верхний регистр, без пробелов) и ищется нечётко."
+    ),
+    responses=_auth,
+)
 def get_parts(
-    skip: int = 0,
-    limit: int = 100,
-    search: Optional[str] = None,
+    skip: int = Query(0, ge=0, description="Сколько записей пропустить"),
+    limit: int = Query(100, ge=1, le=500, description="Максимум записей"),
+    search: Optional[str] = Query(None, description="Поиск по артикулу (part_number)"),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
-    """Получение списка запчастей. search — поиск по артикулу (part_number). Запрос нормализуется так же, как артикул при сохранении: обрезка пробелов, верхний регистр, без пробелов внутри."""
     q = db.query(Part)
     if search and search.strip():
         term = search.strip().upper().replace(" ", "")
@@ -29,50 +43,67 @@ def get_parts(
     return parts
 
 
-@router.get("/{part_id}", response_model=PartSchema)
+@router.get(
+    "/{part_id}",
+    response_model=PartSchema,
+    status_code=status.HTTP_200_OK,
+    summary="Получить запчасть по ID",
+    description="Возвращает данные запчасти. Возвращает 404 если не найдена.",
+    responses={**_auth, **_404},
+)
 def get_part(
     part_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
-    """Получение запчасти по ID"""
     part = db.query(Part).filter(Part.id == part_id).first()
     if not part:
         raise NotFoundException("Запчасть не найдена")
     return part
 
 
-@router.post("/", response_model=PartSchema)
+@router.post(
+    "/",
+    response_model=PartSchema,
+    status_code=status.HTTP_201_CREATED,
+    summary="Создать запчасть",
+    description="Создание новой запчасти. Артикул нормализуется (верхний регистр, без пробелов).",
+    responses=_write,
+)
 def create_part(
     part_create: PartCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_manager_or_admin)
+    current_user: User = Depends(require_manager_or_admin),
 ):
-    """Создание запчасти"""
-    part = Part(**part_create.dict())
+    part = Part(**part_create.model_dump())
     db.add(part)
     db.commit()
     db.refresh(part)
     return part
 
 
-@router.put("/{part_id}", response_model=PartSchema)
+@router.put(
+    "/{part_id}",
+    response_model=PartSchema,
+    status_code=status.HTTP_200_OK,
+    summary="Обновить запчасть",
+    description="Обновление данных запчасти. Передавать нужно только изменяемые поля.",
+    responses={**_write, **_404},
+)
 def update_part(
     part_id: int,
     part_update: PartUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_manager_or_admin)
+    current_user: User = Depends(require_manager_or_admin),
 ):
-    """Обновление запчасти"""
     part = db.query(Part).filter(Part.id == part_id).first()
     if not part:
         raise NotFoundException("Запчасть не найдена")
-    
-    update_data = part_update.dict(exclude_unset=True)
+
+    update_data = part_update.model_dump(exclude_unset=True)
     for field, value in update_data.items():
         setattr(part, field, value)
-    
+
     db.commit()
     db.refresh(part)
     return part
-

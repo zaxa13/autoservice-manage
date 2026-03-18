@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.orm import Session
 from typing import List
 from app.database import get_db
@@ -6,43 +6,66 @@ from app.dependencies import get_current_user
 from app.models.user import User
 from app.models.supplier import Supplier
 from app.schemas.supplier import Supplier as SupplierSchema, SupplierCreate, SupplierUpdate
+from app.schemas.responses import ErrorResponse
 from app.core.permissions import require_manager_or_admin
 from app.core.exceptions import NotFoundException
 
 router = APIRouter()
 
+_404 = {404: {"model": ErrorResponse, "description": "Поставщик не найден"}}
+_auth = {401: {"model": ErrorResponse, "description": "Не авторизован"}}
+_write = {**_auth, 403: {"model": ErrorResponse, "description": "Недостаточно прав"}}
 
-@router.get("/", response_model=List[SupplierSchema])
+
+@router.get(
+    "/",
+    response_model=List[SupplierSchema],
+    status_code=status.HTTP_200_OK,
+    summary="Список поставщиков",
+    description="Возвращает список поставщиков с пагинацией.",
+    responses=_auth,
+)
 def list_suppliers(
-    skip: int = 0,
-    limit: int = 100,
+    skip: int = Query(0, ge=0, description="Сколько записей пропустить"),
+    limit: int = Query(100, ge=1, le=500, description="Максимум записей"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """Список поставщиков."""
     return db.query(Supplier).offset(skip).limit(limit).all()
 
 
-@router.get("/{supplier_id}", response_model=SupplierSchema)
+@router.get(
+    "/{supplier_id}",
+    response_model=SupplierSchema,
+    status_code=status.HTTP_200_OK,
+    summary="Получить поставщика по ID",
+    description="Возвращает данные поставщика. Возвращает 404 если не найден.",
+    responses={**_auth, **_404},
+)
 def get_supplier(
     supplier_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """Поставщик по ID."""
     s = db.query(Supplier).filter(Supplier.id == supplier_id).first()
     if not s:
         raise NotFoundException("Поставщик не найден")
     return s
 
 
-@router.post("/", response_model=SupplierSchema)
+@router.post(
+    "/",
+    response_model=SupplierSchema,
+    status_code=status.HTTP_201_CREATED,
+    summary="Создать поставщика",
+    description="Создание нового поставщика. Доступно менеджеру и администратору.",
+    responses=_write,
+)
 def create_supplier(
     payload: SupplierCreate,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_manager_or_admin),
 ):
-    """Создание поставщика."""
     s = Supplier(
         name=payload.name,
         inn=payload.inn,
@@ -60,14 +83,20 @@ def create_supplier(
     return s
 
 
-@router.put("/{supplier_id}", response_model=SupplierSchema)
+@router.put(
+    "/{supplier_id}",
+    response_model=SupplierSchema,
+    status_code=status.HTTP_200_OK,
+    summary="Обновить поставщика",
+    description="Обновление данных поставщика. Передавать нужно только изменяемые поля.",
+    responses={**_write, **_404},
+)
 def update_supplier(
     supplier_id: int,
     payload: SupplierUpdate,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_manager_or_admin),
 ):
-    """Обновление поставщика."""
     s = db.query(Supplier).filter(Supplier.id == supplier_id).first()
     if not s:
         raise NotFoundException("Поставщик не найден")
@@ -94,13 +123,18 @@ def update_supplier(
     return s
 
 
-@router.delete("/{supplier_id}", status_code=204)
+@router.delete(
+    "/{supplier_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Удалить поставщика",
+    description="Удаление поставщика. Доступно менеджеру и администратору.",
+    responses={**_write, **_404},
+)
 def delete_supplier(
     supplier_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_manager_or_admin),
 ):
-    """Удаление поставщика."""
     s = db.query(Supplier).filter(Supplier.id == supplier_id).first()
     if not s:
         raise NotFoundException("Поставщик не найден")

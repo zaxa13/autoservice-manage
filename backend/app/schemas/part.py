@@ -1,4 +1,4 @@
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, Field, field_validator
 from typing import Optional
 from decimal import Decimal
 from app.models.part import PartCategory
@@ -23,13 +23,13 @@ def _normalize_article_required(v: Optional[str]) -> str:
 
 
 class PartBase(BaseModel):
-    name: str
-    part_number: str  # Обязателен: без артикула нельзя идентифицировать запчасть при списании
-    brand: Optional[str] = None
-    price: Decimal
-    purchase_price_last: Optional[Decimal] = None
-    unit: str = "шт"
-    category: PartCategory = PartCategory.OTHER
+    name: str = Field(..., min_length=1, description="Название запчасти")
+    part_number: str = Field(..., min_length=1, description="Артикул запчасти (нормализуется: верхний регистр, без пробелов)")
+    brand: Optional[str] = Field(None, description="Бренд / производитель запчасти")
+    price: Decimal = Field(..., ge=0, description="Цена продажи")
+    purchase_price_last: Optional[Decimal] = Field(None, ge=0, description="Последняя закупочная цена")
+    unit: str = Field("шт", description="Единица измерения")
+    category: PartCategory = Field(PartCategory.OTHER, description="Категория запчасти")
 
     @field_validator("part_number")
     @classmethod
@@ -42,13 +42,13 @@ class PartCreate(PartBase):
 
 
 class PartUpdate(BaseModel):
-    name: Optional[str] = None
-    part_number: Optional[str] = None  # при обновлении: если передан — обязан быть непустым после нормализации
-    brand: Optional[str] = None
-    price: Optional[Decimal] = None
-    purchase_price_last: Optional[Decimal] = None
-    unit: Optional[str] = None
-    category: Optional[PartCategory] = None
+    name: Optional[str] = Field(None, min_length=1, description="Название запчасти")
+    part_number: Optional[str] = Field(None, description="Артикул запчасти")
+    brand: Optional[str] = Field(None, description="Бренд / производитель")
+    price: Optional[Decimal] = Field(None, ge=0, description="Цена продажи")
+    purchase_price_last: Optional[Decimal] = Field(None, ge=0, description="Последняя закупочная цена")
+    unit: Optional[str] = Field(None, description="Единица измерения")
+    category: Optional[PartCategory] = Field(None, description="Категория запчасти")
 
     @field_validator("part_number")
     @classmethod
@@ -62,8 +62,7 @@ class PartUpdate(BaseModel):
 
 
 class Part(PartBase):
-    id: int
+    id: int = Field(..., description="Уникальный ID запчасти")
 
     class Config:
         from_attributes = True
-

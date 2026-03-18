@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query, HTTPException
+from fastapi import APIRouter, Depends, Query, HTTPException, status
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import func
 from datetime import date, datetime, timedelta
@@ -14,6 +14,7 @@ from app.models.appointment import Appointment
 from app.models.appointment_post import AppointmentPost
 from app.models.employee import Employee
 from app.models.setting import Setting
+from app.schemas.responses import DashboardStatsResponse, ErrorResponse
 
 router = APIRouter()
 
@@ -47,12 +48,7 @@ def _get_period_bounds(
     date_from: Optional[date] = None,
     date_to: Optional[date] = None,
 ):
-    """
-    Returns (start, end, prev_start, prev_end, label, chart_mode)
-    chart_mode: 'days' | 'weeks' | 'months'
-    ref_date: опорная дата для навигации (какой месяц/год смотрим)
-    """
-    nav = ref_date or today  # опорная точка для навигации
+    nav = ref_date or today
 
     if period == "custom" and date_from and date_to:
         start, end = date_from, date_to
@@ -86,12 +82,11 @@ def _get_period_bounds(
 
     elif period == "month":
         start = nav.replace(day=1)
-        # Прошлый месяц — полный, если не текущий → полный; если текущий → до сегодня
         is_current = (nav.year == today.year and nav.month == today.month)
         end = today if is_current else date(nav.year, nav.month, monthrange(nav.year, nav.month)[1])
         prev_month_last = start - timedelta(days=1)
         prev_start = prev_month_last.replace(day=1)
-        prev_end = prev_month_last  # полный прошлый месяц
+        prev_end = prev_month_last
         label = f"{_MONTHS_RU[nav.month]} {nav.year}"
         chart_mode = "days"
 
@@ -136,7 +131,6 @@ def _revenue_range(db: Session, start: date, end: date) -> float:
 
 
 def _revenue_by_day(db: Session, start: date, end: date) -> dict:
-    """Returns {date_str: amount}"""
     rows = db.query(
         func.date(Payment.created_at),
         func.sum(Payment.amount),
@@ -149,7 +143,6 @@ def _revenue_by_day(db: Session, start: date, end: date) -> dict:
 
 
 def _revenue_by_month(db: Session, year: int) -> dict:
-    """Returns {'YYYY-MM': amount}"""
     rows = db.query(
         func.strftime('%Y-%m', Payment.created_at),
         func.sum(Payment.amount),
@@ -188,12 +181,28 @@ def _pct(current: float, previous: float) -> float | None:
 
 # ── Main endpoint ─────────────────────────────────────────────────────────────
 
-@router.get("/stats")
+@router.get(
+    "/stats",
+    response_model=DashboardStatsResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Статистика дашборда",
+    description=(
+        "Комплексная статистика для главного дашборда: выручка, средний чек, "
+        "количество заказов, загрузка постов, pipeline на 7 дней, уведомления, "
+        "статистика по механикам и график выручки. "
+        "Поддерживаемые периоды: day, week, month, quarter, year, custom. "
+        "Для custom обязательны date_from и date_to (макс. 366 дней)."
+    ),
+    responses={
+        401: {"model": ErrorResponse, "description": "Не авторизован"},
+        400: {"model": ErrorResponse, "description": "Некорректные параметры периода"},
+    },
+)
 def get_dashboard_stats(
-    period: str = Query("month", regex="^(day|week|month|year|quarter|custom)$"),
-    ref_date: Optional[date] = Query(None),
-    date_from: Optional[date] = Query(None),
-    date_to: Optional[date] = Query(None),
+    period: str = Query("month", pattern="^(day|week|month|year|quarter|custom)$", description="Тип периода"),
+    ref_date: Optional[date] = Query(None, description="Опорная дата навигации"),
+    date_from: Optional[date] = Query(None, description="Начало custom-периода"),
+    date_to: Optional[date] = Query(None, description="Конец custom-периода"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -211,7 +220,6 @@ def get_dashboard_stats(
     yesterday = today - timedelta(days=1)
     two_days_ago = now - timedelta(days=2)
 
-    # ref_date не может быть в будущем
     if ref_date and ref_date > today:
         ref_date = today
 
@@ -219,17 +227,16 @@ def get_dashboard_stats(
         period, today, ref_date, date_from, date_to
     )
 
-    # ── 1. Revenue (period) ──────────────────────────────────────────────────
+    # ── 1. Revenue ────────────────────────────────────────────────────────────
     rev_current = _revenue_range(db, start, end)
     rev_prev = _revenue_range(db, prev_start, prev_end)
 
-    # Monthly plan from settings — берём по месяцу начала просматриваемого периода
     plan_key = f"revenue_plan_{start.year}_{start.month:02d}"
     setting_row = db.query(Setting).filter(Setting.key == plan_key).first()
     revenue_plan = float(setting_row.value) if setting_row and setting_row.value else None
     plan_pct = round(rev_current / revenue_plan * 100, 1) if revenue_plan else None
 
-    # ── 2. Avg check (period) ────────────────────────────────────────────────
+    # ── 2. Avg check ─────────────────────────────────────────────────────────
     def _avg_check_range(s: date, e: date):
         q = db.query(func.count(Order.id), func.sum(Order.total_amount)).filter(
             Order.status.in_(["paid", "completed"]),
@@ -242,10 +249,8 @@ def get_dashboard_stats(
     avg_check, orders_count = _avg_check_range(start, end)
     avg_check_prev, orders_count_prev = _avg_check_range(prev_start, prev_end)
 
-    # ── 3. WIP amount ────────────────────────────────────────────────────────
-    wip_rows = db.query(Order.total_amount).filter(
-        Order.status == "in_progress"
-    ).all()
+    # ── 3. WIP ────────────────────────────────────────────────────────────────
+    wip_rows = db.query(Order.total_amount).filter(Order.status == "in_progress").all()
     wip_amount = sum(float(r[0] or 0) for r in wip_rows)
 
     # ── 4. Post load ─────────────────────────────────────────────────────────
@@ -310,7 +315,7 @@ def get_dashboard_stats(
     ).scalar() or 0
     no_shows_pct = round(no_shows / total_today_appts * 100) if total_today_appts else 0
 
-    # ── 7. Mechanics stats (period) ──────────────────────────────────────────
+    # ── 7. Mechanics stats ───────────────────────────────────────────────────
     period_orders = db.query(Order).filter(
         Order.mechanic_id != None,
         Order.status.in_(["in_progress", "ready_for_payment", "paid", "completed"]),
@@ -322,14 +327,12 @@ def get_dashboard_stats(
     for o in period_orders:
         by_mechanic[o.mechanic_id].append(o)
 
-    # Also include mechanics currently in_progress (may have 0 in period)
     active_now = db.query(Order.mechanic_id).filter(
         Order.mechanic_id != None,
         Order.status == "in_progress",
     ).all()
     mechanic_ids = set(by_mechanic.keys()) | {mid for (mid,) in active_now}
 
-    # Team avg check (all mechanics, period)
     team_total_rev = sum(float(o.total_amount) for o in period_orders)
     team_total_cnt = len(period_orders)
     team_avg_check = team_total_rev / team_total_cnt if team_total_cnt else 0
@@ -361,7 +364,6 @@ def get_dashboard_stats(
     revenue_chart = []
 
     if chart_mode == "months":
-        # Годовой вид: 12 месяцев текущего года vs тот же месяц прошлого года
         ref_year = start.year
         cur_by_month = _revenue_by_month(db, ref_year)
         prev_by_month = _revenue_by_month(db, ref_year - 1)
@@ -371,7 +373,7 @@ def get_dashboard_stats(
             m_start = date(ref_year, m, 1)
             is_future = m_start > today
             revenue_chart.append({
-                "label": _MONTHS_RU[m][:3],  # Янв, Фев, ...
+                "label": _MONTHS_RU[m][:3],
                 "date": m_start.isoformat(),
                 "current": cur_by_month.get(key, 0),
                 "previous": prev_by_month.get(prev_key, 0),
@@ -424,9 +426,8 @@ def get_dashboard_stats(
             d = week_end + timedelta(days=1)
             week_offset += 1
 
-    # Навигационные подсказки для фронтенда
     nav_ref = (ref_date or today).isoformat()
-    can_go_next = end < today  # можно идти вперёд если ещё не дошли до сегодня
+    can_go_next = end < today
 
     return {
         "period": period,

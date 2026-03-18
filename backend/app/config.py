@@ -28,11 +28,17 @@ class Settings(BaseSettings):
     SMS_SENDER: str = "Autoservice"
     
     # Email
-    SMTP_HOST: str = "smtp.gmail.com"
-    SMTP_PORT: int = 587
+    SMTP_HOST: str = "smtp.mail.ru"
+    SMTP_PORT: int = 465
     SMTP_USER: str = ""
     SMTP_PASSWORD: str = ""
-    EMAIL_FROM: str = ""
+    EMAIL_FROM: str = "maliaaa@mail.ru"
+
+    # Frontend URL (используется в ссылках для сброса пароля)
+    FRONTEND_URL: str = "http://localhost:3000"
+
+    # Время жизни токена сброса пароля (в минутах)
+    PASSWORD_RESET_TOKEN_EXPIRE_MINUTES: int = 30
     
     # Поставщики
     PARTS_SUPPLIER_API_KEY: str = ""

@@ -1,21 +1,21 @@
 import logging
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field
+from typing import Optional
 from app.config import settings
 from app.api.v1 import api_router
 
-# Настройка логирования
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
 )
 logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Проверка конфигурации при старте"""
     logger.info("Starting Autoservice Management API")
     logger.info(f"SECRET_KEY configured: {bool(settings.SECRET_KEY)}, length: {len(settings.SECRET_KEY) if settings.SECRET_KEY else 0}")
     logger.info(f"ALGORITHM: {settings.ALGORITHM}")
@@ -26,14 +26,37 @@ async def lifespan(app: FastAPI):
     logger.info("Shutting down Autoservice Management API")
 
 
+class RootResponse(BaseModel):
+    message: str = Field(..., description="Приветственное сообщение API")
+    version: str = Field(..., description="Версия API")
+
+
+class HealthResponse(BaseModel):
+    status: str = Field(..., description="Статус сервиса (ok)")
+    secret_key_configured: bool = Field(..., description="Настроен ли SECRET_KEY")
+
+
 app = FastAPI(
     title="Autoservice Management API",
-    description="API для управления автосервисом",
+    description=(
+        "REST API для управления автосервисом.\n\n"
+        "Функциональность:\n"
+        "- Управление клиентами, транспортными средствами и заказ-нарядами\n"
+        "- Справочники работ и запчастей\n"
+        "- Складской учёт с приходными накладными\n"
+        "- Расчёт зарплаты сотрудников\n"
+        "- Запись клиентов на обслуживание\n"
+        "- Интеграции: YooKassa (платежи), ГИБДД (проверка ТС), поставщики запчастей\n"
+        "- Дашборд с аналитикой\n\n"
+        "Авторизация через JWT Bearer Token (получить через `POST /api/v1/auth/login`)."
+    ),
     version="1.0.0",
-    lifespan=lifespan
+    lifespan=lifespan,
+    docs_url="/docs",
+    redoc_url="/redoc",
+    openapi_url="/openapi.json",
 )
 
-# Простой CORS - разрешаем все для разработки
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -42,15 +65,28 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Подключение роутеров
 app.include_router(api_router, prefix="/api/v1")
 
 
-@app.get("/")
+@app.get(
+    "/",
+    response_model=RootResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Корневой эндпоинт",
+    description="Возвращает информацию о версии API.",
+    tags=["system"],
+)
 def root():
     return {"message": "Autoservice Management API", "version": "1.0.0"}
 
 
-@app.get("/health")
+@app.get(
+    "/health",
+    response_model=HealthResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Проверка здоровья",
+    description="Health-check эндпоинт для мониторинга. Проверяет доступность сервиса и конфигурацию.",
+    tags=["system"],
+)
 def health_check():
     return {"status": "ok", "secret_key_configured": bool(settings.SECRET_KEY)}

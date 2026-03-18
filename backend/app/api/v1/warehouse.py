@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query, HTTPException, status
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 from typing import List, Optional
@@ -22,6 +22,7 @@ from app.schemas.receipt import (
     ReceiptDocumentUpdate,
     SupplierReceiptsReport,
 )
+from app.schemas.responses import ErrorResponse
 from app.services.warehouse_service import (
     create_warehouse_item,
     add_incoming_transaction,
@@ -37,16 +38,30 @@ from app.core.exceptions import NotFoundException, BadRequestException
 
 router = APIRouter()
 
+_auth = {401: {"model": ErrorResponse, "description": "Не авторизован"}}
+_write = {**_auth, 403: {"model": ErrorResponse, "description": "Недостаточно прав"}}
+_404_item = {404: {"model": ErrorResponse, "description": "Позиция склада не найдена"}}
+_404_receipt = {404: {"model": ErrorResponse, "description": "Накладная не найдена"}}
 
-@router.get("/items", response_model=List[WarehouseItemSchema])
+
+@router.get(
+    "/items",
+    response_model=List[WarehouseItemSchema],
+    status_code=status.HTTP_200_OK,
+    summary="Позиции склада",
+    description=(
+        "Список позиций склада с пагинацией. "
+        "Фильтрация по артикулу (точное совпадение после нормализации)."
+    ),
+    responses=_auth,
+)
 def get_warehouse_items(
-    skip: int = 0,
-    limit: int = 500,
-    part_number: Optional[str] = None,
+    skip: int = Query(0, ge=0, description="Сколько записей пропустить"),
+    limit: int = Query(500, ge=1, le=1000, description="Максимум записей"),
+    part_number: Optional[str] = Query(None, description="Фильтр по артикулу (точное совпадение)"),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
-    """Получение списка позиций склада. Поиск по артикулу: пробелы обрезаются, буквы приводятся к верхнему регистру."""
     from app.models.warehouse import WarehouseItem
     from app.models.part import Part
     q = db.query(WarehouseItem).join(Part, WarehouseItem.part_id == Part.id)
@@ -58,75 +73,105 @@ def get_warehouse_items(
     return items
 
 
-@router.get("/items/{item_id}", response_model=WarehouseItemSchema)
+@router.get(
+    "/items/{item_id}",
+    response_model=WarehouseItemSchema,
+    status_code=status.HTTP_200_OK,
+    summary="Позиция склада по ID",
+    description="Возвращает одну позицию склада по ID.",
+    responses={**_auth, **_404_item},
+)
 def get_warehouse_item(
     item_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
-    """Получение позиции склада по ID"""
     from app.models.warehouse import WarehouseItem
-    from app.core.exceptions import NotFoundException
-    
+
     item = db.query(WarehouseItem).filter(WarehouseItem.id == item_id).first()
     if not item:
         raise NotFoundException("Позиция склада не найдена")
     return item
 
 
-@router.post("/items", response_model=WarehouseItemSchema)
+@router.post(
+    "/items",
+    response_model=WarehouseItemSchema,
+    status_code=status.HTTP_201_CREATED,
+    summary="Создать позицию склада",
+    description="Создание новой складской позиции для запчасти. Доступно менеджеру и администратору.",
+    responses=_write,
+)
 def create_item(
     item_create: WarehouseItemCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_manager_or_admin)
+    current_user: User = Depends(require_manager_or_admin),
 ):
-    """Создание позиции на складе"""
     item = create_warehouse_item(db, item_create)
     return item
 
 
-@router.post("/transactions/incoming", response_model=WarehouseTransactionSchema)
+@router.post(
+    "/transactions/incoming",
+    response_model=WarehouseTransactionSchema,
+    status_code=status.HTTP_201_CREATED,
+    summary="Приход на склад",
+    description="Оформление прихода на склад. Увеличивает остаток позиции. Требует привязку к сотруднику.",
+    responses={**_write, 400: {"model": ErrorResponse, "description": "Не привязан сотрудник"}},
+)
 def create_incoming_transaction(
     transaction_create: WarehouseTransactionCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_manager_or_admin)
+    current_user: User = Depends(require_manager_or_admin),
 ):
-    """Приход на склад"""
     if not current_user.employee_id:
-        from fastapi import HTTPException, status
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="У пользователя не привязан сотрудник"
+            detail="У пользователя не привязан сотрудник",
         )
-    
+
     transaction = add_incoming_transaction(db, transaction_create, current_user.employee_id)
     return transaction
 
 
-@router.get("/low-stock", response_model=List[WarehouseItemSchema])
+@router.get(
+    "/low-stock",
+    response_model=List[WarehouseItemSchema],
+    status_code=status.HTTP_200_OK,
+    summary="Позиции с низким остатком",
+    description="Возвращает позиции склада, остаток которых ниже минимального порога.",
+    responses=_auth,
+)
 def get_low_stock(
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
-    """Получение позиций с низким остатком"""
     items = get_low_stock_items(db)
     return items
 
 
-@router.get("/transactions", response_model=List[WarehouseTransactionList])
+@router.get(
+    "/transactions",
+    response_model=List[WarehouseTransactionList],
+    status_code=status.HTTP_200_OK,
+    summary="Журнал движений склада",
+    description=(
+        "Журнал складских операций с фильтрацией по дате, типу, запчасти, заказу или накладной."
+    ),
+    responses=_auth,
+)
 def list_transactions(
-    date_from: Optional[date] = None,
-    date_to: Optional[date] = None,
-    transaction_type: Optional[TransactionType] = None,
-    part_id: Optional[int] = None,
-    order_id: Optional[int] = None,
-    receipt_id: Optional[int] = None,
-    skip: int = 0,
-    limit: int = 100,
+    date_from: Optional[date] = Query(None, description="Дата начала периода"),
+    date_to: Optional[date] = Query(None, description="Дата конца периода"),
+    transaction_type: Optional[TransactionType] = Query(None, description="Тип операции"),
+    part_id: Optional[int] = Query(None, description="ID запчасти"),
+    order_id: Optional[int] = Query(None, description="ID заказ-наряда"),
+    receipt_id: Optional[int] = Query(None, description="ID накладной"),
+    skip: int = Query(0, ge=0, description="Сколько записей пропустить"),
+    limit: int = Query(100, ge=1, le=500, description="Максимум записей"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """Журнал движений склада."""
     return get_transactions(
         db,
         date_from=date_from,
@@ -140,31 +185,49 @@ def list_transactions(
     )
 
 
-@router.post("/transactions/adjustment", response_model=WarehouseTransactionSchema)
+@router.post(
+    "/transactions/adjustment",
+    response_model=WarehouseTransactionSchema,
+    status_code=status.HTTP_201_CREATED,
+    summary="Корректировка остатка",
+    description=(
+        "Ручная корректировка количества на складе. "
+        "Положительное значение — увеличение, отрицательное — списание. "
+        "Требует привязку к сотруднику."
+    ),
+    responses={**_write, 400: {"model": ErrorResponse, "description": "Не привязан сотрудник"}},
+)
 def adjustment(
     payload: WarehouseAdjustmentCreate,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_manager_or_admin),
 ):
-    """Ручная корректировка остатка."""
     if not current_user.employee_id:
-        from fastapi import HTTPException, status
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="У пользователя не привязан сотрудник"
+            detail="У пользователя не привязан сотрудник",
         )
     return create_adjustment(db, payload, current_user.employee_id)
 
 
-@router.get("/reports/supplier-receipts", response_model=SupplierReceiptsReport)
+@router.get(
+    "/reports/supplier-receipts",
+    response_model=SupplierReceiptsReport,
+    status_code=status.HTTP_200_OK,
+    summary="Отчёт по приходу от поставщика",
+    description=(
+        "Отчёт для сверки: все накладные от конкретного поставщика за период. "
+        "Фильтрация по дате документа накладной."
+    ),
+    responses=_auth,
+)
 def get_supplier_receipts_report_endpoint(
-    supplier_id: int,
-    date_from: Optional[date] = None,
-    date_to: Optional[date] = None,
+    supplier_id: int = Query(..., description="ID поставщика"),
+    date_from: Optional[date] = Query(None, description="Дата начала периода"),
+    date_to: Optional[date] = Query(None, description="Дата конца периода"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """Отчёт по приходу от поставщика за период (сверка). Период — по дате документа накладной."""
     data = get_supplier_receipts_report(db, supplier_id=supplier_id, date_from=date_from, date_to=date_to)
     return SupplierReceiptsReport(
         receipts=data["receipts"],
@@ -173,15 +236,21 @@ def get_supplier_receipts_report_endpoint(
     )
 
 
-@router.get("/receipts", response_model=List[ReceiptDocumentSchema])
+@router.get(
+    "/receipts",
+    response_model=List[ReceiptDocumentSchema],
+    status_code=status.HTTP_200_OK,
+    summary="Список приходных накладных",
+    description="Список накладных с фильтрацией по статусу. Строки подгружаются для расчёта итого.",
+    responses=_auth,
+)
 def list_receipts(
-    skip: int = 0,
-    limit: int = 100,
-    status: Optional[ReceiptStatus] = None,
+    skip: int = Query(0, ge=0, description="Сколько записей пропустить"),
+    limit: int = Query(100, ge=1, le=500, description="Максимум записей"),
+    receipt_status: Optional[ReceiptStatus] = Query(None, alias="status", description="Фильтр по статусу (draft / posted)"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """Список приходных накладных (с подгрузкой строк для итога)."""
     from sqlalchemy.orm import joinedload
     q = (
         db.query(ReceiptDocument)
@@ -190,18 +259,24 @@ def list_receipts(
         )
         .order_by(ReceiptDocument.created_at.desc())
     )
-    if status is not None:
-        q = q.filter(ReceiptDocument.status == status)
+    if receipt_status is not None:
+        q = q.filter(ReceiptDocument.status == receipt_status)
     return q.offset(skip).limit(limit).all()
 
 
-@router.get("/receipts/{receipt_id}", response_model=ReceiptDocumentSchema)
+@router.get(
+    "/receipts/{receipt_id}",
+    response_model=ReceiptDocumentSchema,
+    status_code=status.HTTP_200_OK,
+    summary="Накладная по ID",
+    description="Возвращает приходную накладную со строками. Возвращает 404 если не найдена.",
+    responses={**_auth, **_404_receipt},
+)
 def get_receipt(
     receipt_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """Приходная накладная по ID."""
     from sqlalchemy.orm import joinedload
     r = (
         db.query(ReceiptDocument)
@@ -216,24 +291,44 @@ def get_receipt(
     return r
 
 
-@router.post("/receipts", response_model=ReceiptDocumentSchema)
+@router.post(
+    "/receipts",
+    response_model=ReceiptDocumentSchema,
+    status_code=status.HTTP_201_CREATED,
+    summary="Создать приходную накладную",
+    description="Создание приходной накладной в статусе «Черновик». Доступно менеджеру и администратору.",
+    responses=_write,
+)
 def create_receipt(
     payload: ReceiptDocumentCreate,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_manager_or_admin),
 ):
-    """Создание приходной накладной (черновик)."""
     return create_receipt_document(db, payload)
 
 
-@router.put("/receipts/{receipt_id}", response_model=ReceiptDocumentSchema)
+@router.put(
+    "/receipts/{receipt_id}",
+    response_model=ReceiptDocumentSchema,
+    status_code=status.HTTP_200_OK,
+    summary="Обновить черновик накладной",
+    description=(
+        "Обновление приходной накладной в статусе «Черновик». "
+        "Если переданы строки — все существующие заменяются. "
+        "Редактирование проведённых накладных запрещено (400)."
+    ),
+    responses={
+        **_write,
+        400: {"model": ErrorResponse, "description": "Можно редактировать только черновик"},
+        **_404_receipt,
+    },
+)
 def update_receipt(
     receipt_id: int,
     payload: ReceiptDocumentUpdate,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_manager_or_admin),
 ):
-    """Обновление черновика накладной."""
     r = db.query(ReceiptDocument).filter(ReceiptDocument.id == receipt_id).first()
     if not r:
         raise NotFoundException("Накладная не найдена")
@@ -244,10 +339,10 @@ def update_receipt(
     if payload.supplier_id is not None:
         r.supplier_id = payload.supplier_id
     if payload.lines is not None:
-        from app.models.warehouse import ReceiptLine
-        db.query(ReceiptLine).filter(ReceiptLine.receipt_id == receipt_id).delete()
+        from app.models.warehouse import ReceiptLine as ReceiptLineModel
+        db.query(ReceiptLineModel).filter(ReceiptLineModel.receipt_id == receipt_id).delete()
         for line in payload.lines:
-            rl = ReceiptLine(
+            rl = ReceiptLineModel(
                 receipt_id=r.id,
                 part_id=line.part_id,
                 quantity=line.quantity,
@@ -260,18 +355,30 @@ def update_receipt(
     return r
 
 
-@router.post("/receipts/{receipt_id}/post", response_model=ReceiptDocumentSchema)
+@router.post(
+    "/receipts/{receipt_id}/post",
+    response_model=ReceiptDocumentSchema,
+    status_code=status.HTTP_200_OK,
+    summary="Провести накладную",
+    description=(
+        "Проведение приходной накладной: статус меняется на POSTED, "
+        "создаются складские транзакции, обновляются остатки и закупочные цены запчастей. "
+        "Требует привязку к сотруднику."
+    ),
+    responses={
+        **_write,
+        400: {"model": ErrorResponse, "description": "Не привязан сотрудник или накладная уже проведена"},
+        **_404_receipt,
+    },
+)
 def post_receipt(
     receipt_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_manager_or_admin),
 ):
-    """Проведение приходной накладной."""
     if not current_user.employee_id:
-        from fastapi import HTTPException, status
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="У пользователя не привязан сотрудник"
+            detail="У пользователя не привязан сотрудник",
         )
     return post_receipt_document(db, receipt_id, current_user.employee_id)
-
