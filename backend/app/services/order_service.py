@@ -24,7 +24,16 @@ def generate_order_number(db: Session) -> str:
 
 def create_order(db: Session, order_create: OrderCreate, employee_id: int) -> Order:
     """Создание заказ-наряда"""
+    from app.models.vehicle import Vehicle
+
     order_number = generate_order_number(db)
+    
+    # Snapshot пробега авто на момент создания заказа
+    mileage = order_create.mileage_at_service
+    if mileage is None:
+        vehicle = db.query(Vehicle).filter(Vehicle.id == order_create.vehicle_id).first()
+        if vehicle:
+            mileage = vehicle.mileage
     
     # Расчет общей суммы
     total_amount = Decimal(0)
@@ -38,6 +47,7 @@ def create_order(db: Session, order_create: OrderCreate, employee_id: int) -> Or
         status=OrderStatus.NEW,
         total_amount=0,
         paid_amount=0,
+        mileage_at_service=mileage,
         recommendations=order_create.recommendations,
         comments=order_create.comments
     )

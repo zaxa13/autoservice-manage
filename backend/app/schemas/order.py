@@ -116,3 +116,4 @@ class OrderDetail(Order):
 
     class Config:
         from_attributes = True
+

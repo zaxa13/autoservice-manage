@@ -11,6 +11,7 @@ from app.models.customer import Customer
 from app.schemas.vehicle import Vehicle as VehicleSchema, VehicleCreate, VehicleUpdate
 from app.schemas.order import OrderDetail
 from app.schemas.responses import ErrorResponse
+from app.schemas.order import OrderDetail
 from app.core.exceptions import NotFoundException
 from app.core.permissions import require_manager_or_admin
 
