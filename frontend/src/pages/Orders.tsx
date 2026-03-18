@@ -147,13 +147,12 @@ export default function Orders() {
   const [globalDiscount, setGlobalDiscount] = useState<number>(0);
   const [applyToAll, setApplyToAll] = useState(false);
 
-  // --- ПОИСК ЗАПЧАСТЕЙ ДЛЯ ЗАКАЗА ---
-  const [orderPartsSearchQuery, setOrderPartsSearchQuery] = useState('');
-  const [orderPartsSearchResults, setOrderPartsSearchResults] = useState<Part[]>([]);
-  const [orderPartsSearchLoading, setOrderPartsSearchLoading] = useState(false);
+  // --- ПОИСК ЗАПЧАСТЕЙ ДЛЯ ЗАКАЗА (per-row state, исправлен shared state баг) ---
+  const [partRowInputs, setPartRowInputs] = useState<string[]>([]);
+  const [partRowResults, setPartRowResults] = useState<Part[][]>([]);
+  const [partRowLoading, setPartRowLoading] = useState<boolean[]>([]);
+  const partRowDebounceRefs = useRef<(ReturnType<typeof setTimeout> | null)[]>([]);
   const [orderPartCache, setOrderPartCache] = useState<(Part | null)[]>([]);
-  const orderPartsSearchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [editingPartIdx, setEditingPartIdx] = useState<number | null>(null);
   const [openAddPartOrder, setOpenAddPartOrder] = useState(false);
   const [addPartOrderLineIndex, setAddPartOrderLineIndex] = useState<number | null>(null);
   const [newPartFormOrder, setNewPartFormOrder] = useState({ name: '', part_number: '', brand: '', price: 0, unit: 'шт', category: 'other' as Part['category'] });
@@ -240,23 +239,22 @@ export default function Orders() {
     return result;
   }, [allWorks, worksSearchCategory, worksSearchQuery]);
 
-  // Поиск запчастей по артикулу (для строк заказа)
-  useEffect(() => {
-    if (!openDialog) return;
-    if (orderPartsSearchDebounceRef.current) clearTimeout(orderPartsSearchDebounceRef.current);
-    if (!orderPartsSearchQuery.trim()) {
-      setOrderPartsSearchResults([]);
+  // Поиск запчастей по артикулу — per-row, исключает shared state баг
+  const handlePartRowSearch = (idx: number, value: string) => {
+    setPartRowInputs(prev => { const n = [...prev]; n[idx] = value; return n; });
+    if (partRowDebounceRefs.current[idx]) clearTimeout(partRowDebounceRefs.current[idx]!);
+    if (!value.trim()) {
+      setPartRowResults(prev => { const n = [...prev]; n[idx] = []; return n; });
       return;
     }
-    orderPartsSearchDebounceRef.current = setTimeout(() => {
-      setOrderPartsSearchLoading(true);
-      api.get<Part[]>('/parts/', { params: { search: orderPartsSearchQuery.trim(), limit: 50 } })
-        .then((r) => setOrderPartsSearchResults(r.data))
-        .catch(() => setOrderPartsSearchResults([]))
-        .finally(() => setOrderPartsSearchLoading(false));
+    setPartRowLoading(prev => { const n = [...prev]; n[idx] = true; return n; });
+    partRowDebounceRefs.current[idx] = setTimeout(() => {
+      api.get<Part[]>('/parts/', { params: { search: value.trim(), limit: 50 } })
+        .then(r => setPartRowResults(prev => { const n = [...prev]; n[idx] = r.data; return n; }))
+        .catch(() => setPartRowResults(prev => { const n = [...prev]; n[idx] = []; return n; }))
+        .finally(() => setPartRowLoading(prev => { const n = [...prev]; n[idx] = false; return n; }));
     }, 300);
-    return () => { if (orderPartsSearchDebounceRef.current) clearTimeout(orderPartsSearchDebounceRef.current); };
-  }, [orderPartsSearchQuery, openDialog]);
+  };
 
   // Бренды
   useEffect(() => {
@@ -306,7 +304,12 @@ export default function Orders() {
       order_works: (d.order_works || []).map(w => ({ work_name: w.work?.name || (w as any).work_name || '', quantity: w.quantity, price: Number(w.price), discount: (w as any).discount || 0 })),
       order_parts: parts
     });
-    setOrderPartCache((d.order_parts || []).map((p: any) => p.part || (p.part_id && p.part_name ? { id: p.part_id, part_number: p.article ?? '', name: p.part_name, price: p.price ?? 0, unit: 'шт', category: 'other' as const } as Part : null)));
+    const cachedParts = (d.order_parts || []).map((p: any) => p.part || (p.part_id && p.part_name ? { id: p.part_id, part_number: p.article ?? '', name: p.part_name, price: p.price ?? 0, unit: 'шт', category: 'other' as const, stock_quantity: 0 } as Part : null));
+    setOrderPartCache(cachedParts);
+    const count = cachedParts.length || 1;
+    setPartRowInputs(Array(count).fill(''));
+    setPartRowResults(Array(count).fill([]));
+    setPartRowLoading(Array(count).fill(false));
   };
 
   const loadOrderPayments = async (id: number) => {
@@ -332,6 +335,7 @@ export default function Orders() {
       setEditingOrderId(null); setSelectedVehicle(null); setPaidAmountFromServer(0); setOriginalPaidAmount(0); setPayments([]);
       setFormData({ vehicle_id: 0, mechanic_id: undefined, status: 'new', order_works: [], order_parts: [], recommendations: '', comments: '' });
       setOrderPartCache([]);
+      setPartRowInputs([]); setPartRowResults([]); setPartRowLoading([]);
       setLicensePlateSearch(''); setVinSearch('');
       setInlineMileage('');
     }
@@ -557,6 +561,9 @@ export default function Orders() {
       const row = { part_id: 0, part_name: '', article: '', quantity: 1, price: 0, discount: applyToAll ? globalDiscount : 0 };
       setFormData(p => ({ ...p, order_parts: [...(p.order_parts || []), row as any] }));
       setOrderPartCache(prev => [...prev, null]);
+      setPartRowInputs(prev => [...prev, '']);
+      setPartRowResults(prev => [...prev, []]);
+      setPartRowLoading(prev => [...prev, false]);
     }
   };
 
@@ -574,7 +581,8 @@ export default function Orders() {
       return { ...p, order_parts: list };
     });
     setOrderPartCache(prev => { const n = [...prev]; n[idx] = part; return n; });
-    setOrderPartsSearchQuery('');
+    setPartRowInputs(prev => { const n = [...prev]; n[idx] = ''; return n; });
+    setPartRowResults(prev => { const n = [...prev]; n[idx] = []; return n; });
   };
 
   const removeRow = (t: 'work' | 'part', idx: number) => {
@@ -591,6 +599,21 @@ export default function Orders() {
         if (next.length === 0) next.push(null);
         return next;
       });
+      setPartRowInputs(prev => {
+        const next = prev.filter((_, i) => i !== idx);
+        if (next.length === 0) next.push('');
+        return next;
+      });
+      setPartRowResults(prev => {
+        const next = prev.filter((_, i) => i !== idx);
+        if (next.length === 0) next.push([]);
+        return next;
+      });
+      setPartRowLoading(prev => {
+        const next = prev.filter((_, i) => i !== idx);
+        if (next.length === 0) next.push(false);
+        return next;
+      });
     }
   };
 
@@ -605,7 +628,8 @@ export default function Orders() {
       next[idx] = null;
       return next;
     });
-    setOrderPartsSearchQuery('');
+    setPartRowInputs(prev => { const n = [...prev]; n[idx] = ''; return n; });
+    setPartRowResults(prev => { const n = [...prev]; n[idx] = []; return n; });
   };
 
   const handleAddPartOrderSubmit = async () => {
@@ -1012,13 +1036,34 @@ export default function Orders() {
           <Box><Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1, px: 1 }}><Typography variant="subtitle1" sx={{ fontWeight: 900 }}><ShoppingBagRounded fontSize="small" color="primary" sx={{ verticalAlign: 'middle', mr: 1 }} /> Запчасти</Typography><Button variant="contained" size="small" startIcon={<AddRounded />} onClick={() => addRow('part')}>Добавить строку</Button></Stack>
             <Stack spacing={1}>{(formData.order_parts || []).map((part, idx) => {
               const partSelected = !!orderPartCache[idx];
+              const cachedPart = orderPartCache[idx];
+              const stockQty = cachedPart?.stock_quantity ?? 0;
+              const needQty = Number(part.quantity) || 0;
+              const stockEmpty = partSelected && stockQty === 0;
+              const stockInsufficient = partSelected && !stockEmpty && needQty > stockQty;
+              const rowInput = partRowInputs[idx] ?? '';
+              const rowResults = partRowResults[idx] ?? [];
+              const rowLoading = partRowLoading[idx] ?? false;
               return (
-                <Paper key={idx} elevation={0} sx={{ p: 1.5, px: 2, borderRadius: 2, border: '1px solid #E2E8F0', bgcolor: '#fff', '&:hover': { borderColor: 'primary.main' } }}>
+                <Paper key={idx} elevation={0} sx={{ p: 1.5, px: 2, borderRadius: 2, border: '1px solid', borderColor: stockEmpty ? 'error.light' : stockInsufficient ? 'warning.light' : '#E2E8F0', bgcolor: '#fff', '&:hover': { borderColor: stockEmpty ? 'error.main' : stockInsufficient ? 'warning.main' : 'primary.main' } }}>
                   <Grid container spacing={2} alignItems="center">
                     {partSelected ? (
                       <>
-                        <Grid item xs={2} lg={1.5}><TextField size="small" fullWidth label="Артикул" value={orderPartCache[idx]?.part_number ?? ''} InputProps={{ readOnly: true }} sx={{ '& .MuiInputBase-input': { cursor: 'default' } }} /></Grid>
-                        <Grid item xs={2} lg={2.5}><TextField size="small" fullWidth label="Название" value={orderPartCache[idx]?.name ?? ''} InputProps={{ readOnly: true }} sx={{ '& .MuiInputBase-input': { cursor: 'default' } }} /></Grid>
+                        <Grid item xs={2} lg={1.5}>
+                          <TextField size="small" fullWidth label="Артикул" value={cachedPart?.part_number ?? ''} InputProps={{ readOnly: true }} sx={{ '& .MuiInputBase-input': { cursor: 'default' } }} />
+                        </Grid>
+                        <Grid item xs={2} lg={2.5}>
+                          <Stack spacing={0.5}>
+                            <TextField size="small" fullWidth label="Название" value={cachedPart?.name ?? ''} InputProps={{ readOnly: true }} sx={{ '& .MuiInputBase-input': { cursor: 'default' } }} />
+                            {stockEmpty ? (
+                              <Chip size="small" color="error" icon={<WarningAmberRounded />} label="Нет на складе" sx={{ fontSize: '0.65rem', height: 20 }} />
+                            ) : stockInsufficient ? (
+                              <Chip size="small" color="warning" icon={<WarningAmberRounded />} label={`Не хватает: нужно ${needQty}, есть ${stockQty} ${cachedPart?.unit ?? 'шт'}`} sx={{ fontSize: '0.65rem', height: 20 }} />
+                            ) : (
+                              <Chip size="small" color="success" label={`На складе: ${stockQty} ${cachedPart?.unit ?? 'шт'}`} sx={{ fontSize: '0.65rem', height: 20 }} />
+                            )}
+                          </Stack>
+                        </Grid>
                         <Grid item xs={1} lg={1}><TextField size="small" fullWidth label="Кол-во" type="number" value={part.quantity} onChange={e => updateRow('part', idx, 'quantity', e.target.value)} /></Grid>
                         <Grid item xs={2} lg={1.5}><TextField size="small" fullWidth label="Цена (клиент)" type="number" value={part.price} onChange={e => updateRow('part', idx, 'price', e.target.value)} InputProps={{ endAdornment: '₽' }} /></Grid>
                         <Grid item xs={1} lg={1}><TextField size="small" fullWidth label="Скидка" type="number" value={part.discount} onChange={e => updateRow('part', idx, 'discount', e.target.value)} InputProps={{ endAdornment: '%' }} /></Grid>
@@ -1029,25 +1074,46 @@ export default function Orders() {
                     ) : (
                       <>
                         <Grid item xs={12} lg={6}>
-                          <Autocomplete<Part | { id: number; name: string }>
+                          <Autocomplete<Part | { id: number; name: string; stock_quantity?: number }>
                             size="small"
                             value={null}
-                            inputValue={orderPartsSearchQuery}
-                            onInputChange={(_, v) => setOrderPartsSearchQuery(v)}
+                            inputValue={rowInput}
+                            onInputChange={(_, v) => handlePartRowSearch(idx, v)}
                             onChange={(_, option) => {
                               if (option && 'id' in option) {
                                 if (option.id === -1) {
                                   setAddPartOrderLineIndex(idx);
-                                  setNewPartFormOrder({ name: orderPartsSearchQuery.trim() || '', part_number: orderPartsSearchQuery.trim() || '', brand: '', price: 0, unit: 'шт', category: 'other' });
+                                  setNewPartFormOrder({ name: rowInput.trim() || '', part_number: rowInput.trim() || '', brand: '', price: 0, unit: 'шт', category: 'other' });
                                   setOpenAddPartOrder(true);
                                   return;
                                 }
                                 setOrderPartLine(idx, option as Part);
                               }
                             }}
-                            options={orderPartsSearchQuery.trim() && orderPartsSearchResults.length === 0 ? [{ id: -1, name: `+ Добавить «${orderPartsSearchQuery.trim()}»` }] : orderPartsSearchResults}
+                            options={rowInput.trim() && rowResults.length === 0 ? [{ id: -1, name: `+ Добавить «${rowInput.trim()}»`, stock_quantity: 0 }] : rowResults}
                             getOptionLabel={(opt) => opt.id === -1 ? opt.name : `${(opt as Part).part_number ?? ''} — ${(opt as Part).name}`}
-                            loading={orderPartsSearchLoading}
+                            loading={rowLoading}
+                            renderOption={(props, opt) => {
+                              if (opt.id === -1) return <li {...props}><Typography variant="body2" color="primary">{opt.name}</Typography></li>;
+                              const p = opt as Part;
+                              const sq = p.stock_quantity ?? 0;
+                              return (
+                                <li {...props}>
+                                  <Stack direction="row" alignItems="center" justifyContent="space-between" width="100%" spacing={1}>
+                                    <Stack>
+                                      <Typography variant="body2" sx={{ fontWeight: 600 }}>{p.part_number}</Typography>
+                                      <Typography variant="caption" color="text.secondary">{p.name}{p.brand ? ` · ${p.brand}` : ''}</Typography>
+                                    </Stack>
+                                    <Chip
+                                      size="small"
+                                      label={sq === 0 ? 'Нет' : `${sq} ${p.unit}`}
+                                      color={sq === 0 ? 'error' : sq < 3 ? 'warning' : 'success'}
+                                      sx={{ fontSize: '0.65rem', minWidth: 48, flexShrink: 0 }}
+                                    />
+                                  </Stack>
+                                </li>
+                              );
+                            }}
                             renderInput={(params) => (
                               <TextField
                                 {...params}
@@ -1056,7 +1122,7 @@ export default function Orders() {
                                 InputProps={{
                                   ...params.InputProps,
                                   startAdornment: (<><InputAdornment position="start"><SearchIcon fontSize="small" color="action" /></InputAdornment>{params.InputProps.startAdornment}</>),
-                                  endAdornment: (<>{orderPartsSearchLoading ? <CircularProgress color="inherit" size={20} /> : null}{params.InputProps.endAdornment}</>)
+                                  endAdornment: (<>{rowLoading ? <CircularProgress color="inherit" size={20} /> : null}{params.InputProps.endAdornment}</>)
                                 }}
                               />
                             )}

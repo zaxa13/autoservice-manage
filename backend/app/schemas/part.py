@@ -63,6 +63,7 @@ class PartUpdate(BaseModel):
 
 class Part(PartBase):
     id: int = Field(..., description="Уникальный ID запчасти")
+    stock_quantity: int = Field(0, description="Текущий остаток на складе (из warehouse_items)")
 
     class Config:
         from_attributes = True

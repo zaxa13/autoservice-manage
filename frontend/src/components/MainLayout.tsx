@@ -26,7 +26,7 @@ import {
   LocalShippingRounded,
   DirectionsCarRounded,
 } from '@mui/icons-material';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import api from '../services/api';
 import { User } from '../types';
@@ -53,7 +53,6 @@ const menuItems = [
 ];
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
-  const navigate = useNavigate();
   const location = useLocation();
   const { logout } = useAuthStore();
 
@@ -154,7 +153,11 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         <List sx={{ flexGrow: 1, px: 0 }}>
           {menuItems.map((item) => (
             <ListItem key={item.text} disablePadding>
-              <ListItemButton onClick={() => navigate(item.path)} sx={location.pathname === item.path ? activeStyle : normalStyle}>
+              <ListItemButton
+                component={Link}
+                to={item.path}
+                sx={location.pathname === item.path ? activeStyle : normalStyle}
+              >
                 <ListItemIcon sx={{ minWidth: 38, color: 'inherit' }}>{item.icon}</ListItemIcon>
                 <ListItemText primary={item.text} primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: 700 }} />
               </ListItemButton>

@@ -107,6 +107,7 @@ export interface Part {
   purchase_price_last?: number
   unit: string
   category: 'engine' | 'transmission' | 'suspension' | 'brakes' | 'electrical' | 'body' | 'consumables' | 'other'
+  stock_quantity: number  // текущий остаток на складе (из warehouse_items)
 }
 
 export interface WarehouseItem {
