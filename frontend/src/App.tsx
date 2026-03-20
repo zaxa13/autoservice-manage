@@ -18,6 +18,7 @@ import Suppliers from './pages/Suppliers'
 import Employees from './pages/Employees'
 import Salary from './pages/Salary'
 import Vehicles from './pages/Vehicles'
+import Reports from './pages/Reports'
 
 // Импорт стора
 import { useAuthStore } from './store/authStore'
@@ -119,6 +120,14 @@ function AppRoutes() {
         element={
           <PrivateRoute>
             <Vehicles />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/reports"
+        element={
+          <PrivateRoute>
+            <Reports />
           </PrivateRoute>
         }
       />

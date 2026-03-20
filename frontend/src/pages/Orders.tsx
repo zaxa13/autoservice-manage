@@ -301,7 +301,7 @@ export default function Orders() {
     }));
     setFormData({
       vehicle_id: d.vehicle_id, mechanic_id: d.mechanic_id, status: d.status, recommendations: d.recommendations || '', comments: d.comments || '',
-      order_works: (d.order_works || []).map(w => ({ work_name: w.work?.name || (w as any).work_name || '', quantity: w.quantity, price: Number(w.price), discount: (w as any).discount || 0 })),
+      order_works: (d.order_works || []).map(w => ({ work_name: w.work?.name || (w as any).work_name || '', mechanic_id: w.mechanic_id ?? d.mechanic_id ?? undefined, quantity: w.quantity, price: Number(w.price), discount: (w as any).discount || 0 })),
       order_parts: parts
     });
     const cachedParts = (d.order_parts || []).map((p: any) => p.part || (p.part_id && p.part_name ? { id: p.part_id, part_number: p.article ?? '', name: p.part_name, price: p.price ?? 0, unit: 'шт', category: 'other' as const, stock_quantity: 0 } as Part : null));
@@ -555,7 +555,7 @@ export default function Orders() {
 
   const addRow = (t: 'work' | 'part') => {
     if (t === 'work') {
-      const row = { work_name: '', part_name: '', quantity: 1, price: 0, discount: applyToAll ? globalDiscount : 0 };
+      const row = { work_name: '', part_name: '', mechanic_id: formData.mechanic_id ?? undefined, quantity: 1, price: 0, discount: applyToAll ? globalDiscount : 0 };
       setFormData(p => ({ ...p, order_works: [...(p.order_works || []), row as any] }));
     } else {
       const row = { part_id: 0, part_name: '', article: '', quantity: 1, price: 0, discount: applyToAll ? globalDiscount : 0 };
@@ -1026,10 +1026,24 @@ export default function Orders() {
                   )}
                 />
               </Grid>
-              <Grid item xs={3} lg={1.2}><TextField fullWidth size="small" label="Кол-во" type="number" value={work.quantity} onChange={e => updateRow('work', idx, 'quantity', e.target.value)} /></Grid>
-              <Grid item xs={3} lg={1.5}><TextField fullWidth size="small" label="Цена" type="number" value={work.price} onChange={e => updateRow('work', idx, 'price', e.target.value)} InputProps={{ endAdornment: '₽' }} /></Grid>
-              <Grid item xs={3} lg={1.2}><TextField fullWidth size="small" label="Скидка" type="number" value={work.discount} onChange={e => updateRow('work', idx, 'discount', e.target.value)} InputProps={{ endAdornment: '%' }} /></Grid>
-              <Grid item xs={2} lg={1.6} sx={{ textAlign: 'right' }}><Typography variant="subtitle1" sx={{ fontWeight: 800, color: 'primary.main' }}>{formatCurrency((Number(work.price) * Number(work.quantity)) * (1 - (Number(work.discount) || 0) / 100))}</Typography></Grid>
+              <Grid item xs={6} lg={2}>
+                <FormControl fullWidth size="small">
+                  <InputLabel>Механик</InputLabel>
+                  <Select
+                    value={(work as any).mechanic_id || ''}
+                    label="Механик"
+                    onChange={e => updateRow('work', idx, 'mechanic_id', e.target.value || null)}
+                    displayEmpty
+                  >
+                    <MenuItem value=""><em>Не задан</em></MenuItem>
+                    {employees.map(e => <MenuItem key={e.id} value={e.id}>{e.full_name}</MenuItem>)}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={3} lg={1}><TextField fullWidth size="small" label="Кол-во" type="number" value={work.quantity} onChange={e => updateRow('work', idx, 'quantity', e.target.value)} /></Grid>
+              <Grid item xs={3} lg={1.3}><TextField fullWidth size="small" label="Цена" type="number" value={work.price} onChange={e => updateRow('work', idx, 'price', e.target.value)} InputProps={{ endAdornment: '₽' }} /></Grid>
+              <Grid item xs={3} lg={1}><TextField fullWidth size="small" label="Скидка" type="number" value={work.discount} onChange={e => updateRow('work', idx, 'discount', e.target.value)} InputProps={{ endAdornment: '%' }} /></Grid>
+              <Grid item xs={2} lg={1.2} sx={{ textAlign: 'right' }}><Typography variant="subtitle1" sx={{ fontWeight: 800, color: 'primary.main' }}>{formatCurrency((Number(work.price) * Number(work.quantity)) * (1 - (Number(work.discount) || 0) / 100))}</Typography></Grid>
               <Grid item xs={1} lg={0.5}><IconButton color="error" size="small" onClick={() => removeRow('work', idx)}><DeleteOutlineRounded fontSize="small" /></IconButton></Grid>
             </Grid></Paper>))}</Stack></Box>
 

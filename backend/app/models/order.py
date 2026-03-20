@@ -93,6 +93,7 @@ class OrderWork(Base):
     order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
     work_id = Column(Integer, ForeignKey("works.id"), nullable=True)  # Nullable для ручного ввода
     work_name = Column(String, nullable=True)  # Название работы при ручном вводе
+    mechanic_id = Column(Integer, ForeignKey("employees.id"), nullable=True)  # Механик по данной работе
     quantity = Column(Integer, nullable=False, default=1)
     price = Column(Numeric(10, 2), nullable=False)
     discount = Column(Numeric(10, 2), nullable=True, default=0)  # Скидка в процентах
@@ -100,6 +101,7 @@ class OrderWork(Base):
 
     order = relationship("Order", back_populates="order_works")
     work = relationship("Work")
+    mechanic = relationship("Employee", foreign_keys=[mechanic_id])
 
 
 class OrderPart(Base):

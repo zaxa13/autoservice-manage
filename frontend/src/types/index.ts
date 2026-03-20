@@ -41,6 +41,8 @@ export interface OrderWork {
   price: number
   total: number
   work: Work
+  mechanic_id?: number | null
+  mechanic?: Employee | null
 }
 
 export interface OrderPart {
@@ -56,6 +58,7 @@ export interface OrderPart {
 export interface OrderWorkCreate {
   work_id?: number | null
   work_name?: string | null
+  mechanic_id?: number | null
   quantity: number
   price: number
   discount?: number | null
@@ -359,4 +362,116 @@ export interface AppointmentUpdate {
   post_id?: number
   order_id?: number
   sort_order?: number
+}
+
+// ── Reports ───────────────────────────────────────────────────────────────────
+
+export interface RevenueByDayItem {
+  date: string
+  revenue: number
+  orders_count: number
+}
+
+export interface RevenueByWorkCategoryItem {
+  category: string
+  category_label: string
+  revenue: number
+  orders_count: number
+}
+
+export interface RevenueByPaymentMethodItem {
+  method: string
+  method_label: string
+  amount: number
+  payments_count: number
+}
+
+export interface RevenueReportResponse {
+  date_from: string
+  date_to: string
+  total_revenue: number
+  total_orders: number
+  avg_check: number
+  by_day: RevenueByDayItem[]
+  by_work_category: RevenueByWorkCategoryItem[]
+  by_payment_method: RevenueByPaymentMethodItem[]
+}
+
+export interface MechanicReportItem {
+  employee_id: number
+  full_name: string
+  orders_completed: number
+  orders_in_progress: number
+  revenue: number
+  avg_check: number
+  works_count: number
+  salary_total: number | null
+}
+
+export interface MechanicsReportResponse {
+  date_from: string
+  date_to: string
+  mechanics: MechanicReportItem[]
+  team_total_revenue: number
+  team_total_orders: number
+  team_avg_check: number
+}
+
+export interface OrderReportItem {
+  id: number
+  number: string
+  status: string
+  status_label: string
+  created_at: string
+  completed_at: string | null
+  customer_name: string | null
+  vehicle_info: string | null
+  mechanic_name: string | null
+  total_amount: number
+  paid_amount: number
+  works_total: number
+  parts_total: number
+}
+
+export interface OrderStatusBreakdownItem {
+  status: string
+  status_label: string
+  count: number
+}
+
+export interface OrdersReportResponse {
+  date_from: string
+  date_to: string
+  total_count: number
+  total_amount: number
+  total_paid: number
+  by_status: OrderStatusBreakdownItem[]
+  orders: OrderReportItem[]
+}
+
+export interface PartUsageItem {
+  part_id: number
+  part_name: string
+  part_number: string
+  category: string
+  category_label: string
+  total_quantity: number
+  total_revenue: number
+  total_cost: number
+  total_margin: number
+  margin_pct: number
+  orders_count: number
+  current_stock: number
+}
+
+export interface PartsReportResponse {
+  date_from: string
+  date_to: string
+  total_parts_revenue: number
+  total_quantity_sold: number
+  total_parts_cost: number
+  total_parts_margin: number
+  total_margin_pct: number
+  top_parts: PartUsageItem[]
+  low_stock_parts: PartUsageItem[]
 }

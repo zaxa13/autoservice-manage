@@ -25,6 +25,7 @@ import {
   BalanceRounded,
   LocalShippingRounded,
   DirectionsCarRounded,
+  AssessmentRounded,
 } from '@mui/icons-material';
 import { useLocation, Link } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
@@ -50,6 +51,7 @@ const menuItems = [
   { text: 'Поставщики', icon: <LocalShippingRounded />, path: '/suppliers' },
   { text: 'Сотрудники', icon: <PeopleAltRounded />, path: '/employees' },
   { text: 'Зарплата', icon: <AccountBalanceWalletRounded />, path: '/salary' },
+  { text: 'Отчёты', icon: <AssessmentRounded />, path: '/reports' },
 ];
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {

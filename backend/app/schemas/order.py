@@ -20,6 +20,7 @@ def _normalize_article(v: Optional[str]) -> Optional[str]:
 class OrderWorkBase(BaseModel):
     work_id: Optional[int] = Field(None, description="ID работы из справочника (null для ручного ввода)")
     work_name: Optional[str] = Field(None, description="Название работы при ручном вводе")
+    mechanic_id: Optional[int] = Field(None, description="ID механика, выполняющего данную работу")
     quantity: int = Field(1, ge=1, description="Количество")
     price: Decimal = Field(..., ge=0, description="Цена за единицу")
     discount: Optional[Decimal] = Field(0, ge=0, le=100, description="Скидка в процентах")
@@ -34,6 +35,7 @@ class OrderWork(OrderWorkBase):
     order_id: int = Field(..., description="ID заказ-наряда")
     total: Decimal = Field(..., description="Итого с учётом скидки")
     work: Optional[Work] = Field(None, description="Данные работы из справочника")
+    mechanic: Optional[Employee] = Field(None, description="Механик, выполняющий работу")
 
     class Config:
         from_attributes = True
