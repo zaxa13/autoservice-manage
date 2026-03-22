@@ -1,124 +1,184 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="doc-title">ЗАКАЗ-НАРЯД № {{ order_number }}</div>
-<div class="doc-meta">
-  <table width="100%"><tr>
-    <td>Дата: <b>{{ created_at }}</b></td>
-    <td align="right">Статус: <b>{{ status_label }}</b></td>
-  </tr></table>
-</div>
 
-<div class="section-title">Клиент</div>
-<table class="info">
-  <tr><td class="label">ФИО:</td><td>{{ customer_name }}</td></tr>
-  <tr><td class="label">Телефон:</td><td>{{ customer_phone }}</td></tr>
-  {% if customer_address %}<tr><td class="label">Адрес:</td><td>{{ customer_address }}</td></tr>{% endif %}
-</table>
+<p style="font-size:10pt; margin:0 0 2px 0;"><b>ПОСТАВЩИК:</b> {{ company_name }}</p>
+<p style="font-size:10pt; margin:0 0 10px 0;">адрес: {{ company_address }} | Тел: {{ company_phone }} | ИНН: {{ company_inn }}</p>
 
-<div class="section-title">Транспортное средство</div>
-<table class="info">
-  <tr><td class="label">Марка / Модель:</td><td><b>{{ vehicle_brand }} {{ vehicle_model }}</b></td></tr>
-  {% if vehicle_year %}<tr><td class="label">Год выпуска:</td><td>{{ vehicle_year }}</td></tr>{% endif %}
-  {% if vehicle_plate %}<tr><td class="label">Гос. номер:</td><td><b>{{ vehicle_plate }}</b></td></tr>{% endif %}
-  {% if vehicle_vin %}<tr><td class="label">VIN:</td><td>{{ vehicle_vin }}</td></tr>{% endif %}
-  {% if mileage %}<tr><td class="label">Пробег при сдаче:</td><td>{{ mileage }} км</td></tr>{% endif %}
-</table>
+<h2 style="text-align:center; font-size:14pt; margin:8px 0;">
+  Заказ-наряд № {{ order_number }} от {{ created_at }}
+</h2>
 
-<div class="section-title">Сотрудники</div>
-<table class="info">
-  {% if accepted_by %}<tr><td class="label">Принял заказ:</td><td>{{ accepted_by }}</td></tr>{% endif %}
-  {% if mechanic_name %}<tr><td class="label">Механик:</td><td>{{ mechanic_name }}</td></tr>
-  {% else %}<tr><td class="label">Механик:</td><td>не назначен</td></tr>{% endif %}
-</table>
-
-{% if works %}
-<div class="section-title">Работы</div>
-<table class="data">
-  <thead>
-    <tr>
-      <th class="c">№</th>
-      <th>Наименование работы</th>
-      <th class="r">Кол-во</th>
-      <th class="r">Цена, руб.</th>
-      {% if has_work_discounts %}<th class="r">Скидка</th>{% endif %}
-      <th class="r">Сумма, руб.</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for w in works %}
-    <tr{% if loop.index is even %} class="alt"{% endif %}>
-      <td class="c">{{ loop.index }}</td>
-      <td>{{ w.name }}</td>
-      <td class="r">{{ w.quantity }}</td>
-      <td class="r">{{ w.price }}</td>
-      {% if has_work_discounts %}<td class="r">{{ w.discount }}%</td>{% endif %}
-      <td class="r"><b>{{ w.total }}</b></td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-{% else %}
-<div class="section-title">Работы</div>
-<p style="font-size:10pt; color:#888; margin: 4px 0 12px 0;">Работы не добавлены</p>
-{% endif %}
-
-{% if parts %}
-<div class="section-title">Запчасти и материалы</div>
-<table class="data">
-  <thead>
-    <tr>
-      <th class="c">№</th>
-      <th>Наименование</th>
-      <th>Артикул</th>
-      <th class="r">Кол-во</th>
-      <th class="r">Цена, руб.</th>
-      {% if has_part_discounts %}<th class="r">Скидка</th>{% endif %}
-      <th class="r">Сумма, руб.</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for p in parts %}
-    <tr{% if loop.index is even %} class="alt"{% endif %}>
-      <td class="c">{{ loop.index }}</td>
-      <td>{{ p.name }}</td>
-      <td>{{ p.article if p.article else '—' }}</td>
-      <td class="r">{{ p.quantity }}</td>
-      <td class="r">{{ p.price }}</td>
-      {% if has_part_discounts %}<td class="r">{{ p.discount }}%</td>{% endif %}
-      <td class="r"><b>{{ p.total }}</b></td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-{% else %}
-<div class="section-title">Запчасти и материалы</div>
-<p style="font-size:10pt; color:#888; margin: 4px 0 12px 0;">Запчасти не добавлены</p>
-{% endif %}
-
-<div class="totals">
-  {% if works_total %}<div class="row">Работы: {{ works_total }} руб.</div>{% endif %}
-  {% if parts_total %}<div class="row">Запчасти: {{ parts_total }} руб.</div>{% endif %}
-  <div class="grand">ИТОГО К ОПЛАТЕ: {{ grand_total }} руб.</div>
-</div>
-
-{% if recommendations %}
-<div class="note-box">
-  <div class="note-title">Рекомендации мастера:</div>
-  {{ recommendations }}
-</div>
-{% endif %}
-
-
-<table class="sig">
+<!-- Информационный блок -->
+<table border="1" cellspacing="0" cellpadding="4" width="100%" style="font-size:10pt; margin-bottom:10px;">
   <tr>
-    <td>
-      <div>Принял / Исполнитель:</div>
-      <div class="sig-line">{{ mechanic_name or accepted_by or '' }}</div>
-    </td>
-    <td>
-      <div>Заказчик:</div>
-      <div class="sig-line">{{ customer_name }}</div>
+    <td colspan="3"><b>Заказчик:</b> {{ customer_name }}</td>
+    <td>адрес заказчика: {{ customer_address or '' }}</td>
+    <td colspan="2">телефоны: {{ customer_phone }}</td>
+  </tr>
+  <tr>
+    <td colspan="2"><b>Автомобиль:</b> {{ vehicle_brand }} {{ vehicle_model }}</td>
+    <td>гос. номер: <b>{{ vehicle_plate or '—' }}</b></td>
+    <td colspan="3">VIN: {{ vehicle_vin or '—' }}</td>
+  </tr>
+  <tr>
+    <td colspan="3"></td>
+    <td colspan="2">год вып. {{ vehicle_year or '—' }}</td>
+    <td>пробег {{ mileage or '—' }}</td>
+  </tr>
+  <tr>
+    <td colspan="6"><b>Плательщик:</b> {{ customer_name }}</td>
+  </tr>
+  <tr>
+    <td style="width:100px;">ИНН</td>
+    <td colspan="3">адрес: {{ customer_address or '' }}</td>
+    <td colspan="2">телефоны: {{ customer_phone }}</td>
+  </tr>
+  <tr>
+    <td style="width:110px;">Принят:<br>{{ created_at }}</td>
+    <td style="width:130px;">Вид ремонта:<br>Текущий ремонт</td>
+    <td>Диспетчер:<br>{{ accepted_by or '' }}</td>
+    <td>Мастер:<br>{{ mechanic_name or '' }}</td>
+    <td colspan="2" style="text-align:center;">
+      <b>{{ status_label }}</b><br>
+      <span style="font-size:9pt;">в валюте: Руб</span>
     </td>
   </tr>
 </table>
+
+<!-- ===== РАБОТЫ ===== -->
+<p style="text-align:center; font-size:11pt; font-weight:bold; margin:10px 0 4px 0;">
+  Работы выполненные по заказ-наряду:
+</p>
+
+<table border="1" cellspacing="0" cellpadding="3" width="100%" style="font-size:9pt;">
+  <thead>
+    <tr style="background:#e0e0e0;">
+      <th style="width:22px;">№</th>
+      <th style="width:70px;">Код</th>
+      <th>Наименование работ/услуг</th>
+      <th style="width:38px;">Кол.<br>оп.</th>
+      {% if has_work_discounts %}<th style="width:45px;">Скидка</th>{% endif %}
+      <th style="width:70px;">Сумма</th>
+      <th style="width:55px;">в т.ч.<br>НДС</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% if works %}
+      {% for w in works %}
+      <tr>
+        <td style="text-align:center;">{{ loop.index }}</td>
+        <td style="text-align:center; font-size:8pt;">{{ w.article }}</td>
+        <td>{{ w.name }}</td>
+        <td style="text-align:center;">{{ w.quantity }}</td>
+        {% if has_work_discounts %}<td style="text-align:center;">{{ w.discount }}%</td>{% endif %}
+        <td style="text-align:right;"><b>{{ w.total }}</b></td>
+        <td style="text-align:right;">0,00</td>
+      </tr>
+      {% endfor %}
+    {% else %}
+      <tr><td colspan="{{ 7 if has_work_discounts else 6 }}" style="text-align:center; color:#888;">Работы не добавлены</td></tr>
+    {% endif %}
+  </tbody>
+  <tfoot>
+    <tr style="background:#f0f0f0;">
+      <td colspan="{{ 4 if has_work_discounts else 3 }}" style="text-align:right; font-weight:bold;">Итого работ на сумму:</td>
+      <td style="text-align:center; font-weight:bold;">{{ works_qty_total }}</td>
+      <td style="text-align:right; font-weight:bold;">{{ works_total or '0,00' }}</td>
+      <td style="text-align:right;">0,00</td>
+    </tr>
+  </tfoot>
+</table>
+{% if works_total_words %}
+<p style="font-size:9pt; margin:2px 0 10px 0;">{{ works_total_words }}</p>
+{% endif %}
+
+<!-- ===== ЗАПЧАСТИ ===== -->
+<p style="text-align:center; font-size:11pt; font-weight:bold; margin:10px 0 4px 0;">
+  Установленные запасные части и материалы:
+</p>
+
+<table border="1" cellspacing="0" cellpadding="3" width="100%" style="font-size:9pt;">
+  <thead>
+    <tr style="background:#e0e0e0;">
+      <th style="width:22px;">№</th>
+      <th style="width:70px;">Код</th>
+      <th>Наименование</th>
+      <th style="width:40px;">Кол-во</th>
+      <th style="width:40px;">Ед.<br>изм.</th>
+      <th style="width:60px;">Цена</th>
+      {% if has_part_discounts %}<th style="width:45px;">Скидка</th>{% endif %}
+      <th style="width:60px;">Сумма</th>
+      <th style="width:55px;">в т.ч.<br>НДС</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% if parts %}
+      {% for p in parts %}
+      <tr>
+        <td style="text-align:center;">{{ loop.index }}</td>
+        <td style="text-align:center; font-size:8pt;">{{ p.article if p.article else '' }}</td>
+        <td>{{ p.name }}</td>
+        <td style="text-align:center;">{{ p.quantity }}</td>
+        <td style="text-align:center;">шт</td>
+        <td style="text-align:right;">{{ p.price }}</td>
+        {% if has_part_discounts %}<td style="text-align:center;">{{ p.discount }}%</td>{% endif %}
+        <td style="text-align:right;"><b>{{ p.total }}</b></td>
+        <td style="text-align:right;">0,00</td>
+      </tr>
+      {% endfor %}
+    {% else %}
+      <tr><td colspan="{{ 9 if has_part_discounts else 8 }}" style="text-align:center; color:#888;">Запчасти не добавлены</td></tr>
+    {% endif %}
+  </tbody>
+  <tfoot>
+    <tr style="background:#f0f0f0;">
+      <td colspan="3" style="text-align:right; font-weight:bold;">Итого материалов на сумму:</td>
+      <td style="text-align:center; font-weight:bold;">{{ parts_qty_total }}</td>
+      <td colspan="{{ 3 if has_part_discounts else 2 }}" style="text-align:right; font-weight:bold;"></td>
+      <td style="text-align:right; font-weight:bold;">{{ parts_total or '0,00' }}</td>
+      <td style="text-align:right;">0,00</td>
+    </tr>
+  </tfoot>
+</table>
+{% if parts_total_words %}
+<p style="font-size:9pt; margin:2px 0 10px 0;">{{ parts_total_words }}</p>
+{% endif %}
+
+<!-- ===== ИТОГО ===== -->
+<table width="100%" cellspacing="0" cellpadding="3" style="font-size:10pt; margin-top:6px;">
+  <tr>
+    <td style="text-align:right; font-weight:bold;">Итого по заказ-наряду:</td>
+    <td style="width:90px; text-align:right; border:1px solid #333; font-weight:bold; font-size:12pt;">{{ grand_total }}</td>
+    <td style="width:60px; text-align:right; border:1px solid #333;">0,00</td>
+  </tr>
+</table>
+<p style="font-size:10pt; font-weight:bold; margin:4px 0 10px 0;">
+  Всего по заказ-наряду: {{ grand_total_words }}
+</p>
+
+{% if recommendations %}
+<div style="border:1px dashed #999; padding:6px; margin:8px 0; font-size:9pt;">
+  <b>Рекомендации:</b> {{ recommendations }}
+</div>
+{% endif %}
+
+<!-- Подписи -->
+<table width="100%" cellspacing="0" cellpadding="3" style="font-size:10pt; margin-top:20px;">
+  <tr>
+    <td style="width:50%;">Дата: {{ created_at }}</td>
+    <td>Заказчик ______________________ /{{ customer_name }}/</td>
+  </tr>
+</table>
+
+<div style="border:1px dashed #999; margin-top:10px; padding:4px; font-size:10pt; min-height:40px;">
+  Причина обращения
+</div>
+
+<p style="font-size:8.5pt; margin-top:12px; line-height:1.5;">
+  <b>Гарантии:</b> Гарантия на работы: слесарные - 30 дней, электрические - 30 дней, оригинальные з/ч - 30 дней,
+  з/ч связанные с электрооборудованием, подачей топлива и системой впрыска - гарантия не предоставляется,
+  на контрактные з/ч - гарантия нет. Гарантийные обязательства на работы выполняются фирмой только при
+  предъявлении акта приемки автомобиля и техпаспорта (доверенности).
+</p>
+
 {% endblock %}
