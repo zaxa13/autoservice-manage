@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, Query, HTTPException, status
+from fastapi.responses import Response
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel
@@ -18,6 +19,7 @@ from app.services.payment_service import (
     cancel_payment,
     cancel_all_payments,
 )
+from app.services.pdf_service import generate_order_pdf, generate_act_pdf
 from app.core.permissions import require_manager_or_admin, require_admin
 from app.core.exceptions import NotFoundException, BadRequestException
 
@@ -508,3 +510,43 @@ def update_order_payment(
     db.refresh(payment)
 
     return payment
+
+
+@router.get(
+    "/{order_id}/print",
+    status_code=status.HTTP_200_OK,
+    summary="PDF заказ-наряда",
+    description="Генерирует и возвращает PDF-файл заказ-наряда.",
+    responses={**_auth, **_404},
+)
+def print_order(
+    order_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    pdf_bytes = generate_order_pdf(db, order_id)
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"inline; filename=order-{order_id}.pdf"},
+    )
+
+
+@router.get(
+    "/{order_id}/print-act",
+    status_code=status.HTTP_200_OK,
+    summary="PDF акта выполненных работ",
+    description="Генерирует и возвращает PDF-файл акта выполненных работ.",
+    responses={**_auth, **_404},
+)
+def print_act(
+    order_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    pdf_bytes = generate_act_pdf(db, order_id)
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"inline; filename=act-{order_id}.pdf"},
+    )

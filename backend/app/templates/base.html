@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<style>
+  {% if font_path %}
+  @font-face {
+    font-family: DocFont;
+    src: url({{ font_path }});
+  }
+  {% endif %}
+  @page {
+    size: A4;
+    margin: 15mm 15mm 15mm 15mm;
+  }
+  body {
+    font-family: {% if font_path %}DocFont{% else %}sans-serif{% endif %};
+    font-size: 11pt;
+    color: #1a1a1a;
+    margin: 0;
+    padding: 0;
+    line-height: 1.4;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 14px;
+    border-bottom: 2px solid #333;
+    padding-bottom: 8px;
+  }
+  .company-name {
+    font-size: 16pt;
+    font-weight: bold;
+  }
+  .company-info {
+    font-size: 9pt;
+    color: #555;
+  }
+  .doc-title {
+    text-align: center;
+    font-size: 14pt;
+    font-weight: bold;
+    margin: 16px 0 10px 0;
+  }
+  .doc-meta {
+    margin-bottom: 12px;
+    font-size: 10pt;
+  }
+  .section-title {
+    font-size: 11pt;
+    font-weight: bold;
+    margin: 12px 0 6px 0;
+    padding: 3px 6px;
+    background: #eeeeee;
+    border-left: 3px solid #333;
+  }
+  table.info {
+    width: 100%;
+    font-size: 10pt;
+    margin-bottom: 8px;
+    border-collapse: collapse;
+  }
+  table.info td {
+    padding: 2px 4px;
+    vertical-align: top;
+  }
+  table.info td.label {
+    font-weight: bold;
+    color: #555;
+    white-space: nowrap;
+    width: 140px;
+  }
+  table.data {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 6px 0 12px 0;
+    font-size: 10pt;
+  }
+  table.data th {
+    background: #333333;
+    color: #ffffff;
+    padding: 5px 6px;
+    text-align: left;
+    font-weight: 600;
+  }
+  table.data th.c { text-align: center; width: 28px; }
+  table.data th.r { text-align: right; }
+  table.data td {
+    padding: 4px 6px;
+    border-bottom: 1px solid #dddddd;
+  }
+  table.data td.c { text-align: center; }
+  table.data td.r { text-align: right; white-space: nowrap; }
+  table.data tr.alt { background: #fafafa; }
+  .totals {
+    text-align: right;
+    margin: 8px 0;
+    font-size: 11pt;
+  }
+  .totals .row { margin-bottom: 3px; }
+  .totals .grand {
+    font-size: 13pt;
+    font-weight: bold;
+    border-top: 2px solid #333;
+    padding-top: 5px;
+    margin-top: 5px;
+  }
+  table.sig {
+    width: 100%;
+    margin-top: 40px;
+    font-size: 10pt;
+    border-collapse: collapse;
+  }
+  table.sig td {
+    width: 50%;
+    padding: 0 10px;
+    vertical-align: top;
+  }
+  .sig-line {
+    border-bottom: 1px solid #333;
+    margin-top: 28px;
+    padding-bottom: 2px;
+  }
+  .note-box {
+    margin-top: 12px;
+    padding: 8px;
+    border: 1px dashed #999;
+    font-size: 10pt;
+  }
+  .note-title { font-weight: bold; margin-bottom: 4px; }
+</style>
+{% block extra_styles %}{% endblock %}
+</head>
+<body>
+  <div class="header">
+    <div class="company-name">{{ company_name }}</div>
+    <div class="company-info">{{ company_address }} | Тел: {{ company_phone }} | ИНН: {{ company_inn }}</div>
+  </div>
+  {% block content %}{% endblock %}
+  <p style="font-size: 8pt; color: #999; text-align: center; margin-top: 20px;">
+    Документ сформирован автоматически — {{ generated_at }}
+  </p>
+</body>
+</html>

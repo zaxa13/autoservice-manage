@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="doc-title">АКТ ВЫПОЛНЕННЫХ РАБОТ</div>
+<div class="doc-meta">
+  <table width="100%"><tr>
+    <td>К заказ-наряду № <b>{{ order_number }}</b> от {{ created_at }}</td>
+    <td align="right">Дата завершения: <b>{{ completed_at or '—' }}</b></td>
+  </tr></table>
+</div>
+
+<div class="section-title">Клиент</div>
+<table class="info">
+  <tr><td class="label">ФИО:</td><td>{{ customer_name }}</td></tr>
+  <tr><td class="label">Телефон:</td><td>{{ customer_phone }}</td></tr>
+  {% if customer_address %}<tr><td class="label">Адрес:</td><td>{{ customer_address }}</td></tr>{% endif %}
+</table>
+
+<div class="section-title">Транспортное средство</div>
+<table class="info">
+  <tr><td class="label">Марка / Модель:</td><td><b>{{ vehicle_brand }} {{ vehicle_model }}</b></td></tr>
+  {% if vehicle_year %}<tr><td class="label">Год выпуска:</td><td>{{ vehicle_year }}</td></tr>{% endif %}
+  {% if vehicle_plate %}<tr><td class="label">Гос. номер:</td><td><b>{{ vehicle_plate }}</b></td></tr>{% endif %}
+  {% if vehicle_vin %}<tr><td class="label">VIN:</td><td>{{ vehicle_vin }}</td></tr>{% endif %}
+  {% if mileage %}<tr><td class="label">Пробег при сдаче:</td><td>{{ mileage }} км</td></tr>{% endif %}
+</table>
+
+<div class="section-title">Сотрудники</div>
+<table class="info">
+  {% if accepted_by %}<tr><td class="label">Принял заказ:</td><td>{{ accepted_by }}</td></tr>{% endif %}
+  {% if mechanic_name %}<tr><td class="label">Механик:</td><td>{{ mechanic_name }}</td></tr>{% endif %}
+</table>
+
+{% if works %}
+<div class="section-title">Выполненные работы</div>
+<table class="data">
+  <thead>
+    <tr>
+      <th class="c">№</th>
+      <th>Наименование работы</th>
+      <th class="r">Кол-во</th>
+      <th class="r">Цена, руб.</th>
+      {% if has_work_discounts %}<th class="r">Скидка</th>{% endif %}
+      <th class="r">Сумма, руб.</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for w in works %}
+    <tr{% if loop.index is even %} class="alt"{% endif %}>
+      <td class="c">{{ loop.index }}</td>
+      <td>{{ w.name }}</td>
+      <td class="r">{{ w.quantity }}</td>
+      <td class="r">{{ w.price }}</td>
+      {% if has_work_discounts %}<td class="r">{{ w.discount }}%</td>{% endif %}
+      <td class="r"><b>{{ w.total }}</b></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+{% if parts %}
+<div class="section-title">Использованные запчасти и материалы</div>
+<table class="data">
+  <thead>
+    <tr>
+      <th class="c">№</th>
+      <th>Наименование</th>
+      <th>Артикул</th>
+      <th class="r">Кол-во</th>
+      <th class="r">Цена, руб.</th>
+      {% if has_part_discounts %}<th class="r">Скидка</th>{% endif %}
+      <th class="r">Сумма, руб.</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for p in parts %}
+    <tr{% if loop.index is even %} class="alt"{% endif %}>
+      <td class="c">{{ loop.index }}</td>
+      <td>{{ p.name }}</td>
+      <td>{{ p.article if p.article else '—' }}</td>
+      <td class="r">{{ p.quantity }}</td>
+      <td class="r">{{ p.price }}</td>
+      {% if has_part_discounts %}<td class="r">{{ p.discount }}%</td>{% endif %}
+      <td class="r"><b>{{ p.total }}</b></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+<div class="totals">
+  {% if works_total %}<div class="row">Работы: {{ works_total }} руб.</div>{% endif %}
+  {% if parts_total %}<div class="row">Запчасти: {{ parts_total }} руб.</div>{% endif %}
+  <div class="grand">ИТОГО: {{ grand_total }} руб.</div>
+  <div class="row" style="margin-top: 6px; font-size: 11pt;">Оплачено: <b>{{ paid_amount }}</b> руб.</div>
+</div>
+
+{% if recommendations %}
+<div class="note-box">
+  <div class="note-title">Рекомендации мастера:</div>
+  {{ recommendations }}
+</div>
+{% endif %}
+
+{% if comments %}
+<div class="note-box">
+  <div class="note-title">Комментарии:</div>
+  {{ comments }}
+</div>
+{% endif %}
+
+<p style="margin-top: 16px; font-size: 10pt;">
+  Вышеперечисленные работы выполнены в полном объёме.
+  Заказчик претензий по объёму, качеству и срокам оказания услуг не имеет.
+</p>
+
+<table class="sig">
+  <tr>
+    <td>
+      <div>Исполнитель:</div>
+      <div class="sig-line">{{ mechanic_name or accepted_by or '' }}</div>
+    </td>
+    <td>
+      <div>Заказчик (подпись / расшифровка):</div>
+      <div class="sig-line">{{ customer_name }}</div>
+    </td>
+  </tr>
+</table>
+{% endblock %}

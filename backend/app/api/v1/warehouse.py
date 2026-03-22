@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, Query, HTTPException, status
+from fastapi.responses import Response
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 from typing import List, Optional
@@ -382,3 +383,25 @@ def post_receipt(
             detail="У пользователя не привязан сотрудник",
         )
     return post_receipt_document(db, receipt_id, current_user.employee_id)
+
+
+@router.get(
+    "/receipts/{receipt_id}/print",
+    status_code=status.HTTP_200_OK,
+    summary="PDF приходной накладной",
+    description="Генерирует и возвращает PDF-файл приходной накладной.",
+    responses={**_auth, **_404_receipt},
+)
+def print_receipt(
+    receipt_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    from app.services.pdf_service import generate_receipt_pdf
+
+    pdf_bytes = generate_receipt_pdf(db, receipt_id)
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"inline; filename=receipt-{receipt_id}.pdf"},
+    )

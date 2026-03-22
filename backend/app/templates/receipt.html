@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="doc-title">ПРИХОДНАЯ НАКЛАДНАЯ № {{ receipt.number }}</div>
+<div class="doc-meta">
+  <table width="100%"><tr>
+    <td>Дата документа: {{ document_date }}</td>
+    <td align="right">Статус: <b>{{ status_label }}</b></td>
+  </tr></table>
+</div>
+
+{% if supplier_name %}
+<div class="section-title">Поставщик</div>
+<table class="info">
+  <tr><td class="label">Наименование:</td><td>{{ supplier_name }}</td></tr>
+  {% if supplier_inn %}<tr><td class="label">ИНН:</td><td>{{ supplier_inn }}</td></tr>{% endif %}
+  {% if supplier_address %}<tr><td class="label">Адрес:</td><td>{{ supplier_address }}</td></tr>{% endif %}
+  {% if supplier_contact %}<tr><td class="label">Контакт:</td><td>{{ supplier_contact }}</td></tr>{% endif %}
+</table>
+{% endif %}
+
+{% if supplier_doc_number %}
+<table class="info" style="margin-top: 6px;">
+  <tr>
+    <td class="label">Документ поставщика:</td>
+    <td>№ {{ supplier_doc_number }}{% if supplier_doc_date %} от {{ supplier_doc_date }}{% endif %}</td>
+  </tr>
+</table>
+{% endif %}
+
+<div class="section-title">Товарные позиции</div>
+<table class="data">
+  <thead>
+    <tr>
+      <th class="c">№</th>
+      <th>Наименование</th>
+      <th>Артикул</th>
+      <th class="r">Кол-во</th>
+      <th class="r">Закуп. цена</th>
+      <th class="r">Цена продажи</th>
+      <th class="r">Сумма</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for line in lines %}
+    <tr{% if loop.index is even %} class="alt"{% endif %}>
+      <td class="c">{{ loop.index }}</td>
+      <td>{{ line.name }}</td>
+      <td>{{ line.article or '—' }}</td>
+      <td class="r">{{ line.quantity }}</td>
+      <td class="r">{{ line.purchase_price }}</td>
+      <td class="r">{{ line.sale_price }}</td>
+      <td class="r">{{ line.line_total }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<div class="totals">
+  <div class="grand">ИТОГО: {{ total_amount }} руб.</div>
+</div>
+
+<table class="sig">
+  <tr>
+    <td><div>Принял:</div><div class="sig-line"></div></td>
+    <td><div>Сдал:</div><div class="sig-line"></div></td>
+  </tr>
+</table>
+{% endblock %}

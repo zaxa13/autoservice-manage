@@ -33,8 +33,10 @@ structlog==23.2.0
 # Утилиты
 python-dateutil==2.8.2
 
+# Генерация PDF
+xhtml2pdf==0.2.16
+
 # Тестирование
 pytest==7.4.3
 pytest-asyncio==0.21.1
-httpx==0.25.2
 
