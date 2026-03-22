@@ -22,6 +22,16 @@ async def lifespan(app: FastAPI):
     logger.info(f"ACCESS_TOKEN_EXPIRE_MINUTES: {settings.ACCESS_TOKEN_EXPIRE_MINUTES}")
     if not settings.SECRET_KEY or not settings.SECRET_KEY.strip():
         logger.error("CRITICAL: SECRET_KEY не установлен или пустой!")
+
+    from app.database import SessionLocal
+    from app.services.cashflow_service import seed_system_categories
+    db = SessionLocal()
+    try:
+        seed_system_categories(db)
+        logger.info("Cashflow system categories seeded")
+    finally:
+        db.close()
+
     yield
     logger.info("Shutting down Autoservice Management API")
 

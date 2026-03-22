@@ -482,8 +482,27 @@ def update_order_payment(
     if not payment:
         raise NotFoundException("Платёж не найден")
 
+    old_method = payment.payment_method
     payment.amount = payment_update.amount
     payment.payment_method = payment_update.payment_method
+
+    db.flush()
+
+    # Синхронизируем кассовую транзакцию
+    from app.services.cashflow_service import adjust_order_cashflow_transaction
+    adjust_order_cashflow_transaction(
+        db,
+        order_id=order_id,
+        new_amount=payment_update.amount,
+        new_payment_method=payment_update.payment_method.value,
+        payment_id=payment_id,
+    )
+
+    # Пересчитываем paid_amount и статус заказа
+    from app.services.payment_service import recalc_order_paid_amount, _recalc_order_total_amount, _update_order_status_after_payment_change
+    _recalc_order_total_amount(order)
+    recalc_order_paid_amount(db, order)
+    _update_order_status_after_payment_change(order)
 
     db.commit()
     db.refresh(payment)

@@ -69,3 +69,35 @@ def get_current_user(
     
     logger.info(f"User authenticated successfully: username={username}, user_id={user.id}")
     return user
+
+
+def get_optional_user(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(bearer_scheme),
+    token_oauth: Optional[str] = Depends(oauth2_scheme),
+    db: Session = Depends(get_db)
+) -> Optional[User]:
+    """Зависимость для получения текущего пользователя без обязательной авторизации.
+    Возвращает None если токен отсутствует, пользователь не найден или токен невалиден.
+    """
+    token = None
+    if credentials is not None and hasattr(credentials, 'credentials'):
+        token = credentials.credentials
+    elif token_oauth:
+        token = token_oauth
+
+    if not token:
+        return None
+
+    payload = decode_access_token(token)
+    if payload is None:
+        return None
+
+    username: str = payload.get("sub")
+    if username is None:
+        return None
+
+    user = db.query(User).filter(User.username == username).first()
+    if user is None or not user.is_active:
+        return None
+
+    return user

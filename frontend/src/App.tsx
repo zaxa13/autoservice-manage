@@ -19,6 +19,7 @@ import Employees from './pages/Employees'
 import Salary from './pages/Salary'
 import Vehicles from './pages/Vehicles'
 import Reports from './pages/Reports'
+import Cashflow from './pages/Cashflow'
 
 // Импорт стора
 import { useAuthStore } from './store/authStore'
@@ -128,6 +129,14 @@ function AppRoutes() {
         element={
           <PrivateRoute>
             <Reports />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/cashflow"
+        element={
+          <PrivateRoute>
+            <Cashflow />
           </PrivateRoute>
         }
       />

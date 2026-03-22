@@ -364,6 +364,106 @@ export interface AppointmentUpdate {
   sort_order?: number
 }
 
+// ── Cashflow ──────────────────────────────────────────────────────────────────
+
+export type AccountType = 'cash' | 'bank'
+export type CashTransactionType = 'income' | 'expense' | 'transfer'
+
+export interface CashAccount {
+  id: number
+  name: string
+  account_type: AccountType
+  initial_balance: number
+  current_balance: number
+  is_active: boolean
+  created_at: string
+}
+
+export interface CashAccountCreate {
+  name: string
+  account_type: AccountType
+  initial_balance: number
+}
+
+export interface CashAccountUpdate {
+  name?: string
+  is_active?: boolean
+}
+
+export interface TransactionCategory {
+  id: number
+  name: string
+  transaction_type: CashTransactionType
+  is_system: boolean
+  is_active: boolean
+}
+
+export interface TransactionCategoryCreate {
+  name: string
+  transaction_type: CashTransactionType
+}
+
+export interface AccountShort {
+  id: number
+  name: string
+  account_type: AccountType
+}
+
+export interface CategoryShort {
+  id: number
+  name: string
+  transaction_type: CashTransactionType
+}
+
+export interface CashTransaction {
+  id: number
+  transaction_type: CashTransactionType
+  account_id: number
+  account: AccountShort
+  to_account_id: number | null
+  to_account: AccountShort | null
+  category_id: number
+  category: CategoryShort
+  amount: number
+  description: string | null
+  transaction_date: string
+  created_at: string
+  order_id: number | null
+  salary_id: number | null
+}
+
+export interface CashTransactionCreate {
+  transaction_type: CashTransactionType
+  account_id: number
+  to_account_id?: number | null
+  category_id: number
+  amount: number
+  description?: string | null
+  transaction_date?: string | null
+  order_id?: number | null
+  salary_id?: number | null
+}
+
+export interface CashTransactionUpdate {
+  amount?: number
+  description?: string | null
+  transaction_date?: string | null
+  category_id?: number
+}
+
+export interface CashflowListResponse {
+  total: number
+  items: CashTransaction[]
+}
+
+export interface CashflowSummary {
+  total_balance: number
+  total_income: number
+  total_expense: number
+  net_flow: number
+  accounts: CashAccount[]
+}
+
 // ── Reports ───────────────────────────────────────────────────────────────────
 
 export interface RevenueByDayItem {

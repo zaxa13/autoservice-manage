@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.models.user import User
@@ -86,23 +86,42 @@ def calculate_employee_salary(
     response_model=SalarySchema,
     status_code=status.HTTP_200_OK,
     summary="Отметить зарплату как выплаченную",
-    description="Устанавливает статус PAID и фиксирует дату выплаты.",
+    description=(
+        "Устанавливает статус PAID и фиксирует дату выплаты. "
+        "Автоматически создаёт расходную операцию в кассе (если есть активный счёт). "
+        "Опционально принять `account_id` в query-параметре для выбора конкретного счёта."
+    ),
     responses={**_auth, **_404},
 )
 def mark_salary_paid(
     salary_id: int,
+    account_id: Optional[int] = Query(None, description="ID кассового счёта для списания"),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_accountant_or_admin),
 ):
     from datetime import datetime
     from app.models.salary import SalaryStatus
+    from app.models.employee import Employee
+    from app.services.cashflow_service import record_salary_payment
 
     salary = db.query(Salary).filter(Salary.id == salary_id).first()
     if not salary:
         raise NotFoundException("Расчет зарплаты не найден")
 
+    employee = db.query(Employee).filter(Employee.id == salary.employee_id).first()
+    employee_name = employee.full_name if employee else f"Сотрудник #{salary.employee_id}"
+
     salary.status = SalaryStatus.PAID
     salary.paid_at = datetime.utcnow()
+
+    record_salary_payment(
+        db,
+        salary_id=salary_id,
+        amount=salary.total,
+        employee_name=employee_name,
+        account_id=account_id,
+    )
+
     db.commit()
     db.refresh(salary)
     return salary

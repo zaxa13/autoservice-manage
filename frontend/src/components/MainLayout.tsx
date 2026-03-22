@@ -13,6 +13,7 @@ import {
   InventoryRounded,
   PeopleAltRounded,
   AccountBalanceWalletRounded,
+  CurrencyRubleRounded,
   LogoutRounded,
   EmailRounded,
   AdminPanelSettingsRounded,
@@ -51,6 +52,7 @@ const menuItems = [
   { text: 'Поставщики', icon: <LocalShippingRounded />, path: '/suppliers' },
   { text: 'Сотрудники', icon: <PeopleAltRounded />, path: '/employees' },
   { text: 'Зарплата', icon: <AccountBalanceWalletRounded />, path: '/salary' },
+  { text: 'Касса', icon: <CurrencyRubleRounded />, path: '/cashflow' },
   { text: 'Отчёты', icon: <AssessmentRounded />, path: '/reports' },
 ];
 

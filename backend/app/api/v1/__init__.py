@@ -3,7 +3,7 @@ from app.api.v1 import (
     auth, users, orders, vehicles, customers, works, parts,
     warehouse, employees, salary, payments, integrations,
     appointments, appointment_posts, vehicle_brands, suppliers,
-    dashboard, settings_api, reports,
+    dashboard, settings_api, reports, cashflow,
 )
 
 api_router = APIRouter()
@@ -27,3 +27,4 @@ api_router.include_router(appointment_posts.router, prefix="/appointment-posts",
 api_router.include_router(vehicle_brands.router, prefix="/vehicle-brands", tags=["Марки и модели"])
 api_router.include_router(settings_api.router, prefix="/settings", tags=["Настройки"])
 api_router.include_router(reports.router, prefix="/reports", tags=["Отчёты"])
+api_router.include_router(cashflow.router, prefix="/cashflow", tags=["Касса и денежные потоки"])

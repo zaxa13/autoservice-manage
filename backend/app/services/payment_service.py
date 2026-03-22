@@ -2,6 +2,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import List, Optional
 
+
 from sqlalchemy.orm import Session
 
 from app.models.order import Order, OrderStatus
@@ -45,16 +46,12 @@ def _update_order_status_after_payment_change(order: Order) -> None:
     # Полностью оплачен
     if order.paid_amount >= order.total_amount - Decimal("0.01"):
         order.status = OrderStatus.PAID
-    # Частично или не оплачен
+    # Частично оплачен
+    elif order.paid_amount > Decimal("0"):
+        order.status = OrderStatus.READY_FOR_PAYMENT
+    # Не оплачен совсем
     else:
-        if order.paid_amount > Decimal("0"):
-            # Можно пометить как READY_FOR_PAYMENT, если был NEW
-            if order.status == OrderStatus.NEW:
-                order.status = OrderStatus.READY_FOR_PAYMENT
-        else:
-            # Если оплат больше нет, а статус был PAID, откатываем
-            if order.status == OrderStatus.PAID:
-                order.status = OrderStatus.READY_FOR_PAYMENT
+        order.status = OrderStatus.READY_FOR_PAYMENT
 
 
 def get_payments_for_order(db: Session, order_id: int) -> List[Payment]:
@@ -73,6 +70,7 @@ def create_manual_payment(
     order_id: int,
     amount: Decimal,
     payment_method: PaymentMethod,
+    cashflow_account_id: Optional[int] = None,
 ) -> Order:
     """Создать ручной платеж (наличные / карта и т.п.) и обновить заказ."""
     if amount <= Decimal("0"):
@@ -96,6 +94,17 @@ def create_manual_payment(
     recalc_order_paid_amount(db, order)
     _update_order_status_after_payment_change(order)
 
+    # Автоматически фиксируем приход в кассе
+    from app.services.cashflow_service import record_order_payment
+    record_order_payment(
+        db,
+        order_id=order_id,
+        amount=amount,
+        account_id=cashflow_account_id,
+        payment_method=payment_method.value,
+        payment_id=payment.id,
+    )
+
     db.commit()
     db.refresh(order)
     return order
@@ -108,6 +117,11 @@ def cancel_payment(
     amount: Optional[Decimal],
 ) -> Order:
     """Отменить платеж полностью или частично и обновить заказ."""
+    from app.services.cashflow_service import (
+        reverse_order_cashflow_transaction,
+        adjust_order_cashflow_transaction,
+    )
+
     order = _get_order_or_404(db, order_id)
 
     payment = (
@@ -121,9 +135,15 @@ def cancel_payment(
     if payment.status != PaymentStatus.SUCCEEDED:
         raise BadRequestException("Можно отменить только успешный платеж")
 
+    original_amount = payment.amount
+
     if amount is None:
-        # Полная отмена платежа
+        # Полная отмена — сторнируем всю сумму конкретного платежа
         payment.status = PaymentStatus.CANCELLED
+        db.flush()
+        reverse_order_cashflow_transaction(
+            db, order_id, payment_id=payment_id, match_amount=original_amount
+        )
     else:
         amount = Decimal(str(amount))
         if amount <= Decimal("0"):
@@ -134,8 +154,12 @@ def cancel_payment(
         if amount == payment.amount:
             # Полная отмена
             payment.status = PaymentStatus.CANCELLED
+            db.flush()
+            reverse_order_cashflow_transaction(
+                db, order_id, payment_id=payment_id, match_amount=original_amount
+            )
         else:
-            # Частичная отмена: уменьшаем исходный платеж и фиксируем возврат отдельной записью
+            # Частичная отмена: уменьшаем платёж, создаём REFUNDED-запись
             payment.amount = payment.amount - amount
             refund = Payment(
                 order_id=order.id,
@@ -144,8 +168,12 @@ def cancel_payment(
                 status=PaymentStatus.REFUNDED,
             )
             db.add(refund)
+            db.flush()
+            # Сторнируем частичную сумму конкретного платежа
+            reverse_order_cashflow_transaction(
+                db, order_id, reversal_amount=amount, payment_id=payment_id, match_amount=original_amount
+            )
 
-    # Пересчитываем сумму заказов и оплат и статус заказа
     _recalc_order_total_amount(order)
     recalc_order_paid_amount(db, order)
     _update_order_status_after_payment_change(order)
@@ -157,13 +185,21 @@ def cancel_payment(
 
 def cancel_all_payments(db: Session, order_id: int) -> Order:
     """Отменить все успешные платежи по заказу и обновить заказ."""
+    from app.services.cashflow_service import reverse_order_cashflow_transaction
+
     order = _get_order_or_404(db, order_id)
 
-    for payment in order.payments:
-        if payment.status == PaymentStatus.SUCCEEDED:
-            payment.status = PaymentStatus.CANCELLED
+    succeeded = [p for p in order.payments if p.status == PaymentStatus.SUCCEEDED]
 
-    # Пересчитываем сумму заказов и оплат и статус заказа
+    for payment in succeeded:
+        original_amount = payment.amount
+        original_payment_id = payment.id
+        payment.status = PaymentStatus.CANCELLED
+        db.flush()
+        reverse_order_cashflow_transaction(
+            db, order_id, payment_id=original_payment_id, match_amount=original_amount
+        )
+
     _recalc_order_total_amount(order)
     recalc_order_paid_amount(db, order)
     _update_order_status_after_payment_change(order)
