@@ -11,6 +11,18 @@ class SalaryStatus(str, enum.Enum):
     PAID = "paid"
 
 
+class SalaryScheme(Base):
+    __tablename__ = "salary_schemes"
+
+    id = Column(Integer, primary_key=True, index=True)
+    employee_id = Column(Integer, ForeignKey("employees.id"), unique=True, nullable=False)
+    works_percentage = Column(Numeric(5, 2), nullable=False, default=0)
+    revenue_percentage = Column(Numeric(5, 2), nullable=False, default=0)
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    employee = relationship("Employee", back_populates="salary_scheme")
+
+
 class Salary(Base):
     __tablename__ = "salaries"
 

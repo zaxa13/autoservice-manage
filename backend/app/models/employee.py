@@ -29,5 +29,6 @@ class Employee(Base):
     orders_created = relationship("Order", foreign_keys="Order.employee_id", back_populates="employee")
     orders_mechanic = relationship("Order", foreign_keys="Order.mechanic_id", back_populates="mechanic")
     warehouse_transactions = relationship("WarehouseTransaction", back_populates="employee")
+    salary_scheme = relationship("SalaryScheme", back_populates="employee", uselist=False)
     salaries = relationship("Salary", back_populates="employee")
 

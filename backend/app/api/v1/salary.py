@@ -5,11 +5,11 @@ from app.database import get_db
 from app.dependencies import get_current_user
 from app.models.user import User
 from app.models.salary import Salary
-from app.schemas.salary import Salary as SalarySchema, SalaryCalculate, SalaryUpdate
+from app.schemas.salary import Salary as SalarySchema, SalaryCalculate, SalaryUpdate, SalarySchemeUpdate, SalarySchemeResponse
 from app.schemas.responses import ErrorResponse
-from app.services.salary_service import calculate_salary
+from app.services.salary_service import calculate_salary, get_salary_scheme, update_salary_scheme
 from app.core.exceptions import NotFoundException
-from app.core.permissions import require_accountant_or_admin
+from app.core.permissions import require_accountant_or_admin, require_admin
 
 router = APIRouter()
 
@@ -102,11 +102,25 @@ def mark_salary_paid(
     from datetime import datetime
     from app.models.salary import SalaryStatus
     from app.models.employee import Employee
-    from app.services.cashflow_service import record_salary_payment
+    from app.models.cashflow import Account
+    from app.services.cashflow_service import record_salary_payment, _calc_account_balance
 
     salary = db.query(Salary).filter(Salary.id == salary_id).first()
     if not salary:
         raise NotFoundException("Расчет зарплаты не найден")
+
+    # Проверяем баланс выбранного счёта
+    if account_id:
+        account = db.query(Account).filter(Account.id == account_id, Account.is_active == True).first()
+        if not account:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Счёт не найден")
+        balance = _calc_account_balance(db, account)
+        if balance < salary.total:
+            shortage = salary.total - balance
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Недостаточно средств на счёте «{account.name}». Не хватает {shortage:.2f} руб."
+            )
 
     employee = db.query(Employee).filter(Employee.id == salary.employee_id).first()
     employee_name = employee.full_name if employee else f"Сотрудник #{salary.employee_id}"
@@ -125,3 +139,34 @@ def mark_salary_paid(
     db.commit()
     db.refresh(salary)
     return salary
+
+
+@router.get(
+    "/scheme/{employee_id}",
+    response_model=SalarySchemeResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Получить схему зарплаты сотрудника",
+    responses={**_auth, **_404},
+)
+def get_employee_salary_scheme(
+    employee_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_accountant_or_admin),
+):
+    return get_salary_scheme(db, employee_id)
+
+
+@router.put(
+    "/scheme/{employee_id}",
+    response_model=SalarySchemeResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Сохранить схему зарплаты сотрудника",
+    responses={**_auth, **_404},
+)
+def set_employee_salary_scheme(
+    employee_id: int,
+    data: SalarySchemeUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_accountant_or_admin),
+):
+    return update_salary_scheme(db, employee_id, data)

@@ -82,6 +82,7 @@ class OrderCreate(OrderBase):
 
 
 class OrderUpdate(BaseModel):
+    employee_id: Optional[int] = Field(None, description="ID ответственного менеджера")
     mechanic_id: Optional[int] = Field(None, description="ID механика")
     status: Optional[OrderStatus] = Field(None, description="Статус заказ-наряда")
     paid_amount: Optional[Decimal] = Field(None, ge=0, description="Сумма оплаты")

@@ -5,6 +5,24 @@ from decimal import Decimal
 from app.models.salary import SalaryStatus
 
 
+class SalarySchemeBase(BaseModel):
+    works_percentage: Decimal = Field(0, ge=0, le=100, description="% от суммы работ (для механика)")
+    revenue_percentage: Decimal = Field(0, ge=0, le=100, description="% от личной выручки (для менеджера)")
+
+
+class SalarySchemeUpdate(SalarySchemeBase):
+    pass
+
+
+class SalarySchemeResponse(SalarySchemeBase):
+    id: Optional[int] = None
+    employee_id: int
+    updated_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
 class SalaryBase(BaseModel):
     employee_id: int = Field(..., description="ID сотрудника")
     period_start: date = Field(..., description="Начало расчётного периода")

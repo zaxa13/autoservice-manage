@@ -104,6 +104,9 @@ def update_order(db: Session, order_id: int, order_update: OrderUpdate) -> Order
     if not order:
         raise NotFoundException("Заказ-наряд не найден")
     
+    if order_update.employee_id is not None:
+        order.employee_id = order_update.employee_id
+
     if order_update.mechanic_id is not None:
         order.mechanic_id = order_update.mechanic_id
     
