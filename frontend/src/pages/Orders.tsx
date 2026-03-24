@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import {
   Container, Typography, Box, Button, Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, Paper, Dialog, TextField, IconButton, CircularProgress,
-  Alert, Divider, Stack, alpha, AppBar, Toolbar, InputAdornment, Checkbox,
+  Alert, Stack, alpha, AppBar, Toolbar, InputAdornment, Checkbox,
   FormControlLabel, Avatar, Tabs, Tab, Grid, Collapse, MenuItem, FormControl,
   InputLabel, Select, Chip, Tooltip, DialogTitle, DialogContent, DialogContentText, DialogActions,
   Autocomplete, Snackbar, Popover
@@ -11,16 +11,16 @@ import {
 import { Search as SearchIcon } from '@mui/icons-material';
 import {
   AddRounded, ArrowBackRounded, DeleteOutlineRounded, DirectionsCarFilledRounded,
-  BuildCircleRounded, ShoppingBagRounded, PercentRounded, NumbersRounded, BadgeRounded,
+  BuildCircleRounded, ShoppingBagRounded,
   SaveRounded, CommentRounded, EngineeringRounded, PaymentRounded, CheckCircleRounded,
   EditRounded, RestartAltRounded, WarningAmberRounded, HistoryRounded, LocalAtmRounded,
   CreditCardRounded, AccountBalanceWalletRounded, ContactPhoneRounded, SpeedRounded,
-  PhoneRounded, PersonRounded, SearchOffRounded, ContentCopyRounded,
+  PhoneRounded, PersonRounded, SearchOffRounded, ContentCopyRounded, PrintRounded, DescriptionRounded,
 } from '@mui/icons-material';
 import { formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import api from '../services/api';
-import { Order, OrderCreate, Vehicle, OrderWorkCreate, OrderPartCreate, Employee, OrderStatusInfo, OrderDetail, VehicleHistoryOrder, User, Customer, CustomerCreate, Part, Work } from '../types';
+import type { Order, OrderCreate, Vehicle, Employee, OrderStatusInfo, OrderDetail, VehicleHistoryOrder, User, Customer, CustomerCreate, Part, Work, BrandRef, ModelRef, OrderPayment } from '../types';
 
 // Категории работ
 const WORK_CATEGORIES: { value: string; label: string; color: string }[] = [
@@ -47,11 +47,11 @@ const STATUS_COLORS: Record<string, "default" | "primary" | "secondary" | "error
   new: 'default', estimation: 'info', in_progress: 'primary', ready_for_payment: 'warning', paid: 'success', completed: 'success', cancelled: 'error',
 };
 
-const METHOD_ICONS: Record<string, any> = {
-  cash: <LocalAtmRounded fontSize="small" />,
-  card: <CreditCardRounded fontSize="small" />,
-  yookassa: <AccountBalanceWalletRounded fontSize="small" />
-};
+const METHOD_ICONS = {
+  cash:     <LocalAtmRounded fontSize="small" />,
+  card:     <CreditCardRounded fontSize="small" />,
+  yookassa: <AccountBalanceWalletRounded fontSize="small" />,
+} satisfies Record<string, React.ReactNode>;
 
 const METHOD_LABELS: Record<string, string> = { 
   cash: 'Наличные', 
@@ -116,8 +116,8 @@ export default function Orders() {
   const [searchingVehicle, setSearchingVehicle] = useState(false);
 
   // --- СПРАВОЧНИКИ БРЕНДОВ И МОДЕЛЕЙ ---
-  const [brands, setBrands] = useState<any[]>([]);
-  const [models, setModels] = useState<any[]>([]);
+  const [brands, setBrands] = useState<BrandRef[]>([]);
+  const [models, setModels] = useState<ModelRef[]>([]);
   const [loadingModels, setLoadingModels] = useState(false);
 
   // --- ДОБАВЛЕНИЕ/РЕДАКТИРОВАНИЕ АВТО ---
@@ -134,14 +134,13 @@ export default function Orders() {
   const [newCustomerData, setNewCustomerData] = useState<CustomerCreate>({ full_name: '', phone: '', email: '' });
 
   // --- ОПЛАТЫ ---
-  const [payments, setPayments] = useState<any[]>([]);
+  const [payments, setPayments] = useState<OrderPayment[]>([]);
   const [openPaymentDialog, setOpenPaymentDialog] = useState(false);
   const [openResetConfirm, setOpenResetConfirm] = useState(false);
   const [editingPaymentId, setEditingPaymentId] = useState<number | null>(null);
   const [paymentAmount, setPaymentAmount] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('cash');
   const [paidAmountFromServer, setPaidAmountFromServer] = useState(0);
-  const [originalPaidAmount, setOriginalPaidAmount] = useState(0);
 
   // --- СКИДКИ ---
   const [globalDiscount, setGlobalDiscount] = useState<number>(0);
@@ -159,8 +158,8 @@ export default function Orders() {
   const [savingNewPartOrder, setSavingNewPartOrder] = useState(false);
 
   // --- ФОРМА ЗАКАЗА ---
-  const [formData, setFormData] = useState<OrderCreate & { status?: string }>({
-    vehicle_id: 0, mechanic_id: undefined, status: 'new', recommendations: '', comments: '', order_works: [], order_parts: []
+  const [formData, setFormData] = useState<OrderCreate & { status?: string; employee_id?: number }>({
+    vehicle_id: 0, mechanic_id: undefined, employee_id: undefined, status: 'new', recommendations: '', comments: '', order_works: [], order_parts: []
   });
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -275,10 +274,11 @@ export default function Orders() {
 
   const getStatusLabel = (val: string) => orderStatuses.find(s => s.value === val)?.label || FALLBACK_LABELS[val] || val;
   const isAdmin = currentUser?.role === 'admin';
-  const formatCurrency = (v: any) => new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB', maximumFractionDigits: 0 }).format(Number(v) || 0);
+  const formatCurrency = (v: unknown): string => new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB', maximumFractionDigits: 0 }).format(Number(v) || 0);
 
   const totals = useMemo(() => {
-    const calc = (p: any, q: any, d: any) => (Number(p) * Number(q)) * (1 - (Number(d) || 0) / 100);
+    const calc = (p: number, q: number, d: number | null | undefined) =>
+      (p * q) * (1 - (d ?? 0) / 100);
     const w = (formData.order_works || []).reduce((s, x) => s + calc(x.price, x.quantity, x.discount), 0);
     const p = (formData.order_parts || []).reduce((s, x) => s + calc(x.price, x.quantity, x.discount), 0);
     return { works: w, parts: p, grand: w + p };
@@ -300,7 +300,7 @@ export default function Orders() {
       discount: (p.discount ?? 0) as number
     }));
     setFormData({
-      vehicle_id: d.vehicle_id, mechanic_id: d.mechanic_id, status: d.status, recommendations: d.recommendations || '', comments: d.comments || '',
+      vehicle_id: d.vehicle_id, employee_id: d.employee_id, mechanic_id: d.mechanic_id, status: d.status, recommendations: d.recommendations || '', comments: d.comments || '',
       order_works: (d.order_works || []).map(w => ({ work_name: w.work?.name || (w as any).work_name || '', mechanic_id: w.mechanic_id ?? d.mechanic_id ?? undefined, quantity: w.quantity, price: Number(w.price), discount: (w as any).discount || 0 })),
       order_parts: parts
     });
@@ -333,7 +333,7 @@ export default function Orders() {
       setInlineMileage(order.vehicle?.mileage?.toString() ?? '');
     } else {
       setEditingOrderId(null); setSelectedVehicle(null); setPaidAmountFromServer(0); setOriginalPaidAmount(0); setPayments([]);
-      setFormData({ vehicle_id: 0, mechanic_id: undefined, status: 'new', order_works: [], order_parts: [], recommendations: '', comments: '' });
+      setFormData({ vehicle_id: 0, mechanic_id: undefined, employee_id: undefined, status: 'new', order_works: [], order_parts: [], recommendations: '', comments: '' });
       setOrderPartCache([]);
       setPartRowInputs([]); setPartRowResults([]); setPartRowLoading([]);
       setLicensePlateSearch(''); setVinSearch('');
@@ -532,6 +532,13 @@ export default function Orders() {
     setPaymentAmount(payment.amount.toString());
     setPaymentMethod(payment.payment_method);
     setOpenPaymentDialog(true);
+  };
+
+  const openPdf = (path: string) => {
+    api.get(path, { responseType: 'blob' }).then((res) => {
+      const url = URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
+      window.open(url, '_blank');
+    }).catch(() => setError('Ошибка генерации PDF'));
   };
 
   const handleCancelAllPayments = async () => {
@@ -820,8 +827,18 @@ export default function Orders() {
               )}
             </Stack>
             <Stack direction="row" spacing={2}>
+              {editingOrderId && (
+                <>
+                  <Tooltip title="Печать заказ-наряда">
+                    <IconButton onClick={() => openPdf(`/orders/${editingOrderId}/print`)}><PrintRounded /></IconButton>
+                  </Tooltip>
+                  <Tooltip title="Печать акта выполненных работ">
+                    <IconButton onClick={() => openPdf(`/orders/${editingOrderId}/print-act`)}><DescriptionRounded /></IconButton>
+                  </Tooltip>
+                </>
+              )}
               <Button variant="outlined" size="large" onClick={() => handleSave(false)} disabled={saveLoading} startIcon={<SaveRounded />}>Сохранить</Button>
-              {paidAmountFromServer >= totals.grand - 0.01 && totals.grand > 0 && <Button variant="contained" color="success" onClick={() => handleSave(true)} disabled={saveLoading} startIcon={<CheckCircleRounded />}>Завершить заказ</Button>}
+              {paidAmountFromServer >= totals.grand - 0.01 && totals.grand > 0 && formData.status !== 'completed' && <Button variant="contained" color="success" onClick={() => handleSave(true)} disabled={saveLoading} startIcon={<CheckCircleRounded />}>Завершить заказ</Button>}
             </Stack>
           </Toolbar>
         </AppBar>
@@ -870,8 +887,15 @@ export default function Orders() {
                   </Stack>
               </Stack>)}
             </Paper></Grid>
-            <Grid item xs={12} md={3}><Paper sx={{ p: 2.5, borderRadius: 3, border: '1px solid #E2E8F0', height: '100%', display: 'flex', alignItems: 'center' }}><FormControl fullWidth size="small"><InputLabel>Ответственный мастер</InputLabel><Select value={formData.mechanic_id || ''} label="Ответственный мастер" onChange={e => setFormData({ ...formData, mechanic_id: Number(e.target.value) })}>{employees.map(e => <MenuItem key={e.id} value={e.id}>{e.full_name}</MenuItem>)}</Select></FormControl></Paper></Grid>
-            <Grid item xs={12} md={3}><Paper sx={{ p: 2.5, borderRadius: 3, border: '1px solid #E2E8F0', height: '100%', display: 'flex', alignItems: 'center' }}><FormControl fullWidth size="small"><InputLabel>Статус заказа</InputLabel><Select value={formData.status || 'new'} label="Статус заказа" onChange={e => setFormData({ ...formData, status: e.target.value })}>{orderStatuses.map(s => <MenuItem key={s.value} value={s.value}>{s.label}</MenuItem>)}</Select></FormControl></Paper></Grid>
+            <Grid item xs={12} md={2}><Paper sx={{ p: 2.5, borderRadius: 3, border: '1px solid #E2E8F0', height: '100%', display: 'flex', alignItems: 'center' }}><FormControl fullWidth size="small"><InputLabel>Менеджер</InputLabel><Select value={formData.employee_id || ''} label="Менеджер" onChange={e => setFormData({ ...formData, employee_id: Number(e.target.value) || undefined })}><MenuItem value=""><em>Не выбран</em></MenuItem>{employees.filter(e => e.position === 'manager' || e.position === 'admin').map(e => <MenuItem key={e.id} value={e.id}>{e.full_name}</MenuItem>)}</Select></FormControl></Paper></Grid>
+            <Grid item xs={12} md={2}><Paper sx={{ p: 2.5, borderRadius: 3, border: '1px solid #E2E8F0', height: '100%', display: 'flex', alignItems: 'center' }}><FormControl fullWidth size="small"><InputLabel>Механик</InputLabel><Select value={formData.mechanic_id || ''} label="Механик" onChange={e => setFormData({ ...formData, mechanic_id: Number(e.target.value) || undefined })}><MenuItem value=""><em>Не выбран</em></MenuItem>{employees.filter(e => e.position === 'mechanic').map(e => <MenuItem key={e.id} value={e.id}>{e.full_name}</MenuItem>)}</Select></FormControl></Paper></Grid>
+            <Grid item xs={12} md={2}><Paper sx={{ p: 2.5, borderRadius: 3, border: '1px solid #E2E8F0', height: '100%', display: 'flex', alignItems: 'center' }}>
+              {formData.status === 'completed' ? (
+                <Chip label="Завершён" color="success" sx={{ fontWeight: 700, fontSize: 14, px: 1 }} />
+              ) : (
+                <FormControl fullWidth size="small"><InputLabel>Статус заказа</InputLabel><Select value={formData.status || 'new'} label="Статус заказа" onChange={e => setFormData({ ...formData, status: e.target.value })}>{orderStatuses.map(s => <MenuItem key={s.value} value={s.value}>{s.label}</MenuItem>)}</Select></FormControl>
+              )}
+            </Paper></Grid>
           </Grid>
 
           {editingOrderId && (

@@ -1,36 +1,36 @@
-import { useState } from 'react'
 import {
-  Box, Paper, Typography, Divider, Table, TableBody, TableCell,
+  Box, Paper, Typography, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Chip, Grid, alpha,
   MenuItem, Select, FormControl, InputLabel, Link,
 } from '@mui/material'
 import { AssignmentRounded, AccountBalanceWalletRounded } from '@mui/icons-material'
 import { OrdersReportResponse } from '../../types'
 import { useReportsStore } from '../../store/reportsStore'
+import { BRAND, PALETTE, FONT, iconBoxSx, overlineSx } from '../../design-tokens'
 
 const fmt = (n: number) =>
   new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB', maximumFractionDigits: 0 }).format(n)
 
-const STATUS_COLORS: Record<string, string> = {
-  new: '#64748B',
-  estimation: '#8B5CF6',
-  in_progress: '#F59E0B',
-  ready_for_payment: '#3B82F6',
-  paid: '#10B981',
-  completed: '#4F46E5',
-  cancelled: '#EF4444',
-}
+const STATUS_COLORS = {
+  new:               PALETTE.slate[500],
+  estimation:        PALETTE.blue.main,
+  in_progress:       PALETTE.amber.main,
+  ready_for_payment: PALETTE.blue.main,
+  paid:              PALETTE.green.main,
+  completed:         BRAND.primary,
+  cancelled:         PALETTE.red.main,
+} as const satisfies Record<string, string>
 
 const STATUS_OPTIONS = [
-  { value: '', label: 'Все статусы' },
-  { value: 'new', label: 'Новый' },
-  { value: 'estimation', label: 'Проценка' },
-  { value: 'in_progress', label: 'В работе' },
+  { value: '',                  label: 'Все статусы' },
+  { value: 'new',               label: 'Новый' },
+  { value: 'estimation',        label: 'Проценка' },
+  { value: 'in_progress',       label: 'В работе' },
   { value: 'ready_for_payment', label: 'Готов к оплате' },
-  { value: 'paid', label: 'Оплачен' },
-  { value: 'completed', label: 'Завершён' },
-  { value: 'cancelled', label: 'Отменён' },
-]
+  { value: 'paid',              label: 'Оплачен' },
+  { value: 'completed',         label: 'Завершён' },
+  { value: 'cancelled',         label: 'Отменён' },
+] as const
 
 interface Props {
   data: OrdersReportResponse
@@ -44,127 +44,44 @@ export default function OrdersReport({ data }: Props) {
     fetchReport()
   }
 
+  const statusColor = (status: string): string =>
+    STATUS_COLORS[status as keyof typeof STATUS_COLORS] ?? PALETTE.slate[500]
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-      {/* Summary cards */}
+
+      {/* ── Summary cards ── */}
       <Grid container spacing={2}>
         <Grid item xs={12} sm={4}>
-          <Paper
-            elevation={0}
-            sx={{
-              p: 3,
-              border: '1px dashed',
-              borderColor: 'divider',
-              borderRadius: '16px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 2,
-            }}
-          >
-            <Box
-              sx={{
-                width: 48,
-                height: 48,
-                borderRadius: '12px',
-                bgcolor: alpha('#4F46E5', 0.12),
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#4F46E5',
-                flexShrink: 0,
-              }}
-            >
-              <AssignmentRounded />
-            </Box>
+          <Paper elevation={0} sx={{ p: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Box sx={iconBoxSx(BRAND.primary)}><AssignmentRounded /></Box>
             <Box>
-              <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700 }}>
-                Заказов
-              </Typography>
-              <Typography variant="h6" sx={{ fontWeight: 900, lineHeight: 1.2 }}>
-                {data.total_count}
-              </Typography>
+              <Typography sx={{ ...overlineSx, mb: 0.3 }}>Заказов</Typography>
+              <Typography variant="h6" sx={{ fontWeight: 900, lineHeight: 1.2 }}>{data.total_count}</Typography>
             </Box>
           </Paper>
         </Grid>
         <Grid item xs={12} sm={4}>
-          <Paper
-            elevation={0}
-            sx={{
-              p: 3,
-              border: '1px dashed',
-              borderColor: 'divider',
-              borderRadius: '16px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 2,
-            }}
-          >
-            <Box
-              sx={{
-                width: 48,
-                height: 48,
-                borderRadius: '12px',
-                bgcolor: alpha('#10B981', 0.12),
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#10B981',
-                flexShrink: 0,
-              }}
-            >
-              <AccountBalanceWalletRounded />
-            </Box>
+          <Paper elevation={0} sx={{ p: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Box sx={iconBoxSx(PALETTE.green.main)}><AccountBalanceWalletRounded /></Box>
             <Box>
-              <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700 }}>
-                Общая сумма
-              </Typography>
-              <Typography variant="h6" sx={{ fontWeight: 900, lineHeight: 1.2 }}>
-                {fmt(data.total_amount)}
-              </Typography>
+              <Typography sx={{ ...overlineSx, mb: 0.3 }}>Общая сумма</Typography>
+              <Typography variant="h6" sx={{ fontWeight: 900, lineHeight: 1.2 }}>{fmt(data.total_amount)}</Typography>
             </Box>
           </Paper>
         </Grid>
         <Grid item xs={12} sm={4}>
-          <Paper
-            elevation={0}
-            sx={{
-              p: 3,
-              border: '1px dashed',
-              borderColor: 'divider',
-              borderRadius: '16px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 2,
-            }}
-          >
-            <Box
-              sx={{
-                width: 48,
-                height: 48,
-                borderRadius: '12px',
-                bgcolor: alpha('#F59E0B', 0.12),
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#F59E0B',
-                flexShrink: 0,
-              }}
-            >
-              <AccountBalanceWalletRounded />
-            </Box>
+          <Paper elevation={0} sx={{ p: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Box sx={iconBoxSx(PALETTE.amber.main)}><AccountBalanceWalletRounded /></Box>
             <Box>
-              <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700 }}>
-                Оплачено
-              </Typography>
-              <Typography variant="h6" sx={{ fontWeight: 900, lineHeight: 1.2 }}>
-                {fmt(data.total_paid)}
-              </Typography>
+              <Typography sx={{ ...overlineSx, mb: 0.3 }}>Оплачено</Typography>
+              <Typography variant="h6" sx={{ fontWeight: 900, lineHeight: 1.2 }}>{fmt(data.total_paid)}</Typography>
             </Box>
           </Paper>
         </Grid>
       </Grid>
 
-      {/* Status breakdown */}
+      {/* ── Status breakdown chips ── */}
       {data.by_status.length > 0 && (
         <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
           {data.by_status.map((s) => (
@@ -174,21 +91,22 @@ export default function OrdersReport({ data }: Props) {
               size="small"
               sx={{
                 fontWeight: 700,
-                bgcolor: alpha(STATUS_COLORS[s.status] || '#64748B', 0.12),
-                color: STATUS_COLORS[s.status] || '#64748B',
+                bgcolor: alpha(statusColor(s.status), 0.1),
+                color: statusColor(s.status),
               }}
             />
           ))}
         </Box>
       )}
 
-      {/* Filter + table */}
-      <Paper
-        elevation={0}
-        sx={{ border: '1px dashed', borderColor: 'divider', borderRadius: '16px', overflow: 'hidden' }}
-      >
-        <Box sx={{ p: 3, pb: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
-          <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>
+      {/* ── Filter + table ── */}
+      <Paper elevation={0} sx={{ overflow: 'hidden' }}>
+        <Box sx={{
+          p: 3, pb: 1.5,
+          display: 'flex', alignItems: 'center',
+          justifyContent: 'space-between', flexWrap: 'wrap', gap: 2,
+        }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>
             Список заказ-нарядов ({data.total_count})
           </Typography>
           <FormControl size="small" sx={{ minWidth: 180 }}>
@@ -199,16 +117,14 @@ export default function OrdersReport({ data }: Props) {
               onChange={(e) => handleStatusChange(e.target.value)}
             >
               {STATUS_OPTIONS.map((opt) => (
-                <MenuItem key={opt.value} value={opt.value}>
-                  {opt.label}
-                </MenuItem>
+                <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>
               ))}
             </Select>
           </FormControl>
         </Box>
-        <Divider sx={{ borderStyle: 'dashed' }} />
+
         {data.orders.length === 0 ? (
-          <Box sx={{ p: 3 }}>
+          <Box sx={{ px: 3, pb: 3 }}>
             <Typography variant="body2" color="text.secondary">
               Нет заказ-нарядов за выбранный период
             </Typography>
@@ -218,24 +134,16 @@ export default function OrdersReport({ data }: Props) {
             <Table size="small" stickyHeader>
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ fontWeight: 800 }}>Номер</TableCell>
-                  <TableCell sx={{ fontWeight: 800 }}>Статус</TableCell>
-                  <TableCell sx={{ fontWeight: 800 }}>Клиент</TableCell>
-                  <TableCell sx={{ fontWeight: 800 }}>Автомобиль</TableCell>
-                  <TableCell sx={{ fontWeight: 800 }}>Механик</TableCell>
-                  <TableCell sx={{ fontWeight: 800 }}>Дата</TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 800 }}>
-                    Работы
-                  </TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 800 }}>
-                    Запчасти
-                  </TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 800 }}>
-                    Итого
-                  </TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 800 }}>
-                    Оплачено
-                  </TableCell>
+                  <TableCell>Номер</TableCell>
+                  <TableCell>Статус</TableCell>
+                  <TableCell>Клиент</TableCell>
+                  <TableCell>Автомобиль</TableCell>
+                  <TableCell>Механик</TableCell>
+                  <TableCell>Дата</TableCell>
+                  <TableCell align="right">Работы</TableCell>
+                  <TableCell align="right">Запчасти</TableCell>
+                  <TableCell align="right">Итого</TableCell>
+                  <TableCell align="right">Оплачено</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -246,7 +154,13 @@ export default function OrdersReport({ data }: Props) {
                         component="button"
                         underline="hover"
                         onClick={() => window.open(`/orders?open=${o.id}`, '_blank')}
-                        sx={{ fontWeight: 700, fontFamily: 'monospace', fontSize: '0.875rem', cursor: 'pointer' }}
+                        sx={{
+                          fontWeight: 700,
+                          fontFamily: FONT.mono,
+                          fontSize: '0.8rem',
+                          color: BRAND.primary,
+                          cursor: 'pointer',
+                        }}
                       >
                         {o.number}
                       </Link>
@@ -257,8 +171,8 @@ export default function OrdersReport({ data }: Props) {
                         size="small"
                         sx={{
                           fontWeight: 700,
-                          bgcolor: alpha(STATUS_COLORS[o.status] || '#64748B', 0.12),
-                          color: STATUS_COLORS[o.status] || '#64748B',
+                          bgcolor: alpha(statusColor(o.status), 0.1),
+                          color: statusColor(o.status),
                         }}
                       />
                     </TableCell>
@@ -298,7 +212,7 @@ export default function OrdersReport({ data }: Props) {
                         variant="body2"
                         sx={{
                           fontWeight: 700,
-                          color: o.paid_amount >= o.total_amount ? '#10B981' : 'text.primary',
+                          color: o.paid_amount >= o.total_amount ? PALETTE.green.main : 'text.primary',
                         }}
                       >
                         {fmt(o.paid_amount)}
@@ -311,7 +225,6 @@ export default function OrdersReport({ data }: Props) {
           </TableContainer>
         )}
       </Paper>
-
     </Box>
   )
 }
