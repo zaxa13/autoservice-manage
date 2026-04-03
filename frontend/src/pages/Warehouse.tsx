@@ -41,6 +41,7 @@ import {
   Edit as EditIcon,
   CheckCircle as PostIcon,
   Delete as DeleteIcon,
+  Print as PrintIcon,
 } from '@mui/icons-material'
 import api from '../services/api'
 import {
@@ -163,6 +164,13 @@ export default function Warehouse() {
       .finally(() => setLoading(false))
   }
 
+  const openPdf = (path: string) => {
+    api.get(path, { responseType: 'blob' }).then((res) => {
+      const url = URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
+      window.open(url, '_blank');
+    }).catch(() => setError('Ошибка генерации PDF'));
+  };
+
   const loadReceipts = () => {
     setLoading(true)
     setError('')
@@ -225,10 +233,6 @@ export default function Warehouse() {
       })
       .catch((e) => setError(e.response?.data?.detail || 'Ошибка создания поставщика'))
       .finally(() => setSavingNewSupplier(false))
-  }
-
-  const loadParts = () => {
-    api.get<Part[]>('/parts/').then((r) => setParts(r.data)).catch(() => {})
   }
 
   useEffect(() => {
@@ -909,6 +913,15 @@ export default function Warehouse() {
           <Button onClick={() => { setReceiptDetailOpen(false); setSelectedReceiptId(null) }}>
             Закрыть
           </Button>
+          {receiptDetail && (
+            <Button
+              variant="outlined"
+              startIcon={<PrintIcon />}
+              onClick={() => openPdf(`/warehouse/receipts/${receiptDetail.id}/print`)}
+            >
+              Печать
+            </Button>
+          )}
           {receiptDetail?.status === 'draft' && (
             <>
               <Button
@@ -1195,7 +1208,7 @@ export default function Warehouse() {
                             : partsSearchResults
                         }
                         getOptionLabel={(opt) =>
-                          opt.id === -1 ? opt.name : `${opt.part_number ?? ''} — ${opt.name}`
+                          opt.id === -1 ? opt.name : `${'part_number' in opt ? opt.part_number : ''} — ${opt.name}`
                         }
                         loading={partsSearchLoading}
                         renderInput={(params) => (

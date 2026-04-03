@@ -3,8 +3,7 @@ import {
   Box, Typography, TextField, InputAdornment, IconButton, CircularProgress,
   Card, CardContent, Stack, Chip, Divider, Alert, Button,
   Dialog, DialogTitle, DialogContent, DialogActions,
-  Table, TableBody, TableCell, TableHead, TableRow,
-  Tooltip, Paper, alpha, Collapse, MenuItem, Select, FormControl, InputLabel,
+  Tooltip, alpha, Collapse, MenuItem, Select, FormControl, InputLabel,
 } from '@mui/material'
 import {
   SearchRounded,
@@ -18,6 +17,7 @@ import {
   BuildRounded,
   CheckCircleOutlineRounded,
   EditRounded,
+  SpeedRounded,
 } from '@mui/icons-material'
 import api from '../services/api'
 import { Vehicle, OrderDetail, BrandRef, ModelRef } from '../types'
@@ -42,26 +42,38 @@ function formatCurrency(amount: number) {
   return new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB', maximumFractionDigits: 0 }).format(amount)
 }
 
-// Карточка одного заказ-наряда с раскрытием деталей
+// ── Order card ─────────────────────────────────────────────────────────────────
+
 function OrderCard({ order }: { order: OrderDetail }) {
   const [expanded, setExpanded] = useState(false)
   const st = ORDER_STATUS_LABELS[order.status] ?? { label: order.status, color: 'default' as const }
 
   return (
-    <Paper
-      variant="outlined"
-      sx={{ borderRadius: '12px', overflow: 'hidden', mb: 1.5,
-        borderColor: order.status === 'completed' ? 'success.light' : 'divider' }}
+    <Box
+      sx={{
+        border: '1px solid #E2E8F0',
+        borderLeft: order.status === 'completed'
+          ? '3px solid #10B981'
+          : order.status === 'cancelled'
+            ? '3px solid #EF4444'
+            : '3px solid #E2E8F0',
+        borderRadius: '10px',
+        overflow: 'hidden',
+        mb: 1.5,
+        bgcolor: '#fff',
+      }}
     >
-      {/* Шапка заказа */}
       <Box
-        sx={{ display: 'flex', alignItems: 'center', gap: 2, px: 2, py: 1.5,
-          bgcolor: alpha('#F8FAFC', 0.8), cursor: 'pointer',
-          '&:hover': { bgcolor: alpha('#F1F5F9', 1) } }}
+        sx={{
+          display: 'flex', alignItems: 'center', gap: 2, px: 2, py: 1.5,
+          cursor: 'pointer',
+          '&:hover': { bgcolor: '#F8FAFC' },
+          transition: 'background 0.15s',
+        }}
         onClick={() => setExpanded(!expanded)}
       >
-        <Box sx={{ minWidth: 120 }}>
-          <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700, display: 'block' }}>
+        <Box sx={{ minWidth: 110 }}>
+          <Typography variant="caption" sx={{ fontWeight: 700, display: 'block', color: '#475569', fontSize: '0.7rem', letterSpacing: '0.04em' }}>
             № {order.number}
           </Typography>
           <Typography variant="caption" color="text.secondary">
@@ -73,42 +85,40 @@ function OrderCard({ order }: { order: OrderDetail }) {
           label={st.label}
           color={st.color}
           size="small"
-          sx={{ fontWeight: 700, borderRadius: '8px', minWidth: 90 }}
+          sx={{ fontWeight: 700, minWidth: 84 }}
         />
 
         <Box sx={{ flexGrow: 1 }}>
           {order.mechanic && (
             <Typography variant="caption" color="text.secondary">
-              Механик: {order.mechanic.full_name}
+              {order.mechanic.full_name}
             </Typography>
           )}
         </Box>
 
-        <Typography variant="subtitle2" sx={{ fontWeight: 800, color: 'text.primary', minWidth: 100, textAlign: 'right' }}>
+        <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#0F172A', minWidth: 90, textAlign: 'right' }}>
           {formatCurrency(Number(order.total_amount))}
         </Typography>
 
-        <IconButton size="small" sx={{ ml: 0.5 }}>
+        <IconButton size="small" sx={{ color: 'text.disabled' }}>
           {expanded ? <ExpandLessRounded fontSize="small" /> : <ExpandMoreRounded fontSize="small" />}
         </IconButton>
       </Box>
 
-      {/* Раскрытые детали */}
       <Collapse in={expanded}>
-        <Box sx={{ px: 2, pb: 2 }}>
-          <Divider sx={{ my: 1.5 }} />
+        <Box sx={{ px: 2.5, pb: 2.5, pt: 0.5 }}>
+          <Divider sx={{ mb: 2 }} />
 
-          {/* Работы */}
           {order.order_works && order.order_works.length > 0 && (
-            <Box sx={{ mb: 1.5 }}>
-              <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.75 }}>
-                <BuildRounded fontSize="inherit" /> РАБОТЫ
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="overline" sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1, color: '#64748B' }}>
+                <BuildRounded fontSize="inherit" /> Работы
               </Typography>
               <Stack spacing={0.5}>
                 {order.order_works.map((w) => (
                   <Box key={w.id} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant="body2">
-                      {w.work?.name || w.work_name || '—'}
+                    <Typography variant="body2" color="text.primary">
+                      {w.work?.name || '—'}
                       {w.quantity > 1 && (
                         <Typography component="span" variant="caption" color="text.secondary"> × {w.quantity}</Typography>
                       )}
@@ -122,25 +132,24 @@ function OrderCard({ order }: { order: OrderDetail }) {
             </Box>
           )}
 
-          {/* Запчасти */}
           {order.order_parts && order.order_parts.length > 0 && (
-            <Box sx={{ mb: 1.5 }}>
-              <Typography variant="caption" sx={{ fontWeight: 800, color: 'text.secondary', display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.75 }}>
-                <CheckCircleOutlineRounded fontSize="inherit" /> ЗАПЧАСТИ
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="overline" sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1, color: '#64748B' }}>
+                <CheckCircleOutlineRounded fontSize="inherit" /> Запчасти
               </Typography>
               <Stack spacing={0.5}>
                 {order.order_parts.map((p) => (
                   <Box key={p.id} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 1 }}>
                     <Box>
                       <Typography variant="body2">
-                        {p.part?.name || p.part_name || '—'}
+                        {p.part?.name || '—'}
                         {p.quantity > 1 && (
                           <Typography component="span" variant="caption" color="text.secondary"> × {p.quantity}</Typography>
                         )}
                       </Typography>
-                      {(p.article || p.part?.part_number) && (
-                        <Typography variant="caption" color="text.secondary">
-                          Арт: {p.article || p.part?.part_number}
+                      {p.part?.part_number && (
+                        <Typography variant="caption" color="text.secondary" sx={{ fontFamily: 'monospace' }}>
+                          {p.part.part_number}
                         </Typography>
                       )}
                     </Box>
@@ -153,18 +162,19 @@ function OrderCard({ order }: { order: OrderDetail }) {
             </Box>
           )}
 
-          {/* Рекомендации */}
           {order.recommendations && (
-            <Box sx={{ mt: 1, p: 1.5, bgcolor: alpha('#FEF9C3', 0.6), borderRadius: '8px', border: '1px dashed #FCD34D' }}>
-              <Typography variant="caption" sx={{ fontWeight: 800, color: '#92400E', display: 'block', mb: 0.5 }}>
+            <Box sx={{ mt: 1.5, p: 1.5, bgcolor: '#FFFBEB', borderRadius: '8px', border: '1px solid #FDE68A' }}>
+              <Typography variant="overline" sx={{ color: '#92400E', display: 'block', mb: 0.5 }}>
                 Рекомендации
               </Typography>
               <Typography variant="body2" color="text.secondary">{order.recommendations}</Typography>
             </Box>
           )}
 
-          {/* Итог */}
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1.5, pt: 1.5, borderTop: '1px dashed', borderColor: 'divider', gap: 3 }}>
+          <Box sx={{
+            display: 'flex', justifyContent: 'flex-end', mt: 2, pt: 1.5,
+            borderTop: '1px solid #F1F5F9', gap: 3,
+          }}>
             <Typography variant="body2" color="text.secondary">
               Оплачено: <strong>{formatCurrency(Number(order.paid_amount))}</strong>
             </Typography>
@@ -174,14 +184,13 @@ function OrderCard({ order }: { order: OrderDetail }) {
           </Box>
         </Box>
       </Collapse>
-    </Paper>
+    </Box>
   )
 }
 
-// Диалог истории конкретного авто
-function VehicleHistoryDialog({
-  vehicle, open, onClose,
-}: {
+// ── Vehicle history dialog ─────────────────────────────────────────────────────
+
+function VehicleHistoryDialog({ vehicle, open, onClose }: {
   vehicle: Vehicle | null
   open: boolean
   onClose: () => void
@@ -202,12 +211,8 @@ function VehicleHistoryDialog({
 
   if (!vehicle) return null
 
-  const vehicleLabel = [
-    vehicle.brand?.name,
-    vehicle.model?.name,
-    vehicle.year,
-    vehicle.license_plate,
-  ].filter(Boolean).join(' ')
+  const vehicleLabel = [vehicle.brand?.name, vehicle.model?.name, vehicle.year, vehicle.license_plate]
+    .filter(Boolean).join(' ')
 
   const totalSpent = history.reduce((sum, o) => sum + Number(o.total_amount), 0)
 
@@ -217,13 +222,17 @@ function VehicleHistoryDialog({
       onClose={onClose}
       maxWidth="md"
       fullWidth
-      PaperProps={{ sx: { borderRadius: '20px', maxHeight: '90vh' } }}
+      PaperProps={{ sx: { borderRadius: '16px', maxHeight: '90vh' } }}
     >
-      <DialogTitle sx={{ pb: 1 }}>
+      <DialogTitle sx={{ pb: 1.5, borderBottom: '1px solid #F1F5F9' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <Box sx={{ width: 40, height: 40, bgcolor: 'primary.main', borderRadius: '10px',
-              display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Box sx={{
+              width: 40, height: 40,
+              background: 'linear-gradient(135deg, #2DD4BF 0%, #0D9488 100%)',
+              borderRadius: '10px',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
               <HistoryRounded sx={{ color: '#fff', fontSize: 20 }} />
             </Box>
             <Box>
@@ -237,58 +246,65 @@ function VehicleHistoryDialog({
         </Box>
       </DialogTitle>
 
-      <DialogContent sx={{ pt: 0 }}>
-        {/* Клиент */}
+      <DialogContent sx={{ pt: 2 }}>
         {vehicle.customer && (
-          <Paper variant="outlined" sx={{ p: 1.5, mb: 2, borderRadius: '12px', display: 'flex', alignItems: 'center', gap: 2 }}>
-            <PersonRounded color="action" />
+          <Box sx={{
+            p: 1.5, mb: 2.5,
+            border: '1px solid #E2E8F0',
+            borderRadius: '10px',
+            display: 'flex', alignItems: 'center', gap: 2,
+            bgcolor: '#F8FAFC',
+          }}>
+            <Box sx={{
+              width: 36, height: 36, borderRadius: '50%',
+              bgcolor: alpha('#0D9488', 0.1),
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <PersonRounded sx={{ color: '#0D9488', fontSize: 18 }} />
+            </Box>
             <Box>
-              <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>{vehicle.customer.full_name}</Typography>
+              <Typography variant="subtitle2" sx={{ fontWeight: 700, lineHeight: 1.2 }}>{vehicle.customer.full_name}</Typography>
               <Typography variant="caption" color="text.secondary">{vehicle.customer.phone}</Typography>
             </Box>
             {vehicle.vin && (
               <Box sx={{ ml: 'auto', textAlign: 'right' }}>
-                <Typography variant="caption" color="text.secondary" display="block">VIN</Typography>
-                <Typography variant="caption" sx={{ fontWeight: 700, fontFamily: 'monospace' }}>{vehicle.vin}</Typography>
+                <Typography variant="caption" color="text.secondary" display="block" sx={{ letterSpacing: '0.04em', textTransform: 'uppercase', fontSize: '0.65rem' }}>VIN</Typography>
+                <Typography variant="caption" sx={{ fontWeight: 700, fontFamily: 'monospace', letterSpacing: '0.05em' }}>{vehicle.vin}</Typography>
               </Box>
             )}
-          </Paper>
+          </Box>
         )}
 
-        {/* Статистика */}
         {!loading && history.length > 0 && (
-          <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-            <Paper variant="outlined" sx={{ flex: 1, p: 1.5, borderRadius: '12px', textAlign: 'center' }}>
-              <Typography variant="h5" sx={{ fontWeight: 900, color: 'primary.main' }}>{history.length}</Typography>
-              <Typography variant="caption" color="text.secondary">заказ-нарядов</Typography>
-            </Paper>
-            <Paper variant="outlined" sx={{ flex: 1, p: 1.5, borderRadius: '12px', textAlign: 'center' }}>
-              <Typography variant="h5" sx={{ fontWeight: 900, color: 'success.main' }}>
-                {formatCurrency(totalSpent)}
-              </Typography>
-              <Typography variant="caption" color="text.secondary">суммарно потрачено</Typography>
-            </Paper>
-            {vehicle.mileage && (
-              <Paper variant="outlined" sx={{ flex: 1, p: 1.5, borderRadius: '12px', textAlign: 'center' }}>
-                <Typography variant="h5" sx={{ fontWeight: 900 }}>
-                  {vehicle.mileage.toLocaleString('ru-RU')}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">км пробег</Typography>
-              </Paper>
-            )}
+          <Box sx={{ display: 'flex', gap: 1.5, mb: 2.5 }}>
+            {[
+              { value: history.length, label: 'заказ-нарядов', color: '#0D9488' },
+              { value: formatCurrency(totalSpent), label: 'суммарно', color: '#10B981' },
+              ...(vehicle.mileage ? [{ value: `${vehicle.mileage.toLocaleString('ru-RU')} км`, label: 'пробег', color: '#F59E0B' }] : []),
+            ].map((stat, i) => (
+              <Box key={i} sx={{
+                flex: 1, p: 1.5,
+                border: '1px solid #E2E8F0',
+                borderTop: `3px solid ${stat.color}`,
+                borderRadius: '10px',
+                textAlign: 'center',
+                bgcolor: '#fff',
+              }}>
+                <Typography variant="h5" sx={{ fontWeight: 800, color: stat.color, lineHeight: 1.2 }}>{stat.value}</Typography>
+                <Typography variant="caption" color="text.secondary">{stat.label}</Typography>
+              </Box>
+            ))}
           </Box>
         )}
 
         {loading && (
           <Box sx={{ textAlign: 'center', py: 6 }}><CircularProgress /></Box>
         )}
-
-        {error && <Alert severity="error" sx={{ borderRadius: '12px' }}>{error}</Alert>}
-
+        {error && <Alert severity="error">{error}</Alert>}
         {!loading && !error && history.length === 0 && (
-          <Box sx={{ textAlign: 'center', py: 6 }}>
-            <HistoryRounded sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} />
-            <Typography color="text.secondary">Заказ-нарядов по этому автомобилю пока нет</Typography>
+          <Box sx={{ textAlign: 'center', py: 8 }}>
+            <HistoryRounded sx={{ fontSize: 48, color: '#CBD5E1', mb: 1.5 }} />
+            <Typography color="text.secondary" fontWeight={600}>Заказ-нарядов пока нет</Typography>
           </Box>
         )}
 
@@ -297,19 +313,16 @@ function VehicleHistoryDialog({
         ))}
       </DialogContent>
 
-      <DialogActions sx={{ px: 3, pb: 2 }}>
-        <Button onClick={onClose} variant="outlined" sx={{ borderRadius: '10px', fontWeight: 700 }}>
-          Закрыть
-        </Button>
+      <DialogActions sx={{ px: 3, pb: 2.5, borderTop: '1px solid #F1F5F9' }}>
+        <Button onClick={onClose} variant="outlined">Закрыть</Button>
       </DialogActions>
     </Dialog>
   )
 }
 
-// Диалог редактирования автомобиля
-function VehicleEditDialog({
-  vehicle, open, onClose, onSaved,
-}: {
+// ── Vehicle edit dialog ────────────────────────────────────────────────────────
+
+function VehicleEditDialog({ vehicle, open, onClose, onSaved }: {
   vehicle: Vehicle | null
   open: boolean
   onClose: () => void
@@ -341,10 +354,6 @@ function VehicleEditDialog({
       .then((res) => setModels(res.data.models || []))
   }, [form.brand_id])
 
-  const handleBrandChange = (brand_id: number) => {
-    setForm((f) => ({ ...f, brand_id, model_id: 0 }))
-  }
-
   const handleSave = async () => {
     if (!vehicle) return
     setSaving(true)
@@ -371,18 +380,16 @@ function VehicleEditDialog({
   if (!vehicle) return null
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      maxWidth="sm"
-      fullWidth
-      PaperProps={{ sx: { borderRadius: '20px' } }}
-    >
-      <DialogTitle sx={{ pb: 1 }}>
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+      <DialogTitle sx={{ pb: 1.5, borderBottom: '1px solid #F1F5F9' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <Box sx={{ width: 40, height: 40, bgcolor: 'primary.main', borderRadius: '10px',
-              display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Box sx={{
+              width: 40, height: 40,
+              background: 'linear-gradient(135deg, #2DD4BF 0%, #0D9488 100%)',
+              borderRadius: '10px',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
               <EditRounded sx={{ color: '#fff', fontSize: 20 }} />
             </Box>
             <Box>
@@ -396,17 +403,16 @@ function VehicleEditDialog({
         </Box>
       </DialogTitle>
 
-      <DialogContent>
-        <Stack spacing={2.5} sx={{ mt: 1 }}>
-          {error && <Alert severity="error" sx={{ borderRadius: '12px' }}>{error}</Alert>}
+      <DialogContent sx={{ pt: 2.5 }}>
+        <Stack spacing={2.5}>
+          {error && <Alert severity="error">{error}</Alert>}
 
           <FormControl fullWidth size="small">
             <InputLabel>Марка</InputLabel>
             <Select
               value={form.brand_id || ''}
               label="Марка"
-              onChange={(e) => handleBrandChange(Number(e.target.value))}
-              sx={{ borderRadius: '12px' }}
+              onChange={(e) => setForm((f) => ({ ...f, brand_id: Number(e.target.value), model_id: 0 }))}
             >
               {brands.map((b) => (
                 <MenuItem key={b.id} value={b.id}>{b.name}</MenuItem>
@@ -420,7 +426,6 @@ function VehicleEditDialog({
               value={form.model_id || ''}
               label="Модель"
               onChange={(e) => setForm((f) => ({ ...f, model_id: Number(e.target.value) }))}
-              sx={{ borderRadius: '12px' }}
             >
               {models.map((m) => (
                 <MenuItem key={m.id} value={m.id}>{m.name}</MenuItem>
@@ -429,55 +434,30 @@ function VehicleEditDialog({
           </FormControl>
 
           <Box sx={{ display: 'flex', gap: 2 }}>
-            <TextField
-              label="Год выпуска"
-              size="small"
-              fullWidth
-              value={form.year}
+            <TextField label="Год выпуска" size="small" fullWidth value={form.year}
               onChange={(e) => setForm((f) => ({ ...f, year: e.target.value }))}
-              inputProps={{ maxLength: 4 }}
-              InputProps={{ sx: { borderRadius: '12px' } }}
-            />
-            <TextField
-              label="Пробег (км)"
-              size="small"
-              fullWidth
-              value={form.mileage}
-              onChange={(e) => setForm((f) => ({ ...f, mileage: e.target.value }))}
-              InputProps={{ sx: { borderRadius: '12px' } }}
-            />
+              inputProps={{ maxLength: 4 }} />
+            <TextField label="Пробег (км)" size="small" fullWidth value={form.mileage}
+              onChange={(e) => setForm((f) => ({ ...f, mileage: e.target.value }))} />
           </Box>
 
-          <TextField
-            label="Госномер"
-            size="small"
-            fullWidth
-            value={form.license_plate}
+          <TextField label="Госномер" size="small" fullWidth value={form.license_plate}
             onChange={(e) => setForm((f) => ({ ...f, license_plate: e.target.value.toUpperCase() }))}
-            InputProps={{ sx: { borderRadius: '12px', fontFamily: 'monospace' } }}
-          />
+            InputProps={{ sx: { fontFamily: 'monospace', letterSpacing: '0.08em' } }} />
 
-          <TextField
-            label="VIN"
-            size="small"
-            fullWidth
-            value={form.vin}
+          <TextField label="VIN" size="small" fullWidth value={form.vin}
             onChange={(e) => setForm((f) => ({ ...f, vin: e.target.value.toUpperCase() }))}
-            InputProps={{ sx: { borderRadius: '12px', fontFamily: 'monospace' } }}
-            inputProps={{ maxLength: 17 }}
-          />
+            InputProps={{ sx: { fontFamily: 'monospace', letterSpacing: '0.06em' } }}
+            inputProps={{ maxLength: 17 }} />
         </Stack>
       </DialogContent>
 
-      <DialogActions sx={{ px: 3, pb: 2.5, gap: 1 }}>
-        <Button onClick={onClose} variant="outlined" sx={{ borderRadius: '10px', fontWeight: 700 }}>
-          Отмена
-        </Button>
+      <DialogActions sx={{ px: 3, pb: 2.5, gap: 1, borderTop: '1px solid #F1F5F9' }}>
+        <Button onClick={onClose} variant="outlined">Отмена</Button>
         <Button
           onClick={handleSave}
           variant="contained"
           disabled={saving || !form.brand_id || !form.model_id}
-          sx={{ borderRadius: '10px', fontWeight: 700 }}
         >
           {saving ? <CircularProgress size={20} color="inherit" /> : 'Сохранить'}
         </Button>
@@ -486,9 +466,9 @@ function VehicleEditDialog({
   )
 }
 
-// Основная страница
+// ── Main page ──────────────────────────────────────────────────────────────────
+
 export default function VehiclesPage() {
-  const [query, setQuery] = useState('')
   const [inputValue, setInputValue] = useState('')
   const [loading, setLoading] = useState(false)
   const [results, setResults] = useState<Vehicle[]>([])
@@ -501,7 +481,6 @@ export default function VehiclesPage() {
   const handleSearch = async (q?: string) => {
     const searchQuery = (q ?? inputValue).trim()
     if (searchQuery.length < 2) return
-
     setLoading(true)
     setError('')
     setSearched(true)
@@ -520,116 +499,172 @@ export default function VehiclesPage() {
     if (e.key === 'Enter') handleSearch()
   }
 
-  // При вводе VIN или госномера — автоматически в верхний регистр
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value)
-  }
-
   return (
     <Box>
-      {/* Заголовок */}
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" sx={{ fontWeight: 900, letterSpacing: -0.5 }}>Автомобили</Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-          Найдите автомобиль и просмотрите полную историю обслуживания
-        </Typography>
+      {/* ── Page header ── */}
+      <Box sx={{
+        mb: 4,
+        pb: 3,
+        borderBottom: '1px solid #F1F5F9',
+        display: 'flex',
+        alignItems: 'flex-end',
+        justifyContent: 'space-between',
+      }}>
+        <Box>
+          <Typography variant="overline" sx={{ color: '#94A3B8', mb: 0.5, display: 'block' }}>
+            База данных
+          </Typography>
+          <Typography variant="h4" sx={{ fontWeight: 800, letterSpacing: '-0.03em', color: '#0F172A', lineHeight: 1 }}>
+            Автомобили
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.75 }}>
+            Поиск по номеру телефона, VIN или госномеру
+          </Typography>
+        </Box>
+        <Box sx={{
+          width: 44, height: 44,
+          background: 'linear-gradient(135deg, #2DD4BF 0%, #0D9488 100%)',
+          borderRadius: '12px',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          boxShadow: '0 4px 12px rgba(79,70,229,0.3)',
+        }}>
+          <DirectionsCarRounded sx={{ color: '#fff', fontSize: 22 }} />
+        </Box>
       </Box>
 
-      {/* Поиск */}
-      <Paper
-        elevation={0}
-        sx={{ p: 3, borderRadius: '20px', border: '1px solid', borderColor: 'divider', mb: 3, maxWidth: 640 }}
-      >
-        <Typography variant="subtitle2" sx={{ fontWeight: 800, mb: 1.5, color: 'text.secondary' }}>
-          Поиск по номеру телефона, VIN или госномеру
-        </Typography>
-        <Box sx={{ display: 'flex', gap: 1.5 }}>
-          <TextField
-            inputRef={inputRef}
-            fullWidth
-            placeholder="Например: +79001234567, А123ВС77, WBA..."
-            value={inputValue}
-            onChange={handleInputChange}
-            onKeyDown={handleKeyDown}
-            size="small"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchRounded color="action" />
-                </InputAdornment>
-              ),
-              sx: { borderRadius: '12px', fontFamily: 'monospace' },
-            }}
-          />
-          <Button
-            variant="contained"
-            onClick={() => handleSearch()}
-            disabled={loading || inputValue.trim().length < 2}
-            sx={{ borderRadius: '12px', fontWeight: 700, px: 3, minWidth: 100 }}
-          >
-            {loading ? <CircularProgress size={20} color="inherit" /> : 'Найти'}
-          </Button>
-        </Box>
-        <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-          VIN и госномера ищутся без учёта регистра
-        </Typography>
-      </Paper>
+      {/* ── Search ── */}
+      <Box sx={{
+        display: 'flex',
+        gap: 1.5,
+        maxWidth: 680,
+        mb: 3,
+      }}>
+        <TextField
+          inputRef={inputRef}
+          fullWidth
+          placeholder="А123ВС77 · +79001234567 · WBA..."
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onKeyDown={handleKeyDown}
+          size="medium"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchRounded sx={{ color: '#94A3B8', fontSize: 22 }} />
+              </InputAdornment>
+            ),
+            sx: {
+              borderRadius: '10px',
+              fontFamily: 'monospace',
+              fontSize: '0.95rem',
+              bgcolor: '#fff',
+              letterSpacing: '0.03em',
+            },
+          }}
+        />
+        <Button
+          variant="contained"
+          onClick={() => handleSearch()}
+          disabled={loading || inputValue.trim().length < 2}
+          sx={{ borderRadius: '10px', fontWeight: 700, px: 3.5, minWidth: 110, whiteSpace: 'nowrap' }}
+        >
+          {loading ? <CircularProgress size={20} color="inherit" /> : 'Найти'}
+        </Button>
+      </Box>
 
-      {/* Ошибка */}
       {error && (
-        <Alert severity="error" sx={{ borderRadius: '12px', mb: 2, maxWidth: 640 }}>{error}</Alert>
+        <Alert severity="error" sx={{ mb: 3, maxWidth: 680 }}>{error}</Alert>
       )}
 
-      {/* Результаты */}
+      {/* ── Empty state ── */}
       {searched && !loading && results.length === 0 && !error && (
-        <Box sx={{ textAlign: 'center', py: 8 }}>
-          <DirectionsCarRounded sx={{ fontSize: 56, color: 'text.disabled', mb: 1.5 }} />
-          <Typography color="text.secondary" sx={{ fontWeight: 600 }}>Автомобили не найдены</Typography>
-          <Typography variant="caption" color="text.disabled">
+        <Box sx={{ textAlign: 'center', py: 10 }}>
+          <Box sx={{
+            width: 64, height: 64, borderRadius: '16px',
+            bgcolor: '#F1F5F9',
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            mb: 2,
+          }}>
+            <DirectionsCarRounded sx={{ fontSize: 32, color: '#CBD5E1' }} />
+          </Box>
+          <Typography variant="subtitle1" fontWeight={700} color="text.secondary">
+            Автомобили не найдены
+          </Typography>
+          <Typography variant="body2" color="text.disabled" sx={{ mt: 0.5 }}>
             Попробуйте другой запрос
           </Typography>
         </Box>
       )}
 
+      {/* ── Results ── */}
       {results.length > 0 && (
         <Box>
-          <Typography variant="subtitle2" sx={{ fontWeight: 800, mb: 2, color: 'text.secondary' }}>
-            Найдено: {results.length}
-          </Typography>
-          <Stack spacing={1.5} sx={{ maxWidth: 720 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2.5 }}>
+            <Typography variant="overline" sx={{ color: '#64748B' }}>
+              Найдено
+            </Typography>
+            <Chip
+              label={results.length}
+              size="small"
+              sx={{
+                bgcolor: '#0D9488',
+                color: '#fff',
+                fontWeight: 700,
+                height: '20px',
+                fontSize: '0.7rem',
+              }}
+            />
+          </Box>
+
+          <Stack spacing={1.5} sx={{ maxWidth: 760 }}>
             {results.map((vehicle) => (
               <Card
                 key={vehicle.id}
                 variant="outlined"
-                sx={{ borderRadius: '16px', transition: 'box-shadow 0.2s',
-                  '&:hover': { boxShadow: '0 4px 16px rgba(0,0,0,0.1)', borderColor: 'primary.light' } }}
+                sx={{
+                  borderRadius: '12px',
+                  borderLeft: '3px solid #0D9488',
+                  transition: 'box-shadow 0.2s, border-color 0.2s',
+                  '&:hover': {
+                    boxShadow: '0 6px 20px rgba(0,0,0,0.08)',
+                    borderLeftColor: '#2DD4BF',
+                  },
+                }}
               >
-                <CardContent sx={{ '&:last-child': { pb: 2 } }}>
-                  <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
-                    {/* Иконка авто */}
-                    <Box sx={{ width: 48, height: 48, bgcolor: alpha('#4F46E5', 0.1),
-                      borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <DirectionsCarRounded sx={{ color: 'primary.main', fontSize: 24 }} />
+                <CardContent sx={{ '&:last-child': { pb: 2 }, p: 2 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+
+                    {/* Car icon */}
+                    <Box sx={{
+                      width: 48, height: 48,
+                      borderRadius: '10px',
+                      bgcolor: alpha('#0D9488', 0.08),
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      flexShrink: 0,
+                    }}>
+                      <DirectionsCarRounded sx={{ color: '#0D9488', fontSize: 22 }} />
                     </Box>
 
-                    {/* Данные авто */}
+                    {/* Vehicle info */}
                     <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-                      <Typography variant="subtitle1" sx={{ fontWeight: 800, lineHeight: 1.2 }}>
-                        {[vehicle.brand?.name, vehicle.model?.name].filter(Boolean).join(' ')}
+                      <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1, flexWrap: 'wrap' }}>
+                        <Typography variant="subtitle1" sx={{ fontWeight: 800, color: '#0F172A', lineHeight: 1.3 }}>
+                          {[vehicle.brand?.name, vehicle.model?.name].filter(Boolean).join(' ')}
+                        </Typography>
                         {vehicle.year && (
-                          <Typography component="span" variant="body2" color="text.secondary" sx={{ ml: 1 }}>
+                          <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
                             {vehicle.year}
                           </Typography>
                         )}
-                      </Typography>
+                      </Box>
 
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 0.75 }}>
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75, mt: 0.75 }}>
                         {vehicle.license_plate && (
                           <Chip
                             label={vehicle.license_plate}
                             size="small"
                             variant="outlined"
-                            sx={{ fontWeight: 800, fontFamily: 'monospace', borderRadius: '8px', letterSpacing: 1 }}
+                            sx={{ fontFamily: 'monospace', fontWeight: 800, letterSpacing: '0.06em', fontSize: '0.72rem' }}
                           />
                         )}
                         {vehicle.vin && (
@@ -637,31 +672,30 @@ export default function VehiclesPage() {
                             <Chip
                               label={vehicle.vin}
                               size="small"
-                              sx={{ fontWeight: 700, fontFamily: 'monospace', borderRadius: '8px',
-                                bgcolor: alpha('#F1F5F9', 1), fontSize: '0.7rem' }}
+                              sx={{ fontFamily: 'monospace', bgcolor: '#F8FAFC', fontSize: '0.68rem', letterSpacing: '0.03em' }}
                             />
                           </Tooltip>
                         )}
                         {vehicle.mileage && (
                           <Chip
+                            icon={<SpeedRounded sx={{ fontSize: '14px !important' }} />}
                             label={`${vehicle.mileage.toLocaleString('ru-RU')} км`}
                             size="small"
-                            sx={{ borderRadius: '8px', fontSize: '0.75rem' }}
+                            sx={{ bgcolor: '#F8FAFC', fontSize: '0.72rem' }}
                           />
                         )}
                       </Box>
 
-                      {/* Клиент */}
                       {vehicle.customer && (
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 1 }}>
-                          <PersonRounded fontSize="small" color="action" />
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          <PersonRounded sx={{ fontSize: 14, color: '#94A3B8' }} />
+                          <Typography variant="body2" sx={{ fontWeight: 600, color: '#475569' }}>
                             {vehicle.customer.full_name}
                           </Typography>
                           {vehicle.customer.phone && (
                             <>
                               <Typography variant="body2" color="text.disabled">·</Typography>
-                              <PhoneRounded fontSize="small" color="action" />
+                              <PhoneRounded sx={{ fontSize: 13, color: '#94A3B8' }} />
                               <Typography variant="body2" color="text.secondary">
                                 {vehicle.customer.phone}
                               </Typography>
@@ -671,21 +705,23 @@ export default function VehiclesPage() {
                       )}
                     </Box>
 
-                    {/* Кнопки действий */}
+                    {/* Actions */}
                     <Stack direction="row" spacing={1} sx={{ flexShrink: 0 }}>
                       <Button
                         variant="outlined"
+                        size="small"
                         startIcon={<EditRounded />}
                         onClick={() => setEditVehicle(vehicle)}
-                        sx={{ borderRadius: '12px', fontWeight: 700 }}
+                        sx={{ fontWeight: 700 }}
                       >
                         Изменить
                       </Button>
                       <Button
                         variant="contained"
+                        size="small"
                         startIcon={<HistoryRounded />}
                         onClick={() => setHistoryVehicle(vehicle)}
-                        sx={{ borderRadius: '12px', fontWeight: 700 }}
+                        sx={{ fontWeight: 700 }}
                       >
                         История
                       </Button>
@@ -698,14 +734,11 @@ export default function VehiclesPage() {
         </Box>
       )}
 
-      {/* Диалог истории */}
       <VehicleHistoryDialog
         vehicle={historyVehicle}
         open={!!historyVehicle}
         onClose={() => setHistoryVehicle(null)}
       />
-
-      {/* Диалог редактирования */}
       <VehicleEditDialog
         vehicle={editVehicle}
         open={!!editVehicle}

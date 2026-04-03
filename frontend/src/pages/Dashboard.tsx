@@ -140,9 +140,26 @@ function KpiCard({
   extra?: React.ReactNode
 }) {
   return (
-    <Paper sx={{ p: 2.5, height: '100%' }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 1.5 }}>
-        <Box sx={{ p: 1.2, borderRadius: '10px', bgcolor: alpha(color, 0.12), color, display: 'flex' }}>
+    <Paper sx={{
+      p: 2.5,
+      height: '100%',
+      borderTop: `3px solid ${color}`,
+      borderRadius: '12px',
+      transition: 'box-shadow 0.2s, transform 0.15s',
+      '&:hover': {
+        boxShadow: `0 8px 24px ${alpha(color, 0.14)}`,
+        transform: 'translateY(-1px)',
+      },
+    }}>
+      <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 2 }}>
+        <Box sx={{
+          p: 1.1,
+          borderRadius: '10px',
+          bgcolor: alpha(color, 0.1),
+          color,
+          display: 'flex',
+          border: `1px solid ${alpha(color, 0.15)}`,
+        }}>
           {icon}
         </Box>
         <TrendBadge pct={trend} invertColor={invertColor} />
@@ -150,13 +167,15 @@ function KpiCard({
       {loading ? (
         <CircularProgress size={22} sx={{ mt: 0.5 }} />
       ) : (
-        <Typography variant="h5" sx={{ fontWeight: 800, lineHeight: 1.1 }}>{value}</Typography>
+        <Typography variant="h5" sx={{ fontWeight: 800, lineHeight: 1.1, letterSpacing: '-0.02em', color: '#0F172A' }}>{value}</Typography>
       )}
       <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.3, fontSize: 11 }}>
         {subtitle}
       </Typography>
-      <Typography variant="caption" color="text.secondary" sx={{
-        display: 'block', mt: 1, textTransform: 'uppercase', fontWeight: 700, fontSize: 10, letterSpacing: '0.05em',
+      <Typography sx={{
+        display: 'block', mt: 1.5,
+        textTransform: 'uppercase', fontWeight: 700, fontSize: '0.65rem',
+        letterSpacing: '0.07em', color: '#94A3B8',
       }}>
         {title}
       </Typography>
@@ -180,9 +199,15 @@ function RevenueCard({
   const planPct = revenue.plan_pct
 
   return (
-    <Paper sx={{ p: 2.5, height: '100%' }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 1.5 }}>
-        <Box sx={{ p: 1.2, borderRadius: '10px', bgcolor: alpha(color, 0.12), color, display: 'flex' }}>
+    <Paper sx={{
+      p: 2.5, height: '100%',
+      borderTop: `3px solid ${color}`,
+      borderRadius: '12px',
+      transition: 'box-shadow 0.2s, transform 0.15s',
+      '&:hover': { boxShadow: `0 8px 24px ${alpha(color, 0.14)}`, transform: 'translateY(-1px)' },
+    }}>
+      <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 2 }}>
+        <Box sx={{ p: 1.1, borderRadius: '10px', bgcolor: alpha(color, 0.1), color, display: 'flex', border: `1px solid ${alpha(color, 0.15)}` }}>
           <AttachMoneyRounded />
         </Box>
         <Stack direction="row" alignItems="center" spacing={1}>
@@ -277,13 +302,19 @@ function LoadCard({ title, pct, subtitle, loading }: {
   const color = pct === null ? '#94A3B8' : pct >= 70 ? '#10B981' : pct >= 45 ? '#F59E0B' : '#EF4444'
   const label = pct === null ? null : pct >= 70 ? 'Хорошо' : pct >= 45 ? 'Средне' : 'Мало'
   return (
-    <Paper sx={{ p: 2.5, height: '100%' }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 1.5 }}>
-        <Box sx={{ p: 1.2, borderRadius: '10px', bgcolor: alpha(color, 0.12), color, display: 'flex' }}>
+    <Paper sx={{
+      p: 2.5, height: '100%',
+      borderTop: `3px solid ${color}`,
+      borderRadius: '12px',
+      transition: 'box-shadow 0.2s, transform 0.15s',
+      '&:hover': { boxShadow: `0 8px 24px ${alpha(color, 0.12)}`, transform: 'translateY(-1px)' },
+    }}>
+      <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 2 }}>
+        <Box sx={{ p: 1.1, borderRadius: '10px', bgcolor: alpha(color, 0.1), color, display: 'flex', border: `1px solid ${alpha(color, 0.15)}` }}>
           <DirectionsCarRounded />
         </Box>
         {label && (
-          <Chip label={label} size="small" sx={{ bgcolor: alpha(color, 0.12), color, fontSize: 10, height: 20, fontWeight: 700 }} />
+          <Chip label={label} size="small" sx={{ bgcolor: alpha(color, 0.12), color, fontSize: '0.65rem', height: 20, fontWeight: 700 }} />
         )}
       </Stack>
       {loading ? (

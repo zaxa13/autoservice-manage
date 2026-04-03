@@ -1,8 +1,56 @@
+// ── Primitive domain types (single source of truth) ──────────────────────────
+
+export type UserRole = 'admin' | 'manager' | 'mechanic' | 'accountant'
+
+export type OrderStatus =
+  | 'new'
+  | 'estimation'
+  | 'in_progress'
+  | 'ready_for_payment'
+  | 'paid'
+  | 'completed'
+  | 'cancelled'
+
+export type SalaryStatus = 'draft' | 'calculated' | 'paid'
+
+export type ReceiptDocumentStatus = 'draft' | 'posted'
+
+export type WorkCategory =
+  | 'diagnostics' | 'engine' | 'transmission' | 'suspension' | 'brakes'
+  | 'electrical'  | 'cooling' | 'fuel_system' | 'exhaust'    | 'climate'
+  | 'maintenance' | 'body_work' | 'painting'  | 'tire_service' | 'glass'
+  | 'repair'      | 'other'
+
+export type PartCategory =
+  | 'engine' | 'transmission' | 'suspension' | 'brakes'
+  | 'electrical' | 'body' | 'consumables' | 'other'
+
+export type TransactionType = 'incoming' | 'outgoing' | 'adjustment'
+
+export type AccountType = 'cash' | 'bank'
+
+export type CashTransactionType = 'income' | 'expense' | 'transfer'
+
+export type PaymentMethod = 'cash' | 'card' | 'yookassa'
+
+export type AppointmentStatus =
+  | 'scheduled'
+  | 'confirmed'
+  | 'waiting'
+  | 'arrived'
+  | 'in_work'
+  | 'ready'
+  | 'completed'
+  | 'no_show'
+  | 'cancelled'
+
+// ── Entity interfaces ──────────────────────────────────────────────────────────
+
 export interface User {
   id: number
   username: string
   email: string
-  role: 'admin' | 'manager' | 'mechanic' | 'accountant'
+  role: UserRole
   employee_id?: number
   is_active: boolean
 }
@@ -13,7 +61,7 @@ export interface Order {
   vehicle_id: number
   employee_id: number
   mechanic_id?: number
-  status: 'new' | 'estimation' | 'in_progress' | 'ready_for_payment' | 'paid' | 'completed' | 'cancelled'
+  status: OrderStatus
   total_amount: number
   paid_amount: number
   mileage_at_service?: number
@@ -29,8 +77,8 @@ export interface OrderDetail extends Order {
   mechanic?: Employee
   order_works: OrderWork[]
   order_parts: OrderPart[]
-  recommendations?: string  // Только в детальной информации
-  comments?: string  // Только в детальной информации
+  recommendations?: string
+  comments?: string
 }
 
 export interface OrderWork {
@@ -83,13 +131,46 @@ export interface OrderCreate {
 }
 
 export interface OrderUpdate {
+  employee_id?: number
   mechanic_id?: number
-  status?: 'new' | 'estimation' | 'in_progress' | 'ready_for_payment' | 'paid' | 'completed' | 'cancelled'
+  status?: OrderStatus
   paid_amount?: number
   recommendations?: string
   comments?: string
   order_works?: OrderWorkCreate[]
   order_parts?: OrderPartCreate[]
+}
+
+export interface OrderPayment {
+  id: number
+  order_id: number
+  amount: number
+  payment_method: PaymentMethod
+  status: 'succeeded' | 'cancelled' | 'pending' | 'failed'
+  created_at: string
+  external_id?: string | null
+}
+
+export interface SalaryScheme {
+  id?: number
+  employee_id: number
+  works_percentage: number
+  revenue_percentage: number
+  updated_at?: string
+}
+
+export interface SalaryRecord {
+  id: number
+  employee_id: number
+  period_start: string
+  period_end: string
+  base_salary: number
+  bonus: number
+  penalty: number
+  total: number
+  status: SalaryStatus
+  created_at: string
+  paid_at?: string
 }
 
 export interface Work {
@@ -98,19 +179,19 @@ export interface Work {
   description?: string
   price: number
   duration_minutes: number
-  category: 'diagnostics' | 'engine' | 'transmission' | 'suspension' | 'brakes' | 'electrical' | 'cooling' | 'fuel_system' | 'exhaust' | 'climate' | 'maintenance' | 'body_work' | 'painting' | 'tire_service' | 'glass' | 'repair' | 'other'
+  category: WorkCategory
 }
 
 export interface Part {
   id: number
   name: string
-  part_number: string  // обязателен в БД
+  part_number: string
   brand?: string
   price: number
   purchase_price_last?: number
   unit: string
-  category: 'engine' | 'transmission' | 'suspension' | 'brakes' | 'electrical' | 'body' | 'consumables' | 'other'
-  stock_quantity: number  // текущий остаток на складе (из warehouse_items)
+  category: PartCategory
+  stock_quantity: number
 }
 
 export interface WarehouseItem {
@@ -122,8 +203,6 @@ export interface WarehouseItem {
   last_updated: string
   part: Part
 }
-
-export type TransactionType = 'incoming' | 'outgoing' | 'adjustment'
 
 export interface WarehouseTransaction {
   id: number
@@ -174,7 +253,7 @@ export interface ReceiptDocument {
   supplier_id?: number
   supplier_document_number?: string
   supplier_document_date?: string
-  status: 'draft' | 'posted'
+  status: ReceiptDocumentStatus
   created_at: string
   supplier?: Supplier
   lines: ReceiptLine[]
@@ -196,7 +275,6 @@ export interface ReceiptDocumentCreate {
   lines: ReceiptLineCreate[]
 }
 
-/** Отчёт по приходу от поставщика за период (сверка). */
 export interface SupplierReceiptsReport {
   receipts: ReceiptDocument[]
   total_count: number
@@ -247,7 +325,7 @@ export interface Vehicle {
   brand?: BrandRef
   model?: ModelRef
   year?: number
-  mileage?: number  // Пробег в км
+  mileage?: number
   customer_id: number
   customer?: Customer
   created_at?: string
@@ -259,13 +337,12 @@ export interface VehicleCreate {
   brand_id: number
   model_id: number
   year?: number
-  mileage?: number  // Пробег в км
+  mileage?: number
   customer_id: number
 }
 
-export interface VehicleHistoryOrder extends OrderDetail {
-  // наследует все поля OrderDetail — используется в истории автомобиля
-}
+// Type alias — semantically honest, no empty interface needed
+export type VehicleHistoryOrder = OrderDetail
 
 export interface Employee {
   id: number
@@ -279,26 +356,15 @@ export interface Employee {
 }
 
 export interface OrderStatusInfo {
-  value: string
+  value: OrderStatus
   label: string
 }
-
-export type AppointmentStatus =
-  | 'scheduled'   // Записан
-  | 'confirmed'   // Подтверждён
-  | 'waiting'     // Ожидаем авто
-  | 'arrived'     // Авто на СТО
-  | 'in_work'     // В работе
-  | 'ready'       // Готов к выдаче
-  | 'completed'   // Завершён
-  | 'no_show'     // Не явился
-  | 'cancelled'   // Отменён
 
 export interface AppointmentPost {
   id: number
   name: string
   max_slots: number
-  slot_times?: string[]  // слоты по времени: ["09:00", "11:00", ...]
+  slot_times?: string[]
   color?: string
   sort_order: number
   created_at: string
@@ -319,8 +385,8 @@ export interface AppointmentOrder {
 
 export interface Appointment {
   id: number
-  date: string  // YYYY-MM-DD format
-  time: string  // HH:MM format
+  date: string
+  time: string
   customer_name: string
   customer_phone: string
   description?: string
@@ -338,8 +404,8 @@ export interface Appointment {
 }
 
 export interface AppointmentCreate {
-  date: string  // YYYY-MM-DD format
-  time: string  // HH:MM format
+  date: string
+  time: string
   customer_name: string
   customer_phone: string
   description?: string
@@ -365,9 +431,6 @@ export interface AppointmentUpdate {
 }
 
 // ── Cashflow ──────────────────────────────────────────────────────────────────
-
-export type AccountType = 'cash' | 'bank'
-export type CashTransactionType = 'income' | 'expense' | 'transfer'
 
 export interface CashAccount {
   id: number
