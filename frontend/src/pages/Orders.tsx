@@ -289,7 +289,6 @@ export default function Orders() {
     const d: OrderDetail = res.data;
     setSelectedVehicle(d.vehicle);
     setInlineMileage(d.vehicle?.mileage?.toString() ?? '');
-    setOriginalPaidAmount(Number(d.paid_amount || 0));
     setPaidAmountFromServer(Number(d.paid_amount || 0));
     const parts = (d.order_parts || []).map((p: any) => ({
       part_id: p.part_id ?? 0,
@@ -332,7 +331,7 @@ export default function Orders() {
       setSearchingVehicle(false);
       setInlineMileage(order.vehicle?.mileage?.toString() ?? '');
     } else {
-      setEditingOrderId(null); setSelectedVehicle(null); setPaidAmountFromServer(0); setOriginalPaidAmount(0); setPayments([]);
+      setEditingOrderId(null); setSelectedVehicle(null); setPaidAmountFromServer(0); setPayments([]);
       setFormData({ vehicle_id: 0, mechanic_id: undefined, employee_id: undefined, status: 'new', order_works: [], order_parts: [], recommendations: '', comments: '' });
       setOrderPartCache([]);
       setPartRowInputs([]); setPartRowResults([]); setPartRowLoading([]);
