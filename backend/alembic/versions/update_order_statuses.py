@@ -19,9 +19,9 @@ depends_on = None
 def upgrade() -> None:
     # Обновляем старые статусы 'completed' на 'ready_for_payment'
     op.execute("""
-        UPDATE orders 
-        SET status = 'ready_for_payment' 
-        WHERE status = 'completed' OR status = 'COMPLETED'
+        UPDATE orders
+        SET status = 'ready_for_payment'
+        WHERE status::text = 'completed' OR status::text = 'COMPLETED'
     """)
 
 
