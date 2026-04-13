@@ -16,8 +16,10 @@ from app.models import *  # Импортируем все модели
 # access to the values within the .ini file in use.
 config = context.config
 
-# Устанавливаем URL БД из настроек
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+# Устанавливаем URL БД из настроек.
+# ConfigParser использует % как спецсимвол интерполяции — экранируем %% чтобы
+# URL-encoded пароли (например %23, %2A) не ломали парсинг.
+config.set_main_option("sqlalchemy.url", settings.DATABASE_URL.replace("%", "%%"))
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
