@@ -24,7 +24,7 @@ class Account(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     account_type = Column(
-        Enum(AccountType, values_callable=lambda obj: [e.value for e in obj]),
+        Enum(AccountType, values_callable=lambda obj: [e.value for e in obj], native_enum=False),
         nullable=False,
     )
     initial_balance = Column(Numeric(12, 2), nullable=False, default=0)
@@ -51,7 +51,7 @@ class TransactionCategory(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     transaction_type = Column(
-        Enum(TransactionType, values_callable=lambda obj: [e.value for e in obj]),
+        Enum(TransactionType, values_callable=lambda obj: [e.value for e in obj], native_enum=False),
         nullable=False,
     )
     is_system = Column(Boolean, nullable=False, default=False)
@@ -67,7 +67,7 @@ class CashTransaction(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     transaction_type = Column(
-        Enum(TransactionType, values_callable=lambda obj: [e.value for e in obj]),
+        Enum(TransactionType, values_callable=lambda obj: [e.value for e in obj], native_enum=False),
         nullable=False,
     )
     account_id = Column(Integer, ForeignKey("cash_accounts.id"), nullable=False)
