@@ -1,0 +1,49 @@
+# docker-compose.prod.yml — локальный тест production-образа
+#
+# Симулирует то, что делает платформа при провижининге тенанта.
+# Использование:
+#   docker-compose -f docker-compose.prod.yml up
+#   Открыть: http://localhost
+#
+# Отличие от docker-compose.yml:
+#   - Один combined контейнер (nginx + uvicorn) как в продакшне
+#   - Без volume-маунтов (работает из образа, не из исходников)
+#   - ADMIN_EMAIL / ADMIN_PASSWORD создают admin при старте
+
+services:
+  db:
+    image: postgres:14-alpine
+    environment:
+      POSTGRES_USER: autoservice
+      POSTGRES_PASSWORD: autoservice_password
+      POSTGRES_DB: autoservice_db
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U autoservice"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  tenant:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    environment:
+      DATABASE_URL: postgresql://autoservice:autoservice_password@db:5432/autoservice_db
+      SECRET_KEY: dev-secret-key-change-in-production
+      TENANT_SLUG: devtenant
+      TENANT_ID: 00000000-0000-0000-0000-000000000001
+      PLAN: start
+      ADMIN_EMAIL: admin@example.com
+      ADMIN_PASSWORD: admin123
+      ENVIRONMENT: production
+      DEBUG: "false"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_prod_data:

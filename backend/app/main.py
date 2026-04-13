@@ -14,6 +14,30 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+def _seed_admin(db, email: str, password: str) -> None:
+    """Создаёт admin-пользователя если ещё не существует. Идемпотентно."""
+    from app.models.user import User, UserRole
+    from app.core.security import get_password_hash
+    existing = db.query(User).filter(User.email == email).first()
+    if existing:
+        logger.info("Admin user already exists: %s", email)
+        return
+    username = email.split("@")[0]
+    # Если username занят — добавляем суффикс
+    if db.query(User).filter(User.username == username).first():
+        username = f"{username}_admin"
+    user = User(
+        username=username,
+        email=email,
+        password_hash=get_password_hash(password),
+        role=UserRole.ADMIN,
+        is_active=True,
+    )
+    db.add(user)
+    db.commit()
+    logger.info("Admin user created: %s (role=admin)", email)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Starting Autoservice Management API")
@@ -29,6 +53,10 @@ async def lifespan(app: FastAPI):
     try:
         seed_system_categories(db)
         logger.info("Cashflow system categories seeded")
+
+        # Создаём admin-пользователя при первом старте (провижининг платформы)
+        if settings.ADMIN_EMAIL and settings.ADMIN_PASSWORD:
+            _seed_admin(db, settings.ADMIN_EMAIL, settings.ADMIN_PASSWORD)
     finally:
         db.close()
 

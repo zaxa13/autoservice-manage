@@ -48,6 +48,16 @@ class Settings(BaseSettings):
     GIBDD_API_KEY: str = ""
     GIBDD_API_URL: str = ""
     
+    # Tenant identity (заполняется платформой при провижининге)
+    TENANT_SLUG: str = ""
+    TENANT_ID: str = ""
+    PLAN: str = "start"
+
+    # Admin seeding (заполняется платформой при провижининге)
+    # Если заданы — создаётся admin-пользователь при первом старте
+    ADMIN_EMAIL: str = ""
+    ADMIN_PASSWORD: str = ""
+
     # Environment
     ENVIRONMENT: str = "development"
     DEBUG: bool = True
