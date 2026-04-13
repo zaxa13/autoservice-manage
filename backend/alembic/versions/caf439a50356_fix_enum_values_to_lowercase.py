@@ -23,37 +23,37 @@ def upgrade() -> None:
     
     # Update parts.category
     op.execute("""
-        UPDATE parts 
-        SET category = LOWER(category)
-        WHERE category != LOWER(category)
+        UPDATE parts
+        SET category = LOWER(category::text)::partcategory
+        WHERE category::text != LOWER(category::text)
     """)
-    
+
     # Update works.category
     op.execute("""
-        UPDATE works 
-        SET category = LOWER(category)
-        WHERE category != LOWER(category)
+        UPDATE works
+        SET category = LOWER(category::text)::workcategory
+        WHERE category::text != LOWER(category::text)
     """)
-    
+
     # Update employees.position
     op.execute("""
-        UPDATE employees 
-        SET position = LOWER(position)
-        WHERE position != LOWER(position)
+        UPDATE employees
+        SET position = LOWER(position::text)::employeeposition
+        WHERE position::text != LOWER(position::text)
     """)
-    
+
     # Update users.role
     op.execute("""
-        UPDATE users 
-        SET role = LOWER(role)
-        WHERE role != LOWER(role)
+        UPDATE users
+        SET role = LOWER(role::text)::userrole
+        WHERE role::text != LOWER(role::text)
     """)
-    
+
     # Update warehouse_transactions.transaction_type
     op.execute("""
-        UPDATE warehouse_transactions 
-        SET transaction_type = LOWER(transaction_type)
-        WHERE transaction_type != LOWER(transaction_type)
+        UPDATE warehouse_transactions
+        SET transaction_type = LOWER(transaction_type::text)::transactiontype
+        WHERE transaction_type::text != LOWER(transaction_type::text)
     """)
 
 
@@ -62,9 +62,9 @@ def downgrade() -> None:
     
     # Update parts.category
     op.execute("""
-        UPDATE parts 
-        SET category = UPPER(category)
-        WHERE category = 'other'
+        UPDATE parts
+        SET category = UPPER(category::text)::partcategory
+        WHERE category::text = 'other'
     """)
     
     # Note: We only revert 'other' to 'OTHER' as that was the problematic one
