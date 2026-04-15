@@ -11,8 +11,10 @@ logger = logging.getLogger(__name__)
 
 
 def authenticate_user(db: Session, username: str, password: str) -> User:
-    """Аутентификация пользователя"""
+    """Аутентификация пользователя по username или email"""
     user = db.query(User).filter(User.username == username).first()
+    if not user:
+        user = db.query(User).filter(User.email == username).first()
     if not user or not verify_password(password, user.password_hash):
         logger.warning(f"Неудачная попытка входа для пользователя: {username}")
         raise HTTPException(
