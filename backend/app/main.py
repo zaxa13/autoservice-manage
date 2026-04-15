@@ -15,15 +15,16 @@ logger = logging.getLogger(__name__)
 
 
 def _seed_admin(db, email: str, password: str) -> None:
-    """Создаёт admin-пользователя если ещё не существует. Идемпотентно."""
+    """Создаёт admin-пользователя или обновляет пароль если уже существует."""
     from app.models.user import User, UserRole
     from app.core.security import get_password_hash
     existing = db.query(User).filter(User.email == email).first()
     if existing:
-        logger.info("Admin user already exists: %s", email)
+        existing.password_hash = get_password_hash(password)
+        db.commit()
+        logger.info("Admin password updated: %s", email)
         return
     username = email.split("@")[0]
-    # Если username занят — добавляем суффикс
     if db.query(User).filter(User.username == username).first():
         username = f"{username}_admin"
     user = User(
