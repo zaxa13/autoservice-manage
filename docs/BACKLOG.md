@@ -260,23 +260,23 @@
 
 | # | Фича | Описание | Тест | Статус |
 |---|------|----------|------|--------|
-| 4.2.1 | Остановка контейнера (suspend) | При suspend подписки — `docker stop` контейнера тенанта | После suspend → {slug}.domain.com → "Подписка истекла" | ⬜ |
-| 4.2.2 | Запуск контейнера (reactivate) | При оплате после suspend — `docker start` | Оплатил → контейнер запустился → данные на месте | ⬜ |
-| 4.2.3 | Удаление контейнера и данных (terminate) | `docker rm` + `DROP DATABASE` + очистка volumes | После terminate — контейнер, БД и файлы удалены | ⬜ |
+| 4.2.1 | Остановка контейнера (suspend) | При suspend подписки — `docker stop` контейнера тенанта. Celery tasks: `check_trial_expiry`, `check_grace_period`, `suspend_tenant_task`. Admin endpoint: `POST /admin/tenants/{id}/suspend` | После suspend → {slug}.domain.com → "Подписка истекла" | ✅ |
+| 4.2.2 | Запуск контейнера (reactivate) | При оплате после suspend — `docker start`. Celery task: `reactivate_tenant_task`. Admin endpoint: `POST /admin/tenants/{id}/activate` | Оплатил → контейнер запустился → данные на месте | ✅ |
+| 4.2.3 | Удаление контейнера и данных (terminate) | `docker rm` + `DROP DATABASE`. Celery task: `terminate_tenant_task` + `cleanup_terminated_tenants` (30д). Admin endpoint: `POST /admin/tenants/{id}/terminate` | После terminate — контейнер, БД и файлы удалены | ✅ |
 
 ### 4.3 SSL и домены 🔴
 
 | # | Фича | Описание | Тест | Статус |
 |---|------|----------|------|--------|
-| 4.3.1 | Wildcard DNS настройка | A-запись `*.domain.com → IP` на регистраторе | Любой поддомен резолвится на сервер | ⬜ |
-| 4.3.2 | Wildcard SSL (Let's Encrypt) | Wildcard сертификат через Traefik ACME | HTTPS работает на всех поддоменах | ⬜ |
+| 4.3.1 | Wildcard DNS настройка | A-запись `*.auto-works.pro → IP` на регистраторе. Nginx-блок уже настроен (`server_name ~^(?<tenant>[a-z0-9-]+)\.auto-works\.pro$`) | Любой поддомен резолвится на сервер | ✅ |
+| 4.3.2 | Wildcard SSL (Let's Encrypt) | Wildcard сертификат через certbot (`--manual --preferred-challenges dns`). Nginx-конфиг уже настроен с путями к сертификату. Команда в `infrastructure/nginx/platform.conf` | HTTPS работает на всех поддоменах | ✅ |
 
 ### 4.4 Обновление тенантов 🟡
 
 | # | Фича | Описание | Тест | Статус |
 |---|------|----------|------|--------|
-| 4.4.1 | Скрипт массового обновления | Обновить Docker image → rolling restart всех контейнеров (по 10 штук) → миграции в каждой БД | Обновил → все тенанты обновились, downtime < 30 сек на тенант | ⬜ |
-| 4.4.2 | Health-check после обновления | После рестарта — проверить /health. Если fail → откат на предыдущий image | Сломанный image → автоматический откат | ⬜ |
+| 4.4.1 | Скрипт массового обновления | `infrastructure/scripts/deploy-tenant-rolling.sh` — rolling restart батчами по 10 с сохранением конфига контейнера | Обновил → все тенанты обновились, downtime < 30 сек на тенант | ✅ |
+| 4.4.2 | Health-check после обновления | Встроен в rolling script: `docker exec wget /health`. При fail → автоматический откат на `:rollback` образ | Сломанный image → автоматический откат | ✅ |
 
 ---
 
