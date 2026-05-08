@@ -17,19 +17,31 @@ from uuid import UUID
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.pool import NullPool
 
 from app.config import settings
 
 # Re-export Base — чтобы импортировать как `from app.database import Base`.
 from app.models._base import Base  # noqa: F401
 
-# Один engine на процесс. echo выключаем по умолчанию — DEBUG отдельно.
+# Engine конфигурируем под PgBouncer в **transaction-pool**:
+#
+# 1. NullPool — не пуллим в SQLAlchemy, пуллит pgbouncer. Двойной pool
+#    приводит к stale соединениям и привязке к event-loop в тестах.
+#
+# 2. statement_cache_size=0 + prepared_statement_cache_size=0 — asyncpg по
+#    умолчанию кеширует prepared statements server-side. В transaction-mode
+#    каждая транзакция может пойти на новое физическое соединение, и кеш
+#    становится протухшим → "prepared statement does not exist".
+#    См. https://magicstack.github.io/asyncpg/current/faq.html#why-am-i-getting-prepared-statement-errors
 _runtime_engine = create_async_engine(
     settings.DATABASE_URL,
     echo=settings.DEBUG,
-    pool_pre_ping=True,
-    pool_size=10,
-    max_overflow=20,
+    poolclass=NullPool,
+    connect_args={
+        "statement_cache_size": 0,
+        "prepared_statement_cache_size": 0,
+    },
 )
 
 _session_factory = async_sessionmaker(
