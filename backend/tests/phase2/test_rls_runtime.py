@@ -61,7 +61,9 @@ def test_alpha_cannot_see_beta_row_by_id(tenant_conn, migrator_conn):
 # INSERT WITH CHECK
 # ---------------------------------------------------------------------------
 def test_insert_with_foreign_tenant_id_is_rejected(tenant_conn):
-    with pytest.raises(psycopg2.errors.CheckViolation) as exc:
+    # RLS WITH CHECK раньше думал что это CheckViolation, но Postgres
+    # бросает SQLSTATE 42501 (insufficient_privilege) для row-level security.
+    with pytest.raises(psycopg2.errors.InsufficientPrivilege) as exc:
         with tenant_txn(tenant_conn, TENANT_ALPHA) as cur:
             cur.execute(
                 "INSERT INTO app.customers (tenant_id, full_name, phone) "
@@ -82,8 +84,8 @@ def test_insert_with_own_tenant_id_works(tenant_conn):
 
 
 def test_insert_without_set_local_is_rejected(tenant_conn):
-    """current_tenant()=NULL → WITH CHECK не проходит."""
-    with pytest.raises(psycopg2.errors.CheckViolation):
+    """current_tenant()=NULL → WITH CHECK не проходит (SQLSTATE 42501)."""
+    with pytest.raises(psycopg2.errors.InsufficientPrivilege):
         with tenant_conn.cursor() as cur:
             cur.execute(
                 "INSERT INTO app.customers (tenant_id, full_name, phone) "
@@ -111,9 +113,9 @@ def test_alpha_cannot_update_beta_row(tenant_conn, migrator_conn):
 
 
 def test_alpha_cannot_change_tenant_id_to_beta(tenant_conn, migrator_conn):
-    """UPDATE WITH CHECK защищает от смены tenant_id на чужой."""
+    """UPDATE WITH CHECK защищает от смены tenant_id на чужой (SQLSTATE 42501)."""
     alpha_id = _seed_customer(migrator_conn, TENANT_ALPHA, "Alpha-trying-escape")
-    with pytest.raises(psycopg2.errors.CheckViolation):
+    with pytest.raises(psycopg2.errors.InsufficientPrivilege):
         with tenant_txn(tenant_conn, TENANT_ALPHA) as cur:
             cur.execute(
                 "UPDATE app.customers SET tenant_id=%s WHERE id=%s",
@@ -205,19 +207,25 @@ def test_tenant_app_resolves_unqualified_table_name(tenant_conn, migrator_conn):
 # ---------------------------------------------------------------------------
 # UNIQUE per-tenant: одинаковые значения в разных тенантах допустимы
 # ---------------------------------------------------------------------------
+# NOT NULL колонки users (is_active, password_must_be_changed) в моделях
+# имеют клиентский default через SQLAlchemy — для raw SQL передаём явно.
+_USERS_INSERT = (
+    "INSERT INTO app.users "
+    "(tenant_id, username, email, password_hash, role, "
+    " is_active, password_must_be_changed) "
+    "VALUES (%s, %s, %s, %s, %s, true, false)"
+)
+
+
 def test_unique_email_is_per_tenant(migrator_conn):
     """Один и тот же email может быть у пользователя в Alpha и в Beta."""
     with migrator_conn.cursor() as cur:
         cur.execute(
-            "INSERT INTO app.users "
-            "(tenant_id, username, email, password_hash, role) "
-            "VALUES (%s, %s, %s, %s, %s)",
+            _USERS_INSERT,
             (str(TENANT_ALPHA), "admin", "shared@example.com", "x", "admin"),
         )
         cur.execute(
-            "INSERT INTO app.users "
-            "(tenant_id, username, email, password_hash, role) "
-            "VALUES (%s, %s, %s, %s, %s)",
+            _USERS_INSERT,
             (str(TENANT_BETA), "admin", "shared@example.com", "x", "admin"),
         )
     migrator_conn.commit()
@@ -226,18 +234,14 @@ def test_unique_email_is_per_tenant(migrator_conn):
 def test_unique_email_collision_within_same_tenant(migrator_conn):
     with migrator_conn.cursor() as cur:
         cur.execute(
-            "INSERT INTO app.users "
-            "(tenant_id, username, email, password_hash, role) "
-            "VALUES (%s, %s, %s, %s, %s)",
+            _USERS_INSERT,
             (str(TENANT_ALPHA), "u1", "dup@example.com", "x", "admin"),
         )
     migrator_conn.commit()
     with pytest.raises(psycopg2.errors.UniqueViolation):
         with migrator_conn.cursor() as cur:
             cur.execute(
-                "INSERT INTO app.users "
-                "(tenant_id, username, email, password_hash, role) "
-                "VALUES (%s, %s, %s, %s, %s)",
+                _USERS_INSERT,
                 (str(TENANT_ALPHA), "u2", "dup@example.com", "x", "manager"),
             )
             migrator_conn.commit()
