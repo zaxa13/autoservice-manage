@@ -60,8 +60,12 @@ async def tenant_session(tenant_id: UUID) -> AsyncIterator[AsyncSession]:
     """
     async with _session_factory() as session:
         async with session.begin():
+            # `SET LOCAL = $1` Postgres не принимает (это конфиг-команда, не
+            # запрос). Используем функцию `set_config(name, value, is_local)`
+            # — она принимает параметры и эквивалентна `SET LOCAL` при
+            # is_local=true.
             await session.execute(
-                text("SET LOCAL app.tenant_id = :tid"),
+                text("SELECT set_config('app.tenant_id', :tid, true)"),
                 {"tid": str(tenant_id)},
             )
             yield session
