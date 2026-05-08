@@ -1,39 +1,43 @@
-from fastapi import HTTPException, status, Depends
-from app.models.user import User, UserRole
-from app.dependencies import get_current_user
-import logging
+"""Role-based авторизация через JWT-claims (без обращения к БД).
 
-logger = logging.getLogger(__name__)
+Источник истины — claim `roles` в JWT-токене, который выдаёт platform-api
+(или внутренний логин tenant-app в Фазе 4-5). Сами роли — те же что
+в `UserRole` в моделях:
+- admin, manager, mechanic, accountant
+"""
+from __future__ import annotations
+
+from typing import Iterable
+
+from fastapi import Depends, HTTPException, status
+
+from app.core.security import TenantClaims
+from app.dependencies import get_current_claims
 
 
-def require_admin(current_user: User = Depends(get_current_user)) -> User:
-    """Требует роль администратора"""
-    if current_user.role != UserRole.ADMIN:
-        logger.warning(f"Non-admin user attempted admin action: {current_user.username}, role: {current_user.role}")
+def _check_roles(claims: TenantClaims, allowed: Iterable[str]) -> TenantClaims:
+    allowed_set = set(allowed)
+    if not (set(claims.roles) & allowed_set):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Недостаточно прав доступа"
+            detail="Недостаточно прав доступа",
         )
-    return current_user
+    return claims
 
 
-def require_manager_or_admin(current_user: User = Depends(get_current_user)) -> User:
-    """Требует роль менеджера или администратора"""
-    if current_user.role not in [UserRole.ADMIN, UserRole.MANAGER]:
-        logger.warning(f"Unauthorized user attempted manager action: {current_user.username}, role: {current_user.role}")
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Недостаточно прав доступа"
-        )
-    return current_user
+def require_admin(
+    claims: TenantClaims = Depends(get_current_claims),
+) -> TenantClaims:
+    return _check_roles(claims, ["admin"])
 
 
-def require_accountant_or_admin(current_user: User = Depends(get_current_user)) -> User:
-    """Требует роль бухгалтера или администратора"""
-    if current_user.role not in [UserRole.ADMIN, UserRole.ACCOUNTANT]:
-        logger.warning(f"Unauthorized user attempted accountant action: {current_user.username}, role: {current_user.role}")
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Недостаточно прав доступа"
-        )
-    return current_user
+def require_manager_or_admin(
+    claims: TenantClaims = Depends(get_current_claims),
+) -> TenantClaims:
+    return _check_roles(claims, ["admin", "manager"])
+
+
+def require_accountant_or_admin(
+    claims: TenantClaims = Depends(get_current_claims),
+) -> TenantClaims:
+    return _check_roles(claims, ["admin", "accountant"])
