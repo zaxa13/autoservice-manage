@@ -1,61 +1,118 @@
+"""JWT-утилиты tenant-app + bcrypt-хеширование паролей.
+
+Two-mode JWT:
+- Legacy `create_access_token` / `decode_access_token` — старый формат
+  (только `sub` + `exp`), оставлены до Фазы 4 для обратной совместимости
+  кода, который ещё не переписан.
+- Новый `decode_tenant_token` → `TenantClaims` — формат shared-DB
+  архитектуры, обязательно несёт `tenant_id` (UUID). Используется
+  зависимостью `get_current_claims` в `app.dependencies`.
+"""
+from __future__ import annotations
+
+import logging
+import uuid
 from datetime import datetime, timedelta
 from typing import Optional
-from jose import jwt, JWTError
+
 import bcrypt
+from jose import JWTError, jwt
+from pydantic import BaseModel, Field, ValidationError, field_validator
+
 from app.config import settings
-import logging
 
 logger = logging.getLogger(__name__)
 
 
+# ---------------------------------------------------------------------------
+# Passwords (legacy compat)
+# ---------------------------------------------------------------------------
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Проверка пароля"""
     try:
-        password_bytes = plain_password.encode('utf-8')
+        password_bytes = plain_password.encode("utf-8")
         if len(password_bytes) > 72:
             password_bytes = password_bytes[:72]
-        hashed_bytes = hashed_password.encode('utf-8')
-        return bcrypt.checkpw(password_bytes, hashed_bytes)
-    except Exception as e:
-        logger.error(f"Password verification error: {e}")
+        return bcrypt.checkpw(password_bytes, hashed_password.encode("utf-8"))
+    except Exception as e:  # noqa: BLE001
+        logger.error("Password verification error: %s", e)
         return False
 
 
 def get_password_hash(password: str) -> str:
-    """Хеширование пароля"""
     if not isinstance(password, str):
         password = str(password)
-    
-    password_bytes = password.encode('utf-8')
+    password_bytes = password.encode("utf-8")
     if len(password_bytes) > 72:
         password_bytes = password_bytes[:72]
-    
     salt = bcrypt.gensalt(rounds=12)
-    hashed = bcrypt.hashpw(password_bytes, salt)
-    return hashed.decode('utf-8')
+    return bcrypt.hashpw(password_bytes, salt).decode("utf-8")
 
 
+# ---------------------------------------------------------------------------
+# Legacy JWT (оставлено до Фазы 4 — будет удалено вместе со старым auth flow)
+# ---------------------------------------------------------------------------
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
-    """Создание JWT токена"""
     to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    
+    expire = datetime.utcnow() + (
+        expires_delta or timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    )
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
-    return encoded_jwt
+    return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
 
 def decode_access_token(token: str) -> Optional[dict]:
-    """Декодирует и проверяет JWT токен"""
     try:
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-        return payload
+        return jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
     except JWTError as e:
-        logger.warning(f"JWT decode error: {type(e).__name__}: {str(e)}")
+        logger.warning("JWT decode error: %s: %s", type(e).__name__, e)
         return None
-    except Exception as e:
-        logger.error(f"Unexpected error decoding token: {type(e).__name__}: {str(e)}")
-        return None
+
+
+# ---------------------------------------------------------------------------
+# Shared-DB JWT
+# ---------------------------------------------------------------------------
+class TenantClaims(BaseModel):
+    """Claims, извлекаемые из JWT для tenant-app.
+
+    `tenant_id` — обязательный UUID. Остальное опционально: токены могут
+    приходить от platform-api (owner-flow) или от внутреннего логина
+    employee, у них разные подмножества полей.
+    """
+
+    tenant_id: uuid.UUID
+    owner_id: uuid.UUID | None = None
+    user_id: int | None = None
+    sub: str | None = None
+    roles: list[str] = Field(default_factory=list)
+
+    model_config = {"extra": "ignore"}
+
+    @field_validator("tenant_id", mode="before")
+    @classmethod
+    def _coerce_tenant_id(cls, v):
+        if isinstance(v, uuid.UUID):
+            return v
+        if isinstance(v, str):
+            # pydantic сам поднимет ValidationError если строка не UUID
+            return uuid.UUID(v)
+        return v
+
+
+class InvalidTokenError(Exception):
+    """Брошен при любых проблемах с tenant-токеном: подпись, expiry,
+    отсутствующие/невалидные claims."""
+
+
+def decode_tenant_token(token: str) -> TenantClaims:
+    """Декодирует и валидирует токен. Поднимает `InvalidTokenError`."""
+    try:
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+        )
+    except JWTError as e:
+        raise InvalidTokenError(f"jwt: {e}") from e
+
+    try:
+        return TenantClaims(**payload)
+    except (ValidationError, ValueError) as e:
+        raise InvalidTokenError(f"claims: {e}") from e

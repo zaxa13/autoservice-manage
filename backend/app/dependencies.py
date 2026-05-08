@@ -1,103 +1,49 @@
+"""FastAPI-зависимости tenant-app.
+
+`get_tenant_db` — единственная допустимая точка входа в БД для бизнес-роутов.
+Прямой импорт `_session_factory` из `app.database` запрещён код-ревью.
+
+Цепочка: HTTP-запрос → bearer-токен → `get_current_claims` → `TenantClaims`
+→ `tenant_session(tenant_id)` → AsyncSession с открытой транзакцией и
+установленным `app.tenant_id`.
+"""
+from __future__ import annotations
+
+from typing import AsyncIterator
+
 from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials, OAuth2PasswordBearer
-from sqlalchemy.orm import Session
-from typing import Optional
-from app.database import get_db
-from app.models.user import User
-from app.core.security import decode_access_token
-import logging
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from sqlalchemy.ext.asyncio import AsyncSession
 
-logger = logging.getLogger(__name__)
+from app.core.security import InvalidTokenError, TenantClaims, decode_tenant_token
+from app.database import tenant_session
 
-# HTTPBearer для Swagger UI
-bearer_scheme = HTTPBearer(auto_error=False)
-
-# OAuth2PasswordBearer для стандартного OAuth2
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login", auto_error=False)
+_bearer = HTTPBearer(auto_error=False)
 
 
-def get_current_user(
-    credentials: Optional[HTTPAuthorizationCredentials] = Depends(bearer_scheme),
-    token_oauth: Optional[str] = Depends(oauth2_scheme),
-    db: Session = Depends(get_db)
-) -> User:
-    """Зависимость для получения текущего аутентифицированного пользователя"""
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Не удалось подтвердить учетные данные",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    
-    # Получаем токен из любого источника (HTTPBearer имеет приоритет)
-    token = None
-    if credentials is not None and hasattr(credentials, 'credentials'):
-        token = credentials.credentials
-        logger.debug("Токен получен из HTTPBearer")
-    elif token_oauth:
-        token = token_oauth
-        logger.debug("Токен получен из OAuth2PasswordBearer")
-    
-    if not token:
-        logger.warning("Токен не предоставлен: credentials=%s, token_oauth=%s", credentials, token_oauth)
-        raise credentials_exception
-    
-    # Декодируем токен
-    payload = decode_access_token(token)
-    if payload is None:
-        logger.warning("Попытка использования невалидного токена")
-        raise credentials_exception
-    
-    # Извлекаем username из токена
-    username: str = payload.get("sub")
-    if username is None:
-        logger.warning("Токен не содержит username")
-        raise credentials_exception
-    
-    # Находим пользователя в БД
-    user = db.query(User).filter(User.username == username).first()
-    if user is None:
-        logger.warning(f"Пользователь не найден: {username}")
-        raise credentials_exception
-    
-    # Проверяем, активен ли пользователь
-    if not user.is_active:
-        logger.warning(f"Попытка доступа неактивного пользователя: {username}")
+def get_current_claims(
+    credentials: HTTPAuthorizationCredentials | None = Depends(_bearer),
+) -> TenantClaims:
+    """Извлекает и валидирует JWT из Authorization: Bearer."""
+    if credentials is None or credentials.scheme.lower() != "bearer":
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Учетная запись неактивна",
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Missing bearer token",
+            headers={"WWW-Authenticate": "Bearer"},
         )
-    
-    logger.info(f"User authenticated successfully: username={username}, user_id={user.id}")
-    return user
+    try:
+        return decode_tenant_token(credentials.credentials)
+    except InvalidTokenError as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Invalid token: {e}",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
 
-def get_optional_user(
-    credentials: Optional[HTTPAuthorizationCredentials] = Depends(bearer_scheme),
-    token_oauth: Optional[str] = Depends(oauth2_scheme),
-    db: Session = Depends(get_db)
-) -> Optional[User]:
-    """Зависимость для получения текущего пользователя без обязательной авторизации.
-    Возвращает None если токен отсутствует, пользователь не найден или токен невалиден.
-    """
-    token = None
-    if credentials is not None and hasattr(credentials, 'credentials'):
-        token = credentials.credentials
-    elif token_oauth:
-        token = token_oauth
-
-    if not token:
-        return None
-
-    payload = decode_access_token(token)
-    if payload is None:
-        return None
-
-    username: str = payload.get("sub")
-    if username is None:
-        return None
-
-    user = db.query(User).filter(User.username == username).first()
-    if user is None or not user.is_active:
-        return None
-
-    return user
+async def get_tenant_db(
+    claims: TenantClaims = Depends(get_current_claims),
+) -> AsyncIterator[AsyncSession]:
+    """Async-сессия с RLS-контекстом для tenant из JWT."""
+    async with tenant_session(claims.tenant_id) as session:
+        yield session

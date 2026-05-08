@@ -42,16 +42,6 @@ async def beta_session():
 # ---------------------------------------------------------------------------
 # Базовое поведение
 # ---------------------------------------------------------------------------
-async def test_seed_creates_cashflow_categories(alpha_session, migrator_conn):
-    onboarding = _import_seed()
-    await onboarding.seed_tenant_defaults(alpha_session)
-
-    # alpha_session коммитнется при выходе из CM. Проверяем извне миграторовским connect.
-
-# Этот тест нужен в два этапа из-за async vs sync split — выносим в отдельную
-# функцию ниже.
-
-
 async def test_seed_creates_income_and_expense_categories(migrator_conn):
     """Проверяем КОНКРЕТНО что после сида в категориях есть income+expense."""
     onboarding = _import_seed()
