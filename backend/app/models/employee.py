@@ -1,34 +1,46 @@
-from sqlalchemy import Column, Integer, String, Date, Numeric, Boolean, DateTime, ForeignKey, Enum
-from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
+"""Сотрудник автосервиса."""
 import enum
-from app.database import Base
+from datetime import date, datetime
+from decimal import Decimal
+
+from sqlalchemy import (
+    BigInteger,
+    Boolean,
+    Date,
+    DateTime,
+    Identity,
+    Numeric,
+    PrimaryKeyConstraint,
+    String,
+    func,
+)
+from sqlalchemy.orm import Mapped, mapped_column
+
+from app.models._base import Base, TenantMixin
 
 
 class EmployeePosition(str, enum.Enum):
-    ADMIN = "admin"        # Администратор
-    MANAGER = "manager"   # Менеджер
-    MECHANIC = "mechanic" # Механик
+    ADMIN = "admin"
+    MANAGER = "manager"
+    MECHANIC = "mechanic"
 
 
-class Employee(Base):
+class Employee(Base, TenantMixin):
     __tablename__ = "employees"
 
-    id = Column(Integer, primary_key=True, index=True)
-    full_name = Column(String, nullable=False)
-    position = Column(Enum(EmployeePosition, values_callable=lambda obj: [e.value for e in obj]), nullable=False)
-    phone = Column(String, nullable=True)
-    email = Column(String, nullable=True)
-    hire_date = Column(Date, nullable=False)
-    salary_base = Column(Numeric(10, 2), nullable=False, default=0)
-    is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), nullable=False)
+    full_name: Mapped[str] = mapped_column(String(255), nullable=False)
+    position: Mapped[str] = mapped_column(String(20), nullable=False)
+    phone: Mapped[str | None] = mapped_column(String(50))
+    email: Mapped[str | None] = mapped_column(String(255))
+    hire_date: Mapped[date] = mapped_column(Date, nullable=False)
+    salary_base: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False, default=0)
+    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), onupdate=func.now()
+    )
 
-    user = relationship("User", back_populates="employee", uselist=False)
-    orders_created = relationship("Order", foreign_keys="Order.employee_id", back_populates="employee")
-    orders_mechanic = relationship("Order", foreign_keys="Order.mechanic_id", back_populates="mechanic")
-    warehouse_transactions = relationship("WarehouseTransaction", back_populates="employee")
-    salary_scheme = relationship("SalaryScheme", back_populates="employee", uselist=False)
-    salaries = relationship("Salary", back_populates="employee")
-
+    __table_args__ = (PrimaryKeyConstraint("tenant_id", "id"),)

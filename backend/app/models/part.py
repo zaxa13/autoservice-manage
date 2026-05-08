@@ -1,6 +1,18 @@
-from sqlalchemy import Column, Integer, String, Numeric, Enum
+"""Справочник запчастей."""
 import enum
-from app.database import Base
+from decimal import Decimal
+
+from sqlalchemy import (
+    BigInteger,
+    Identity,
+    Index,
+    Numeric,
+    PrimaryKeyConstraint,
+    String,
+)
+from sqlalchemy.orm import Mapped, mapped_column
+
+from app.models._base import Base, TenantMixin
 
 
 class PartCategory(str, enum.Enum):
@@ -14,15 +26,21 @@ class PartCategory(str, enum.Enum):
     OTHER = "other"
 
 
-class Part(Base):
+class Part(Base, TenantMixin):
     __tablename__ = "parts"
 
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False)
-    part_number = Column(String, index=True, nullable=False)  # Артикул обязателен (идентификация при списании)
-    brand = Column(String, nullable=True)
-    price = Column(Numeric(10, 2), nullable=False)
-    purchase_price_last = Column(Numeric(10, 2), nullable=True)
-    unit = Column(String, nullable=False, default="шт")
-    category = Column(Enum(PartCategory, values_callable=lambda obj: [e.value for e in obj]), nullable=False, default=PartCategory.OTHER)
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), nullable=False)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    part_number: Mapped[str] = mapped_column(String(100), nullable=False)
+    brand: Mapped[str | None] = mapped_column(String(100))
+    price: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
+    purchase_price_last: Mapped[Decimal | None] = mapped_column(Numeric(10, 2))
+    unit: Mapped[str] = mapped_column(String(20), nullable=False, default="шт")
+    category: Mapped[str] = mapped_column(
+        String(30), nullable=False, default=PartCategory.OTHER.value
+    )
 
+    __table_args__ = (
+        PrimaryKeyConstraint("tenant_id", "id"),
+        Index("ix_parts_tenant_part_number", "tenant_id", "part_number"),
+    )

@@ -1,122 +1,149 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Numeric, Enum, DateTime, Date, TypeDecorator
-from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
+"""Заказ-наряд: Order + OrderWork (работы) + OrderPart (запчасти).
+
+Номер заказа `Order.number` — UNIQUE per tenant. Генерация — через таблицу
+`tenant_counters` (см. миграцию 0001), атомарно через UPDATE...RETURNING.
+"""
 import enum
-from app.database import Base
-from app.config import settings
+from datetime import datetime
+from decimal import Decimal
+
+from sqlalchemy import (
+    BigInteger,
+    DateTime,
+    ForeignKeyConstraint,
+    Identity,
+    Index,
+    Integer,
+    Numeric,
+    PrimaryKeyConstraint,
+    String,
+    UniqueConstraint,
+    func,
+)
+from sqlalchemy.orm import Mapped, mapped_column
+
+from app.models._base import Base, TenantMixin
 
 
 class OrderStatus(str, enum.Enum):
-    NEW = "new"  # Новый
-    ESTIMATION = "estimation"  # Проценка
-    IN_PROGRESS = "in_progress"  # В работе
-    READY_FOR_PAYMENT = "ready_for_payment"  # Готов к оплате
-    PAID = "paid"  # Оплачен
-    COMPLETED = "completed"  # Завершен
-    CANCELLED = "cancelled"  # Отменен
+    NEW = "new"
+    ESTIMATION = "estimation"
+    IN_PROGRESS = "in_progress"
+    READY_FOR_PAYMENT = "ready_for_payment"
+    PAID = "paid"
+    COMPLETED = "completed"
+    CANCELLED = "cancelled"
 
 
-class OrderStatusType(TypeDecorator):
-    """TypeDecorator для корректной работы с OrderStatus в SQLite"""
-    impl = String
-    cache_ok = True
-
-    def __init__(self, length=50):
-        super().__init__(length)
-
-    def process_bind_param(self, value, dialect):
-        """Конвертация Python enum в строку для сохранения в БД"""
-        if value is None:
-            return None
-        if isinstance(value, OrderStatus):
-            return value.value  # Возвращаем значение enum (нижний регистр)
-        return str(value)
-
-    def process_result_value(self, value, dialect):
-        """Конвертация строки из БД в Python enum"""
-        if value is None:
-            return None
-        # Маппинг старых значений в верхнем регистре на новые enum значения
-        old_to_new = {
-            'NEW': 'new',
-            'IN_PROGRESS': 'in_progress',
-            'COMPLETED': 'completed',  # COMPLETED теперь мапим на completed (новый статус "завершен")
-            'READY_FOR_PAYMENT': 'ready_for_payment',
-            'ESTIMATION': 'estimation',
-            'PAID': 'paid',
-            'CANCELLED': 'cancelled',
-        }
-        # Если значение в верхнем регистре, конвертируем в нижний
-        normalized_value = old_to_new.get(value.upper()) if value.upper() in old_to_new else value
-        # Конвертируем в enum
-        try:
-            return OrderStatus(normalized_value)
-        except ValueError:
-            # Если не получилось, пробуем найти по исходному значению
-            return OrderStatus(value.lower()) if hasattr(OrderStatus, value.upper()) else OrderStatus.NEW
-
-
-class Order(Base):
+class Order(Base, TenantMixin):
     __tablename__ = "orders"
 
-    id = Column(Integer, primary_key=True, index=True)
-    number = Column(String, unique=True, index=True, nullable=False)
-    vehicle_id = Column(Integer, ForeignKey("vehicles.id"), nullable=False)
-    employee_id = Column(Integer, ForeignKey("employees.id"), nullable=False)  # Кто принял заказ
-    mechanic_id = Column(Integer, ForeignKey("employees.id"), nullable=True)  # Кто выполняет
-    # Используем кастомный TypeDecorator для корректной работы со статусами в SQLite
-    status = Column(
-        OrderStatusType(50),
-        nullable=False,
-        default=OrderStatus.NEW
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), nullable=False)
+    number: Mapped[str] = mapped_column(String(50), nullable=False)
+    vehicle_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    employee_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    mechanic_id: Mapped[int | None] = mapped_column(BigInteger)
+    status: Mapped[str] = mapped_column(String(30), nullable=False, default=OrderStatus.NEW.value)
+    total_amount: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False, default=0)
+    paid_amount: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False, default=0)
+    mileage_at_service: Mapped[int | None] = mapped_column(Integer)
+    recommendations: Mapped[str | None] = mapped_column(String(2000))
+    comments: Mapped[str | None] = mapped_column(String(2000))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
     )
-    total_amount = Column(Numeric(10, 2), nullable=False, default=0)
-    paid_amount = Column(Numeric(10, 2), nullable=False, default=0)
-    mileage_at_service = Column(Integer, nullable=True)
-    recommendations = Column(String, nullable=True)  # Рекомендации
-    comments = Column(String, nullable=True)  # Комментарии
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    completed_at = Column(DateTime(timezone=True), nullable=True)
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
-    vehicle = relationship("Vehicle", back_populates="orders")
-    employee = relationship("Employee", foreign_keys=[employee_id], back_populates="orders_created")
-    mechanic = relationship("Employee", foreign_keys=[mechanic_id], back_populates="orders_mechanic")
-    order_works = relationship("OrderWork", back_populates="order", cascade="all, delete-orphan")
-    order_parts = relationship("OrderPart", back_populates="order", cascade="all, delete-orphan")
-    payments = relationship("Payment", back_populates="order")
+    __table_args__ = (
+        PrimaryKeyConstraint("tenant_id", "id"),
+        UniqueConstraint("tenant_id", "number", name="uq_orders_tenant_number"),
+        ForeignKeyConstraint(
+            ["tenant_id", "vehicle_id"],
+            ["vehicles.tenant_id", "vehicles.id"],
+            ondelete="RESTRICT",
+            name="fk_orders_vehicle",
+        ),
+        ForeignKeyConstraint(
+            ["tenant_id", "employee_id"],
+            ["employees.tenant_id", "employees.id"],
+            ondelete="RESTRICT",
+            name="fk_orders_employee",
+        ),
+        ForeignKeyConstraint(
+            ["tenant_id", "mechanic_id"],
+            ["employees.tenant_id", "employees.id"],
+            ondelete="SET NULL",
+            name="fk_orders_mechanic",
+        ),
+        Index("ix_orders_tenant_created", "tenant_id", "created_at"),
+        Index("ix_orders_tenant_status", "tenant_id", "status"),
+        Index("ix_orders_tenant_vehicle", "tenant_id", "vehicle_id"),
+    )
 
 
-class OrderWork(Base):
+class OrderWork(Base, TenantMixin):
     __tablename__ = "order_works"
 
-    id = Column(Integer, primary_key=True, index=True)
-    order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
-    work_id = Column(Integer, ForeignKey("works.id"), nullable=True)  # Nullable для ручного ввода
-    work_name = Column(String, nullable=True)  # Название работы при ручном вводе
-    mechanic_id = Column(Integer, ForeignKey("employees.id"), nullable=True)  # Механик по данной работе
-    quantity = Column(Integer, nullable=False, default=1)
-    price = Column(Numeric(10, 2), nullable=False)
-    discount = Column(Numeric(10, 2), nullable=True, default=0)  # Скидка в процентах
-    total = Column(Numeric(10, 2), nullable=False)
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), nullable=False)
+    order_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    work_id: Mapped[int | None] = mapped_column(BigInteger)
+    work_name: Mapped[str | None] = mapped_column(String(255))
+    mechanic_id: Mapped[int | None] = mapped_column(BigInteger)
+    quantity: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    price: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
+    discount: Mapped[Decimal | None] = mapped_column(Numeric(10, 2), default=0)
+    total: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
 
-    order = relationship("Order", back_populates="order_works")
-    work = relationship("Work")
-    mechanic = relationship("Employee", foreign_keys=[mechanic_id])
+    __table_args__ = (
+        PrimaryKeyConstraint("tenant_id", "id"),
+        ForeignKeyConstraint(
+            ["tenant_id", "order_id"],
+            ["orders.tenant_id", "orders.id"],
+            ondelete="CASCADE",
+            name="fk_order_works_order",
+        ),
+        ForeignKeyConstraint(
+            ["tenant_id", "work_id"],
+            ["works.tenant_id", "works.id"],
+            ondelete="SET NULL",
+            name="fk_order_works_work",
+        ),
+        ForeignKeyConstraint(
+            ["tenant_id", "mechanic_id"],
+            ["employees.tenant_id", "employees.id"],
+            ondelete="SET NULL",
+            name="fk_order_works_mechanic",
+        ),
+        Index("ix_order_works_tenant_order", "tenant_id", "order_id"),
+    )
 
 
-class OrderPart(Base):
+class OrderPart(Base, TenantMixin):
     __tablename__ = "order_parts"
 
-    id = Column(Integer, primary_key=True, index=True)
-    order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
-    part_id = Column(Integer, ForeignKey("parts.id"), nullable=True)  # Nullable для ручного ввода
-    part_name = Column(String, nullable=True)  # Название запчасти при ручном вводе
-    article = Column(String, nullable=True)  # Артикул запчасти
-    quantity = Column(Integer, nullable=False, default=1)
-    price = Column(Numeric(10, 2), nullable=False)
-    discount = Column(Numeric(10, 2), nullable=True, default=0)  # Скидка в процентах
-    total = Column(Numeric(10, 2), nullable=False)
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), nullable=False)
+    order_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    part_id: Mapped[int | None] = mapped_column(BigInteger)
+    part_name: Mapped[str | None] = mapped_column(String(255))
+    article: Mapped[str | None] = mapped_column(String(100))
+    quantity: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    price: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
+    discount: Mapped[Decimal | None] = mapped_column(Numeric(10, 2), default=0)
+    total: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
 
-    order = relationship("Order", back_populates="order_parts")
-    part = relationship("Part")
-
+    __table_args__ = (
+        PrimaryKeyConstraint("tenant_id", "id"),
+        ForeignKeyConstraint(
+            ["tenant_id", "order_id"],
+            ["orders.tenant_id", "orders.id"],
+            ondelete="CASCADE",
+            name="fk_order_parts_order",
+        ),
+        ForeignKeyConstraint(
+            ["tenant_id", "part_id"],
+            ["parts.tenant_id", "parts.id"],
+            ondelete="SET NULL",
+            name="fk_order_parts_part",
+        ),
+        Index("ix_order_parts_tenant_order", "tenant_id", "order_id"),
+    )

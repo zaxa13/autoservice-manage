@@ -1,21 +1,27 @@
-from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import relationship
-from app.database import Base
+"""Поставщик запчастей."""
+from sqlalchemy import (
+    BigInteger,
+    Identity,
+    PrimaryKeyConstraint,
+    String,
+)
+from sqlalchemy.orm import Mapped, mapped_column
+
+from app.models._base import Base, TenantMixin
 
 
-class Supplier(Base):
+class Supplier(Base, TenantMixin):
     __tablename__ = "suppliers"
 
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False)
-    inn = Column(String, nullable=True)
-    kpp = Column(String, nullable=True)
-    legal_address = Column(String, nullable=True)
-    contact = Column(String, nullable=True)
-    # Банковские реквизиты
-    bank_name = Column(String, nullable=True)
-    bik = Column(String, nullable=True)
-    bank_account = Column(String, nullable=True)  # расчётный счёт
-    correspondent_account = Column(String, nullable=True)  # корр. счёт
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), nullable=False)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    inn: Mapped[str | None] = mapped_column(String(20))
+    kpp: Mapped[str | None] = mapped_column(String(20))
+    legal_address: Mapped[str | None] = mapped_column(String(500))
+    contact: Mapped[str | None] = mapped_column(String(255))
+    bank_name: Mapped[str | None] = mapped_column(String(255))
+    bik: Mapped[str | None] = mapped_column(String(20))
+    bank_account: Mapped[str | None] = mapped_column(String(50))
+    correspondent_account: Mapped[str | None] = mapped_column(String(50))
 
-    receipt_documents = relationship("ReceiptDocument", back_populates="supplier")
+    __table_args__ = (PrimaryKeyConstraint("tenant_id", "id"),)

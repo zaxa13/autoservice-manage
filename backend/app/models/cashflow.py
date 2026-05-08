@@ -1,92 +1,126 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Numeric, Enum, DateTime, Boolean, Text
-from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
+"""Учёт денежных средств: счета (касса/банк), категории, транзакции.
+
+Системные категории (`is_system=True`) копируются в каждого тенанта при
+онбординге — глобально шарить мы их не можем (RLS изоляция).
+"""
 import enum
-from app.database import Base
+from datetime import datetime
+from decimal import Decimal
+
+from sqlalchemy import (
+    BigInteger,
+    Boolean,
+    DateTime,
+    ForeignKeyConstraint,
+    Identity,
+    Index,
+    Numeric,
+    PrimaryKeyConstraint,
+    String,
+    Text,
+    func,
+)
+from sqlalchemy.orm import Mapped, mapped_column
+
+from app.models._base import Base, TenantMixin
 
 
 class AccountType(str, enum.Enum):
-    CASH = "cash"       # Наличные (физическая касса)
-    BANK = "bank"       # Банковский расчётный счёт
+    CASH = "cash"
+    BANK = "bank"
 
 
-class TransactionType(str, enum.Enum):
-    INCOME = "income"       # Приход
-    EXPENSE = "expense"     # Расход
-    TRANSFER = "transfer"   # Перевод между счетами
+class CashflowTransactionType(str, enum.Enum):
+    INCOME = "income"
+    EXPENSE = "expense"
+    TRANSFER = "transfer"
 
 
-class Account(Base):
-    """Счёт / регистр денежных средств (касса, банковский счёт)."""
-
+class Account(Base, TenantMixin):
     __tablename__ = "cash_accounts"
 
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False)
-    account_type = Column(
-        Enum(AccountType, values_callable=lambda obj: [e.value for e in obj], native_enum=False),
-        nullable=False,
-    )
-    initial_balance = Column(Numeric(12, 2), nullable=False, default=0)
-    is_active = Column(Boolean, nullable=False, default=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-
-    transactions_from = relationship(
-        "CashTransaction",
-        foreign_keys="CashTransaction.account_id",
-        back_populates="account",
-    )
-    transactions_to = relationship(
-        "CashTransaction",
-        foreign_keys="CashTransaction.to_account_id",
-        back_populates="to_account",
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), nullable=False)
+    name: Mapped[str] = mapped_column(String(100), nullable=False)
+    account_type: Mapped[str] = mapped_column(String(20), nullable=False)
+    initial_balance: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False, default=0)
+    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
     )
 
+    __table_args__ = (PrimaryKeyConstraint("tenant_id", "id"),)
 
-class TransactionCategory(Base):
-    """Категория операции (Оплата заказа, Зарплата, Аренда, Закупка и т.д.)."""
 
+class TransactionCategory(Base, TenantMixin):
     __tablename__ = "cash_transaction_categories"
 
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False)
-    transaction_type = Column(
-        Enum(TransactionType, values_callable=lambda obj: [e.value for e in obj], native_enum=False),
-        nullable=False,
-    )
-    is_system = Column(Boolean, nullable=False, default=False)
-    is_active = Column(Boolean, nullable=False, default=True)
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), nullable=False)
+    name: Mapped[str] = mapped_column(String(100), nullable=False)
+    transaction_type: Mapped[str] = mapped_column(String(20), nullable=False)
+    is_system: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
 
-    transactions = relationship("CashTransaction", back_populates="category")
+    __table_args__ = (PrimaryKeyConstraint("tenant_id", "id"),)
 
 
-class CashTransaction(Base):
-    """Операция движения денежных средств."""
-
+class CashTransaction(Base, TenantMixin):
     __tablename__ = "cash_transactions"
 
-    id = Column(Integer, primary_key=True, index=True)
-    transaction_type = Column(
-        Enum(TransactionType, values_callable=lambda obj: [e.value for e in obj], native_enum=False),
-        nullable=False,
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), nullable=False)
+    transaction_type: Mapped[str] = mapped_column(String(20), nullable=False)
+    account_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    to_account_id: Mapped[int | None] = mapped_column(BigInteger)
+    category_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    amount: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False)
+    description: Mapped[str | None] = mapped_column(Text)
+    transaction_date: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
     )
-    account_id = Column(Integer, ForeignKey("cash_accounts.id"), nullable=False)
-    # Для операций типа transfer — счёт назначения
-    to_account_id = Column(Integer, ForeignKey("cash_accounts.id"), nullable=True)
-    category_id = Column(Integer, ForeignKey("cash_transaction_categories.id"), nullable=False)
-    amount = Column(Numeric(12, 2), nullable=False)
-    description = Column(Text, nullable=True)
-    transaction_date = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    order_id: Mapped[int | None] = mapped_column(BigInteger)
+    salary_id: Mapped[int | None] = mapped_column(BigInteger)
+    payment_id: Mapped[int | None] = mapped_column(BigInteger)
 
-    # Опциональные привязки к другим сущностям
-    order_id = Column(Integer, ForeignKey("orders.id"), nullable=True)
-    salary_id = Column(Integer, ForeignKey("salaries.id"), nullable=True)
-    payment_id = Column(Integer, ForeignKey("payments.id"), nullable=True)
-
-    account = relationship("Account", foreign_keys=[account_id], back_populates="transactions_from")
-    to_account = relationship("Account", foreign_keys=[to_account_id], back_populates="transactions_to")
-    category = relationship("TransactionCategory", back_populates="transactions")
-    order = relationship("Order")
-    salary = relationship("Salary")
-    payment = relationship("Payment")
+    __table_args__ = (
+        PrimaryKeyConstraint("tenant_id", "id"),
+        ForeignKeyConstraint(
+            ["tenant_id", "account_id"],
+            ["cash_accounts.tenant_id", "cash_accounts.id"],
+            ondelete="RESTRICT",
+            name="fk_cash_transactions_account",
+        ),
+        ForeignKeyConstraint(
+            ["tenant_id", "to_account_id"],
+            ["cash_accounts.tenant_id", "cash_accounts.id"],
+            ondelete="RESTRICT",
+            name="fk_cash_transactions_to_account",
+        ),
+        ForeignKeyConstraint(
+            ["tenant_id", "category_id"],
+            ["cash_transaction_categories.tenant_id", "cash_transaction_categories.id"],
+            ondelete="RESTRICT",
+            name="fk_cash_transactions_category",
+        ),
+        ForeignKeyConstraint(
+            ["tenant_id", "order_id"],
+            ["orders.tenant_id", "orders.id"],
+            ondelete="SET NULL",
+            name="fk_cash_transactions_order",
+        ),
+        ForeignKeyConstraint(
+            ["tenant_id", "salary_id"],
+            ["salaries.tenant_id", "salaries.id"],
+            ondelete="SET NULL",
+            name="fk_cash_transactions_salary",
+        ),
+        ForeignKeyConstraint(
+            ["tenant_id", "payment_id"],
+            ["payments.tenant_id", "payments.id"],
+            ondelete="SET NULL",
+            name="fk_cash_transactions_payment",
+        ),
+        Index("ix_cash_transactions_tenant_date", "tenant_id", "transaction_date"),
+        Index("ix_cash_transactions_tenant_account", "tenant_id", "account_id"),
+    )

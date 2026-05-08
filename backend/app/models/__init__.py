@@ -1,66 +1,81 @@
-from app.models.user import User, UserRole
-from app.models.password_reset import PasswordResetToken
-from app.models.employee import Employee
+"""Re-export всех моделей tenant-приложения."""
+from app.models._base import Base, TenantMixin
+from app.models.appointment import Appointment, AppointmentStatus
+from app.models.appointment_post import AppointmentPost
+from app.models.cashflow import (
+    Account,
+    AccountType,
+    CashTransaction,
+    CashflowTransactionType,
+    TransactionCategory,
+)
 from app.models.customer import Customer
-from app.models.vehicle import Vehicle
-from app.models.work import Work
-from app.models.part import Part
-from app.models.order import Order, OrderStatus, OrderWork, OrderPart
+from app.models.employee import Employee, EmployeePosition
+from app.models.integration import IntegrationLog, IntegrationType
+from app.models.order import Order, OrderPart, OrderStatus, OrderWork
+from app.models.part import Part, PartCategory
+from app.models.password_reset import PasswordResetToken
+from app.models.payment import Payment, PaymentMethod, PaymentStatus
+from app.models.salary import Salary, SalaryScheme, SalaryStatus
+from app.models.setting import Setting
 from app.models.supplier import Supplier
+from app.models.tenant_counter import TenantCounter
+from app.models.user import User, UserRole
+from app.models.vehicle import Vehicle
+from app.models.vehicle_brand import VehicleBrand, VehicleModel
 from app.models.warehouse import (
-    WarehouseItem,
-    WarehouseTransaction,
-    TransactionType,
     ReceiptDocument,
     ReceiptLine,
     ReceiptStatus,
+    TransactionType,
+    WarehouseItem,
+    WarehouseTransaction,
 )
-from app.models.salary import Salary, SalaryStatus
-from app.models.payment import Payment, PaymentMethod, PaymentStatus
-from app.models.integration import IntegrationLog, IntegrationType
-from app.models.appointment import Appointment
-from app.models.appointment_post import AppointmentPost
-from app.models.vehicle_brand import VehicleBrand, VehicleModel
-from app.models.setting import Setting
-from app.models.cashflow import Account, AccountType, TransactionCategory, CashTransaction
-from app.models.cashflow import TransactionType as CashTransactionType
+from app.models.work import Work, WorkCategory
 
 __all__ = [
-    "User",
-    "UserRole",
-    "PasswordResetToken",
-    "Employee",
+    "Base",
+    "TenantMixin",
+    "Account",
+    "AccountType",
+    "Appointment",
+    "AppointmentPost",
+    "AppointmentStatus",
+    "CashTransaction",
+    "CashflowTransactionType",
     "Customer",
-    "Vehicle",
-    "Work",
-    "Part",
+    "Employee",
+    "EmployeePosition",
+    "IntegrationLog",
+    "IntegrationType",
     "Order",
+    "OrderPart",
     "OrderStatus",
     "OrderWork",
-    "OrderPart",
-    "Supplier",
-    "WarehouseItem",
-    "WarehouseTransaction",
-    "TransactionType",
+    "Part",
+    "PartCategory",
+    "PasswordResetToken",
+    "Payment",
+    "PaymentMethod",
+    "PaymentStatus",
     "ReceiptDocument",
     "ReceiptLine",
     "ReceiptStatus",
     "Salary",
+    "SalaryScheme",
     "SalaryStatus",
-    "Payment",
-    "PaymentMethod",
-    "PaymentStatus",
-    "IntegrationLog",
-    "IntegrationType",
-    "Appointment",
-    "AppointmentPost",
+    "Setting",
+    "Supplier",
+    "TenantCounter",
+    "TransactionCategory",
+    "TransactionType",
+    "User",
+    "UserRole",
+    "Vehicle",
     "VehicleBrand",
     "VehicleModel",
-    "Setting",
-    "Account",
-    "AccountType",
-    "TransactionCategory",
-    "CashTransaction",
-    "CashTransactionType",
+    "WarehouseItem",
+    "WarehouseTransaction",
+    "Work",
+    "WorkCategory",
 ]
-
