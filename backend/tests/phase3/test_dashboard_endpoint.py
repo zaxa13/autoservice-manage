@@ -121,7 +121,7 @@ async def test_stats_with_completed_order_increases_revenue_and_count(client):
 
     # Customer + brand/model + vehicle + order.
     r = await client.post(
-        "/api/v1/customers/", json={"full_name": "X", "phone": "+7"},
+        "/api/v1/customers/", json={"full_name": "X", "phone": "+79001234567"},
         headers=headers,
     )
     cust = r.json()["id"]
@@ -176,7 +176,7 @@ async def test_isolation_between_tenants(client):
     # Beta создаёт заказ.
     headers_b = refs_b["headers"]
     r = await client.post(
-        "/api/v1/customers/", json={"full_name": "Beta", "phone": "+7"},
+        "/api/v1/customers/", json={"full_name": "Beta", "phone": "+79001234567"},
         headers=headers_b,
     )
     cust = r.json()["id"]
