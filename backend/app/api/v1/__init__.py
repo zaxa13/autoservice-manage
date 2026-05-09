@@ -15,6 +15,7 @@ from app.api.v1 import (
     employees,
     orders,
     parts,
+    reports,
     settings_api,
     suppliers,
     users,
@@ -48,3 +49,4 @@ api_router.include_router(cashflow.router, prefix="/cashflow", tags=["Касса
 api_router.include_router(warehouse.router, prefix="/warehouse", tags=["Склад"])
 api_router.include_router(salary.router, prefix="/salary", tags=["Зарплата"])
 api_router.include_router(dashboard.router, prefix="/dashboard", tags=["Дашборд"])
+api_router.include_router(reports.router, prefix="/reports", tags=["Отчёты"])
