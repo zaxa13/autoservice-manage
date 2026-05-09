@@ -36,6 +36,12 @@ class CashflowTransactionType(str, enum.Enum):
     TRANSFER = "transfer"
 
 
+# Alias для обратной совместимости со schemas/cashflow.py.
+# В warehouse.py живёт другой `TransactionType` (incoming/outgoing/adjustment) —
+# не путать.
+TransactionType = CashflowTransactionType
+
+
 class Account(Base, TenantMixin):
     __tablename__ = "cash_accounts"
 
