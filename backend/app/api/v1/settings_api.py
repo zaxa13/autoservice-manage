@@ -1,73 +1,68 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy.orm import Session
+"""Настройки тенанта — KV-store. Сейчас выставлен только revenue_plan."""
+from __future__ import annotations
+
+from fastapi import APIRouter, Depends, Query, status
 from pydantic import BaseModel, Field
-from app.database import get_db
-from app.dependencies import get_current_user
-from app.models.user import User, UserRole
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.core.permissions import require_admin
+from app.core.security import TenantClaims
+from app.dependencies import get_current_claims, get_tenant_db
 from app.models.setting import Setting
-from app.schemas.responses import RevenuePlanResponse, ErrorResponse
+from app.schemas.responses import ErrorResponse, RevenuePlanResponse
 
 router = APIRouter()
 
 
-def _require_admin(current_user: User = Depends(get_current_user)) -> User:
-    if current_user.role != UserRole.ADMIN:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Доступ только для администратора",
-        )
-    return current_user
-
-
 class RevenuePlanIn(BaseModel):
-    year: int = Field(..., ge=2020, le=2099, description="Год")
-    month: int = Field(..., ge=1, le=12, description="Месяц (1-12)")
-    amount: float = Field(..., ge=0, description="Сумма плана выручки")
+    year: int = Field(..., ge=2020, le=2099)
+    month: int = Field(..., ge=1, le=12)
+    amount: float = Field(..., ge=0)
+
+
+def _key(year: int, month: int) -> str:
+    return f"revenue_plan_{year}_{month:02d}"
 
 
 @router.get(
     "/revenue-plan",
     response_model=RevenuePlanResponse,
-    status_code=status.HTTP_200_OK,
-    summary="Получить план выручки",
-    description=(
-        "Возвращает план выручки на указанный месяц. "
-        "Если план не задан — `amount` будет `null`."
-    ),
-    responses={401: {"model": ErrorResponse, "description": "Не авторизован"}},
+    responses={401: {"model": ErrorResponse}},
 )
-def get_revenue_plan(
-    year: int = Query(..., ge=2020, le=2099, description="Год"),
-    month: int = Query(..., ge=1, le=12, description="Месяц (1-12)"),
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+async def get_revenue_plan(
+    year: int = Query(..., ge=2020, le=2099),
+    month: int = Query(..., ge=1, le=12),
+    db: AsyncSession = Depends(get_tenant_db),
+    claims: TenantClaims = Depends(get_current_claims),
 ):
-    key = f"revenue_plan_{year}_{month:02d}"
-    row = db.query(Setting).filter(Setting.key == key).first()
+    row = await db.get(Setting, (claims.tenant_id, _key(year, month)))
     return {"year": year, "month": month, "amount": float(row.value) if row else None}
 
 
 @router.put(
     "/revenue-plan",
     response_model=RevenuePlanResponse,
-    status_code=status.HTTP_200_OK,
-    summary="Установить план выручки",
-    description="Устанавливает или обновляет план выручки на месяц. Только администратор.",
     responses={
-        401: {"model": ErrorResponse, "description": "Не авторизован"},
-        403: {"model": ErrorResponse, "description": "Только для администратора"},
+        401: {"model": ErrorResponse},
+        403: {"model": ErrorResponse},
     },
 )
-def set_revenue_plan(
+async def set_revenue_plan(
     body: RevenuePlanIn,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(_require_admin),
+    db: AsyncSession = Depends(get_tenant_db),
+    claims: TenantClaims = Depends(require_admin),
 ):
-    key = f"revenue_plan_{body.year}_{body.month:02d}"
-    row = db.query(Setting).filter(Setting.key == key).first()
+    pk = (claims.tenant_id, _key(body.year, body.month))
+    row = await db.get(Setting, pk)
     if row:
         row.value = str(body.amount)
     else:
-        db.add(Setting(key=key, value=str(body.amount)))
-    db.commit()
+        db.add(
+            Setting(
+                tenant_id=claims.tenant_id,
+                key=_key(body.year, body.month),
+                value=str(body.amount),
+            )
+        )
+    await db.flush()
     return {"year": body.year, "month": body.month, "amount": body.amount}

@@ -1,14 +1,21 @@
-from fastapi import APIRouter, Depends, Query, status
-from sqlalchemy.orm import Session
-from typing import List
-from app.database import get_db
-from app.dependencies import get_current_user
-from app.models.user import User
-from app.models.supplier import Supplier
-from app.schemas.supplier import Supplier as SupplierSchema, SupplierCreate, SupplierUpdate
-from app.schemas.responses import ErrorResponse
-from app.core.permissions import require_manager_or_admin
+"""Поставщики — async CRUD на shared-DB."""
+from __future__ import annotations
+
+from fastapi import APIRouter, Depends, Query, Response, status
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.core.exceptions import NotFoundException
+from app.core.permissions import require_manager_or_admin
+from app.core.security import TenantClaims
+from app.dependencies import get_current_claims, get_tenant_db
+from app.models.supplier import Supplier
+from app.schemas.responses import ErrorResponse
+from app.schemas.supplier import (
+    Supplier as SupplierSchema,
+    SupplierCreate,
+    SupplierUpdate,
+)
 
 router = APIRouter()
 
@@ -17,38 +24,31 @@ _auth = {401: {"model": ErrorResponse, "description": "Не авторизова
 _write = {**_auth, 403: {"model": ErrorResponse, "description": "Недостаточно прав"}}
 
 
-@router.get(
-    "/",
-    response_model=List[SupplierSchema],
-    status_code=status.HTTP_200_OK,
-    summary="Список поставщиков",
-    description="Возвращает список поставщиков с пагинацией.",
-    responses=_auth,
-)
-def list_suppliers(
-    skip: int = Query(0, ge=0, description="Сколько записей пропустить"),
-    limit: int = Query(100, ge=1, le=500, description="Максимум записей"),
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
-):
-    return db.query(Supplier).offset(skip).limit(limit).all()
+@router.get("/", response_model=list[SupplierSchema], responses=_auth)
+async def list_suppliers(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=500),
+    db: AsyncSession = Depends(get_tenant_db),
+    _claims: TenantClaims = Depends(get_current_claims),
+) -> list[SupplierSchema]:
+    result = await db.execute(
+        select(Supplier).order_by(Supplier.id).offset(skip).limit(limit)
+    )
+    return list(result.scalars().all())
 
 
 @router.get(
     "/{supplier_id}",
     response_model=SupplierSchema,
-    status_code=status.HTTP_200_OK,
-    summary="Получить поставщика по ID",
-    description="Возвращает данные поставщика. Возвращает 404 если не найден.",
     responses={**_auth, **_404},
 )
-def get_supplier(
+async def get_supplier(
     supplier_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
-):
-    s = db.query(Supplier).filter(Supplier.id == supplier_id).first()
-    if not s:
+    db: AsyncSession = Depends(get_tenant_db),
+    claims: TenantClaims = Depends(get_current_claims),
+) -> SupplierSchema:
+    s = await db.get(Supplier, (claims.tenant_id, supplier_id))
+    if s is None:
         raise NotFoundException("Поставщик не найден")
     return s
 
@@ -57,87 +57,54 @@ def get_supplier(
     "/",
     response_model=SupplierSchema,
     status_code=status.HTTP_201_CREATED,
-    summary="Создать поставщика",
-    description="Создание нового поставщика. Доступно менеджеру и администратору.",
     responses=_write,
 )
-def create_supplier(
-    payload: SupplierCreate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(require_manager_or_admin),
-):
-    s = Supplier(
-        name=payload.name,
-        inn=payload.inn,
-        kpp=payload.kpp,
-        legal_address=payload.legal_address,
-        contact=payload.contact,
-        bank_name=payload.bank_name,
-        bik=payload.bik,
-        bank_account=payload.bank_account,
-        correspondent_account=payload.correspondent_account,
-    )
+async def create_supplier(
+    body: SupplierCreate,
+    db: AsyncSession = Depends(get_tenant_db),
+    claims: TenantClaims = Depends(require_manager_or_admin),
+) -> SupplierSchema:
+    s = Supplier(tenant_id=claims.tenant_id, **body.model_dump())
     db.add(s)
-    db.commit()
-    db.refresh(s)
+    await db.flush()
+    await db.refresh(s)
     return s
 
 
 @router.put(
     "/{supplier_id}",
     response_model=SupplierSchema,
-    status_code=status.HTTP_200_OK,
-    summary="Обновить поставщика",
-    description="Обновление данных поставщика. Передавать нужно только изменяемые поля.",
     responses={**_write, **_404},
 )
-def update_supplier(
+async def update_supplier(
     supplier_id: int,
-    payload: SupplierUpdate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(require_manager_or_admin),
-):
-    s = db.query(Supplier).filter(Supplier.id == supplier_id).first()
-    if not s:
+    body: SupplierUpdate,
+    db: AsyncSession = Depends(get_tenant_db),
+    claims: TenantClaims = Depends(require_manager_or_admin),
+) -> SupplierSchema:
+    s = await db.get(Supplier, (claims.tenant_id, supplier_id))
+    if s is None:
         raise NotFoundException("Поставщик не найден")
-    if payload.name is not None:
-        s.name = payload.name
-    if payload.inn is not None:
-        s.inn = payload.inn
-    if payload.kpp is not None:
-        s.kpp = payload.kpp
-    if payload.legal_address is not None:
-        s.legal_address = payload.legal_address
-    if payload.contact is not None:
-        s.contact = payload.contact
-    if payload.bank_name is not None:
-        s.bank_name = payload.bank_name
-    if payload.bik is not None:
-        s.bik = payload.bik
-    if payload.bank_account is not None:
-        s.bank_account = payload.bank_account
-    if payload.correspondent_account is not None:
-        s.correspondent_account = payload.correspondent_account
-    db.commit()
-    db.refresh(s)
+    for k, v in body.model_dump(exclude_unset=True).items():
+        setattr(s, k, v)
+    await db.flush()
+    await db.refresh(s)
     return s
 
 
 @router.delete(
     "/{supplier_id}",
     status_code=status.HTTP_204_NO_CONTENT,
-    summary="Удалить поставщика",
-    description="Удаление поставщика. Доступно менеджеру и администратору.",
     responses={**_write, **_404},
 )
-def delete_supplier(
+async def delete_supplier(
     supplier_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(require_manager_or_admin),
-):
-    s = db.query(Supplier).filter(Supplier.id == supplier_id).first()
-    if not s:
+    db: AsyncSession = Depends(get_tenant_db),
+    claims: TenantClaims = Depends(require_manager_or_admin),
+) -> Response:
+    s = await db.get(Supplier, (claims.tenant_id, supplier_id))
+    if s is None:
         raise NotFoundException("Поставщик не найден")
-    db.delete(s)
-    db.commit()
-    return None
+    await db.delete(s)
+    await db.flush()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
