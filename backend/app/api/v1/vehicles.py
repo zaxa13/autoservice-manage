@@ -1,19 +1,33 @@
-from fastapi import APIRouter, Depends, Query, HTTPException, status
-from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import func, or_
-from typing import List, Optional
-from app.database import get_db
-from app.dependencies import get_current_user
-from app.models.user import User
-from app.models.vehicle import Vehicle
-from app.models.vehicle_brand import VehicleBrand, VehicleModel
-from app.models.customer import Customer
-from app.schemas.vehicle import Vehicle as VehicleSchema, VehicleCreate, VehicleUpdate
-from app.schemas.order import OrderDetail
-from app.schemas.responses import ErrorResponse
-from app.schemas.order import OrderDetail
+"""Транспортные средства — async CRUD c FK на customers/brands/models.
+
+Без `joinedload`/`selectinload`, потому что Phase 2 модели не несут
+relationships (composite FK создаёт нюансы — будем добавлять централизованно
+в будущем). Вместо этого — bulk-fetch связанных сущностей по ids.
+
+GET /{id}/history (история обслуживания) подключим в Wave 3 вместе с
+миграцией orders.
+"""
+from __future__ import annotations
+
+from typing import Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import or_, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.core.exceptions import NotFoundException
 from app.core.permissions import require_manager_or_admin
+from app.core.security import TenantClaims
+from app.dependencies import get_current_claims, get_tenant_db
+from app.models.customer import Customer
+from app.models.vehicle import Vehicle
+from app.models.vehicle_brand import VehicleBrand, VehicleModel
+from app.schemas.responses import ErrorResponse
+from app.schemas.vehicle import (
+    Vehicle as VehicleSchema,
+    VehicleCreate,
+    VehicleUpdate,
+)
 
 router = APIRouter()
 
@@ -22,294 +36,262 @@ _auth = {401: {"model": ErrorResponse, "description": "Не авторизова
 _write = {**_auth, 403: {"model": ErrorResponse, "description": "Недостаточно прав"}}
 
 
-def _vehicle_query(db: Session):
-    return db.query(Vehicle).options(
-        joinedload(Vehicle.customer),
-        joinedload(Vehicle.brand),
-        joinedload(Vehicle.vehicle_model),
-    )
+def _vehicle_dict(v: Vehicle, customer, brand, model) -> dict:
+    return {
+        "id": v.id,
+        "vin": v.vin,
+        "license_plate": v.license_plate,
+        "brand_id": v.brand_id,
+        "model_id": v.model_id,
+        "year": v.year,
+        "mileage": v.mileage,
+        "customer_id": v.customer_id,
+        "created_at": v.created_at,
+        "customer": customer,
+        "brand": ({"id": brand.id, "name": brand.name} if brand else None),
+        "model": ({"id": model.id, "name": model.name} if model else None),
+    }
 
 
-@router.get(
-    "/",
-    response_model=List[VehicleSchema],
-    status_code=status.HTTP_200_OK,
-    summary="Список транспортных средств",
-    description="Возвращает список ТС с пагинацией. Опциональная фильтрация по ID клиента.",
-    responses=_auth,
-)
-def get_vehicles(
-    skip: int = Query(0, ge=0, description="Сколько записей пропустить"),
-    limit: int = Query(100, ge=1, le=500, description="Максимум записей"),
-    customer_id: Optional[int] = Query(None, description="Фильтр по ID клиента"),
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+async def _serialize_one(
+    db: AsyncSession, v: Vehicle, claims: TenantClaims
+) -> dict:
+    customer = await db.get(Customer, (claims.tenant_id, v.customer_id))
+    brand = await db.get(VehicleBrand, (claims.tenant_id, v.brand_id))
+    model = await db.get(VehicleModel, (claims.tenant_id, v.model_id))
+    return _vehicle_dict(v, customer, brand, model)
+
+
+async def _serialize_many(
+    db: AsyncSession, vehicles: list[Vehicle]
+) -> list[dict]:
+    if not vehicles:
+        return []
+    cids = {v.customer_id for v in vehicles}
+    bids = {v.brand_id for v in vehicles}
+    mids = {v.model_id for v in vehicles}
+    cmap = {
+        c.id: c
+        for c in (
+            await db.execute(select(Customer).where(Customer.id.in_(cids)))
+        ).scalars()
+    }
+    bmap = {
+        b.id: b
+        for b in (
+            await db.execute(select(VehicleBrand).where(VehicleBrand.id.in_(bids)))
+        ).scalars()
+    }
+    mmap = {
+        m.id: m
+        for m in (
+            await db.execute(select(VehicleModel).where(VehicleModel.id.in_(mids)))
+        ).scalars()
+    }
+    return [
+        _vehicle_dict(v, cmap.get(v.customer_id), bmap.get(v.brand_id), mmap.get(v.model_id))
+        for v in vehicles
+    ]
+
+
+@router.get("/", response_model=list[VehicleSchema], responses=_auth)
+async def list_vehicles(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=500),
+    customer_id: Optional[int] = Query(None),
+    db: AsyncSession = Depends(get_tenant_db),
+    _claims: TenantClaims = Depends(get_current_claims),
 ):
-    query = _vehicle_query(db)
+    stmt = select(Vehicle).order_by(Vehicle.id)
     if customer_id is not None:
-        query = query.filter(Vehicle.customer_id == customer_id)
-    vehicles = query.offset(skip).limit(limit).all()
-    return vehicles
+        stmt = stmt.where(Vehicle.customer_id == customer_id)
+    stmt = stmt.offset(skip).limit(limit)
+    result = await db.execute(stmt)
+    vehicles = list(result.scalars().all())
+    return await _serialize_many(db, vehicles)
 
 
 @router.get(
     "/search/by-license-plate",
     response_model=VehicleSchema,
-    status_code=status.HTTP_200_OK,
-    summary="Поиск по гос. номеру",
-    description="Поиск ТС по государственному номеру (нечёткий, без учёта регистра и пробелов). Возвращает первое совпадение или 404.",
     responses={**_auth, **_404},
 )
-def search_vehicle_by_license_plate(
-    license_plate: str = Query(..., min_length=2, description="Государственный номер"),
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+async def search_by_plate(
+    license_plate: str = Query(..., min_length=2),
+    db: AsyncSession = Depends(get_tenant_db),
+    claims: TenantClaims = Depends(get_current_claims),
 ):
-    license_plate_normalized = license_plate.strip().upper().replace(' ', '')
-    vehicle = _vehicle_query(db).filter(
-        Vehicle.license_plate.ilike(f"%{license_plate_normalized}%")
-    ).first()
-
-    if not vehicle:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Транспортное средство с указанным гос номером не найдено",
-        )
-    return vehicle
+    norm = license_plate.strip().upper().replace(" ", "")
+    result = await db.execute(
+        select(Vehicle).where(Vehicle.license_plate.ilike(f"%{norm}%")).limit(1)
+    )
+    v = result.scalar_one_or_none()
+    if v is None:
+        raise NotFoundException("Транспортное средство не найдено")
+    return await _serialize_one(db, v, claims)
 
 
 @router.get(
     "/search/by-vin",
     response_model=VehicleSchema,
-    status_code=status.HTTP_200_OK,
-    summary="Поиск по VIN",
-    description=(
-        "Поиск ТС по VIN номеру. Принимает полный 17-символьный VIN "
-        "или последние 6 символов. Возвращает 400 при неверном формате, 404 если не найдено."
-    ),
-    responses={
-        **_auth,
-        400: {"model": ErrorResponse, "description": "Неверный формат VIN"},
-        **_404,
-    },
+    responses={**_auth, 400: {"model": ErrorResponse}, **_404},
 )
-def search_vehicle_by_vin(
-    vin: str = Query(..., min_length=6, max_length=17, description="VIN (6 последних символов или полный 17-символьный)"),
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+async def search_by_vin(
+    vin: str = Query(..., min_length=6, max_length=17),
+    db: AsyncSession = Depends(get_tenant_db),
+    claims: TenantClaims = Depends(get_current_claims),
 ):
-    vin_normalized = vin.strip().upper()
-    if len(vin_normalized) == 17:
-        vehicle = _vehicle_query(db).filter(Vehicle.vin == vin_normalized).first()
-    elif len(vin_normalized) == 6:
-        vehicle = _vehicle_query(db).filter(func.substr(Vehicle.vin, -6) == vin_normalized).first()
+    norm = vin.strip().upper()
+    if len(norm) == 17:
+        result = await db.execute(select(Vehicle).where(Vehicle.vin == norm).limit(1))
+    elif len(norm) == 6:
+        # PostgreSQL substr с -6 — последние 6 символов.
+        from sqlalchemy import func
+        result = await db.execute(
+            select(Vehicle).where(func.substr(Vehicle.vin, -6) == norm).limit(1)
+        )
     else:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="VIN номер должен содержать либо 6 последних символов, либо полный 17-символьный номер",
+            status_code=400,
+            detail="VIN должен быть 6 последних символов или полный 17-символьный",
         )
-
-    if not vehicle:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Транспортное средство с указанным VIN номером не найдено",
-        )
-    return vehicle
-
-
-@router.get(
-    "/search",
-    response_model=List[VehicleSchema],
-    status_code=status.HTTP_200_OK,
-    summary="Универсальный поиск ТС",
-    description=(
-        "Универсальный поиск автомобилей по номеру телефона клиента, VIN или госномеру. "
-        "Возвращает до 50 совпадений, отсортированных по ID (новые первые)."
-    ),
-    responses=_auth,
-)
-def search_vehicles(
-    q: str = Query(..., min_length=2, description="Телефон, VIN или госномер"),
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
-):
-    q_normalized = q.strip().upper().replace(" ", "")
-    q_lower = q.strip().lower()
-
-    customer_ids_by_phone = [
-        c.id for c in db.query(Customer.id).filter(
-            Customer.phone.ilike(f"%{q_lower}%")
-        ).all()
-    ]
-
-    vehicles = _vehicle_query(db).filter(
-        or_(
-            Vehicle.vin.ilike(f"%{q_normalized}%"),
-            Vehicle.license_plate.ilike(f"%{q_normalized}%"),
-            Vehicle.customer_id.in_(customer_ids_by_phone) if customer_ids_by_phone else False,
-        )
-    ).order_by(Vehicle.id.desc()).limit(50).all()
-
-    return vehicles
-
-
-@router.get(
-    "/{vehicle_id}",
-    response_model=VehicleSchema,
-    status_code=status.HTTP_200_OK,
-    summary="Получить ТС по ID",
-    description="Возвращает данные транспортного средства с информацией о клиенте, марке и модели.",
-    responses={**_auth, **_404},
-)
-def get_vehicle(
-    vehicle_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
-):
-    vehicle = _vehicle_query(db).filter(Vehicle.id == vehicle_id).first()
-    if not vehicle:
+    v = result.scalar_one_or_none()
+    if v is None:
         raise NotFoundException("Транспортное средство не найдено")
-    return vehicle
+    return await _serialize_one(db, v, claims)
+
+
+@router.get("/search", response_model=list[VehicleSchema], responses=_auth)
+async def search_vehicles(
+    q: str = Query(..., min_length=2),
+    db: AsyncSession = Depends(get_tenant_db),
+    _claims: TenantClaims = Depends(get_current_claims),
+):
+    norm = q.strip().upper().replace(" ", "")
+    raw = q.strip().lower()
+
+    # Phone match → customer ids → vehicles by customer_id.
+    cust_rows = await db.execute(
+        select(Customer.id).where(Customer.phone.ilike(f"%{raw}%"))
+    )
+    cust_ids = [row[0] for row in cust_rows.all()]
+
+    conditions = [
+        Vehicle.vin.ilike(f"%{norm}%"),
+        Vehicle.license_plate.ilike(f"%{norm}%"),
+    ]
+    if cust_ids:
+        conditions.append(Vehicle.customer_id.in_(cust_ids))
+
+    result = await db.execute(
+        select(Vehicle)
+        .where(or_(*conditions))
+        .order_by(Vehicle.id.desc())
+        .limit(50)
+    )
+    vehicles = list(result.scalars().all())
+    return await _serialize_many(db, vehicles)
+
+
+@router.get("/{vehicle_id}", response_model=VehicleSchema, responses={**_auth, **_404})
+async def get_vehicle(
+    vehicle_id: int,
+    db: AsyncSession = Depends(get_tenant_db),
+    claims: TenantClaims = Depends(get_current_claims),
+):
+    v = await db.get(Vehicle, (claims.tenant_id, vehicle_id))
+    if v is None:
+        raise NotFoundException("Транспортное средство не найдено")
+    return await _serialize_one(db, v, claims)
 
 
 @router.post(
     "/",
     response_model=VehicleSchema,
     status_code=status.HTTP_201_CREATED,
-    summary="Создать ТС",
-    description=(
-        "Создание нового транспортного средства. Проверяет существование клиента, марки и модели. "
-        "Модель должна принадлежать указанной марке. Доступно менеджеру и администратору."
-    ),
     responses={
         **_write,
         400: {"model": ErrorResponse, "description": "Модель не принадлежит марке"},
         404: {"model": ErrorResponse, "description": "Клиент / марка / модель не найдены"},
     },
 )
-def create_vehicle(
-    vehicle_create: VehicleCreate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(require_manager_or_admin),
+async def create_vehicle(
+    body: VehicleCreate,
+    db: AsyncSession = Depends(get_tenant_db),
+    claims: TenantClaims = Depends(require_manager_or_admin),
 ):
-    customer = db.query(Customer).filter(Customer.id == vehicle_create.customer_id).first()
-    if not customer:
+    customer = await db.get(Customer, (claims.tenant_id, body.customer_id))
+    if customer is None:
         raise NotFoundException("Клиент не найден")
-    brand = db.query(VehicleBrand).filter(VehicleBrand.id == vehicle_create.brand_id).first()
-    if not brand:
+    brand = await db.get(VehicleBrand, (claims.tenant_id, body.brand_id))
+    if brand is None:
         raise NotFoundException("Марка не найдена")
-    model = db.query(VehicleModel).filter(VehicleModel.id == vehicle_create.model_id).first()
-    if not model:
+    model = await db.get(VehicleModel, (claims.tenant_id, body.model_id))
+    if model is None:
         raise NotFoundException("Модель не найдена")
     if model.brand_id != brand.id:
-        raise HTTPException(status_code=400, detail="Модель не принадлежит указанной марке")
-    vehicle = Vehicle(**vehicle_create.model_dump())
-    db.add(vehicle)
-    db.commit()
-    db.refresh(vehicle)
-    vehicle = _vehicle_query(db).filter(Vehicle.id == vehicle.id).first()
-    return vehicle
+        raise HTTPException(
+            status_code=400, detail="Модель не принадлежит указанной марке"
+        )
+
+    v = Vehicle(tenant_id=claims.tenant_id, **body.model_dump())
+    db.add(v)
+    await db.flush()
+    await db.refresh(v)
+    return await _serialize_one(db, v, claims)
 
 
 @router.put(
     "/{vehicle_id}",
     response_model=VehicleSchema,
-    status_code=status.HTTP_200_OK,
-    summary="Обновить ТС",
-    description=(
-        "Обновление данных транспортного средства. Передавать нужно только изменяемые поля. "
-        "Если меняется марка/модель — проверяется их существование и принадлежность."
-    ),
     responses={
         **_write,
         400: {"model": ErrorResponse, "description": "Модель не принадлежит марке"},
         **_404,
     },
 )
-def update_vehicle(
+async def update_vehicle(
     vehicle_id: int,
-    vehicle_update: VehicleUpdate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(require_manager_or_admin),
+    body: VehicleUpdate,
+    db: AsyncSession = Depends(get_tenant_db),
+    claims: TenantClaims = Depends(require_manager_or_admin),
 ):
-    vehicle = db.query(Vehicle).filter(Vehicle.id == vehicle_id).first()
-    if not vehicle:
+    v = await db.get(Vehicle, (claims.tenant_id, vehicle_id))
+    if v is None:
         raise NotFoundException("Транспортное средство не найдено")
-    update_data = vehicle_update.model_dump(exclude_unset=True)
-    if 'customer_id' in update_data:
-        customer = db.query(Customer).filter(Customer.id == update_data['customer_id']).first()
-        if not customer:
+
+    data = body.model_dump(exclude_unset=True)
+
+    if "customer_id" in data:
+        if await db.get(Customer, (claims.tenant_id, data["customer_id"])) is None:
             raise NotFoundException("Клиент не найден")
-    if 'brand_id' in update_data:
-        brand = db.query(VehicleBrand).filter(VehicleBrand.id == update_data['brand_id']).first()
-        if not brand:
+
+    new_brand_id = data.get("brand_id", v.brand_id)
+    new_model_id = data.get("model_id", v.model_id)
+
+    if "brand_id" in data:
+        if await db.get(VehicleBrand, (claims.tenant_id, data["brand_id"])) is None:
             raise NotFoundException("Марка не найдена")
-    if 'model_id' in update_data:
-        model = db.query(VehicleModel).filter(VehicleModel.id == update_data['model_id']).first()
-        if not model:
+    if "model_id" in data:
+        model = await db.get(VehicleModel, (claims.tenant_id, data["model_id"]))
+        if model is None:
             raise NotFoundException("Модель не найдена")
-        brand_id = update_data.get('brand_id', vehicle.brand_id)
-        if model.brand_id != brand_id:
-            raise HTTPException(status_code=400, detail="Модель не принадлежит указанной марке")
-    for field, value in update_data.items():
-        setattr(vehicle, field, value)
-    db.commit()
-    vehicle = _vehicle_query(db).filter(Vehicle.id == vehicle_id).first()
-    return vehicle
-
-
-@router.get(
-    "/{vehicle_id}/history",
-    response_model=List[OrderDetail],
-    status_code=status.HTTP_200_OK,
-    summary="История обслуживания ТС",
-    description=(
-        "Возвращает все заказ-наряды для указанного автомобиля с работами, запчастями и оплатами. "
-        "Сортировка: новые первые."
-    ),
-    responses={**_auth, **_404},
-)
-def get_vehicle_history(
-    vehicle_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
-):
-    from decimal import Decimal
-    from app.models.order import Order, OrderWork, OrderPart
-    from app.models.payment import Payment, PaymentStatus
-
-    vehicle = db.query(Vehicle).filter(Vehicle.id == vehicle_id).first()
-    if not vehicle:
-        raise NotFoundException("Автомобиль не найден")
-
-    orders = db.query(Order).options(
-        joinedload(Order.vehicle).options(
-            joinedload(Vehicle.customer),
-            joinedload(Vehicle.brand),
-            joinedload(Vehicle.vehicle_model),
-        ),
-        joinedload(Order.employee),
-        joinedload(Order.mechanic),
-        joinedload(Order.order_works).joinedload(OrderWork.work),
-        joinedload(Order.order_parts).joinedload(OrderPart.part),
-    ).filter(Order.vehicle_id == vehicle_id).order_by(Order.created_at.desc()).all()
-
-    result = []
-    for order in orders:
-        total_works = sum((w.total or Decimal("0")) for w in order.order_works)
-        total_parts = sum((p.total or Decimal("0")) for p in order.order_parts)
-        order.total_amount = total_works + total_parts
-
-        paid_amount = (
-            db.query(func.sum(Payment.amount))
-            .filter(
-                Payment.order_id == order.id,
-                Payment.status == PaymentStatus.SUCCEEDED,
+        if model.brand_id != new_brand_id:
+            raise HTTPException(
+                status_code=400, detail="Модель не принадлежит указанной марке"
             )
-            .scalar()
-            or Decimal("0")
-        )
-        order.paid_amount = paid_amount
-        result.append(OrderDetail.model_validate(order))
 
-    return result
+    # Если сменили только brand_id, валидируем текущую model
+    if "brand_id" in data and "model_id" not in data:
+        current_model = await db.get(VehicleModel, (claims.tenant_id, v.model_id))
+        if current_model is None or current_model.brand_id != new_brand_id:
+            raise HTTPException(
+                status_code=400,
+                detail="Текущая модель не принадлежит новой марке — обновите model_id",
+            )
+
+    for k, val in data.items():
+        setattr(v, k, val)
+    await db.flush()
+    await db.refresh(v)
+    return await _serialize_one(db, v, claims)

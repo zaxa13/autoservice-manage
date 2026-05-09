@@ -1,19 +1,17 @@
-"""API v1 router.
-
-Phase 3 wave 1 routers (мигрированы и подключены): auth_me, customers,
-works, parts, suppliers, vehicle_brands, settings_api.
-
-Остальные ~14 роутеров не подключены до миграции — см. backend/PHASE3_TODO.md.
-"""
+"""API v1 router. Phase 3 wave 0+1+2 — подключены 11 роутеров."""
 from fastapi import APIRouter
 
 from app.api.v1 import (
+    appointment_posts,
     auth_me,
     customers,
+    employees,
     parts,
     settings_api,
     suppliers,
+    users,
     vehicle_brands,
+    vehicles,
     works,
 )
 
@@ -28,3 +26,9 @@ api_router.include_router(
     vehicle_brands.router, prefix="/vehicle-brands", tags=["Марки и модели"]
 )
 api_router.include_router(settings_api.router, prefix="/settings", tags=["Настройки"])
+api_router.include_router(employees.router, prefix="/employees", tags=["Сотрудники"])
+api_router.include_router(users.router, prefix="/users", tags=["Пользователи"])
+api_router.include_router(vehicles.router, prefix="/vehicles", tags=["Транспортные средства"])
+api_router.include_router(
+    appointment_posts.router, prefix="/appointment-posts", tags=["Посты"]
+)

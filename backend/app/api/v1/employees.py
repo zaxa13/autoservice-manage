@@ -1,175 +1,146 @@
+"""Сотрудники — async CRUD + опциональное создание учётной записи User."""
+from __future__ import annotations
+
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy.orm import Session
-from typing import List, Annotated
-from app.database import get_db
-from app.dependencies import get_current_user
-from app.models.user import User, UserRole
-from app.models.employee import Employee, EmployeePosition
-from app.schemas.employee import Employee as EmployeeSchema, EmployeeCreate, EmployeeUpdate
-from app.schemas.responses import LabelValueItem, ErrorResponse
+from sqlalchemy import or_, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.core.exceptions import NotFoundException
 from app.core.permissions import require_admin
+from app.core.security import TenantClaims, get_password_hash
+from app.dependencies import get_current_claims, get_tenant_db
+from app.models.employee import Employee, EmployeePosition
+from app.models.user import User, UserRole
+from app.schemas.employee import (
+    Employee as EmployeeSchema,
+    EmployeeCreate,
+    EmployeeUpdate,
+)
+from app.schemas.responses import ErrorResponse, LabelValueItem
 
 router = APIRouter()
-
-EMPLOYEE_POSITION_NAMES = {
-    EmployeePosition.ADMIN: "Администратор",
-    EmployeePosition.MANAGER: "Менеджер",
-    EmployeePosition.MECHANIC: "Механик",
-}
-
-USER_ROLE_NAMES = {
-    UserRole.ADMIN: "Администратор",
-    UserRole.MANAGER: "Менеджер",
-    UserRole.MECHANIC: "Механик",
-    UserRole.ACCOUNTANT: "Бухгалтер",
-}
 
 _404 = {404: {"model": ErrorResponse, "description": "Сотрудник не найден"}}
 _auth = {401: {"model": ErrorResponse, "description": "Не авторизован"}}
 _admin = {**_auth, 403: {"model": ErrorResponse, "description": "Только для администратора"}}
 
 
-@router.get(
-    "/positions",
-    response_model=List[LabelValueItem],
-    status_code=status.HTTP_200_OK,
-    summary="Должности сотрудников",
-    description="Возвращает список возможных должностей сотрудников с русскоязычными названиями.",
-)
-def get_employee_positions():
-    return [
-        {"value": position.value, "label": EMPLOYEE_POSITION_NAMES.get(position, position.value)}
-        for position in EmployeePosition
-    ]
+_POSITION_LABELS = {
+    EmployeePosition.ADMIN.value: "Администратор",
+    EmployeePosition.MANAGER.value: "Менеджер",
+    EmployeePosition.MECHANIC.value: "Механик",
+}
+_ROLE_LABELS = {
+    UserRole.ADMIN.value: "Администратор",
+    UserRole.MANAGER.value: "Менеджер",
+    UserRole.MECHANIC.value: "Механик",
+    UserRole.ACCOUNTANT.value: "Бухгалтер",
+}
 
 
-@router.get(
-    "/user-roles",
-    response_model=List[LabelValueItem],
-    status_code=status.HTTP_200_OK,
-    summary="Роли пользователей",
-    description="Возвращает список возможных ролей пользователей с русскоязычными названиями.",
-)
-def get_user_roles():
-    return [
-        {"value": role.value, "label": USER_ROLE_NAMES.get(role, role.value)}
-        for role in UserRole
-    ]
+@router.get("/positions", response_model=list[LabelValueItem])
+def list_positions() -> list[LabelValueItem]:
+    return [LabelValueItem(value=p.value, label=_POSITION_LABELS[p.value]) for p in EmployeePosition]
 
 
-@router.get(
-    "/",
-    response_model=List[EmployeeSchema],
-    status_code=status.HTTP_200_OK,
-    summary="Список сотрудников",
-    description="Возвращает список сотрудников с пагинацией. Доступно всем авторизованным пользователям.",
-    responses=_auth,
-)
-def get_employees(
-    current_user: Annotated[User, Depends(get_current_user)],
-    skip: int = Query(0, ge=0, description="Сколько записей пропустить"),
-    limit: int = Query(100, ge=1, le=500, description="Максимум записей"),
-    db: Session = Depends(get_db),
+@router.get("/user-roles", response_model=list[LabelValueItem])
+def list_user_roles() -> list[LabelValueItem]:
+    return [LabelValueItem(value=r.value, label=_ROLE_LABELS[r.value]) for r in UserRole]
+
+
+@router.get("/", response_model=list[EmployeeSchema], responses=_auth)
+async def list_employees(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=500),
+    db: AsyncSession = Depends(get_tenant_db),
+    _claims: TenantClaims = Depends(get_current_claims),
 ):
-    employees = db.query(Employee).offset(skip).limit(limit).all()
-    return employees
+    result = await db.execute(
+        select(Employee).order_by(Employee.id).offset(skip).limit(limit)
+    )
+    return list(result.scalars().all())
 
 
 @router.get(
     "/{employee_id}",
     response_model=EmployeeSchema,
-    status_code=status.HTTP_200_OK,
-    summary="Получить сотрудника по ID",
-    description="Возвращает данные сотрудника. Возвращает 404 если сотрудник не найден.",
     responses={**_auth, **_404},
 )
-def get_employee(
+async def get_employee(
     employee_id: int,
-    current_user: Annotated[User, Depends(get_current_user)],
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_tenant_db),
+    claims: TenantClaims = Depends(get_current_claims),
 ):
-    employee = db.query(Employee).filter(Employee.id == employee_id).first()
-    if not employee:
+    e = await db.get(Employee, (claims.tenant_id, employee_id))
+    if e is None:
         raise NotFoundException("Сотрудник не найден")
-    return employee
+    return e
 
 
 @router.post(
     "/",
     response_model=EmployeeSchema,
     status_code=status.HTTP_201_CREATED,
-    summary="Создать сотрудника",
-    description=(
-        "Создание нового сотрудника. Если переданы `username`, `password` и `user_role` — "
-        "автоматически создаётся связанная учётная запись пользователя. "
-        "Возвращает 400 при дублировании логина / email. Только администратор."
-    ),
-    responses={
-        **_admin,
-        400: {"model": ErrorResponse, "description": "Дубликат логина или email"},
-    },
+    responses={**_admin, 400: {"model": ErrorResponse, "description": "Дубликат логина или email"}},
 )
-def create_employee(
-    employee_create: EmployeeCreate,
-    current_user: Annotated[User, Depends(require_admin)],
-    db: Session = Depends(get_db),
+async def create_employee(
+    body: EmployeeCreate,
+    db: AsyncSession = Depends(get_tenant_db),
+    claims: TenantClaims = Depends(require_admin),
 ):
-    employee = Employee(**employee_create.model_dump(exclude={"username", "password", "user_role"}))
+    employee_data = body.model_dump(exclude={"username", "password", "user_role"})
+    if hasattr(employee_data.get("position"), "value"):
+        employee_data["position"] = employee_data["position"].value
+    employee = Employee(tenant_id=claims.tenant_id, **employee_data)
     db.add(employee)
-    db.flush()
+    await db.flush()  # получаем employee.id
 
-    if employee_create.username and employee_create.password and employee_create.user_role:
-        from app.core.security import get_password_hash
-
-        existing_user = db.query(User).filter(
-            (User.username == employee_create.username) |
-            (User.email == employee_create.email)
-        ).first()
-
-        if existing_user:
-            db.rollback()
+    # Создание связанной учётки.
+    if body.username and body.password and body.user_role:
+        email_for_user = body.email or f"{body.username}@autoservice.local"
+        existing = await db.execute(
+            select(User).where(
+                or_(User.username == body.username, User.email == email_for_user)
+            )
+        )
+        if existing.scalar_one_or_none() is not None:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Пользователь с таким логином или email уже существует",
             )
-
-        user = User(
-            username=employee_create.username,
-            email=employee_create.email if employee_create.email else f"{employee_create.username}@autoservice.local",
-            password_hash=get_password_hash(employee_create.password),
-            role=employee_create.user_role,
+        db.add(User(
+            tenant_id=claims.tenant_id,
+            username=body.username,
+            email=email_for_user,
+            password_hash=get_password_hash(body.password),
+            role=body.user_role.value if hasattr(body.user_role, "value") else body.user_role,
             employee_id=employee.id,
-        )
-        db.add(user)
-
-    db.commit()
-    db.refresh(employee)
+            is_active=True,
+            password_must_be_changed=False,
+        ))
+        await db.flush()
+    await db.refresh(employee)
     return employee
 
 
 @router.put(
     "/{employee_id}",
     response_model=EmployeeSchema,
-    status_code=status.HTTP_200_OK,
-    summary="Обновить сотрудника",
-    description="Обновление данных сотрудника. Передавать нужно только изменяемые поля. Только администратор.",
     responses={**_admin, **_404},
 )
-def update_employee(
+async def update_employee(
     employee_id: int,
-    employee_update: EmployeeUpdate,
-    current_user: Annotated[User, Depends(require_admin)],
-    db: Session = Depends(get_db),
+    body: EmployeeUpdate,
+    db: AsyncSession = Depends(get_tenant_db),
+    claims: TenantClaims = Depends(require_admin),
 ):
-    employee = db.query(Employee).filter(Employee.id == employee_id).first()
-    if not employee:
+    e = await db.get(Employee, (claims.tenant_id, employee_id))
+    if e is None:
         raise NotFoundException("Сотрудник не найден")
-
-    update_data = employee_update.model_dump(exclude_unset=True)
-    for field, value in update_data.items():
-        setattr(employee, field, value)
-
-    db.commit()
-    db.refresh(employee)
-    return employee
+    for k, v in body.model_dump(exclude_unset=True).items():
+        if k == "position" and hasattr(v, "value"):
+            v = v.value
+        setattr(e, k, v)
+    await db.flush()
+    await db.refresh(e)
+    return e
