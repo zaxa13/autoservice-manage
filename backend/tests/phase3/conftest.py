@@ -43,6 +43,7 @@ def make_token(
     tenant_id: uuid.UUID | None = TENANT_ALPHA,
     owner_id: uuid.UUID | None = None,
     user_id: int | None = None,
+    employee_id: int | None = None,
     sub: str | None = None,
     roles: list[str] | None = None,
     expires_in: timedelta | None = None,
@@ -61,6 +62,8 @@ def make_token(
         payload["owner_id"] = str(owner_id)
     if user_id is not None:
         payload["user_id"] = user_id
+    if employee_id is not None:
+        payload["employee_id"] = employee_id
     if sub is not None:
         payload["sub"] = sub
     if roles is not None:

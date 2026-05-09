@@ -1,552 +1,476 @@
-from fastapi import APIRouter, Depends, Query, HTTPException, status
-from fastapi.responses import Response
-from sqlalchemy.orm import Session
-from typing import List, Optional
-from pydantic import BaseModel
+"""Заказ-наряды — async CRUD на shared-DB.
+
+В Wave 3a:
+- list / get / create / update (с заменой order_works/order_parts) /
+  cancel / complete / delete (admin)
+- статусы lookup
+- mechanic-фильтр через claims.employee_id (если присутствует)
+
+НЕ в Wave 3a (отложено):
+- /print, /print-act (PDF)
+- payment-endpoints (вернутся в Wave 3b вместе с миграцией payments)
+
+Номера заказов — через `app.tenant_counters`, атомарный
+INSERT...ON CONFLICT DO NOTHING + UPDATE...RETURNING. Формат `ЗН-001`.
+"""
+from __future__ import annotations
+
+from datetime import datetime, timezone
 from decimal import Decimal
-from app.database import get_db
-from app.dependencies import get_current_user
-from app.models.user import User, UserRole
-from app.models.order import Order, OrderStatus, OrderWork, OrderPart
-from app.models.payment import Payment, PaymentStatus
-from app.schemas.order import Order as OrderSchema, OrderCreate, OrderUpdate, OrderDetail
-from app.schemas.payment import Payment as PaymentSchema, PaymentCreate, PaymentCancel
-from app.schemas.responses import LabelValueItem, ErrorResponse
-from app.services.order_service import create_order, update_order, complete_order
-from app.services.payment_service import (
-    get_payments_for_order,
-    create_manual_payment,
-    cancel_payment,
-    cancel_all_payments,
+from typing import Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
+from sqlalchemy import delete, select, text
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.core.exceptions import BadRequestException, NotFoundException
+from app.core.permissions import require_admin, require_manager_or_admin
+from app.core.security import TenantClaims
+from app.dependencies import get_current_claims, get_tenant_db
+from app.models.customer import Customer
+from app.models.employee import Employee
+from app.models.order import Order, OrderPart, OrderStatus, OrderWork
+from app.models.payment import Payment
+from app.models.vehicle import Vehicle
+from app.models.vehicle_brand import VehicleBrand, VehicleModel
+from app.schemas.order import (
+    Order as OrderSchema,
+    OrderCreate,
+    OrderDetail,
+    OrderUpdate,
 )
-from app.services.pdf_service import generate_order_pdf, generate_act_pdf
-from app.core.permissions import require_manager_or_admin, require_admin
-from app.core.exceptions import NotFoundException, BadRequestException
+from app.schemas.responses import ErrorResponse, LabelValueItem
 
 router = APIRouter()
 
 _404 = {404: {"model": ErrorResponse, "description": "Заказ-наряд не найден"}}
 _auth = {401: {"model": ErrorResponse, "description": "Не авторизован"}}
 _write = {**_auth, 403: {"model": ErrorResponse, "description": "Недостаточно прав"}}
-_admin = {**_auth, 403: {"model": ErrorResponse, "description": "Только для администратора"}}
+_admin = {**_auth, 403: {"model": ErrorResponse, "description": "Только администратор"}}
 
 
-class OrderStatusInfo(BaseModel):
-    value: str
-    label: str
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+def _line_total(price, quantity, discount) -> Decimal:
+    """price * quantity * (1 - discount/100)."""
+    p = Decimal(str(price))
+    q = Decimal(str(quantity))
+    d = Decimal(str(discount or 0))
+    return (p * q * (Decimal(1) - d / Decimal(100))).quantize(Decimal("0.01"))
 
 
-@router.get(
-    "/statuses",
-    response_model=List[OrderStatusInfo],
-    status_code=status.HTTP_200_OK,
-    summary="Статусы заказ-нарядов",
-    description=(
-        "Возвращает список доступных статусов для заказ-нарядов (без COMPLETED — "
-        "он устанавливается только через операцию завершения)."
-    ),
-    responses=_auth,
-)
-def get_order_statuses(
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
-):
-    statuses = [
-        OrderStatusInfo(value=OrderStatus.NEW.value, label="Новый"),
-        OrderStatusInfo(value=OrderStatus.ESTIMATION.value, label="Проценка"),
-        OrderStatusInfo(value=OrderStatus.IN_PROGRESS.value, label="В работе"),
-        OrderStatusInfo(value=OrderStatus.READY_FOR_PAYMENT.value, label="Готов к оплате"),
-        OrderStatusInfo(value=OrderStatus.PAID.value, label="Оплачен"),
-        OrderStatusInfo(value=OrderStatus.CANCELLED.value, label="Отменен"),
-    ]
-    return statuses
-
-
-@router.get(
-    "/",
-    response_model=List[OrderSchema],
-    status_code=status.HTTP_200_OK,
-    summary="Список заказ-нарядов",
-    description=(
-        "Возвращает заказ-наряды с пагинацией. Фильтрация по статусу. "
-        "Механик видит только свои заказы. Суммы пересчитываются на лету."
-    ),
-    responses=_auth,
-)
-def get_orders(
-    skip: int = Query(0, ge=0, description="Сколько записей пропустить"),
-    limit: int = Query(100, ge=1, le=500, description="Максимум записей"),
-    status_filter: Optional[OrderStatus] = Query(None, alias="status", description="Фильтр по статусу"),
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
-):
-    from sqlalchemy.orm import joinedload
-    from sqlalchemy import func
-    from app.models.vehicle import Vehicle
-
-    query = db.query(Order).options(
-        joinedload(Order.vehicle).options(
-            joinedload(Vehicle.customer),
-            joinedload(Vehicle.brand),
-            joinedload(Vehicle.vehicle_model),
-        ),
-        joinedload(Order.mechanic),
-    )
-
-    if current_user.role == UserRole.MECHANIC:
-        query = query.filter(Order.mechanic_id == current_user.employee_id)
-
-    if status_filter:
-        query = query.filter(Order.status == status_filter)
-
-    orders = query.order_by(Order.created_at.desc()).offset(skip).limit(limit).all()
-
-    for order in orders:
-        total_works = sum((w.total or Decimal("0")) for w in order.order_works)
-        total_parts = sum((p.total or Decimal("0")) for p in order.order_parts)
-        order.total_amount = total_works + total_parts
-        paid_amount = (
-            db.query(func.sum(Payment.amount))
-            .filter(
-                Payment.order_id == order.id,
-                Payment.status == PaymentStatus.SUCCEEDED,
-            )
-            .scalar()
-            or Decimal("0")
+async def _next_order_number(db: AsyncSession) -> str:
+    """Атомарный per-tenant счётчик: 'ЗН-001', 'ЗН-002', …"""
+    await db.execute(
+        text(
+            "INSERT INTO app.tenant_counters (tenant_id, counter_name, value) "
+            "VALUES (app.current_tenant(), 'orders', 0) "
+            "ON CONFLICT (tenant_id, counter_name) DO NOTHING"
         )
-        order.paid_amount = paid_amount
+    )
+    result = await db.execute(
+        text(
+            "UPDATE app.tenant_counters SET value = value + 1 "
+            "WHERE tenant_id = app.current_tenant() AND counter_name = 'orders' "
+            "RETURNING value"
+        )
+    )
+    n = result.scalar_one()
+    return f"ЗН-{n:03d}"
 
-    return orders
+
+def _vehicle_dict(v: Vehicle, customer, brand, model) -> dict:
+    return {
+        "id": v.id,
+        "vin": v.vin,
+        "license_plate": v.license_plate,
+        "brand_id": v.brand_id,
+        "model_id": v.model_id,
+        "year": v.year,
+        "mileage": v.mileage,
+        "customer_id": v.customer_id,
+        "created_at": v.created_at,
+        "customer": customer,
+        "brand": ({"id": brand.id, "name": brand.name} if brand else None),
+        "model": ({"id": model.id, "name": model.name} if model else None),
+    }
+
+
+async def _serialize_order_works(
+    db: AsyncSession, order_id: int, with_refs: bool = True
+) -> list[dict]:
+    rows = (
+        await db.execute(
+            select(OrderWork).where(OrderWork.order_id == order_id).order_by(OrderWork.id)
+        )
+    ).scalars().all()
+    if not with_refs or not rows:
+        return [
+            {
+                "id": w.id, "order_id": w.order_id, "work_id": w.work_id,
+                "work_name": w.work_name, "mechanic_id": w.mechanic_id,
+                "quantity": w.quantity, "price": w.price, "discount": w.discount,
+                "total": w.total, "work": None, "mechanic": None,
+            }
+            for w in rows
+        ]
+    from app.models.work import Work as WorkModel
+    work_ids = {w.work_id for w in rows if w.work_id}
+    mech_ids = {w.mechanic_id for w in rows if w.mechanic_id}
+    wmap = {}
+    mmap = {}
+    if work_ids:
+        wmap = {
+            w.id: w
+            for w in (await db.execute(select(WorkModel).where(WorkModel.id.in_(work_ids)))).scalars()
+        }
+    if mech_ids:
+        mmap = {
+            e.id: e
+            for e in (await db.execute(select(Employee).where(Employee.id.in_(mech_ids)))).scalars()
+        }
+    return [
+        {
+            "id": w.id, "order_id": w.order_id, "work_id": w.work_id,
+            "work_name": w.work_name, "mechanic_id": w.mechanic_id,
+            "quantity": w.quantity, "price": w.price, "discount": w.discount,
+            "total": w.total,
+            "work": wmap.get(w.work_id),
+            "mechanic": mmap.get(w.mechanic_id),
+        }
+        for w in rows
+    ]
+
+
+async def _serialize_order_parts(
+    db: AsyncSession, order_id: int, with_refs: bool = True
+) -> list[dict]:
+    rows = (
+        await db.execute(
+            select(OrderPart).where(OrderPart.order_id == order_id).order_by(OrderPart.id)
+        )
+    ).scalars().all()
+    if not with_refs or not rows:
+        return [
+            {
+                "id": p.id, "order_id": p.order_id, "part_id": p.part_id,
+                "part_name": p.part_name, "article": p.article,
+                "quantity": p.quantity, "price": p.price, "discount": p.discount,
+                "total": p.total, "part": None,
+            }
+            for p in rows
+        ]
+    from app.models.part import Part as PartModel
+    part_ids = {p.part_id for p in rows if p.part_id}
+    pmap = {}
+    if part_ids:
+        pmap = {
+            p.id: {
+                "id": p.id, "name": p.name, "part_number": p.part_number,
+                "brand": p.brand, "price": p.price,
+                "purchase_price_last": p.purchase_price_last,
+                "unit": p.unit, "category": p.category, "stock_quantity": 0,
+            }
+            for p in (await db.execute(select(PartModel).where(PartModel.id.in_(part_ids)))).scalars()
+        }
+    return [
+        {
+            "id": p.id, "order_id": p.order_id, "part_id": p.part_id,
+            "part_name": p.part_name, "article": p.article,
+            "quantity": p.quantity, "price": p.price, "discount": p.discount,
+            "total": p.total,
+            "part": pmap.get(p.part_id),
+        }
+        for p in rows
+    ]
+
+
+async def _serialize_order(
+    db: AsyncSession, order: Order, claims: TenantClaims, *, detail: bool
+) -> dict:
+    vehicle_dict = None
+    v = await db.get(Vehicle, (claims.tenant_id, order.vehicle_id))
+    if v is not None:
+        cust = await db.get(Customer, (claims.tenant_id, v.customer_id))
+        brand = await db.get(VehicleBrand, (claims.tenant_id, v.brand_id))
+        model = await db.get(VehicleModel, (claims.tenant_id, v.model_id))
+        vehicle_dict = _vehicle_dict(v, cust, brand, model)
+
+    mechanic = None
+    if order.mechanic_id:
+        mechanic = await db.get(Employee, (claims.tenant_id, order.mechanic_id))
+
+    base = {
+        "id": order.id,
+        "number": order.number,
+        "vehicle_id": order.vehicle_id,
+        "employee_id": order.employee_id,
+        "mechanic_id": order.mechanic_id,
+        "status": order.status,
+        "total_amount": order.total_amount,
+        "paid_amount": order.paid_amount,
+        "created_at": order.created_at,
+        "completed_at": order.completed_at,
+        "vehicle": vehicle_dict,
+        "mechanic": mechanic,
+    }
+    if not detail:
+        return base
+    employee = await db.get(Employee, (claims.tenant_id, order.employee_id))
+    base["employee"] = employee
+    base["recommendations"] = order.recommendations
+    base["comments"] = order.comments
+    base["order_works"] = await _serialize_order_works(db, order.id)
+    base["order_parts"] = await _serialize_order_parts(db, order.id)
+    return base
+
+
+def _resolve_employee_id(claims: TenantClaims) -> int:
+    if claims.employee_id is None:
+        raise BadRequestException(
+            "JWT-токен не содержит employee_id — невозможно создать/завершить заказ"
+        )
+    return claims.employee_id
+
+
+# ---------------------------------------------------------------------------
+# Lookup
+# ---------------------------------------------------------------------------
+_STATUS_LABELS = {
+    OrderStatus.NEW.value: "Новый",
+    OrderStatus.ESTIMATION.value: "Проценка",
+    OrderStatus.IN_PROGRESS.value: "В работе",
+    OrderStatus.READY_FOR_PAYMENT.value: "Готов к оплате",
+    OrderStatus.PAID.value: "Оплачен",
+    OrderStatus.COMPLETED.value: "Завершён",
+    OrderStatus.CANCELLED.value: "Отменён",
+}
+
+
+@router.get("/statuses", response_model=list[LabelValueItem])
+def list_statuses() -> list[LabelValueItem]:
+    return [
+        LabelValueItem(value=s.value, label=_STATUS_LABELS[s.value])
+        for s in OrderStatus
+        if s != OrderStatus.COMPLETED  # COMPLETED устанавливается операцией завершения
+    ]
+
+
+# ---------------------------------------------------------------------------
+# CRUD
+# ---------------------------------------------------------------------------
+@router.get("/", response_model=list[OrderSchema], responses=_auth)
+async def list_orders(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=500),
+    status_filter: Optional[OrderStatus] = Query(None, alias="status"),
+    db: AsyncSession = Depends(get_tenant_db),
+    claims: TenantClaims = Depends(get_current_claims),
+):
+    stmt = select(Order).order_by(Order.created_at.desc())
+    if status_filter:
+        stmt = stmt.where(Order.status == status_filter.value)
+    if "mechanic" in claims.roles and not (set(claims.roles) & {"admin", "manager"}):
+        if claims.employee_id is not None:
+            stmt = stmt.where(Order.mechanic_id == claims.employee_id)
+    stmt = stmt.offset(skip).limit(limit)
+    rows = (await db.execute(stmt)).scalars().all()
+    return [await _serialize_order(db, o, claims, detail=False) for o in rows]
 
 
 @router.get(
     "/{order_id}",
     response_model=OrderDetail,
-    status_code=status.HTTP_200_OK,
-    summary="Получить заказ-наряд по ID",
-    description=(
-        "Детальная информация по заказ-наряду: работы, запчасти, сотрудники, оплаты. "
-        "Механик видит только свои заказы (403 при чужом). "
-        "Суммы пересчитываются на лету."
-    ),
-    responses={**_auth, 403: {"model": ErrorResponse, "description": "Нет доступа к этому заказу"}, **_404},
+    responses={**_auth, 403: {"model": ErrorResponse}, **_404},
 )
-def get_order(
+async def get_order(
     order_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_tenant_db),
+    claims: TenantClaims = Depends(get_current_claims),
 ):
-    from sqlalchemy import func
-    from sqlalchemy.orm import joinedload
-    from app.models.vehicle import Vehicle
-
-    order = db.query(Order).options(
-        joinedload(Order.vehicle).options(
-            joinedload(Vehicle.customer),
-            joinedload(Vehicle.brand),
-            joinedload(Vehicle.vehicle_model),
-        ),
-        joinedload(Order.employee),
-        joinedload(Order.mechanic),
-        joinedload(Order.order_works).joinedload(OrderWork.work),
-        joinedload(Order.order_parts).joinedload(OrderPart.part),
-    ).filter(Order.id == order_id).first()
-    if not order:
+    order = await db.get(Order, (claims.tenant_id, order_id))
+    if order is None:
         raise NotFoundException("Заказ-наряд не найден")
-
-    if current_user.role == UserRole.MECHANIC:
-        if order.mechanic_id != current_user.employee_id:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Нет доступа к этому заказ-наряду",
-            )
-
-    total_works = sum((w.total or Decimal("0")) for w in order.order_works)
-    total_parts = sum((p.total or Decimal("0")) for p in order.order_parts)
-    order.total_amount = total_works + total_parts
-
-    paid_amount = (
-        db.query(func.sum(Payment.amount))
-        .filter(
-            Payment.order_id == order.id,
-            Payment.status == PaymentStatus.SUCCEEDED,
-        )
-        .scalar()
-        or Decimal("0")
-    )
-    order.paid_amount = paid_amount
-
-    return order
+    if "mechanic" in claims.roles and not (set(claims.roles) & {"admin", "manager"}):
+        if claims.employee_id is not None and order.mechanic_id != claims.employee_id:
+            raise HTTPException(status_code=403, detail="Нет доступа к этому заказ-наряду")
+    return await _serialize_order(db, order, claims, detail=True)
 
 
 @router.post(
     "/",
     response_model=OrderSchema,
     status_code=status.HTTP_201_CREATED,
-    summary="Создать заказ-наряд",
-    description=(
-        "Создание нового заказ-наряда. Номер генерируется автоматически. "
-        "Если у администратора нет привязанного сотрудника — используется системный. "
-        "Доступно менеджеру и администратору."
-    ),
-    responses={**_write, 400: {"model": ErrorResponse, "description": "Нет активных сотрудников / не привязан сотрудник"}},
+    responses={**_write, 400: {"model": ErrorResponse}},
 )
-def create_new_order(
-    order_create: OrderCreate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(require_manager_or_admin),
+async def create_order(
+    body: OrderCreate,
+    db: AsyncSession = Depends(get_tenant_db),
+    claims: TenantClaims = Depends(require_manager_or_admin),
 ):
-    employee_id = current_user.employee_id
+    employee_id = _resolve_employee_id(claims)
 
-    if not employee_id and current_user.role == UserRole.ADMIN:
-        from app.models.employee import Employee, EmployeePosition
-        system_admin = db.query(Employee).filter(
-            Employee.position == EmployeePosition.ADMIN,
-            Employee.is_active == True,
-        ).first()
+    if await db.get(Vehicle, (claims.tenant_id, body.vehicle_id)) is None:
+        raise NotFoundException("Транспортное средство не найдено")
 
-        if system_admin:
-            employee_id = system_admin.id
-        else:
-            first_employee = db.query(Employee).filter(Employee.is_active == True).first()
-            if first_employee:
-                employee_id = first_employee.id
-            else:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Не найдено активных сотрудников в системе. Создайте хотя бы одного сотрудника.",
-                )
-    elif not employee_id:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="У пользователя не привязан сотрудник",
-        )
-
-    order = create_order(db, order_create, employee_id)
-    return order
-
-
-@router.put(
-    "/{order_id}",
-    response_model=OrderSchema,
-    status_code=status.HTTP_200_OK,
-    summary="Обновить заказ-наряд",
-    description=(
-        "Обновление заказ-наряда: статус, механик, работы, запчасти, рекомендации, комментарии. "
-        "При передаче списков работ/запчастей они полностью заменяются."
-    ),
-    responses={**_write, **_404},
-)
-def update_existing_order(
-    order_id: int,
-    order_update: OrderUpdate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(require_manager_or_admin),
-):
-    order = update_order(db, order_id, order_update)
-    return order
-
-
-@router.post(
-    "/{order_id}/complete",
-    response_model=OrderSchema,
-    status_code=status.HTTP_200_OK,
-    summary="Завершить заказ-наряд",
-    description=(
-        "Установка статуса COMPLETED и фиксация даты завершения. "
-        "Суммы пересчитываются перед возвратом."
-    ),
-    responses={**_auth, 400: {"model": ErrorResponse, "description": "Нет привязанного сотрудника"}, **_404},
-)
-def complete_existing_order(
-    order_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
-):
-    employee_id = current_user.employee_id
-
-    if not employee_id and current_user.role == UserRole.ADMIN:
-        from app.models.employee import Employee, EmployeePosition
-        system_admin = db.query(Employee).filter(
-            Employee.position == EmployeePosition.ADMIN,
-            Employee.is_active == True,
-        ).first()
-
-        if system_admin:
-            employee_id = system_admin.id
-        else:
-            first_employee = db.query(Employee).filter(Employee.is_active == True).first()
-            if first_employee:
-                employee_id = first_employee.id
-            else:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Не найдено активных сотрудников в системе. Создайте хотя бы одного сотрудника.",
-                )
-    elif not employee_id:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="У пользователя не привязан сотрудник",
-        )
-
-    from sqlalchemy import func
-
-    order = complete_order(db, order_id, employee_id)
-
-    total_works = sum((w.total or Decimal("0")) for w in order.order_works)
-    total_parts = sum((p.total or Decimal("0")) for p in order.order_parts)
-    order.total_amount = total_works + total_parts
-
-    paid_amount = (
-        db.query(func.sum(Payment.amount))
-        .filter(
-            Payment.order_id == order.id,
-            Payment.status == PaymentStatus.SUCCEEDED,
-        )
-        .scalar()
-        or Decimal("0")
+    number = await _next_order_number(db)
+    total_works = sum(
+        (_line_total(w.price, w.quantity, w.discount) for w in body.order_works), Decimal(0)
     )
-    order.paid_amount = paid_amount
+    total_parts = sum(
+        (_line_total(p.price, p.quantity, p.discount) for p in body.order_parts), Decimal(0)
+    )
+    order = Order(
+        tenant_id=claims.tenant_id,
+        number=number,
+        vehicle_id=body.vehicle_id,
+        employee_id=employee_id,
+        mechanic_id=body.mechanic_id,
+        status=OrderStatus.NEW.value,
+        total_amount=total_works + total_parts,
+        paid_amount=Decimal(0),
+        recommendations=body.recommendations,
+        comments=body.comments,
+    )
+    db.add(order)
+    await db.flush()
 
-    return order
+    for w in body.order_works:
+        db.add(OrderWork(
+            tenant_id=claims.tenant_id,
+            order_id=order.id,
+            work_id=w.work_id,
+            work_name=w.work_name,
+            mechanic_id=w.mechanic_id,
+            quantity=w.quantity,
+            price=w.price,
+            discount=w.discount or Decimal(0),
+            total=_line_total(w.price, w.quantity, w.discount),
+        ))
+    for p in body.order_parts:
+        db.add(OrderPart(
+            tenant_id=claims.tenant_id,
+            order_id=order.id,
+            part_id=p.part_id,
+            part_name=p.part_name,
+            article=p.article,
+            quantity=p.quantity,
+            price=p.price,
+            discount=p.discount or Decimal(0),
+            total=_line_total(p.price, p.quantity, p.discount),
+        ))
+    await db.flush()
+    await db.refresh(order)
+    return await _serialize_order(db, order, claims, detail=False)
+
+
+@router.put("/{order_id}", response_model=OrderSchema, responses={**_write, **_404})
+async def update_order_endpoint(
+    order_id: int,
+    body: OrderUpdate,
+    db: AsyncSession = Depends(get_tenant_db),
+    claims: TenantClaims = Depends(require_manager_or_admin),
+):
+    order = await db.get(Order, (claims.tenant_id, order_id))
+    if order is None:
+        raise NotFoundException("Заказ-наряд не найден")
+
+    data = body.model_dump(exclude_unset=True)
+
+    if "order_works" in data and data["order_works"] is not None:
+        await db.execute(delete(OrderWork).where(OrderWork.order_id == order.id))
+        for w in body.order_works:
+            db.add(OrderWork(
+                tenant_id=claims.tenant_id, order_id=order.id,
+                work_id=w.work_id, work_name=w.work_name, mechanic_id=w.mechanic_id,
+                quantity=w.quantity, price=w.price, discount=w.discount or Decimal(0),
+                total=_line_total(w.price, w.quantity, w.discount),
+            ))
+        await db.flush()
+        data.pop("order_works")
+    if "order_parts" in data and data["order_parts"] is not None:
+        await db.execute(delete(OrderPart).where(OrderPart.order_id == order.id))
+        for p in body.order_parts:
+            db.add(OrderPart(
+                tenant_id=claims.tenant_id, order_id=order.id,
+                part_id=p.part_id, part_name=p.part_name, article=p.article,
+                quantity=p.quantity, price=p.price, discount=p.discount or Decimal(0),
+                total=_line_total(p.price, p.quantity, p.discount),
+            ))
+        await db.flush()
+        data.pop("order_parts")
+
+    if "status" in data and data["status"] is not None and hasattr(data["status"], "value"):
+        data["status"] = data["status"].value
+    for k, v in data.items():
+        setattr(order, k, v)
+
+    works_total = (
+        await db.execute(
+            text("SELECT COALESCE(SUM(total), 0) FROM app.order_works WHERE order_id = :oid"),
+            {"oid": order.id},
+        )
+    ).scalar() or Decimal(0)
+    parts_total = (
+        await db.execute(
+            text("SELECT COALESCE(SUM(total), 0) FROM app.order_parts WHERE order_id = :oid"),
+            {"oid": order.id},
+        )
+    ).scalar() or Decimal(0)
+    order.total_amount = Decimal(works_total) + Decimal(parts_total)
+
+    await db.flush()
+    await db.refresh(order)
+    return await _serialize_order(db, order, claims, detail=False)
+
+
+@router.post("/{order_id}/cancel", response_model=OrderSchema, responses={**_write, **_404})
+async def cancel_order(
+    order_id: int,
+    db: AsyncSession = Depends(get_tenant_db),
+    claims: TenantClaims = Depends(require_manager_or_admin),
+):
+    order = await db.get(Order, (claims.tenant_id, order_id))
+    if order is None:
+        raise NotFoundException("Заказ-наряд не найден")
+    order.status = OrderStatus.CANCELLED.value
+    await db.flush()
+    await db.refresh(order)
+    return await _serialize_order(db, order, claims, detail=False)
+
+
+@router.post("/{order_id}/complete", response_model=OrderSchema, responses={**_write, **_404})
+async def complete_order(
+    order_id: int,
+    db: AsyncSession = Depends(get_tenant_db),
+    claims: TenantClaims = Depends(require_manager_or_admin),
+):
+    _resolve_employee_id(claims)
+    order = await db.get(Order, (claims.tenant_id, order_id))
+    if order is None:
+        raise NotFoundException("Заказ-наряд не найден")
+    order.status = OrderStatus.COMPLETED.value
+    order.completed_at = datetime.now(timezone.utc)
+    await db.flush()
+    await db.refresh(order)
+    return await _serialize_order(db, order, claims, detail=False)
 
 
 @router.delete(
     "/{order_id}",
     status_code=status.HTTP_204_NO_CONTENT,
-    summary="Удалить заказ-наряд",
-    description=(
-        "Полное удаление заказ-наряда вместе с платежами, работами и запчастями. "
-        "Связанные записи (appointments) отвязываются. Только администратор."
-    ),
     responses={**_admin, **_404},
 )
-def delete_order(
+async def delete_order(
     order_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
-):
-    if current_user.role != UserRole.ADMIN:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Только администратор может удалять заказы")
-
-    order = db.query(Order).filter(Order.id == order_id).first()
-    if not order:
+    db: AsyncSession = Depends(get_tenant_db),
+    claims: TenantClaims = Depends(require_admin),
+) -> Response:
+    order = await db.get(Order, (claims.tenant_id, order_id))
+    if order is None:
         raise NotFoundException("Заказ-наряд не найден")
-
-    db.query(Payment).filter(Payment.order_id == order_id).delete()
-    from app.models.appointment import Appointment
-    db.query(Appointment).filter(Appointment.order_id == order_id).update({Appointment.order_id: None})
-    db.delete(order)
-    db.commit()
-    return None
-
-
-@router.post(
-    "/{order_id}/cancel",
-    response_model=OrderSchema,
-    status_code=status.HTTP_200_OK,
-    summary="Отменить заказ-наряд",
-    description="Установка статуса CANCELLED. Доступно менеджеру и администратору.",
-    responses={**_write, **_404},
-)
-def cancel_order(
-    order_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(require_manager_or_admin),
-):
-    order = db.query(Order).filter(Order.id == order_id).first()
-    if not order:
-        raise NotFoundException("Заказ-наряд не найден")
-
-    order.status = OrderStatus.CANCELLED
-    db.commit()
-    db.refresh(order)
-    return order
-
-
-@router.get(
-    "/{order_id}/payments",
-    response_model=List[PaymentSchema],
-    status_code=status.HTTP_200_OK,
-    summary="Платежи по заказу",
-    description="Возвращает список всех платежей по заказ-наряду.",
-    responses={**_write, **_404},
-)
-def list_order_payments(
-    order_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(require_manager_or_admin),
-):
-    payments = get_payments_for_order(db, order_id)
-    return payments
-
-
-@router.post(
-    "/{order_id}/payments",
-    response_model=OrderDetail,
-    status_code=status.HTTP_201_CREATED,
-    summary="Создать оплату",
-    description=(
-        "Создание ручной оплаты по заказ-наряду (наличные, карта и т.п.). "
-        "`order_id` в теле запроса должен совпадать с параметром пути."
-    ),
-    responses={
-        **_write,
-        400: {"model": ErrorResponse, "description": "Несовпадение order_id"},
-        **_404,
-    },
-)
-def create_order_payment(
-    order_id: int,
-    payment_create: PaymentCreate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(require_manager_or_admin),
-):
-    if payment_create.order_id != order_id:
-        raise BadRequestException("order_id в запросе и в теле не совпадают")
-
-    order = create_manual_payment(
-        db,
-        order_id=order_id,
-        amount=payment_create.amount,
-        payment_method=payment_create.payment_method,
-    )
-    return order
-
-
-@router.post(
-    "/{order_id}/payments/{payment_id}/cancel",
-    response_model=OrderDetail,
-    status_code=status.HTTP_200_OK,
-    summary="Отменить платёж",
-    description="Полная или частичная отмена платежа. При `amount: null` — отмена всей суммы.",
-    responses={**_write, **_404},
-)
-def cancel_order_payment(
-    order_id: int,
-    payment_id: int,
-    cancel_data: PaymentCancel,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(require_manager_or_admin),
-):
-    order = cancel_payment(
-        db,
-        order_id=order_id,
-        payment_id=payment_id,
-        amount=cancel_data.amount,
-    )
-    return order
-
-
-@router.post(
-    "/{order_id}/payments/cancel-all",
-    response_model=OrderDetail,
-    status_code=status.HTTP_200_OK,
-    summary="Отменить все платежи",
-    description="Отмена всех платежей по заказ-наряду. Только администратор.",
-    responses={**_admin, **_404},
-)
-def cancel_all_order_payments(
-    order_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(require_admin),
-):
-    order = cancel_all_payments(db, order_id)
-    return order
-
-
-@router.put(
-    "/{order_id}/payments/{payment_id}",
-    response_model=PaymentSchema,
-    status_code=status.HTTP_200_OK,
-    summary="Редактировать платёж",
-    description="Изменение суммы и способа оплаты существующего платежа. Только администратор.",
-    responses={
-        **_admin,
-        404: {"model": ErrorResponse, "description": "Заказ или платёж не найден"},
-    },
-)
-def update_order_payment(
-    order_id: int,
-    payment_id: int,
-    payment_update: PaymentCreate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(require_admin),
-):
-    order = db.query(Order).filter(Order.id == order_id).first()
-    if not order:
-        raise NotFoundException("Заказ-наряд не найден")
-
-    payment = db.query(Payment).filter(
-        Payment.id == payment_id,
-        Payment.order_id == order_id,
-    ).first()
-    if not payment:
-        raise NotFoundException("Платёж не найден")
-
-    old_method = payment.payment_method
-    payment.amount = payment_update.amount
-    payment.payment_method = payment_update.payment_method
-
-    db.flush()
-
-    # Синхронизируем кассовую транзакцию
-    from app.services.cashflow_service import adjust_order_cashflow_transaction
-    adjust_order_cashflow_transaction(
-        db,
-        order_id=order_id,
-        new_amount=payment_update.amount,
-        new_payment_method=payment_update.payment_method.value,
-        payment_id=payment_id,
-    )
-
-    # Пересчитываем paid_amount и статус заказа
-    from app.services.payment_service import recalc_order_paid_amount, _recalc_order_total_amount, _update_order_status_after_payment_change
-    _recalc_order_total_amount(order)
-    recalc_order_paid_amount(db, order)
-    _update_order_status_after_payment_change(order)
-
-    db.commit()
-    db.refresh(payment)
-
-    return payment
-
-
-@router.get(
-    "/{order_id}/print",
-    status_code=status.HTTP_200_OK,
-    summary="PDF заказ-наряда",
-    description="Генерирует и возвращает PDF-файл заказ-наряда.",
-    responses={**_auth, **_404},
-)
-def print_order(
-    order_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
-):
-    pdf_bytes = generate_order_pdf(db, order_id)
-    return Response(
-        content=pdf_bytes,
-        media_type="application/pdf",
-        headers={"Content-Disposition": f"inline; filename=order-{order_id}.pdf"},
-    )
-
-
-@router.get(
-    "/{order_id}/print-act",
-    status_code=status.HTTP_200_OK,
-    summary="PDF акта выполненных работ",
-    description="Генерирует и возвращает PDF-файл акта выполненных работ.",
-    responses={**_auth, **_404},
-)
-def print_act(
-    order_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
-):
-    pdf_bytes = generate_act_pdf(db, order_id)
-    return Response(
-        content=pdf_bytes,
-        media_type="application/pdf",
-        headers={"Content-Disposition": f"inline; filename=act-{order_id}.pdf"},
-    )
+    await db.execute(delete(Payment).where(Payment.order_id == order_id))
+    await db.delete(order)
+    await db.flush()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

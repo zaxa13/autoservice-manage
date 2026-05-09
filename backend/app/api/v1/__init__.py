@@ -1,11 +1,13 @@
-"""API v1 router. Phase 3 wave 0+1+2 — подключены 11 роутеров."""
+"""API v1 router. Phase 3 wave 0+1+2+3a — 13 роутеров."""
 from fastapi import APIRouter
 
 from app.api.v1 import (
     appointment_posts,
+    appointments,
     auth_me,
     customers,
     employees,
+    orders,
     parts,
     settings_api,
     suppliers,
@@ -32,3 +34,5 @@ api_router.include_router(vehicles.router, prefix="/vehicles", tags=["Транс
 api_router.include_router(
     appointment_posts.router, prefix="/appointment-posts", tags=["Посты"]
 )
+api_router.include_router(orders.router, prefix="/orders", tags=["Заказ-наряды"])
+api_router.include_router(appointments.router, prefix="/appointments", tags=["Записи"])

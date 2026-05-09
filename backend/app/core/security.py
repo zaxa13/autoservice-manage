@@ -82,6 +82,9 @@ class TenantClaims(BaseModel):
     tenant_id: uuid.UUID
     owner_id: uuid.UUID | None = None
     user_id: int | None = None
+    # employee_id — id связанного сотрудника в `app.employees`. Нужно для
+    # роутов, которые принимают заказ-наряды от имени конкретного сотрудника.
+    employee_id: int | None = None
     sub: str | None = None
     roles: list[str] = Field(default_factory=list)
 
