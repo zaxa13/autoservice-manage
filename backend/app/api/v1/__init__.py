@@ -19,6 +19,7 @@ from app.api.v1 import (
     users,
     vehicle_brands,
     vehicles,
+    warehouse,
     works,
 )
 
@@ -42,3 +43,4 @@ api_router.include_router(
 api_router.include_router(orders.router, prefix="/orders", tags=["Заказ-наряды"])
 api_router.include_router(appointments.router, prefix="/appointments", tags=["Записи"])
 api_router.include_router(cashflow.router, prefix="/cashflow", tags=["Касса"])
+api_router.include_router(warehouse.router, prefix="/warehouse", tags=["Склад"])
