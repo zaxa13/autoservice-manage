@@ -1,14 +1,16 @@
 """Заказ-наряды — async CRUD на shared-DB.
 
-В Wave 3a:
-- list / get / create / update (с заменой order_works/order_parts) /
-  cancel / complete / delete (admin)
+Wave 3a + 4c:
+- list / get / create / update / cancel / complete / delete
 - статусы lookup
-- mechanic-фильтр через claims.employee_id (если присутствует)
+- mechanic-фильтр через claims.employee_id
+- payments (Wave 4c): GET /{id}/payments, POST /{id}/payments —
+  ручная оплата (наличные/карта) с авто-созданием cashflow income.
 
-НЕ в Wave 3a (отложено):
+НЕ мигрировано:
 - /print, /print-act (PDF)
-- payment-endpoints (вернутся в Wave 3b вместе с миграцией payments)
+- payment cancel/edit (отложено)
+- yookassa-эндпоинты (внешняя интеграция)
 
 Номера заказов — через `app.tenant_counters`, атомарный
 INSERT...ON CONFLICT DO NOTHING + UPDATE...RETURNING. Формат `ЗН-001`.
@@ -27,12 +29,19 @@ from app.core.exceptions import BadRequestException, NotFoundException
 from app.core.permissions import require_admin, require_manager_or_admin
 from app.core.security import TenantClaims
 from app.dependencies import get_current_claims, get_tenant_db
+from app.models.cashflow import (
+    Account,
+    CashTransaction,
+    CashflowTransactionType,
+    TransactionCategory,
+)
 from app.models.customer import Customer
 from app.models.employee import Employee
 from app.models.order import Order, OrderPart, OrderStatus, OrderWork
-from app.models.payment import Payment
+from app.models.payment import Payment, PaymentMethod, PaymentStatus
 from app.models.vehicle import Vehicle
 from app.models.vehicle_brand import VehicleBrand, VehicleModel
+from app.schemas.payment import Payment as PaymentSchema, PaymentCreate
 from app.schemas.order import (
     Order as OrderSchema,
     OrderCreate,
@@ -474,3 +483,94 @@ async def delete_order(
     await db.delete(order)
     await db.flush()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+# ---------------------------------------------------------------------------
+# Manual payments (Wave 4c)
+# ---------------------------------------------------------------------------
+@router.get(
+    "/{order_id}/payments",
+    response_model=list[PaymentSchema],
+    responses={**_write, **_404},
+)
+async def list_order_payments(
+    order_id: int,
+    db: AsyncSession = Depends(get_tenant_db),
+    claims: TenantClaims = Depends(require_manager_or_admin),
+):
+    if await db.get(Order, (claims.tenant_id, order_id)) is None:
+        raise NotFoundException("Заказ-наряд не найден")
+    rows = (await db.execute(
+        select(Payment).where(Payment.order_id == order_id).order_by(Payment.id)
+    )).scalars().all()
+    return list(rows)
+
+
+@router.post(
+    "/{order_id}/payments",
+    response_model=PaymentSchema,
+    status_code=status.HTTP_201_CREATED,
+    responses={**_write, 400: {"model": ErrorResponse}, **_404},
+)
+async def create_order_payment(
+    order_id: int,
+    body: PaymentCreate,
+    db: AsyncSession = Depends(get_tenant_db),
+    claims: TenantClaims = Depends(require_manager_or_admin),
+):
+    if body.order_id != order_id:
+        raise BadRequestException(
+            "order_id в path и в теле запроса не совпадают"
+        )
+
+    order = await db.get(Order, (claims.tenant_id, order_id))
+    if order is None:
+        raise NotFoundException("Заказ-наряд не найден")
+
+    method = body.payment_method.value if hasattr(body.payment_method, "value") else body.payment_method
+    payment = Payment(
+        tenant_id=claims.tenant_id,
+        order_id=order_id,
+        amount=body.amount,
+        payment_method=method,
+        status=PaymentStatus.SUCCEEDED.value,  # manual = моментально succeeded
+    )
+    db.add(payment)
+    await db.flush()
+
+    # Обновляем paid_amount + статус заказа.
+    new_paid = Decimal(str(order.paid_amount)) + Decimal(str(body.amount))
+    order.paid_amount = new_paid
+    if new_paid >= Decimal(str(order.total_amount)) and order.status not in (
+        OrderStatus.PAID.value, OrderStatus.COMPLETED.value, OrderStatus.CANCELLED.value
+    ):
+        order.status = OrderStatus.PAID.value
+
+    # Cashflow income — если есть активный счёт и системная категория «Оплата заказа».
+    account = (await db.execute(
+        select(Account).where(Account.is_active.is_(True)).order_by(Account.id).limit(1)
+    )).scalar_one_or_none()
+    cat = (await db.execute(
+        select(TransactionCategory).where(
+            TransactionCategory.is_system.is_(True),
+            TransactionCategory.name == "Оплата заказа",
+            TransactionCategory.transaction_type == CashflowTransactionType.INCOME.value,
+        )
+    )).scalar_one_or_none()
+    if account is not None and cat is not None:
+        db.add(CashTransaction(
+            tenant_id=claims.tenant_id,
+            transaction_type=CashflowTransactionType.INCOME.value,
+            account_id=account.id,
+            to_account_id=None,
+            category_id=cat.id,
+            amount=body.amount,
+            description=f"Оплата заказа {order.number} ({method})",
+            transaction_date=datetime.now(timezone.utc),
+            order_id=order.id,
+            payment_id=payment.id,
+        ))
+
+    await db.flush()
+    await db.refresh(payment)
+    return payment

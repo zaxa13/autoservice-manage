@@ -4,8 +4,8 @@
 relationships (composite FK создаёт нюансы — будем добавлять централизованно
 в будущем). Вместо этого — bulk-fetch связанных сущностей по ids.
 
-GET /{id}/history (история обслуживания) подключим в Wave 3 вместе с
-миграцией orders.
+История обслуживания (Wave 4c): GET /{id}/history → список заказ-нарядов
+по этому ТС, отсортированный по дате создания (новые первые).
 """
 from __future__ import annotations
 
@@ -20,8 +20,11 @@ from app.core.permissions import require_manager_or_admin
 from app.core.security import TenantClaims
 from app.dependencies import get_current_claims, get_tenant_db
 from app.models.customer import Customer
+from app.models.employee import Employee
+from app.models.order import Order, OrderPart, OrderWork
 from app.models.vehicle import Vehicle
 from app.models.vehicle_brand import VehicleBrand, VehicleModel
+from app.schemas.order import OrderDetail
 from app.schemas.responses import ErrorResponse
 from app.schemas.vehicle import (
     Vehicle as VehicleSchema,
@@ -191,6 +194,99 @@ async def search_vehicles(
     )
     vehicles = list(result.scalars().all())
     return await _serialize_many(db, vehicles)
+
+
+@router.get(
+    "/{vehicle_id}/history",
+    response_model=list[OrderDetail],
+    responses={**_auth, **_404},
+)
+async def vehicle_history(
+    vehicle_id: int,
+    db: AsyncSession = Depends(get_tenant_db),
+    claims: TenantClaims = Depends(get_current_claims),
+):
+    """История обслуживания: все заказ-наряды этого ТС, новые первые."""
+    vehicle = await db.get(Vehicle, (claims.tenant_id, vehicle_id))
+    if vehicle is None:
+        raise NotFoundException("Транспортное средство не найдено")
+
+    orders = (
+        await db.execute(
+            select(Order)
+            .where(Order.vehicle_id == vehicle_id)
+            .order_by(Order.created_at.desc())
+        )
+    ).scalars().all()
+    if not orders:
+        return []
+
+    # Vehicle с customer/brand/model — единожды.
+    customer = await db.get(Customer, (claims.tenant_id, vehicle.customer_id))
+    brand = await db.get(VehicleBrand, (claims.tenant_id, vehicle.brand_id))
+    model = await db.get(VehicleModel, (claims.tenant_id, vehicle.model_id))
+    vehicle_dict = _vehicle_dict(vehicle, customer, brand, model)
+
+    # Сотрудники (employees + mechanics).
+    emp_ids = {o.employee_id for o in orders} | {
+        o.mechanic_id for o in orders if o.mechanic_id
+    }
+    emp_map: dict[int, Employee] = {}
+    if emp_ids:
+        emp_map = {
+            e.id: e
+            for e in (
+                await db.execute(select(Employee).where(Employee.id.in_(emp_ids)))
+            ).scalars()
+        }
+
+    # order_works / order_parts — bulk.
+    order_ids = [o.id for o in orders]
+    works_rows = (
+        await db.execute(
+            select(OrderWork).where(OrderWork.order_id.in_(order_ids)).order_by(OrderWork.id)
+        )
+    ).scalars().all()
+    parts_rows = (
+        await db.execute(
+            select(OrderPart).where(OrderPart.order_id.in_(order_ids)).order_by(OrderPart.id)
+        )
+    ).scalars().all()
+    works_by_order: dict[int, list] = {}
+    for w in works_rows:
+        works_by_order.setdefault(w.order_id, []).append({
+            "id": w.id, "order_id": w.order_id, "work_id": w.work_id,
+            "work_name": w.work_name, "mechanic_id": w.mechanic_id,
+            "quantity": w.quantity, "price": w.price,
+            "discount": w.discount, "total": w.total,
+            "work": None, "mechanic": None,
+        })
+    parts_by_order: dict[int, list] = {}
+    for p in parts_rows:
+        parts_by_order.setdefault(p.order_id, []).append({
+            "id": p.id, "order_id": p.order_id, "part_id": p.part_id,
+            "part_name": p.part_name, "article": p.article,
+            "quantity": p.quantity, "price": p.price,
+            "discount": p.discount, "total": p.total, "part": None,
+        })
+
+    return [
+        {
+            "id": o.id, "number": o.number,
+            "vehicle_id": o.vehicle_id, "employee_id": o.employee_id,
+            "mechanic_id": o.mechanic_id, "status": o.status,
+            "total_amount": o.total_amount, "paid_amount": o.paid_amount,
+            "created_at": o.created_at, "completed_at": o.completed_at,
+            "vehicle": vehicle_dict,
+            "employee": emp_map.get(o.employee_id),
+            "mechanic": emp_map.get(o.mechanic_id) if o.mechanic_id else None,
+            "recommendations": o.recommendations,
+            "comments": o.comments,
+            "order_works": works_by_order.get(o.id, []),
+            "order_parts": parts_by_order.get(o.id, []),
+        }
+        for o in orders
+    ]
 
 
 @router.get("/{vehicle_id}", response_model=VehicleSchema, responses={**_auth, **_404})
