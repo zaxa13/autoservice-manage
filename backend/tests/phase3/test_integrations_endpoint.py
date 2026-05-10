@@ -122,7 +122,7 @@ async def test_supplier_order_success(client):
         "/api/v1/integrations/suppliers/order",
         json={
             "supplier_id": "ext-supplier-1",
-            "items": [{"part_number": "FIL-001", "quantity": 5}],
+            "parts": [{"part_number": "FIL-001", "quantity": 5}],
         },
         headers={"Authorization": f"Bearer {token}"},
     )

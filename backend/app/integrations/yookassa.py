@@ -38,7 +38,9 @@ async def create_yookassa_payment(
     headers = {
         "Authorization": f"Basic {settings.YOOKASSA_SECRET_KEY}",
         "Content-Type": "application/json",
-        "Idempotence-Key": f"order_{tenant_id}_{order.id}_{order.number}",
+        # Idempotence-Key должен быть ASCII — order.number содержит кириллицу,
+        # поэтому опускаем его и используем только UUID тенанта + id.
+        "Idempotence-Key": f"order_{tenant_id}_{order.id}",
     }
     payload = {
         "amount": {"value": str(body.amount), "currency": "RUB"},
