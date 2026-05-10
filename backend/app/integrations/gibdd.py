@@ -1,50 +1,41 @@
+"""ГИБДД integration — async."""
+from __future__ import annotations
+
+import uuid
+
 import httpx
-import json
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.config import settings
-from app.models.integration import IntegrationLog, IntegrationType
+from app.integrations._helpers import log_integration, make_async_client
+from app.models.integration import IntegrationType
 
 
-def check_vehicle_gibdd(db: Session, vin: str) -> dict:
-    """Проверка транспортного средства в базе ГИБДД"""
+async def check_vehicle_gibdd(
+    db: AsyncSession, *, tenant_id: uuid.UUID, vin: str
+) -> dict:
+    """Проверка ТС в ГИБДД. Возвращает либо raw результат API,
+    либо `{"error": "..."}` при ошибке."""
     url = f"{settings.GIBDD_API_URL}/vehicle/check"
-    
     headers = {
         "Authorization": f"Bearer {settings.GIBDD_API_KEY}",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
     }
-    
-    payload = {
-        "vin": vin
-    }
-    
+    payload = {"vin": vin}
+
     try:
-        with httpx.Client() as client:
-            response = client.post(url, headers=headers, json=payload, timeout=10.0)
+        async with make_async_client() as client:
+            response = await client.post(url, headers=headers, json=payload)
             response.raise_for_status()
             result = response.json()
-        
-        # Логирование
-        log = IntegrationLog(
-            integration_type=IntegrationType.GIBDD,
-            status="success",
-            request_data=json.dumps(payload),
-            response_data=json.dumps(result)
+        await log_integration(
+            db, tenant_id=tenant_id, integration_type=IntegrationType.GIBDD,
+            status="success", request_data=payload, response_data=result,
         )
-        db.add(log)
-        db.commit()
-        
         return result
-    
-    except Exception as e:
-        # Логирование ошибки
-        log = IntegrationLog(
-            integration_type=IntegrationType.GIBDD,
-            status="error",
-            request_data=json.dumps(payload),
-            response_data=str(e)
+    except httpx.HTTPError as e:
+        await log_integration(
+            db, tenant_id=tenant_id, integration_type=IntegrationType.GIBDD,
+            status="error", request_data=payload, response_data=str(e),
         )
-        db.add(log)
-        db.commit()
         return {"error": str(e)}
-

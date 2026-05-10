@@ -1,8 +1,4 @@
-"""API v1 router. Phase 3 wave 0+1+2+3a+3b — 14 роутеров.
-
-Не подключены до Wave 4: warehouse, salary, dashboard, reports, integrations,
-payments (ЮКасса).
-"""
+"""API v1 router. Phase 3 — все 17 роутеров на shared-DB."""
 from fastapi import APIRouter
 
 from app.api.v1 import (
@@ -13,13 +9,15 @@ from app.api.v1 import (
     customers,
     dashboard,
     employees,
+    integrations,
     orders,
     parts,
+    payments,
     reports,
+    salary,
     settings_api,
     suppliers,
     users,
-    salary,
     vehicle_brands,
     vehicles,
     warehouse,
@@ -50,3 +48,5 @@ api_router.include_router(warehouse.router, prefix="/warehouse", tags=["Скла
 api_router.include_router(salary.router, prefix="/salary", tags=["Зарплата"])
 api_router.include_router(dashboard.router, prefix="/dashboard", tags=["Дашборд"])
 api_router.include_router(reports.router, prefix="/reports", tags=["Отчёты"])
+api_router.include_router(integrations.router, prefix="/integrations", tags=["Интеграции"])
+api_router.include_router(payments.router, prefix="/payments", tags=["Платежи (ЮКасса)"])

@@ -1,90 +1,64 @@
+"""Поиск/заказ запчастей у внешних поставщиков — async."""
+from __future__ import annotations
+
+import uuid
+
 import httpx
-import json
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.config import settings
-from app.models.integration import IntegrationLog, IntegrationType
+from app.integrations._helpers import log_integration, make_async_client
+from app.models.integration import IntegrationType
 
 
-def search_parts(db: Session, query: str) -> dict:
-    """Поиск запчастей у поставщиков"""
+async def search_parts(
+    db: AsyncSession, *, tenant_id: uuid.UUID, query: str
+) -> dict:
     url = f"{settings.PARTS_SUPPLIER_API_URL}/search"
-    
     headers = {
         "Authorization": f"Bearer {settings.PARTS_SUPPLIER_API_KEY}",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
     }
-    
-    params = {
-        "query": query
-    }
-    
+    params = {"query": query}
     try:
-        with httpx.Client() as client:
-            response = client.get(url, headers=headers, params=params, timeout=10.0)
+        async with make_async_client() as client:
+            response = await client.get(url, headers=headers, params=params)
             response.raise_for_status()
             result = response.json()
-        
-        # Логирование
-        log = IntegrationLog(
-            integration_type=IntegrationType.PARTS_SUPPLIER,
-            status="success",
-            request_data=json.dumps(params),
-            response_data=json.dumps(result)
+        await log_integration(
+            db, tenant_id=tenant_id, integration_type=IntegrationType.PARTS_SUPPLIER,
+            status="success", request_data=params, response_data=result,
         )
-        db.add(log)
-        db.commit()
-        
         return result
-    
-    except Exception as e:
-        # Логирование ошибки
-        log = IntegrationLog(
-            integration_type=IntegrationType.PARTS_SUPPLIER,
-            status="error",
-            request_data=json.dumps(params),
-            response_data=str(e)
+    except httpx.HTTPError as e:
+        await log_integration(
+            db, tenant_id=tenant_id, integration_type=IntegrationType.PARTS_SUPPLIER,
+            status="error", request_data=params, response_data=str(e),
         )
-        db.add(log)
-        db.commit()
         return {"error": str(e), "results": []}
 
 
-def create_supplier_order(db: Session, order_data: dict) -> dict:
-    """Создание заказа у поставщика"""
+async def create_supplier_order(
+    db: AsyncSession, *, tenant_id: uuid.UUID, order_data: dict
+) -> dict:
     url = f"{settings.PARTS_SUPPLIER_API_URL}/orders"
-    
     headers = {
         "Authorization": f"Bearer {settings.PARTS_SUPPLIER_API_KEY}",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
     }
-    
     try:
-        with httpx.Client() as client:
-            response = client.post(url, headers=headers, json=order_data, timeout=10.0)
+        async with make_async_client() as client:
+            response = await client.post(url, headers=headers, json=order_data)
             response.raise_for_status()
             result = response.json()
-        
-        # Логирование
-        log = IntegrationLog(
-            integration_type=IntegrationType.PARTS_SUPPLIER,
-            status="success",
-            request_data=json.dumps(order_data),
-            response_data=json.dumps(result)
+        await log_integration(
+            db, tenant_id=tenant_id, integration_type=IntegrationType.PARTS_SUPPLIER,
+            status="success", request_data=order_data, response_data=result,
         )
-        db.add(log)
-        db.commit()
-        
         return result
-    
-    except Exception as e:
-        # Логирование ошибки
-        log = IntegrationLog(
-            integration_type=IntegrationType.PARTS_SUPPLIER,
-            status="error",
-            request_data=json.dumps(order_data),
-            response_data=str(e)
+    except httpx.HTTPError as e:
+        await log_integration(
+            db, tenant_id=tenant_id, integration_type=IntegrationType.PARTS_SUPPLIER,
+            status="error", request_data=order_data, response_data=str(e),
         )
-        db.add(log)
-        db.commit()
         return {"error": str(e)}
-
