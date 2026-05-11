@@ -12,6 +12,7 @@ asyncpg==0.29.0
 # Аутентификация и безопасность
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
+bcrypt==4.0.1
 python-decouple==3.8
 
 # Валидация

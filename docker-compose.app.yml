@@ -1,0 +1,62 @@
+# Phase 7: tenant-app production compose.
+#
+# Подключается к существующему shared-DB стеку (postgres + pgbouncer),
+# поднятому из autoservice-platform/docker-compose.shared-db.yml.
+#
+# External network: sharedb-test_default — sandbox network из Phase 1.
+# Для прода можно переименовать на autoworks_default — переключить
+# в --project-name autoworks при `compose up -d` shared-DB compose.
+#
+# Запуск (на сервере):
+#   cd ~/autoservice-manage
+#   cp .env.app.example .env.app
+#   $EDITOR .env.app              # заполнить пароли и SECRET_KEY
+#   docker compose -f docker-compose.app.yml --env-file .env.app up -d --build
+#
+# Проверки:
+#   curl http://127.0.0.1:8002/health        # {"status":"ok"}
+#   curl http://127.0.0.1:8002/openapi.json  # 200
+
+services:
+  tenant-app:
+    build: ./backend
+    container_name: autoworks-tenant-app
+    environment:
+      # Рантайм — под tenant_app, через pgbouncer transaction-pool.
+      DATABASE_URL: ${DATABASE_URL}
+      # Alembic — под migrator_app, через pgbouncer session-pool.
+      DATABASE_URL_MIGRATOR: ${DATABASE_URL_MIGRATOR}
+      # JWT-секрет общий с platform-api (токен выпускает platform,
+      # tenant-app только валидирует тем же секретом).
+      SECRET_KEY: ${SECRET_KEY}
+      ALGORITHM: ${ALGORITHM:-HS256}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-1440}
+      # YooKassa — для эндпоинтов /api/v1/payments/yookassa/*.
+      YOOKASSA_SHOP_ID: ${YOOKASSA_SHOP_ID:-}
+      YOOKASSA_SECRET_KEY: ${YOOKASSA_SECRET_KEY:-}
+      # GIBDD / Parts suppliers (если используются).
+      GIBDD_API_URL: ${GIBDD_API_URL:-}
+      GIBDD_API_KEY: ${GIBDD_API_KEY:-}
+      PARTS_SUPPLIER_API_URL: ${PARTS_SUPPLIER_API_URL:-}
+      PARTS_SUPPLIER_API_KEY: ${PARTS_SUPPLIER_API_KEY:-}
+      # SMTP (опционально — для будущих email-фич tenant-app).
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      EMAIL_FROM: ${EMAIL_FROM:-}
+      # Frontend URL для ссылок (если будут отправляться через email).
+      FRONTEND_URL: ${APP_BASE_URL:-https://app.auto-works.pro}
+      DEBUG: ${DEBUG:-false}
+      ENVIRONMENT: ${ENVIRONMENT:-production}
+    ports:
+      # Только localhost — nginx на хосте проксирует app.auto-works.pro → :8002.
+      - "127.0.0.1:8002:8000"
+    networks:
+      - shared_db
+    restart: unless-stopped
+
+networks:
+  shared_db:
+    name: sharedb-test_default
+    external: true
