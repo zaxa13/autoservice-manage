@@ -4,7 +4,7 @@ from fastapi import APIRouter
 from app.api.v1 import (
     appointment_posts,
     appointments,
-    auth_me,
+    auth,
     cashflow,
     customers,
     dashboard,
@@ -26,7 +26,7 @@ from app.api.v1 import (
 
 api_router = APIRouter()
 
-api_router.include_router(auth_me.router, prefix="/auth", tags=["Auth"])
+api_router.include_router(auth.router, prefix="/auth", tags=["Auth"])
 api_router.include_router(customers.router, prefix="/customers", tags=["Клиенты"])
 api_router.include_router(works.router, prefix="/works", tags=["Виды работ"])
 api_router.include_router(parts.router, prefix="/parts", tags=["Запчасти"])

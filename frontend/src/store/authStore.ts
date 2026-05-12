@@ -7,12 +7,16 @@ function getStoredToken(): string | null {
   return localStorage.getItem('access_token')
 }
 
-/** Декодирует JWT payload без проверки подписи (только клиентская сторона) */
+/** Декодирует JWT payload без проверки подписи (только клиентская сторона).
+ * В shared-DB архитектуре роль приходит в claim `roles: string[]`. */
 export function getRoleFromToken(): string | null {
   try {
     const token = getStoredToken()
     if (!token) return null
     const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')))
+    if (Array.isArray(payload?.roles) && payload.roles.length > 0) {
+      return payload.roles[0]
+    }
     return payload?.role ?? null
   } catch {
     return null
@@ -22,7 +26,7 @@ export function getRoleFromToken(): string | null {
 interface AuthState {
   user: User | null
   isAuthenticated: boolean
-  login: (username: string, password: string) => Promise<void>
+  login: (email: string, password: string) => Promise<void>
   logout: () => void
   setUser: (user: User) => void
   loadUser: () => Promise<void>
@@ -33,16 +37,8 @@ export const useAuthStore = create<AuthState>((set) => ({
   // При открытии новой вкладки или рефреше восстанавливаем сессию из localStorage
   isAuthenticated: !!getStoredToken(),
 
-  login: async (username: string, password: string) => {
-    const params = new URLSearchParams()
-    params.append('username', username)
-    params.append('password', password)
-
-    const response = await api.post('/auth/login', params.toString(), {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-    })
+  login: async (email: string, password: string) => {
+    const response = await api.post('/auth/login', { email, password })
 
     if (!response.data?.access_token) {
       throw new Error('Неверный формат ответа от сервера')

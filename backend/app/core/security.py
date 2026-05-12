@@ -106,6 +106,32 @@ class InvalidTokenError(Exception):
     отсутствующие/невалидные claims."""
 
 
+def create_tenant_token(
+    *,
+    tenant_id: uuid.UUID,
+    user_id: int,
+    role: str,
+    sub: str,
+    expires_delta: Optional[timedelta] = None,
+) -> str:
+    """Выпускает JWT с TenantClaims-совместимой нагрузкой.
+
+    Используется login-эндпоинтом tenant-app после успешной аутентификации
+    через `app.lookup_user_for_login`.
+    """
+    expire = datetime.utcnow() + (
+        expires_delta or timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    )
+    payload = {
+        "sub": sub,
+        "tenant_id": str(tenant_id),
+        "user_id": user_id,
+        "roles": [role],
+        "exp": expire,
+    }
+    return jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+
+
 def decode_tenant_token(token: str) -> TenantClaims:
     """Декодирует и валидирует токен. Поднимает `InvalidTokenError`."""
     try:

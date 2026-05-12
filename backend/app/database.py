@@ -52,6 +52,20 @@ _session_factory = async_sessionmaker(
 
 
 @asynccontextmanager
+async def auth_session() -> AsyncIterator[AsyncSession]:
+    """Async-сессия без RLS-контекста (`app.tenant_id` не выставлен).
+
+    Нужна **только** для login-эндпоинта, где tenant_id ещё неизвестен и
+    мы зовём SECURITY DEFINER функцию `app.lookup_user_for_login(email)`
+    — она сама обходит RLS внутри. Любые прямые SELECT по `app.*` через
+    эту сессию упрутся в RLS (`tenant_id IS NULL` policy fail-closed).
+    """
+    async with _session_factory() as session:
+        async with session.begin():
+            yield session
+
+
+@asynccontextmanager
 async def tenant_session(tenant_id: UUID) -> AsyncIterator[AsyncSession]:
     """Открывает async-сессию с RLS-контекстом для tenant_id.
 

@@ -1,11 +1,13 @@
-"""Smoke-тест: tenant-app FastAPI поднимается без ошибок и отвечает на /health."""
+"""Smoke-тест: tenant-app FastAPI поднимается без ошибок и отвечает на /health.
+
+`/auth/me` теперь возвращает профиль из app.users (а не сырые claims) —
+поведение покрыто в `test_auth_login.py`.
+"""
 from __future__ import annotations
 
 import httpx
 import pytest
 import pytest_asyncio
-
-from .conftest import TENANT_ALPHA, make_token
 
 
 pytestmark = pytest.mark.asyncio
@@ -35,23 +37,10 @@ async def test_openapi_renders(client):
     assert r.status_code == 200
     spec = r.json()
     paths = spec["paths"]
-    # Подключены только мигрированные роуты в Phase 3.
     assert "/health" in paths
+    assert "/api/v1/auth/login" in paths
     assert "/api/v1/auth/me" in paths
     assert "/api/v1/customers/" in paths
-
-
-async def test_auth_me_returns_claims(client):
-    token = make_token(tenant_id=TENANT_ALPHA, roles=["admin"], user_id=1)
-    r = await client.get(
-        "/api/v1/auth/me",
-        headers={"Authorization": f"Bearer {token}"},
-    )
-    assert r.status_code == 200
-    body = r.json()
-    assert body["tenant_id"] == str(TENANT_ALPHA)
-    assert body["roles"] == ["admin"]
-    assert body["user_id"] == 1
 
 
 async def test_auth_me_without_token_returns_401(client):

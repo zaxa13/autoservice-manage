@@ -46,9 +46,14 @@ class User(Base, TenantMixin):
 
     __table_args__ = (
         PrimaryKeyConstraint("tenant_id", "id"),
-        # Логин и email уникальны в рамках тенанта.
+        # Username уникален внутри тенанта (логины типа "admin", "manager"
+        # могут пересекаться между разными tenant'ами).
         UniqueConstraint("tenant_id", "username", name="uq_users_tenant_username"),
-        UniqueConstraint("tenant_id", "email", name="uq_users_tenant_email"),
+        # Email — глобально уникальный. Используется как identity для login
+        # на app.auto-works.pro (см. функцию `app.lookup_user_for_login`):
+        # форма принимает email+password, без tenant_id, поэтому пара
+        # (email, tenant) была бы неоднозначной.
+        UniqueConstraint("email", name="uq_users_email_global"),
         # Один user максимум на одного employee внутри тенанта.
         UniqueConstraint("tenant_id", "employee_id", name="uq_users_tenant_employee"),
         ForeignKeyConstraint(

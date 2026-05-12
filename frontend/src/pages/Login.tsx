@@ -34,7 +34,7 @@ function BrandDecor() {
 }
 
 export default function Login() {
-  const [username, setUsername] = useState('')
+  const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
   const [error, setError]       = useState('')
   const [loading, setLoading]   = useState(false)
@@ -50,7 +50,7 @@ export default function Login() {
     setError('')
     setLoading(true)
     try {
-      await loginUser(username, password)
+      await loginUser(email, password)
     } catch (err: unknown) {
       const msg = err instanceof Error
         ? err.message
@@ -192,22 +192,23 @@ export default function Login() {
           </Box>
 
           <form onSubmit={handleSubmit}>
-            {/* Username */}
+            {/* Email */}
             <Box sx={{ mb: 2.5, animation: 'fadeUp 0.45s cubic-bezier(0.16,1,0.3,1) 0.1s both' }}>
               <Typography sx={{
                 display: 'block', mb: 0.75, fontWeight: 600,
                 fontSize: '0.775rem', color: PALETTE.slate[700],
                 letterSpacing: '0.02em',
               }}>
-                Имя пользователя
+                Email
               </Typography>
               <TextField
                 fullWidth
-                placeholder="Введите логин"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
-                autoComplete="username"
+                autoComplete="email"
                 size="medium"
                 InputProps={{
                   startAdornment: (

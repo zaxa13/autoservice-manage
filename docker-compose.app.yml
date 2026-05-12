@@ -50,10 +50,21 @@ services:
       DEBUG: ${DEBUG:-false}
       ENVIRONMENT: ${ENVIRONMENT:-production}
     ports:
-      # Только localhost — nginx на хосте проксирует app.auto-works.pro → :8002.
+      # Только localhost — nginx на хосте проксирует /api,/docs,/openapi.json,
+      # /health на :8002.
       - "127.0.0.1:8002:8000"
     networks:
       - shared_db
+    restart: unless-stopped
+
+  tenant-frontend:
+    # SPA management-приложения. Vite build → nginx-static (см. frontend/Dockerfile).
+    # Host nginx сам разруливает: /api,/docs,/openapi.json,/health → backend :8002,
+    # остальное (SPA routes) → frontend :8003. Поэтому здесь не пробрасываем /api.
+    build: ./frontend
+    container_name: autoworks-tenant-frontend
+    ports:
+      - "127.0.0.1:8003:80"
     restart: unless-stopped
 
 networks:
