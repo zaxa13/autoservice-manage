@@ -60,11 +60,12 @@ services:
   tenant-frontend:
     # SPA management-приложения. Vite build → nginx-static (см. frontend/Dockerfile).
     # Host nginx сам разруливает: /api,/docs,/openapi.json,/health → backend :8002,
-    # остальное (SPA routes) → frontend :8003. Поэтому здесь не пробрасываем /api.
+    # остальное (SPA routes) → frontend :8004. Поэтому здесь не пробрасываем /api.
+    # Порт 8003 на сервере занят другим проектом (analytics-app-test).
     build: ./frontend
     container_name: autoworks-tenant-frontend
     ports:
-      - "127.0.0.1:8003:80"
+      - "127.0.0.1:8004:80"
     restart: unless-stopped
 
 networks:
