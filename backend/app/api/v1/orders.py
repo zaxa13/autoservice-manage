@@ -202,8 +202,8 @@ async def _serialize_order(
     v = await db.get(Vehicle, (claims.tenant_id, order.vehicle_id))
     if v is not None:
         cust = await db.get(Customer, (claims.tenant_id, v.customer_id))
-        brand = await db.get(VehicleBrand, (claims.tenant_id, v.brand_id))
-        model = await db.get(VehicleModel, (claims.tenant_id, v.model_id))
+        brand = await db.get(VehicleBrand, v.brand_id)
+        model = await db.get(VehicleModel, v.model_id)
         vehicle_dict = _vehicle_dict(v, cust, brand, model)
 
     mechanic = None

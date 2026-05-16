@@ -60,8 +60,8 @@ async def _serialize_one(
     db: AsyncSession, v: Vehicle, claims: TenantClaims
 ) -> dict:
     customer = await db.get(Customer, (claims.tenant_id, v.customer_id))
-    brand = await db.get(VehicleBrand, (claims.tenant_id, v.brand_id))
-    model = await db.get(VehicleModel, (claims.tenant_id, v.model_id))
+    brand = await db.get(VehicleBrand, v.brand_id)
+    model = await db.get(VehicleModel, v.model_id)
     return _vehicle_dict(v, customer, brand, model)
 
 
@@ -223,8 +223,8 @@ async def vehicle_history(
 
     # Vehicle с customer/brand/model — единожды.
     customer = await db.get(Customer, (claims.tenant_id, vehicle.customer_id))
-    brand = await db.get(VehicleBrand, (claims.tenant_id, vehicle.brand_id))
-    model = await db.get(VehicleModel, (claims.tenant_id, vehicle.model_id))
+    brand = await db.get(VehicleBrand, vehicle.brand_id)
+    model = await db.get(VehicleModel, vehicle.model_id)
     vehicle_dict = _vehicle_dict(vehicle, customer, brand, model)
 
     # Сотрудники (employees + mechanics).
@@ -319,10 +319,10 @@ async def create_vehicle(
     customer = await db.get(Customer, (claims.tenant_id, body.customer_id))
     if customer is None:
         raise NotFoundException("Клиент не найден")
-    brand = await db.get(VehicleBrand, (claims.tenant_id, body.brand_id))
+    brand = await db.get(VehicleBrand, body.brand_id)
     if brand is None:
         raise NotFoundException("Марка не найдена")
-    model = await db.get(VehicleModel, (claims.tenant_id, body.model_id))
+    model = await db.get(VehicleModel, body.model_id)
     if model is None:
         raise NotFoundException("Модель не найдена")
     if model.brand_id != brand.id:
@@ -366,10 +366,10 @@ async def update_vehicle(
     new_model_id = data.get("model_id", v.model_id)
 
     if "brand_id" in data:
-        if await db.get(VehicleBrand, (claims.tenant_id, data["brand_id"])) is None:
+        if await db.get(VehicleBrand, data["brand_id"]) is None:
             raise NotFoundException("Марка не найдена")
     if "model_id" in data:
-        model = await db.get(VehicleModel, (claims.tenant_id, data["model_id"]))
+        model = await db.get(VehicleModel, data["model_id"])
         if model is None:
             raise NotFoundException("Модель не найдена")
         if model.brand_id != new_brand_id:
@@ -379,7 +379,7 @@ async def update_vehicle(
 
     # Если сменили только brand_id, валидируем текущую model
     if "brand_id" in data and "model_id" not in data:
-        current_model = await db.get(VehicleModel, (claims.tenant_id, v.model_id))
+        current_model = await db.get(VehicleModel, v.model_id)
         if current_model is None or current_model.brand_id != new_brand_id:
             raise HTTPException(
                 status_code=400,

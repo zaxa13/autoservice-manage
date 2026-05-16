@@ -38,16 +38,12 @@ class Vehicle(Base, TenantMixin):
         # VIN уникален в рамках тенанта (если задан).
         UniqueConstraint("tenant_id", "vin", name="uq_vehicles_tenant_vin"),
         ForeignKeyConstraint(
-            ["tenant_id", "brand_id"],
-            ["vehicle_brands.tenant_id", "vehicle_brands.id"],
-            ondelete="RESTRICT",
-            name="fk_vehicles_brand",
+            ["brand_id"], ["vehicle_brands.id"],
+            ondelete="RESTRICT", name="fk_vehicles_brand",
         ),
         ForeignKeyConstraint(
-            ["tenant_id", "model_id"],
-            ["vehicle_models.tenant_id", "vehicle_models.id"],
-            ondelete="RESTRICT",
-            name="fk_vehicles_model",
+            ["model_id"], ["vehicle_models.id"],
+            ondelete="RESTRICT", name="fk_vehicles_model",
         ),
         ForeignKeyConstraint(
             ["tenant_id", "customer_id"],

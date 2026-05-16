@@ -37,8 +37,8 @@ async def _serialize(db: AsyncSession, a: Appointment, claims: TenantClaims) -> 
     if a.vehicle_id:
         v = await db.get(Vehicle, (claims.tenant_id, a.vehicle_id))
         if v is not None:
-            brand = await db.get(VehicleBrand, (claims.tenant_id, v.brand_id))
-            model = await db.get(VehicleModel, (claims.tenant_id, v.model_id))
+            brand = await db.get(VehicleBrand, v.brand_id)
+            model = await db.get(VehicleModel, v.model_id)
             vehicle_info = {
                 "id": v.id,
                 "license_plate": v.license_plate,
