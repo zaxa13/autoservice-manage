@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react'
 import {
   Box, Typography, TextField, InputAdornment, IconButton, CircularProgress,
-  Card, CardContent, Stack, Chip, Divider, Alert, Button,
+  Card, CardContent, Stack, Chip, Divider, Alert, Button, Paper,
   Dialog, DialogTitle, DialogContent, DialogActions,
   Tooltip, alpha, Collapse, MenuItem, Select, FormControl, InputLabel,
 } from '@mui/material'
@@ -18,9 +18,11 @@ import {
   CheckCircleOutlineRounded,
   EditRounded,
   SpeedRounded,
+  AddRounded,
+  ContactPhoneRounded,
 } from '@mui/icons-material'
 import api from '../services/api'
-import { Vehicle, OrderDetail, BrandRef, ModelRef } from '../types'
+import { Vehicle, OrderDetail, BrandRef, ModelRef, Customer } from '../types'
 
 const ORDER_STATUS_LABELS: Record<string, { label: string; color: 'default' | 'primary' | 'warning' | 'info' | 'success' | 'error' }> = {
   new: { label: 'Новый', color: 'default' },
@@ -466,6 +468,236 @@ function VehicleEditDialog({ vehicle, open, onClose, onSaved }: {
   )
 }
 
+// ── Vehicle create dialog ──────────────────────────────────────────────────────
+
+function VehicleCreateDialog({ open, onClose, onCreated }: {
+  open: boolean
+  onClose: () => void
+  onCreated: (vehicle: Vehicle) => void
+}) {
+  const [brands, setBrands] = useState<BrandRef[]>([])
+  const [models, setModels] = useState<ModelRef[]>([])
+  const [loadingModels, setLoadingModels] = useState(false)
+  const [vehicle, setVehicle] = useState({ brand_id: 0, model_id: 0, year: '', mileage: '', vin: '', license_plate: '' })
+  const [customer, setCustomer] = useState({ full_name: '', phone: '', email: '' })
+  const [foundCustomers, setFoundCustomers] = useState<Customer[]>([])
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null)
+  const [customerSearchAttempted, setCustomerSearchAttempted] = useState(false)
+  const [searchingCustomer, setSearchingCustomer] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+
+  React.useEffect(() => {
+    if (!open) return
+    setVehicle({ brand_id: 0, model_id: 0, year: '', mileage: '', vin: '', license_plate: '' })
+    setCustomer({ full_name: '', phone: '', email: '' })
+    setSelectedCustomer(null)
+    setFoundCustomers([])
+    setCustomerSearchAttempted(false)
+    setError('')
+    api.get('/vehicle-brands/').then((res) => setBrands(res.data.brands || []))
+  }, [open])
+
+  React.useEffect(() => {
+    if (!vehicle.brand_id) { setModels([]); return }
+    setLoadingModels(true)
+    api.post('/vehicle-brands/models', { brand_id: vehicle.brand_id })
+      .then((res) => setModels(res.data.models || []))
+      .finally(() => setLoadingModels(false))
+  }, [vehicle.brand_id])
+
+  const handleSearchCustomer = async () => {
+    if (!customer.phone || customer.phone.length < 5) return
+    setSearchingCustomer(true)
+    setCustomerSearchAttempted(true)
+    try {
+      const res = await api.get('/customers/search/by-phone', { params: { phone: customer.phone } })
+      setFoundCustomers(res.data || [])
+      if (res.data?.length === 1) setSelectedCustomer(res.data[0])
+    } catch {
+      setFoundCustomers([])
+      setSelectedCustomer(null)
+    } finally {
+      setSearchingCustomer(false)
+    }
+  }
+
+  const canSubmit = vehicle.brand_id && vehicle.model_id && (selectedCustomer || (customer.full_name && customer.phone))
+
+  const handleCreate = async () => {
+    setSaving(true)
+    setError('')
+    try {
+      let customerId = selectedCustomer?.id
+      if (!customerId) {
+        const res = await api.post('/customers/', customer)
+        customerId = res.data.id
+      }
+      const res = await api.post('/vehicles/', {
+        brand_id: vehicle.brand_id,
+        model_id: vehicle.model_id,
+        year: vehicle.year ? Number(vehicle.year) : undefined,
+        mileage: vehicle.mileage ? Number(vehicle.mileage) : 0,
+        vin: vehicle.vin || undefined,
+        license_plate: vehicle.license_plate || undefined,
+        customer_id: customerId,
+      })
+      onCreated(res.data)
+      onClose()
+    } catch (e: any) {
+      setError(e.response?.data?.detail || 'Ошибка создания')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth PaperProps={{ sx: { borderRadius: '16px' } }}>
+      <DialogTitle sx={{ pb: 1.5, borderBottom: '1px solid #F1F5F9' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <Box sx={{
+              width: 40, height: 40,
+              background: 'linear-gradient(135deg, #2DD4BF 0%, #0D9488 100%)',
+              borderRadius: '10px',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <AddRounded sx={{ color: '#fff', fontSize: 22 }} />
+            </Box>
+            <Box>
+              <Typography variant="h6" sx={{ fontWeight: 800, lineHeight: 1.2 }}>Новый автомобиль</Typography>
+              <Typography variant="caption" color="text.secondary">Автомобиль и владелец</Typography>
+            </Box>
+          </Box>
+          <IconButton onClick={onClose} size="small"><CloseRounded /></IconButton>
+        </Box>
+      </DialogTitle>
+
+      <DialogContent sx={{ pt: 2.5, bgcolor: '#F8FAFC' }}>
+        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
+          {/* ── Vehicle ── */}
+          <Box>
+            <Typography variant="overline" sx={{ color: '#64748B', fontWeight: 700, mb: 1.5, display: 'block' }}>
+              Автомобиль
+            </Typography>
+            <Stack spacing={2}>
+              <FormControl fullWidth size="small">
+                <InputLabel>Марка *</InputLabel>
+                <Select
+                  value={vehicle.brand_id || ''}
+                  label="Марка *"
+                  onChange={(e) => setVehicle((v) => ({ ...v, brand_id: Number(e.target.value), model_id: 0 }))}
+                >
+                  {brands.map((b) => <MenuItem key={b.id} value={b.id}>{b.name}</MenuItem>)}
+                </Select>
+              </FormControl>
+
+              <FormControl fullWidth size="small" disabled={!vehicle.brand_id || loadingModels}>
+                <InputLabel>Модель *</InputLabel>
+                <Select
+                  value={vehicle.model_id || ''}
+                  label="Модель *"
+                  onChange={(e) => setVehicle((v) => ({ ...v, model_id: Number(e.target.value) }))}
+                >
+                  {loadingModels
+                    ? <MenuItem disabled><CircularProgress size={18} /></MenuItem>
+                    : models.map((m) => <MenuItem key={m.id} value={m.id}>{m.name}</MenuItem>)}
+                </Select>
+              </FormControl>
+
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <TextField label="Госномер" size="small" fullWidth value={vehicle.license_plate}
+                  onChange={(e) => setVehicle((v) => ({ ...v, license_plate: e.target.value.toUpperCase() }))}
+                  InputProps={{ sx: { fontFamily: 'monospace', letterSpacing: '0.08em' } }} />
+                <TextField label="Год" size="small" type="number" fullWidth value={vehicle.year}
+                  onChange={(e) => setVehicle((v) => ({ ...v, year: e.target.value }))}
+                  inputProps={{ maxLength: 4 }} />
+              </Box>
+
+              <TextField label="VIN" size="small" fullWidth value={vehicle.vin}
+                onChange={(e) => setVehicle((v) => ({ ...v, vin: e.target.value.toUpperCase() }))}
+                InputProps={{ sx: { fontFamily: 'monospace', letterSpacing: '0.06em' } }}
+                inputProps={{ maxLength: 17 }} />
+
+              <TextField label="Пробег (км)" size="small" type="number" fullWidth value={vehicle.mileage}
+                onChange={(e) => setVehicle((v) => ({ ...v, mileage: e.target.value }))} />
+            </Stack>
+          </Box>
+
+          {/* ── Customer ── */}
+          <Box>
+            <Typography variant="overline" sx={{ color: '#64748B', fontWeight: 700, mb: 1.5, display: 'block' }}>
+              Владелец
+            </Typography>
+            <Stack spacing={2}>
+              <TextField
+                label="Телефон *"
+                size="small"
+                fullWidth
+                value={customer.phone}
+                onChange={(e) => {
+                  setCustomer((c) => ({ ...c, phone: e.target.value }))
+                  setCustomerSearchAttempted(false)
+                  setSelectedCustomer(null)
+                }}
+                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleSearchCustomer() } }}
+                InputProps={{
+                  endAdornment: (
+                    <IconButton onClick={handleSearchCustomer} disabled={searchingCustomer} size="small">
+                      {searchingCustomer ? <CircularProgress size={18} /> : <ContactPhoneRounded color="primary" />}
+                    </IconButton>
+                  ),
+                }}
+              />
+
+              {selectedCustomer ? (
+                <Paper variant="outlined" sx={{
+                  p: 1.5,
+                  bgcolor: alpha('#10B981', 0.05),
+                  borderColor: '#10B981',
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                }}>
+                  <Box>
+                    <Typography variant="body2" sx={{ fontWeight: 700 }}>{selectedCustomer.full_name}</Typography>
+                    <Typography variant="caption" color="text.secondary">Существующий клиент</Typography>
+                  </Box>
+                  <Button size="small" onClick={() => setSelectedCustomer(null)}>Другой</Button>
+                </Paper>
+              ) : (
+                <>
+                  {customerSearchAttempted && foundCustomers.length > 0 && (
+                    <Stack spacing={0.75}>
+                      <Typography variant="caption" color="text.secondary">Найдены клиенты:</Typography>
+                      {foundCustomers.map((c) => (
+                        <Button key={c.id} variant="outlined" size="small" onClick={() => setSelectedCustomer(c)}>
+                          {c.full_name} · {c.phone}
+                        </Button>
+                      ))}
+                    </Stack>
+                  )}
+                  <TextField label="ФИО *" size="small" fullWidth value={customer.full_name}
+                    onChange={(e) => setCustomer((c) => ({ ...c, full_name: e.target.value }))} />
+                  <TextField label="Email" size="small" fullWidth value={customer.email}
+                    onChange={(e) => setCustomer((c) => ({ ...c, email: e.target.value }))} />
+                </>
+              )}
+            </Stack>
+          </Box>
+        </Box>
+      </DialogContent>
+
+      <DialogActions sx={{ px: 3, pb: 2.5, gap: 1, borderTop: '1px solid #F1F5F9' }}>
+        <Button onClick={onClose} variant="outlined">Отмена</Button>
+        <Button onClick={handleCreate} variant="contained" disabled={saving || !canSubmit}>
+          {saving ? <CircularProgress size={20} color="inherit" /> : 'Создать'}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  )
+}
+
 // ── Main page ──────────────────────────────────────────────────────────────────
 
 export default function VehiclesPage() {
@@ -476,6 +708,7 @@ export default function VehiclesPage() {
   const [error, setError] = useState('')
   const [historyVehicle, setHistoryVehicle] = useState<Vehicle | null>(null)
   const [editVehicle, setEditVehicle] = useState<Vehicle | null>(null)
+  const [createOpen, setCreateOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   const handleSearch = async (q?: string) => {
@@ -521,15 +754,36 @@ export default function VehiclesPage() {
             Поиск по номеру телефона, VIN или госномеру
           </Typography>
         </Box>
-        <Box sx={{
-          width: 44, height: 44,
-          background: 'linear-gradient(135deg, #2DD4BF 0%, #0D9488 100%)',
-          borderRadius: '12px',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 4px 12px rgba(79,70,229,0.3)',
-        }}>
-          <DirectionsCarRounded sx={{ color: '#fff', fontSize: 22 }} />
-        </Box>
+        <Stack direction="row" spacing={1.5} alignItems="center">
+          <Button
+            variant="contained"
+            startIcon={<AddRounded />}
+            onClick={() => setCreateOpen(true)}
+            sx={{
+              borderRadius: '10px',
+              fontWeight: 700,
+              px: 2.5,
+              py: 1.1,
+              background: 'linear-gradient(135deg, #2DD4BF 0%, #0D9488 100%)',
+              boxShadow: '0 4px 12px rgba(13,148,136,0.25)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #14B8A6 0%, #0F766E 100%)',
+                boxShadow: '0 6px 16px rgba(13,148,136,0.35)',
+              },
+            }}
+          >
+            Новый автомобиль
+          </Button>
+          <Box sx={{
+            width: 44, height: 44,
+            background: 'linear-gradient(135deg, #2DD4BF 0%, #0D9488 100%)',
+            borderRadius: '12px',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 4px 12px rgba(79,70,229,0.3)',
+          }}>
+            <DirectionsCarRounded sx={{ color: '#fff', fontSize: 22 }} />
+          </Box>
+        </Stack>
       </Box>
 
       {/* ── Search ── */}
@@ -746,6 +1000,14 @@ export default function VehiclesPage() {
         onSaved={(updated) => {
           setResults((prev) => prev.map((v) => v.id === updated.id ? { ...v, ...updated } : v))
           setEditVehicle(null)
+        }}
+      />
+      <VehicleCreateDialog
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+        onCreated={(created) => {
+          setResults((prev) => [created, ...prev])
+          setSearched(true)
         }}
       />
     </Box>
