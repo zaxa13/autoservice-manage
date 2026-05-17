@@ -51,7 +51,7 @@ async def login(body: LoginRequest) -> TokenResponse:
         row = (
             await session.execute(
                 text(
-                    "SELECT user_id, tenant_id, password_hash, role, is_active "
+                    "SELECT user_id, tenant_id, password_hash, role, is_active, employee_id "
                     "FROM app.lookup_user_for_login(:email)"
                 ),
                 {"email": body.email},
@@ -80,6 +80,7 @@ async def login(body: LoginRequest) -> TokenResponse:
         user_id=row.user_id,
         role=row.role,
         sub=body.email,
+        employee_id=row.employee_id,
     )
     logger.info(
         "login ok: email=%s tenant_id=%s user_id=%s role=%s",

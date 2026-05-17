@@ -112,6 +112,7 @@ def create_tenant_token(
     user_id: int,
     role: str,
     sub: str,
+    employee_id: int | None = None,
     expires_delta: Optional[timedelta] = None,
 ) -> str:
     """Выпускает JWT с TenantClaims-совместимой нагрузкой.
@@ -122,13 +123,15 @@ def create_tenant_token(
     expire = datetime.utcnow() + (
         expires_delta or timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     )
-    payload = {
+    payload: dict = {
         "sub": sub,
         "tenant_id": str(tenant_id),
         "user_id": user_id,
         "roles": [role],
         "exp": expire,
     }
+    if employee_id is not None:
+        payload["employee_id"] = employee_id
     return jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
 
