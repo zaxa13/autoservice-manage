@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { TextField, Button, Typography, Box, CircularProgress, InputAdornment, Alert } from '@mui/material'
+import { TextField, Button, Typography, Box, CircularProgress, InputAdornment, Alert, Link } from '@mui/material'
 import { PersonOutline, LockOutlined, GarageRounded } from '@mui/icons-material'
 import { useAuthStore } from '../store/authStore'
 import { BRAND, FONT, MOTION, PALETTE, SHADOW, SURFACE } from '../design-tokens'
@@ -277,6 +277,27 @@ export default function Login() {
               </Button>
             </Box>
           </form>
+
+          <Typography sx={{
+            display: 'block', textAlign: 'center', mt: 3,
+            color: PALETTE.slate[500], fontSize: '0.825rem',
+            animation: 'fadeUp 0.45s cubic-bezier(0.16,1,0.3,1) 0.25s both',
+          }}>
+            Забыли пароль?{' '}
+            <Link
+              href="https://auto-works.pro/login"
+              target="_blank"
+              rel="noopener"
+              underline="hover"
+              sx={{
+                color: BRAND.primary,
+                fontWeight: 600,
+                textUnderlineOffset: '3px',
+              }}
+            >
+              Сбросьте в личном кабинете →
+            </Link>
+          </Typography>
 
           <Typography sx={{ display: 'block', textAlign: 'center', mt: 5, color: PALETTE.stone[300], fontSize: '0.72rem' }}>
             © {new Date().getFullYear()} AUTO.WORKS CRM. Все права защищены.
