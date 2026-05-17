@@ -452,20 +452,23 @@ async def update_order_endpoint(
         await db.flush()
         data.pop("order_parts")
 
+    # Запрещаем именно *смену* status на завершающие — но no-op (тот же статус)
+    # пропускаем: фронт обычно шлёт всю модель целиком при «Сохранить».
     if "status" in data and data["status"] is not None:
         new_status = data["status"].value if hasattr(data["status"], "value") else data["status"]
-        if new_status == OrderStatus.COMPLETED.value:
-            raise BadRequestException(
-                "Завершение заказа доступно только через POST /orders/{id}/complete"
-            )
-        if new_status == OrderStatus.PAID.value:
-            raise BadRequestException(
-                "Статус «Оплачен» выставляется автоматически после регистрации платежа"
-            )
-        if new_status == OrderStatus.CANCELLED.value:
-            raise BadRequestException(
-                "Отмена доступна только через POST /orders/{id}/cancel"
-            )
+        if new_status != order.status:
+            if new_status == OrderStatus.COMPLETED.value:
+                raise BadRequestException(
+                    "Завершение заказа доступно только через POST /orders/{id}/complete"
+                )
+            if new_status == OrderStatus.PAID.value:
+                raise BadRequestException(
+                    "Статус «Оплачен» выставляется автоматически после регистрации платежа"
+                )
+            if new_status == OrderStatus.CANCELLED.value:
+                raise BadRequestException(
+                    "Отмена доступна только через POST /orders/{id}/cancel"
+                )
         data["status"] = new_status
 
     for k, v in data.items():
