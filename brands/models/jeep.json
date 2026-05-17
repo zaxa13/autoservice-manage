@@ -1,0 +1,77 @@
+{
+  "brand": {
+    "slug": "jeep",
+    "name": "Jeep",
+    "href": "https://www.drom.ru/catalog/jeep/"
+  },
+  "source": "https://www.drom.ru/catalog/jeep/",
+  "collected_at": "2026-05-17",
+  "count": 13,
+  "models": [
+    {
+      "slug": "avenger",
+      "name": "Avenger",
+      "href": "https://www.drom.ru/catalog/jeep/avenger/"
+    },
+    {
+      "slug": "cherokee",
+      "name": "Cherokee",
+      "href": "https://www.drom.ru/catalog/jeep/cherokee/"
+    },
+    {
+      "slug": "commander",
+      "name": "Commander",
+      "href": "https://www.drom.ru/catalog/jeep/commander/"
+    },
+    {
+      "slug": "compass",
+      "name": "Compass",
+      "href": "https://www.drom.ru/catalog/jeep/compass/"
+    },
+    {
+      "slug": "gladiator",
+      "name": "Gladiator",
+      "href": "https://www.drom.ru/catalog/jeep/gladiator/"
+    },
+    {
+      "slug": "grand_cherokee",
+      "name": "Grand Cherokee",
+      "href": "https://www.drom.ru/catalog/jeep/grand_cherokee/"
+    },
+    {
+      "slug": "grand_commander",
+      "name": "Grand Commander",
+      "href": "https://www.drom.ru/catalog/jeep/grand_commander/"
+    },
+    {
+      "slug": "grand_wagoneer",
+      "name": "Grand Wagoneer",
+      "href": "https://www.drom.ru/catalog/jeep/grand_wagoneer/"
+    },
+    {
+      "slug": "liberty",
+      "name": "Liberty",
+      "href": "https://www.drom.ru/catalog/jeep/liberty/"
+    },
+    {
+      "slug": "patriot",
+      "name": "Patriot",
+      "href": "https://www.drom.ru/catalog/jeep/patriot/"
+    },
+    {
+      "slug": "renegade",
+      "name": "Renegade",
+      "href": "https://www.drom.ru/catalog/jeep/renegade/"
+    },
+    {
+      "slug": "wagoneer",
+      "name": "Wagoneer",
+      "href": "https://www.drom.ru/catalog/jeep/wagoneer/"
+    },
+    {
+      "slug": "wrangler",
+      "name": "Wrangler",
+      "href": "https://www.drom.ru/catalog/jeep/wrangler/"
+    }
+  ]
+}

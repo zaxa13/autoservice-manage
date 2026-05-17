@@ -1,0 +1,32 @@
+{
+  "brand": {
+    "slug": "aito",
+    "name": "AITO",
+    "href": "https://www.drom.ru/catalog/aito/"
+  },
+  "source": "https://www.drom.ru/catalog/aito/",
+  "collected_at": "2026-05-17",
+  "count": 4,
+  "models": [
+    {
+      "slug": "m5",
+      "name": "M5",
+      "href": "https://www.drom.ru/catalog/aito/m5/"
+    },
+    {
+      "slug": "m7",
+      "name": "M7",
+      "href": "https://www.drom.ru/catalog/aito/m7/"
+    },
+    {
+      "slug": "m8",
+      "name": "M8",
+      "href": "https://www.drom.ru/catalog/aito/m8/"
+    },
+    {
+      "slug": "m9",
+      "name": "M9",
+      "href": "https://www.drom.ru/catalog/aito/m9/"
+    }
+  ]
+}

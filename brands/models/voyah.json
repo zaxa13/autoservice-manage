@@ -1,0 +1,57 @@
+{
+  "brand": {
+    "slug": "voyah",
+    "name": "Voyah",
+    "href": "https://www.drom.ru/catalog/voyah/"
+  },
+  "source": "https://www.drom.ru/catalog/voyah/",
+  "collected_at": "2026-05-17",
+  "count": 9,
+  "models": [
+    {
+      "slug": "courage",
+      "name": "Courage",
+      "href": "https://www.drom.ru/catalog/voyah/courage/"
+    },
+    {
+      "slug": "dream_plus",
+      "name": "Dream Plus",
+      "href": "https://www.drom.ru/catalog/voyah/dream_plus/"
+    },
+    {
+      "slug": "dreamer",
+      "name": "Dream",
+      "href": "https://www.drom.ru/catalog/voyah/dreamer/"
+    },
+    {
+      "slug": "free",
+      "name": "Free",
+      "href": "https://www.drom.ru/catalog/voyah/free/"
+    },
+    {
+      "slug": "free_plus",
+      "name": "Free Plus",
+      "href": "https://www.drom.ru/catalog/voyah/free_plus/"
+    },
+    {
+      "slug": "passion",
+      "name": "Passion EVR",
+      "href": "https://www.drom.ru/catalog/voyah/passion/"
+    },
+    {
+      "slug": "passion_ev",
+      "name": "Passion EV",
+      "href": "https://www.drom.ru/catalog/voyah/passion_ev/"
+    },
+    {
+      "slug": "passion_l",
+      "name": "Passion L",
+      "href": "https://www.drom.ru/catalog/voyah/passion_l/"
+    },
+    {
+      "slug": "taishan_l9",
+      "name": "Taishan",
+      "href": "https://www.drom.ru/catalog/voyah/taishan_l9/"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "brand": {
+    "slug": "lancia",
+    "name": "Lancia",
+    "href": "https://www.drom.ru/catalog/lancia/"
+  },
+  "source": "https://www.drom.ru/catalog/lancia/",
+  "collected_at": "2026-05-17",
+  "count": 3,
+  "models": [
+    {
+      "slug": "dedra",
+      "name": "Dedra",
+      "href": "https://www.drom.ru/catalog/lancia/dedra/"
+    },
+    {
+      "slug": "delta",
+      "name": "Delta",
+      "href": "https://www.drom.ru/catalog/lancia/delta/"
+    },
+    {
+      "slug": "thema",
+      "name": "Thema",
+      "href": "https://www.drom.ru/catalog/lancia/thema/"
+    }
+  ]
+}

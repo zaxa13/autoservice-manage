@@ -1,0 +1,122 @@
+{
+  "brand": {
+    "slug": "jetour",
+    "name": "Jetour",
+    "href": "https://www.drom.ru/catalog/jetour/"
+  },
+  "source": "https://www.drom.ru/catalog/jetour/",
+  "collected_at": "2026-05-17",
+  "count": 22,
+  "models": [
+    {
+      "slug": "dasheng",
+      "name": "Dashing",
+      "href": "https://www.drom.ru/catalog/jetour/dasheng/"
+    },
+    {
+      "slug": "f700",
+      "name": "F700",
+      "href": "https://www.drom.ru/catalog/jetour/f700/"
+    },
+    {
+      "slug": "g700",
+      "name": "G700",
+      "href": "https://www.drom.ru/catalog/jetour/g700/"
+    },
+    {
+      "slug": "g900",
+      "name": "G900",
+      "href": "https://www.drom.ru/catalog/jetour/g900/"
+    },
+    {
+      "slug": "l6",
+      "name": "L6",
+      "href": "https://www.drom.ru/catalog/jetour/l6/"
+    },
+    {
+      "slug": "l7",
+      "name": "L7",
+      "href": "https://www.drom.ru/catalog/jetour/l7/"
+    },
+    {
+      "slug": "l9",
+      "name": "L9",
+      "href": "https://www.drom.ru/catalog/jetour/l9/"
+    },
+    {
+      "slug": "t1",
+      "name": "T1",
+      "href": "https://www.drom.ru/catalog/jetour/t1/"
+    },
+    {
+      "slug": "t2",
+      "name": "T2",
+      "href": "https://www.drom.ru/catalog/jetour/t2/"
+    },
+    {
+      "slug": "traveller",
+      "name": "Traveller",
+      "href": "https://www.drom.ru/catalog/jetour/traveller/"
+    },
+    {
+      "slug": "x50",
+      "name": "X50",
+      "href": "https://www.drom.ru/catalog/jetour/x50/"
+    },
+    {
+      "slug": "x70",
+      "name": "X70",
+      "href": "https://www.drom.ru/catalog/jetour/x70/"
+    },
+    {
+      "slug": "x70_coupe",
+      "name": "X70 Coupe",
+      "href": "https://www.drom.ru/catalog/jetour/x70_coupe/"
+    },
+    {
+      "slug": "x70_plus",
+      "name": "X70 Plus",
+      "href": "https://www.drom.ru/catalog/jetour/x70_plus/"
+    },
+    {
+      "slug": "x70_pro",
+      "name": "X70 Pro",
+      "href": "https://www.drom.ru/catalog/jetour/x70_pro/"
+    },
+    {
+      "slug": "x70l",
+      "name": "X70L",
+      "href": "https://www.drom.ru/catalog/jetour/x70l/"
+    },
+    {
+      "slug": "x70m",
+      "name": "X70M",
+      "href": "https://www.drom.ru/catalog/jetour/x70m/"
+    },
+    {
+      "slug": "x70s",
+      "name": "X70S",
+      "href": "https://www.drom.ru/catalog/jetour/x70s/"
+    },
+    {
+      "slug": "x90",
+      "name": "X90",
+      "href": "https://www.drom.ru/catalog/jetour/x90/"
+    },
+    {
+      "slug": "x90_plus",
+      "name": "X90 Plus",
+      "href": "https://www.drom.ru/catalog/jetour/x90_plus/"
+    },
+    {
+      "slug": "x90_pro",
+      "name": "X90 Pro",
+      "href": "https://www.drom.ru/catalog/jetour/x90_pro/"
+    },
+    {
+      "slug": "x95",
+      "name": "X95",
+      "href": "https://www.drom.ru/catalog/jetour/x95/"
+    }
+  ]
+}

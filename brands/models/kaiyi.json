@@ -1,0 +1,32 @@
+{
+  "brand": {
+    "slug": "kaiyi",
+    "name": "Kaiyi",
+    "href": "https://www.drom.ru/catalog/kaiyi/"
+  },
+  "source": "https://www.drom.ru/catalog/kaiyi/",
+  "collected_at": "2026-05-17",
+  "count": 4,
+  "models": [
+    {
+      "slug": "e5",
+      "name": "E5",
+      "href": "https://www.drom.ru/catalog/kaiyi/e5/"
+    },
+    {
+      "slug": "x3",
+      "name": "X3",
+      "href": "https://www.drom.ru/catalog/kaiyi/x3/"
+    },
+    {
+      "slug": "x3_pro",
+      "name": "X3 Pro",
+      "href": "https://www.drom.ru/catalog/kaiyi/x3_pro/"
+    },
+    {
+      "slug": "x7_kunlun",
+      "name": "X7 Kunlun",
+      "href": "https://www.drom.ru/catalog/kaiyi/x7_kunlun/"
+    }
+  ]
+}

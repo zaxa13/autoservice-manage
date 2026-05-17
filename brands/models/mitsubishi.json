@@ -1,0 +1,492 @@
+{
+  "brand": {
+    "slug": "mitsubishi",
+    "name": "Mitsubishi",
+    "href": "https://www.drom.ru/catalog/mitsubishi/"
+  },
+  "source": "https://www.drom.ru/catalog/mitsubishi/",
+  "collected_at": "2026-05-17",
+  "count": 96,
+  "models": [
+    {
+      "slug": "3000gt",
+      "name": "3000GT",
+      "href": "https://www.drom.ru/catalog/mitsubishi/3000gt/"
+    },
+    {
+      "slug": "airtrek",
+      "name": "Airtrek",
+      "href": "https://www.drom.ru/catalog/mitsubishi/airtrek/"
+    },
+    {
+      "slug": "aspire",
+      "name": "Aspire",
+      "href": "https://www.drom.ru/catalog/mitsubishi/aspire/"
+    },
+    {
+      "slug": "asx",
+      "name": "ASX",
+      "href": "https://www.drom.ru/catalog/mitsubishi/asx/"
+    },
+    {
+      "slug": "attrage",
+      "name": "Attrage",
+      "href": "https://www.drom.ru/catalog/mitsubishi/attrage/"
+    },
+    {
+      "slug": "bravo",
+      "name": "Bravo",
+      "href": "https://www.drom.ru/catalog/mitsubishi/bravo/"
+    },
+    {
+      "slug": "carisma",
+      "name": "Carisma",
+      "href": "https://www.drom.ru/catalog/mitsubishi/carisma/"
+    },
+    {
+      "slug": "celeste",
+      "name": "Celeste",
+      "href": "https://www.drom.ru/catalog/mitsubishi/celeste/"
+    },
+    {
+      "slug": "challenger",
+      "name": "Challenger",
+      "href": "https://www.drom.ru/catalog/mitsubishi/challenger/"
+    },
+    {
+      "slug": "chariot",
+      "name": "Chariot",
+      "href": "https://www.drom.ru/catalog/mitsubishi/chariot/"
+    },
+    {
+      "slug": "chariot_grandis",
+      "name": "Chariot Grandis",
+      "href": "https://www.drom.ru/catalog/mitsubishi/chariot_grandis/"
+    },
+    {
+      "slug": "colt",
+      "name": "Colt",
+      "href": "https://www.drom.ru/catalog/mitsubishi/colt/"
+    },
+    {
+      "slug": "colt_plus",
+      "name": "Colt Plus",
+      "href": "https://www.drom.ru/catalog/mitsubishi/colt_plus/"
+    },
+    {
+      "slug": "cordia",
+      "name": "Cordia",
+      "href": "https://www.drom.ru/catalog/mitsubishi/cordia/"
+    },
+    {
+      "slug": "debonair",
+      "name": "Debonair",
+      "href": "https://www.drom.ru/catalog/mitsubishi/debonair/"
+    },
+    {
+      "slug": "delica",
+      "name": "Delica",
+      "href": "https://www.drom.ru/catalog/mitsubishi/delica/"
+    },
+    {
+      "slug": "delica_d_2",
+      "name": "Delica D:2",
+      "href": "https://www.drom.ru/catalog/mitsubishi/delica_d_2/"
+    },
+    {
+      "slug": "delica_d_3",
+      "name": "Delica D:3",
+      "href": "https://www.drom.ru/catalog/mitsubishi/delica_d_3/"
+    },
+    {
+      "slug": "delica_d_5",
+      "name": "Delica D:5",
+      "href": "https://www.drom.ru/catalog/mitsubishi/delica_d_5/"
+    },
+    {
+      "slug": "delica_mini",
+      "name": "Delica Mini",
+      "href": "https://www.drom.ru/catalog/mitsubishi/delica_mini/"
+    },
+    {
+      "slug": "destinator",
+      "name": "Destinator",
+      "href": "https://www.drom.ru/catalog/mitsubishi/destinator/"
+    },
+    {
+      "slug": "diamante",
+      "name": "Diamante",
+      "href": "https://www.drom.ru/catalog/mitsubishi/diamante/"
+    },
+    {
+      "slug": "dignity",
+      "name": "Dignity",
+      "href": "https://www.drom.ru/catalog/mitsubishi/dignity/"
+    },
+    {
+      "slug": "dingo",
+      "name": "Mirage Dingo",
+      "href": "https://www.drom.ru/catalog/mitsubishi/dingo/"
+    },
+    {
+      "slug": "dion",
+      "name": "Dion",
+      "href": "https://www.drom.ru/catalog/mitsubishi/dion/"
+    },
+    {
+      "slug": "eclipse",
+      "name": "Eclipse",
+      "href": "https://www.drom.ru/catalog/mitsubishi/eclipse/"
+    },
+    {
+      "slug": "eclipse_cross",
+      "name": "Eclipse Cross",
+      "href": "https://www.drom.ru/catalog/mitsubishi/eclipse_cross/"
+    },
+    {
+      "slug": "ek-active",
+      "name": "eK Active",
+      "href": "https://www.drom.ru/catalog/mitsubishi/ek-active/"
+    },
+    {
+      "slug": "ek-classy",
+      "name": "eK classy",
+      "href": "https://www.drom.ru/catalog/mitsubishi/ek-classy/"
+    },
+    {
+      "slug": "ek-custom",
+      "name": "ek Custom",
+      "href": "https://www.drom.ru/catalog/mitsubishi/ek-custom/"
+    },
+    {
+      "slug": "ek-sport",
+      "name": "eK Sport",
+      "href": "https://www.drom.ru/catalog/mitsubishi/ek-sport/"
+    },
+    {
+      "slug": "ek-wagon",
+      "name": "eK Wagon",
+      "href": "https://www.drom.ru/catalog/mitsubishi/ek-wagon/"
+    },
+    {
+      "slug": "ek_space",
+      "name": "eK Space",
+      "href": "https://www.drom.ru/catalog/mitsubishi/ek_space/"
+    },
+    {
+      "slug": "ek_x_ev",
+      "name": "eK X",
+      "href": "https://www.drom.ru/catalog/mitsubishi/ek_x_ev/"
+    },
+    {
+      "slug": "emeraude",
+      "name": "Emeraude",
+      "href": "https://www.drom.ru/catalog/mitsubishi/emeraude/"
+    },
+    {
+      "slug": "endeavor",
+      "name": "Endeavor",
+      "href": "https://www.drom.ru/catalog/mitsubishi/endeavor/"
+    },
+    {
+      "slug": "eterna",
+      "name": "Eterna",
+      "href": "https://www.drom.ru/catalog/mitsubishi/eterna/"
+    },
+    {
+      "slug": "expo",
+      "name": "Expo",
+      "href": "https://www.drom.ru/catalog/mitsubishi/expo/"
+    },
+    {
+      "slug": "freeca",
+      "name": "Freeca",
+      "href": "https://www.drom.ru/catalog/mitsubishi/freeca/"
+    },
+    {
+      "slug": "fto",
+      "name": "FTO",
+      "href": "https://www.drom.ru/catalog/mitsubishi/fto/"
+    },
+    {
+      "slug": "galant",
+      "name": "Galant",
+      "href": "https://www.drom.ru/catalog/mitsubishi/galant/"
+    },
+    {
+      "slug": "galant_fortis",
+      "name": "Galant Fortis",
+      "href": "https://www.drom.ru/catalog/mitsubishi/galant_fortis/"
+    },
+    {
+      "slug": "grandis",
+      "name": "Grandis",
+      "href": "https://www.drom.ru/catalog/mitsubishi/grandis/"
+    },
+    {
+      "slug": "grunder",
+      "name": "Grunder",
+      "href": "https://www.drom.ru/catalog/mitsubishi/grunder/"
+    },
+    {
+      "slug": "gto",
+      "name": "GTO",
+      "href": "https://www.drom.ru/catalog/mitsubishi/gto/"
+    },
+    {
+      "slug": "i",
+      "name": "i",
+      "href": "https://www.drom.ru/catalog/mitsubishi/i/"
+    },
+    {
+      "slug": "i-miev",
+      "name": "i-MiEV",
+      "href": "https://www.drom.ru/catalog/mitsubishi/i-miev/"
+    },
+    {
+      "slug": "jeep",
+      "name": "Jeep",
+      "href": "https://www.drom.ru/catalog/mitsubishi/jeep/"
+    },
+    {
+      "slug": "l200",
+      "name": "L200",
+      "href": "https://www.drom.ru/catalog/mitsubishi/l200/"
+    },
+    {
+      "slug": "l300",
+      "name": "L300",
+      "href": "https://www.drom.ru/catalog/mitsubishi/l300/"
+    },
+    {
+      "slug": "l400",
+      "name": "L400",
+      "href": "https://www.drom.ru/catalog/mitsubishi/l400/"
+    },
+    {
+      "slug": "lancer",
+      "name": "Lancer",
+      "href": "https://www.drom.ru/catalog/mitsubishi/lancer/"
+    },
+    {
+      "slug": "lancer_cedia",
+      "name": "Lancer Cedia",
+      "href": "https://www.drom.ru/catalog/mitsubishi/lancer_cedia/"
+    },
+    {
+      "slug": "lancer_evolution",
+      "name": "Lancer Evolution",
+      "href": "https://www.drom.ru/catalog/mitsubishi/lancer_evolution/"
+    },
+    {
+      "slug": "lancer_ex",
+      "name": "Lancer EX",
+      "href": "https://www.drom.ru/catalog/mitsubishi/lancer_ex/"
+    },
+    {
+      "slug": "lancer_fortis",
+      "name": "Lancer Fortis",
+      "href": "https://www.drom.ru/catalog/mitsubishi/lancer_fortis/"
+    },
+    {
+      "slug": "legnum",
+      "name": "Legnum",
+      "href": "https://www.drom.ru/catalog/mitsubishi/legnum/"
+    },
+    {
+      "slug": "libero",
+      "name": "Libero",
+      "href": "https://www.drom.ru/catalog/mitsubishi/libero/"
+    },
+    {
+      "slug": "minica",
+      "name": "Minica",
+      "href": "https://www.drom.ru/catalog/mitsubishi/minica/"
+    },
+    {
+      "slug": "minica_toppo",
+      "name": "Minica Toppo",
+      "href": "https://www.drom.ru/catalog/mitsubishi/minica_toppo/"
+    },
+    {
+      "slug": "minicab",
+      "name": "Minicab",
+      "href": "https://www.drom.ru/catalog/mitsubishi/minicab/"
+    },
+    {
+      "slug": "minicab_miev",
+      "name": "Minicab MiEV",
+      "href": "https://www.drom.ru/catalog/mitsubishi/minicab_miev/"
+    },
+    {
+      "slug": "mirage",
+      "name": "Mirage",
+      "href": "https://www.drom.ru/catalog/mitsubishi/mirage/"
+    },
+    {
+      "slug": "montero",
+      "name": "Montero",
+      "href": "https://www.drom.ru/catalog/mitsubishi/montero/"
+    },
+    {
+      "slug": "montero_sport",
+      "name": "Montero Sport",
+      "href": "https://www.drom.ru/catalog/mitsubishi/montero_sport/"
+    },
+    {
+      "slug": "outlander",
+      "name": "Outlander",
+      "href": "https://www.drom.ru/catalog/mitsubishi/outlander/"
+    },
+    {
+      "slug": "outlander_sport",
+      "name": "Outlander Sport",
+      "href": "https://www.drom.ru/catalog/mitsubishi/outlander_sport/"
+    },
+    {
+      "slug": "pajero",
+      "name": "Pajero",
+      "href": "https://www.drom.ru/catalog/mitsubishi/pajero/"
+    },
+    {
+      "slug": "pajero_io",
+      "name": "Pajero iO",
+      "href": "https://www.drom.ru/catalog/mitsubishi/pajero_io/"
+    },
+    {
+      "slug": "pajero_junior",
+      "name": "Pajero Junior",
+      "href": "https://www.drom.ru/catalog/mitsubishi/pajero_junior/"
+    },
+    {
+      "slug": "pajero_mini",
+      "name": "Pajero Mini",
+      "href": "https://www.drom.ru/catalog/mitsubishi/pajero_mini/"
+    },
+    {
+      "slug": "pajero_pinin",
+      "name": "Pajero Pinin",
+      "href": "https://www.drom.ru/catalog/mitsubishi/pajero_pinin/"
+    },
+    {
+      "slug": "pajero_sport",
+      "name": "Pajero Sport",
+      "href": "https://www.drom.ru/catalog/mitsubishi/pajero_sport/"
+    },
+    {
+      "slug": "pistachio",
+      "name": "Pistachio",
+      "href": "https://www.drom.ru/catalog/mitsubishi/pistachio/"
+    },
+    {
+      "slug": "proudia",
+      "name": "Proudia",
+      "href": "https://www.drom.ru/catalog/mitsubishi/proudia/"
+    },
+    {
+      "slug": "raider",
+      "name": "Raider",
+      "href": "https://www.drom.ru/catalog/mitsubishi/raider/"
+    },
+    {
+      "slug": "rvr",
+      "name": "RVR",
+      "href": "https://www.drom.ru/catalog/mitsubishi/rvr/"
+    },
+    {
+      "slug": "sapporo",
+      "name": "Sapporo",
+      "href": "https://www.drom.ru/catalog/mitsubishi/sapporo/"
+    },
+    {
+      "slug": "savrin",
+      "name": "Savrin",
+      "href": "https://www.drom.ru/catalog/mitsubishi/savrin/"
+    },
+    {
+      "slug": "sigma",
+      "name": "Sigma",
+      "href": "https://www.drom.ru/catalog/mitsubishi/sigma/"
+    },
+    {
+      "slug": "space_gear",
+      "name": "Space Gear",
+      "href": "https://www.drom.ru/catalog/mitsubishi/space_gear/"
+    },
+    {
+      "slug": "space_runner",
+      "name": "Space Runner",
+      "href": "https://www.drom.ru/catalog/mitsubishi/space_runner/"
+    },
+    {
+      "slug": "space_star",
+      "name": "Space Star",
+      "href": "https://www.drom.ru/catalog/mitsubishi/space_star/"
+    },
+    {
+      "slug": "space_wagon",
+      "name": "Space Wagon",
+      "href": "https://www.drom.ru/catalog/mitsubishi/space_wagon/"
+    },
+    {
+      "slug": "starion",
+      "name": "Starion",
+      "href": "https://www.drom.ru/catalog/mitsubishi/starion/"
+    },
+    {
+      "slug": "strada",
+      "name": "Strada",
+      "href": "https://www.drom.ru/catalog/mitsubishi/strada/"
+    },
+    {
+      "slug": "toppo",
+      "name": "Toppo",
+      "href": "https://www.drom.ru/catalog/mitsubishi/toppo/"
+    },
+    {
+      "slug": "toppo_bj",
+      "name": "Toppo BJ",
+      "href": "https://www.drom.ru/catalog/mitsubishi/toppo_bj/"
+    },
+    {
+      "slug": "toppo_bj_wide",
+      "name": "Toppo BJ Wide",
+      "href": "https://www.drom.ru/catalog/mitsubishi/toppo_bj_wide/"
+    },
+    {
+      "slug": "town_box",
+      "name": "Town Box",
+      "href": "https://www.drom.ru/catalog/mitsubishi/town_box/"
+    },
+    {
+      "slug": "town_box_wide",
+      "name": "Town Box Wide",
+      "href": "https://www.drom.ru/catalog/mitsubishi/town_box_wide/"
+    },
+    {
+      "slug": "tredia",
+      "name": "Tredia",
+      "href": "https://www.drom.ru/catalog/mitsubishi/tredia/"
+    },
+    {
+      "slug": "triton",
+      "name": "Triton",
+      "href": "https://www.drom.ru/catalog/mitsubishi/triton/"
+    },
+    {
+      "slug": "xforce",
+      "name": "Xforce",
+      "href": "https://www.drom.ru/catalog/mitsubishi/xforce/"
+    },
+    {
+      "slug": "xpander",
+      "name": "Xpander",
+      "href": "https://www.drom.ru/catalog/mitsubishi/xpander/"
+    },
+    {
+      "slug": "xpander_cross",
+      "name": "Xpander Cross",
+      "href": "https://www.drom.ru/catalog/mitsubishi/xpander_cross/"
+    }
+  ]
+}

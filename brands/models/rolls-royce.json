@@ -1,0 +1,82 @@
+{
+  "brand": {
+    "slug": "rolls-royce",
+    "name": "Rolls-Royce",
+    "href": "https://www.drom.ru/catalog/rolls-royce/"
+  },
+  "source": "https://www.drom.ru/catalog/rolls-royce/",
+  "collected_at": "2026-05-17",
+  "count": 14,
+  "models": [
+    {
+      "slug": "20-25",
+      "name": "20/25",
+      "href": "https://www.drom.ru/catalog/rolls-royce/20-25/"
+    },
+    {
+      "slug": "corniche",
+      "name": "Corniche",
+      "href": "https://www.drom.ru/catalog/rolls-royce/corniche/"
+    },
+    {
+      "slug": "cullinan",
+      "name": "Cullinan",
+      "href": "https://www.drom.ru/catalog/rolls-royce/cullinan/"
+    },
+    {
+      "slug": "dawn",
+      "name": "Dawn",
+      "href": "https://www.drom.ru/catalog/rolls-royce/dawn/"
+    },
+    {
+      "slug": "flying_spur",
+      "name": "Flying Spur",
+      "href": "https://www.drom.ru/catalog/rolls-royce/flying_spur/"
+    },
+    {
+      "slug": "ghost",
+      "name": "Ghost",
+      "href": "https://www.drom.ru/catalog/rolls-royce/ghost/"
+    },
+    {
+      "slug": "park_ward",
+      "name": "Park Ward",
+      "href": "https://www.drom.ru/catalog/rolls-royce/park_ward/"
+    },
+    {
+      "slug": "phantom",
+      "name": "Phantom",
+      "href": "https://www.drom.ru/catalog/rolls-royce/phantom/"
+    },
+    {
+      "slug": "silver_cloud",
+      "name": "Silver Cloud",
+      "href": "https://www.drom.ru/catalog/rolls-royce/silver_cloud/"
+    },
+    {
+      "slug": "silver_seraph",
+      "name": "Silver Seraph",
+      "href": "https://www.drom.ru/catalog/rolls-royce/silver_seraph/"
+    },
+    {
+      "slug": "silver_spirit",
+      "name": "Silver Spirit",
+      "href": "https://www.drom.ru/catalog/rolls-royce/silver_spirit/"
+    },
+    {
+      "slug": "silver_spur",
+      "name": "Silver Spur",
+      "href": "https://www.drom.ru/catalog/rolls-royce/silver_spur/"
+    },
+    {
+      "slug": "spectre",
+      "name": "Spectre",
+      "href": "https://www.drom.ru/catalog/rolls-royce/spectre/"
+    },
+    {
+      "slug": "wraith",
+      "name": "Wraith",
+      "href": "https://www.drom.ru/catalog/rolls-royce/wraith/"
+    }
+  ]
+}

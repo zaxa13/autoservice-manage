@@ -1,0 +1,77 @@
+{
+  "brand": {
+    "slug": "bentley",
+    "name": "Bentley",
+    "href": "https://www.drom.ru/catalog/bentley/"
+  },
+  "source": "https://www.drom.ru/catalog/bentley/",
+  "collected_at": "2026-05-17",
+  "count": 13,
+  "models": [
+    {
+      "slug": "arnage",
+      "name": "Arnage",
+      "href": "https://www.drom.ru/catalog/bentley/arnage/"
+    },
+    {
+      "slug": "azure",
+      "name": "Azure",
+      "href": "https://www.drom.ru/catalog/bentley/azure/"
+    },
+    {
+      "slug": "bentayga",
+      "name": "Bentayga",
+      "href": "https://www.drom.ru/catalog/bentley/bentayga/"
+    },
+    {
+      "slug": "brooklands",
+      "name": "Brooklands",
+      "href": "https://www.drom.ru/catalog/bentley/brooklands/"
+    },
+    {
+      "slug": "continental",
+      "name": "Continental",
+      "href": "https://www.drom.ru/catalog/bentley/continental/"
+    },
+    {
+      "slug": "continental_gt",
+      "name": "Continental GT",
+      "href": "https://www.drom.ru/catalog/bentley/continental_gt/"
+    },
+    {
+      "slug": "eight",
+      "name": "Eight",
+      "href": "https://www.drom.ru/catalog/bentley/eight/"
+    },
+    {
+      "slug": "flying_spur",
+      "name": "Flying Spur",
+      "href": "https://www.drom.ru/catalog/bentley/flying_spur/"
+    },
+    {
+      "slug": "mulsanne",
+      "name": "Mulsanne",
+      "href": "https://www.drom.ru/catalog/bentley/mulsanne/"
+    },
+    {
+      "slug": "r-type",
+      "name": "R-Type",
+      "href": "https://www.drom.ru/catalog/bentley/r-type/"
+    },
+    {
+      "slug": "s",
+      "name": "S",
+      "href": "https://www.drom.ru/catalog/bentley/s/"
+    },
+    {
+      "slug": "t-series",
+      "name": "T-Series",
+      "href": "https://www.drom.ru/catalog/bentley/t-series/"
+    },
+    {
+      "slug": "turbo_r",
+      "name": "Turbo R",
+      "href": "https://www.drom.ru/catalog/bentley/turbo_r/"
+    }
+  ]
+}

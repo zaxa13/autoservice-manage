@@ -1,0 +1,32 @@
+{
+  "brand": {
+    "slug": "polestar",
+    "name": "Polestar",
+    "href": "https://www.drom.ru/catalog/polestar/"
+  },
+  "source": "https://www.drom.ru/catalog/polestar/",
+  "collected_at": "2026-05-17",
+  "count": 4,
+  "models": [
+    {
+      "slug": "1",
+      "name": "1",
+      "href": "https://www.drom.ru/catalog/polestar/1/"
+    },
+    {
+      "slug": "2",
+      "name": "2",
+      "href": "https://www.drom.ru/catalog/polestar/2/"
+    },
+    {
+      "slug": "3",
+      "name": "3",
+      "href": "https://www.drom.ru/catalog/polestar/3/"
+    },
+    {
+      "slug": "4",
+      "name": "4",
+      "href": "https://www.drom.ru/catalog/polestar/4/"
+    }
+  ]
+}

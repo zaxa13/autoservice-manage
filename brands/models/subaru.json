@@ -1,0 +1,232 @@
+{
+  "brand": {
+    "slug": "subaru",
+    "name": "Subaru",
+    "href": "https://www.drom.ru/catalog/subaru/"
+  },
+  "source": "https://www.drom.ru/catalog/subaru/",
+  "collected_at": "2026-05-17",
+  "count": 44,
+  "models": [
+    {
+      "slug": "alcyone",
+      "name": "Alcyone",
+      "href": "https://www.drom.ru/catalog/subaru/alcyone/"
+    },
+    {
+      "slug": "ascent",
+      "name": "Ascent",
+      "href": "https://www.drom.ru/catalog/subaru/ascent/"
+    },
+    {
+      "slug": "b9_tribeca",
+      "name": "B9 Tribeca",
+      "href": "https://www.drom.ru/catalog/subaru/b9_tribeca/"
+    },
+    {
+      "slug": "baja",
+      "name": "Baja",
+      "href": "https://www.drom.ru/catalog/subaru/baja/"
+    },
+    {
+      "slug": "brat",
+      "name": "Brat",
+      "href": "https://www.drom.ru/catalog/subaru/brat/"
+    },
+    {
+      "slug": "brz",
+      "name": "BRZ",
+      "href": "https://www.drom.ru/catalog/subaru/brz/"
+    },
+    {
+      "slug": "chiffon",
+      "name": "Chiffon",
+      "href": "https://www.drom.ru/catalog/subaru/chiffon/"
+    },
+    {
+      "slug": "crosstrek",
+      "name": "Crosstrek",
+      "href": "https://www.drom.ru/catalog/subaru/crosstrek/"
+    },
+    {
+      "slug": "dex",
+      "name": "Dex",
+      "href": "https://www.drom.ru/catalog/subaru/dex/"
+    },
+    {
+      "slug": "dias_wagon",
+      "name": "Dias Wagon",
+      "href": "https://www.drom.ru/catalog/subaru/dias_wagon/"
+    },
+    {
+      "slug": "domingo",
+      "name": "Domingo",
+      "href": "https://www.drom.ru/catalog/subaru/domingo/"
+    },
+    {
+      "slug": "exiga",
+      "name": "Exiga",
+      "href": "https://www.drom.ru/catalog/subaru/exiga/"
+    },
+    {
+      "slug": "exiga_crossover_7",
+      "name": "Exiga Crossover 7",
+      "href": "https://www.drom.ru/catalog/subaru/exiga_crossover_7/"
+    },
+    {
+      "slug": "forester",
+      "name": "Forester",
+      "href": "https://www.drom.ru/catalog/subaru/forester/"
+    },
+    {
+      "slug": "getaway",
+      "name": "Getaway",
+      "href": "https://www.drom.ru/catalog/subaru/getaway/"
+    },
+    {
+      "slug": "impreza",
+      "name": "Impreza",
+      "href": "https://www.drom.ru/catalog/subaru/impreza/"
+    },
+    {
+      "slug": "impreza_wrx",
+      "name": "Impreza WRX",
+      "href": "https://www.drom.ru/catalog/subaru/impreza_wrx/"
+    },
+    {
+      "slug": "impreza_wrx_sti",
+      "name": "Impreza WRX STI",
+      "href": "https://www.drom.ru/catalog/subaru/impreza_wrx_sti/"
+    },
+    {
+      "slug": "impreza_xv",
+      "name": "Impreza XV",
+      "href": "https://www.drom.ru/catalog/subaru/impreza_xv/"
+    },
+    {
+      "slug": "justy",
+      "name": "Justy",
+      "href": "https://www.drom.ru/catalog/subaru/justy/"
+    },
+    {
+      "slug": "layback",
+      "name": "Layback",
+      "href": "https://www.drom.ru/catalog/subaru/layback/"
+    },
+    {
+      "slug": "legacy",
+      "name": "Legacy",
+      "href": "https://www.drom.ru/catalog/subaru/legacy/"
+    },
+    {
+      "slug": "legacy_b4",
+      "name": "Legacy B4",
+      "href": "https://www.drom.ru/catalog/subaru/legacy_b4/"
+    },
+    {
+      "slug": "legacy_lancaster",
+      "name": "Legacy Lancaster",
+      "href": "https://www.drom.ru/catalog/subaru/legacy_lancaster/"
+    },
+    {
+      "slug": "leone",
+      "name": "Leone",
+      "href": "https://www.drom.ru/catalog/subaru/leone/"
+    },
+    {
+      "slug": "levorg",
+      "name": "Levorg",
+      "href": "https://www.drom.ru/catalog/subaru/levorg/"
+    },
+    {
+      "slug": "lucra",
+      "name": "Lucra",
+      "href": "https://www.drom.ru/catalog/subaru/lucra/"
+    },
+    {
+      "slug": "outback",
+      "name": "Outback",
+      "href": "https://www.drom.ru/catalog/subaru/outback/"
+    },
+    {
+      "slug": "pleo",
+      "name": "Pleo",
+      "href": "https://www.drom.ru/catalog/subaru/pleo/"
+    },
+    {
+      "slug": "pleo_plus",
+      "name": "Pleo Plus",
+      "href": "https://www.drom.ru/catalog/subaru/pleo_plus/"
+    },
+    {
+      "slug": "r1",
+      "name": "R1",
+      "href": "https://www.drom.ru/catalog/subaru/r1/"
+    },
+    {
+      "slug": "r2",
+      "name": "R2",
+      "href": "https://www.drom.ru/catalog/subaru/r2/"
+    },
+    {
+      "slug": "rex",
+      "name": "Rex",
+      "href": "https://www.drom.ru/catalog/subaru/rex/"
+    },
+    {
+      "slug": "sambar",
+      "name": "Sambar",
+      "href": "https://www.drom.ru/catalog/subaru/sambar/"
+    },
+    {
+      "slug": "solterra",
+      "name": "Solterra",
+      "href": "https://www.drom.ru/catalog/subaru/solterra/"
+    },
+    {
+      "slug": "stella",
+      "name": "Stella",
+      "href": "https://www.drom.ru/catalog/subaru/stella/"
+    },
+    {
+      "slug": "svx",
+      "name": "SVX",
+      "href": "https://www.drom.ru/catalog/subaru/svx/"
+    },
+    {
+      "slug": "trailseeker",
+      "name": "Trailseeker",
+      "href": "https://www.drom.ru/catalog/subaru/trailseeker/"
+    },
+    {
+      "slug": "traviq",
+      "name": "Traviq",
+      "href": "https://www.drom.ru/catalog/subaru/traviq/"
+    },
+    {
+      "slug": "trezia",
+      "name": "Trezia",
+      "href": "https://www.drom.ru/catalog/subaru/trezia/"
+    },
+    {
+      "slug": "tribeca",
+      "name": "Tribeca",
+      "href": "https://www.drom.ru/catalog/subaru/tribeca/"
+    },
+    {
+      "slug": "uncharted",
+      "name": "Uncharted",
+      "href": "https://www.drom.ru/catalog/subaru/uncharted/"
+    },
+    {
+      "slug": "vivio",
+      "name": "Vivio",
+      "href": "https://www.drom.ru/catalog/subaru/vivio/"
+    },
+    {
+      "slug": "xv",
+      "name": "XV",
+      "href": "https://www.drom.ru/catalog/subaru/xv/"
+    }
+  ]
+}

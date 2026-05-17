@@ -1,0 +1,317 @@
+{
+  "brand": {
+    "slug": "jac",
+    "name": "JAC",
+    "href": "https://www.drom.ru/catalog/jac/"
+  },
+  "source": "https://www.drom.ru/catalog/jac/",
+  "collected_at": "2026-05-17",
+  "count": 61,
+  "models": [
+    {
+      "slug": "binyue",
+      "name": "Binyue",
+      "href": "https://www.drom.ru/catalog/jac/binyue/"
+    },
+    {
+      "slug": "iev",
+      "name": "iEV4",
+      "href": "https://www.drom.ru/catalog/jac/iev/"
+    },
+    {
+      "slug": "iev5",
+      "name": "iEV5",
+      "href": "https://www.drom.ru/catalog/jac/iev5/"
+    },
+    {
+      "slug": "iev6e",
+      "name": "iEV6E",
+      "href": "https://www.drom.ru/catalog/jac/iev6e/"
+    },
+    {
+      "slug": "iev6e_sport",
+      "name": "iEV6E Sport",
+      "href": "https://www.drom.ru/catalog/jac/iev6e_sport/"
+    },
+    {
+      "slug": "iev6s",
+      "name": "iEV6S",
+      "href": "https://www.drom.ru/catalog/jac/iev6s/"
+    },
+    {
+      "slug": "iev7l",
+      "name": "iEV7L",
+      "href": "https://www.drom.ru/catalog/jac/iev7l/"
+    },
+    {
+      "slug": "iev7s",
+      "name": "iEV7S",
+      "href": "https://www.drom.ru/catalog/jac/iev7s/"
+    },
+    {
+      "slug": "ieva50",
+      "name": "iEVA50",
+      "href": "https://www.drom.ru/catalog/jac/ieva50/"
+    },
+    {
+      "slug": "ievs4",
+      "name": "iEVS4",
+      "href": "https://www.drom.ru/catalog/jac/ievs4/"
+    },
+    {
+      "slug": "j2",
+      "name": "J2",
+      "href": "https://www.drom.ru/catalog/jac/j2/"
+    },
+    {
+      "slug": "j3",
+      "name": "J3",
+      "href": "https://www.drom.ru/catalog/jac/j3/"
+    },
+    {
+      "slug": "j5",
+      "name": "J5",
+      "href": "https://www.drom.ru/catalog/jac/j5/"
+    },
+    {
+      "slug": "j6",
+      "name": "J6",
+      "href": "https://www.drom.ru/catalog/jac/j6/"
+    },
+    {
+      "slug": "j7",
+      "name": "J7",
+      "href": "https://www.drom.ru/catalog/jac/j7/"
+    },
+    {
+      "slug": "jiayue_a5",
+      "name": "Jiayue A5",
+      "href": "https://www.drom.ru/catalog/jac/jiayue_a5/"
+    },
+    {
+      "slug": "js2_pro",
+      "name": "JS2 Pro",
+      "href": "https://www.drom.ru/catalog/jac/js2_pro/"
+    },
+    {
+      "slug": "js3",
+      "name": "JS3",
+      "href": "https://www.drom.ru/catalog/jac/js3/"
+    },
+    {
+      "slug": "js4",
+      "name": "JS4",
+      "href": "https://www.drom.ru/catalog/jac/js4/"
+    },
+    {
+      "slug": "js5",
+      "name": "JS5",
+      "href": "https://www.drom.ru/catalog/jac/js5/"
+    },
+    {
+      "slug": "js6",
+      "name": "JS6",
+      "href": "https://www.drom.ru/catalog/jac/js6/"
+    },
+    {
+      "slug": "js9",
+      "name": "JS9",
+      "href": "https://www.drom.ru/catalog/jac/js9/"
+    },
+    {
+      "slug": "m1",
+      "name": "M1",
+      "href": "https://www.drom.ru/catalog/jac/m1/"
+    },
+    {
+      "slug": "refine",
+      "name": "Refine",
+      "href": "https://www.drom.ru/catalog/jac/refine/"
+    },
+    {
+      "slug": "refine_a60",
+      "name": "Refine A60",
+      "href": "https://www.drom.ru/catalog/jac/refine_a60/"
+    },
+    {
+      "slug": "refine_l6_max",
+      "name": "Refine L6 Max",
+      "href": "https://www.drom.ru/catalog/jac/refine_l6_max/"
+    },
+    {
+      "slug": "refine_m3",
+      "name": "Refine M3",
+      "href": "https://www.drom.ru/catalog/jac/refine_m3/"
+    },
+    {
+      "slug": "refine_m5",
+      "name": "Refine M5",
+      "href": "https://www.drom.ru/catalog/jac/refine_m5/"
+    },
+    {
+      "slug": "refine_m6",
+      "name": "Refine M6",
+      "href": "https://www.drom.ru/catalog/jac/refine_m6/"
+    },
+    {
+      "slug": "refine_r3",
+      "name": "Refine R3",
+      "href": "https://www.drom.ru/catalog/jac/refine_r3/"
+    },
+    {
+      "slug": "refine_rf8",
+      "name": "Refine RF8",
+      "href": "https://www.drom.ru/catalog/jac/refine_rf8/"
+    },
+    {
+      "slug": "refine_s2",
+      "name": "Refine S2",
+      "href": "https://www.drom.ru/catalog/jac/refine_s2/"
+    },
+    {
+      "slug": "refine_s3",
+      "name": "Refine S3",
+      "href": "https://www.drom.ru/catalog/jac/refine_s3/"
+    },
+    {
+      "slug": "refine_s4",
+      "name": "Refine S4",
+      "href": "https://www.drom.ru/catalog/jac/refine_s4/"
+    },
+    {
+      "slug": "refine_s5",
+      "name": "Refine S5",
+      "href": "https://www.drom.ru/catalog/jac/refine_s5/"
+    },
+    {
+      "slug": "refine_s7",
+      "name": "Refine S7",
+      "href": "https://www.drom.ru/catalog/jac/refine_s7/"
+    },
+    {
+      "slug": "rein",
+      "name": "Rein",
+      "href": "https://www.drom.ru/catalog/jac/rein/"
+    },
+    {
+      "slug": "rf8",
+      "name": "RF8",
+      "href": "https://www.drom.ru/catalog/jac/rf8/"
+    },
+    {
+      "slug": "s1",
+      "name": "S1",
+      "href": "https://www.drom.ru/catalog/jac/s1/"
+    },
+    {
+      "slug": "s3",
+      "name": "S3",
+      "href": "https://www.drom.ru/catalog/jac/s3/"
+    },
+    {
+      "slug": "s3_pro",
+      "name": "S3 Pro",
+      "href": "https://www.drom.ru/catalog/jac/s3_pro/"
+    },
+    {
+      "slug": "s5",
+      "name": "S5",
+      "href": "https://www.drom.ru/catalog/jac/s5/"
+    },
+    {
+      "slug": "s7",
+      "name": "S7",
+      "href": "https://www.drom.ru/catalog/jac/s7/"
+    },
+    {
+      "slug": "sehol_a5",
+      "name": "Sehol A5",
+      "href": "https://www.drom.ru/catalog/jac/sehol_a5/"
+    },
+    {
+      "slug": "sehol_a5_plus",
+      "name": "Sehol A5 Plus",
+      "href": "https://www.drom.ru/catalog/jac/sehol_a5_plus/"
+    },
+    {
+      "slug": "sehol_aipao",
+      "name": "Sehol Aipao",
+      "href": "https://www.drom.ru/catalog/jac/sehol_aipao/"
+    },
+    {
+      "slug": "sehol_e10x",
+      "name": "Sehol E10X",
+      "href": "https://www.drom.ru/catalog/jac/sehol_e10x/"
+    },
+    {
+      "slug": "sehol_e20x",
+      "name": "Sehol E20X",
+      "href": "https://www.drom.ru/catalog/jac/sehol_e20x/"
+    },
+    {
+      "slug": "sehol_e40x",
+      "name": "Sehol E40X",
+      "href": "https://www.drom.ru/catalog/jac/sehol_e40x/"
+    },
+    {
+      "slug": "sehol_qx",
+      "name": "Sehol QX",
+      "href": "https://www.drom.ru/catalog/jac/sehol_qx/"
+    },
+    {
+      "slug": "sehol_x4",
+      "name": "Sehol X4",
+      "href": "https://www.drom.ru/catalog/jac/sehol_x4/"
+    },
+    {
+      "slug": "sehol_x6",
+      "name": "Sehol X6",
+      "href": "https://www.drom.ru/catalog/jac/sehol_x6/"
+    },
+    {
+      "slug": "sehol_x7",
+      "name": "Sehol X7",
+      "href": "https://www.drom.ru/catalog/jac/sehol_x7/"
+    },
+    {
+      "slug": "sehol_x8",
+      "name": "Sehol X8",
+      "href": "https://www.drom.ru/catalog/jac/sehol_x8/"
+    },
+    {
+      "slug": "sehol_x8_plus",
+      "name": "Sehol X8 Plus",
+      "href": "https://www.drom.ru/catalog/jac/sehol_x8_plus/"
+    },
+    {
+      "slug": "t40",
+      "name": "T40",
+      "href": "https://www.drom.ru/catalog/jac/t40/"
+    },
+    {
+      "slug": "t6",
+      "name": "T6",
+      "href": "https://www.drom.ru/catalog/jac/t6/"
+    },
+    {
+      "slug": "t8",
+      "name": "T8",
+      "href": "https://www.drom.ru/catalog/jac/t8/"
+    },
+    {
+      "slug": "t8_pro",
+      "name": "T8 Pro",
+      "href": "https://www.drom.ru/catalog/jac/t8_pro/"
+    },
+    {
+      "slug": "t9",
+      "name": "T9",
+      "href": "https://www.drom.ru/catalog/jac/t9/"
+    },
+    {
+      "slug": "yttrium_3",
+      "name": "Yttrium 3",
+      "href": "https://www.drom.ru/catalog/jac/yttrium_3/"
+    }
+  ]
+}

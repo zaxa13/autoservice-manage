@@ -1,0 +1,117 @@
+{
+  "brand": {
+    "slug": "moskvitch",
+    "name": "Москвич",
+    "href": "https://www.drom.ru/catalog/moskvitch/"
+  },
+  "source": "https://www.drom.ru/catalog/moskvitch/",
+  "collected_at": "2026-05-17",
+  "count": 21,
+  "models": [
+    {
+      "slug": "2137",
+      "name": "2137",
+      "href": "https://www.drom.ru/catalog/moskvitch/2137/"
+    },
+    {
+      "slug": "2138",
+      "name": "2138",
+      "href": "https://www.drom.ru/catalog/moskvitch/2138/"
+    },
+    {
+      "slug": "2140",
+      "name": "2140",
+      "href": "https://www.drom.ru/catalog/moskvitch/2140/"
+    },
+    {
+      "slug": "2141",
+      "name": "2141",
+      "href": "https://www.drom.ru/catalog/moskvitch/2141/"
+    },
+    {
+      "slug": "2335",
+      "name": "2335",
+      "href": "https://www.drom.ru/catalog/moskvitch/2335/"
+    },
+    {
+      "slug": "3",
+      "name": "3",
+      "href": "https://www.drom.ru/catalog/moskvitch/3/"
+    },
+    {
+      "slug": "3e",
+      "name": "3е",
+      "href": "https://www.drom.ru/catalog/moskvitch/3e/"
+    },
+    {
+      "slug": "400",
+      "name": "400",
+      "href": "https://www.drom.ru/catalog/moskvitch/400/"
+    },
+    {
+      "slug": "401",
+      "name": "401",
+      "href": "https://www.drom.ru/catalog/moskvitch/401/"
+    },
+    {
+      "slug": "402",
+      "name": "402",
+      "href": "https://www.drom.ru/catalog/moskvitch/402/"
+    },
+    {
+      "slug": "403",
+      "name": "403",
+      "href": "https://www.drom.ru/catalog/moskvitch/403/"
+    },
+    {
+      "slug": "407",
+      "name": "407",
+      "href": "https://www.drom.ru/catalog/moskvitch/407/"
+    },
+    {
+      "slug": "408",
+      "name": "408",
+      "href": "https://www.drom.ru/catalog/moskvitch/408/"
+    },
+    {
+      "slug": "410",
+      "name": "410",
+      "href": "https://www.drom.ru/catalog/moskvitch/410/"
+    },
+    {
+      "slug": "411",
+      "name": "411",
+      "href": "https://www.drom.ru/catalog/moskvitch/411/"
+    },
+    {
+      "slug": "412",
+      "name": "412",
+      "href": "https://www.drom.ru/catalog/moskvitch/412/"
+    },
+    {
+      "slug": "426",
+      "name": "426",
+      "href": "https://www.drom.ru/catalog/moskvitch/426/"
+    },
+    {
+      "slug": "6",
+      "name": "6",
+      "href": "https://www.drom.ru/catalog/moskvitch/6/"
+    },
+    {
+      "slug": "8",
+      "name": "8",
+      "href": "https://www.drom.ru/catalog/moskvitch/8/"
+    },
+    {
+      "slug": "m70",
+      "name": "M70",
+      "href": "https://www.drom.ru/catalog/moskvitch/m70/"
+    },
+    {
+      "slug": "m90",
+      "name": "M90",
+      "href": "https://www.drom.ru/catalog/moskvitch/m90/"
+    }
+  ]
+}

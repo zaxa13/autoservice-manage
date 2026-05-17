@@ -1,0 +1,27 @@
+{
+  "brand": {
+    "slug": "aurus",
+    "name": "Aurus",
+    "href": "https://www.drom.ru/catalog/aurus/"
+  },
+  "source": "https://www.drom.ru/catalog/aurus/",
+  "collected_at": "2026-05-17",
+  "count": 3,
+  "models": [
+    {
+      "slug": "arsenal",
+      "name": "Арсенал",
+      "href": "https://www.drom.ru/catalog/aurus/arsenal/"
+    },
+    {
+      "slug": "komendant",
+      "name": "Комендант",
+      "href": "https://www.drom.ru/catalog/aurus/komendant/"
+    },
+    {
+      "slug": "senat",
+      "name": "Сенат",
+      "href": "https://www.drom.ru/catalog/aurus/senat/"
+    }
+  ]
+}

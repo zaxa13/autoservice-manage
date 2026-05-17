@@ -1,0 +1,77 @@
+{
+  "brand": {
+    "slug": "dacia",
+    "name": "Dacia",
+    "href": "https://www.drom.ru/catalog/dacia/"
+  },
+  "source": "https://www.drom.ru/catalog/dacia/",
+  "collected_at": "2026-05-17",
+  "count": 13,
+  "models": [
+    {
+      "slug": "bigster",
+      "name": "Bigster",
+      "href": "https://www.drom.ru/catalog/dacia/bigster/"
+    },
+    {
+      "slug": "dokker",
+      "name": "Dacia Dokker",
+      "href": "https://www.drom.ru/catalog/dacia/dokker/"
+    },
+    {
+      "slug": "duster",
+      "name": "Duster",
+      "href": "https://www.drom.ru/catalog/dacia/duster/"
+    },
+    {
+      "slug": "lodgy",
+      "name": "Lodgy",
+      "href": "https://www.drom.ru/catalog/dacia/lodgy/"
+    },
+    {
+      "slug": "lodgy_stepway",
+      "name": "Lodgy Stepway",
+      "href": "https://www.drom.ru/catalog/dacia/lodgy_stepway/"
+    },
+    {
+      "slug": "logan",
+      "name": "Logan",
+      "href": "https://www.drom.ru/catalog/dacia/logan/"
+    },
+    {
+      "slug": "logan_mcv",
+      "name": "Logan MCV",
+      "href": "https://www.drom.ru/catalog/dacia/logan_mcv/"
+    },
+    {
+      "slug": "logan_mcv_stepway",
+      "name": "Logan MCV Stepway",
+      "href": "https://www.drom.ru/catalog/dacia/logan_mcv_stepway/"
+    },
+    {
+      "slug": "logan_pick-up",
+      "name": "Logan Pick-Up",
+      "href": "https://www.drom.ru/catalog/dacia/logan_pick-up/"
+    },
+    {
+      "slug": "sandero",
+      "name": "Sandero",
+      "href": "https://www.drom.ru/catalog/dacia/sandero/"
+    },
+    {
+      "slug": "sandero_stepway",
+      "name": "Sandero Stepway",
+      "href": "https://www.drom.ru/catalog/dacia/sandero_stepway/"
+    },
+    {
+      "slug": "spring",
+      "name": "Spring",
+      "href": "https://www.drom.ru/catalog/dacia/spring/"
+    },
+    {
+      "slug": "stiker",
+      "name": "Stiker",
+      "href": "https://www.drom.ru/catalog/dacia/stiker/"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "brand": {
+    "slug": "jetta",
+    "name": "Jetta",
+    "href": "https://www.drom.ru/catalog/jetta/"
+  },
+  "source": "https://www.drom.ru/catalog/jetta/",
+  "collected_at": "2026-05-17",
+  "count": 5,
+  "models": [
+    {
+      "slug": "va3",
+      "name": "VA3",
+      "href": "https://www.drom.ru/catalog/jetta/va3/"
+    },
+    {
+      "slug": "va7",
+      "name": "VA7",
+      "href": "https://www.drom.ru/catalog/jetta/va7/"
+    },
+    {
+      "slug": "vs5",
+      "name": "VS5",
+      "href": "https://www.drom.ru/catalog/jetta/vs5/"
+    },
+    {
+      "slug": "vs7",
+      "name": "VS7",
+      "href": "https://www.drom.ru/catalog/jetta/vs7/"
+    },
+    {
+      "slug": "vs8",
+      "name": "VS8",
+      "href": "https://www.drom.ru/catalog/jetta/vs8/"
+    }
+  ]
+}

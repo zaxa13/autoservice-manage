@@ -1,0 +1,372 @@
+{
+  "brand": {
+    "slug": "hyundai",
+    "name": "Hyundai",
+    "href": "https://www.drom.ru/catalog/hyundai/"
+  },
+  "source": "https://www.drom.ru/catalog/hyundai/",
+  "collected_at": "2026-05-17",
+  "count": 72,
+  "models": [
+    {
+      "slug": "accent",
+      "name": "Accent",
+      "href": "https://www.drom.ru/catalog/hyundai/accent/"
+    },
+    {
+      "slug": "atos",
+      "name": "Atos",
+      "href": "https://www.drom.ru/catalog/hyundai/atos/"
+    },
+    {
+      "slug": "avante",
+      "name": "Avante",
+      "href": "https://www.drom.ru/catalog/hyundai/avante/"
+    },
+    {
+      "slug": "azera",
+      "name": "Azera",
+      "href": "https://www.drom.ru/catalog/hyundai/azera/"
+    },
+    {
+      "slug": "bayon",
+      "name": "Bayon",
+      "href": "https://www.drom.ru/catalog/hyundai/bayon/"
+    },
+    {
+      "slug": "casper",
+      "name": "Casper",
+      "href": "https://www.drom.ru/catalog/hyundai/casper/"
+    },
+    {
+      "slug": "celesta",
+      "name": "Celesta",
+      "href": "https://www.drom.ru/catalog/hyundai/celesta/"
+    },
+    {
+      "slug": "centennial",
+      "name": "Centennial",
+      "href": "https://www.drom.ru/catalog/hyundai/centennial/"
+    },
+    {
+      "slug": "coupe-model",
+      "name": "Coupe",
+      "href": "https://www.drom.ru/catalog/hyundai/coupe-model/"
+    },
+    {
+      "slug": "creta",
+      "name": "Creta",
+      "href": "https://www.drom.ru/catalog/hyundai/creta/"
+    },
+    {
+      "slug": "custin",
+      "name": "Custin",
+      "href": "https://www.drom.ru/catalog/hyundai/custin/"
+    },
+    {
+      "slug": "custo",
+      "name": "Custo",
+      "href": "https://www.drom.ru/catalog/hyundai/custo/"
+    },
+    {
+      "slug": "elantra",
+      "name": "Elantra",
+      "href": "https://www.drom.ru/catalog/hyundai/elantra/"
+    },
+    {
+      "slug": "elexio",
+      "name": "Elexio",
+      "href": "https://www.drom.ru/catalog/hyundai/elexio/"
+    },
+    {
+      "slug": "encino",
+      "name": "Encino",
+      "href": "https://www.drom.ru/catalog/hyundai/encino/"
+    },
+    {
+      "slug": "entourage",
+      "name": "Entourage",
+      "href": "https://www.drom.ru/catalog/hyundai/entourage/"
+    },
+    {
+      "slug": "equus",
+      "name": "Equus",
+      "href": "https://www.drom.ru/catalog/hyundai/equus/"
+    },
+    {
+      "slug": "galloper",
+      "name": "Galloper",
+      "href": "https://www.drom.ru/catalog/hyundai/galloper/"
+    },
+    {
+      "slug": "genesis",
+      "name": "Genesis",
+      "href": "https://www.drom.ru/catalog/hyundai/genesis/"
+    },
+    {
+      "slug": "getz",
+      "name": "Getz",
+      "href": "https://www.drom.ru/catalog/hyundai/getz/"
+    },
+    {
+      "slug": "grace",
+      "name": "Grace",
+      "href": "https://www.drom.ru/catalog/hyundai/grace/"
+    },
+    {
+      "slug": "grand_creta",
+      "name": "Grand Creta",
+      "href": "https://www.drom.ru/catalog/hyundai/grand_creta/"
+    },
+    {
+      "slug": "grand_santa_fe",
+      "name": "Grand Santa Fe",
+      "href": "https://www.drom.ru/catalog/hyundai/grand_santa_fe/"
+    },
+    {
+      "slug": "grandeur",
+      "name": "Grandeur",
+      "href": "https://www.drom.ru/catalog/hyundai/grandeur/"
+    },
+    {
+      "slug": "h1",
+      "name": "H1",
+      "href": "https://www.drom.ru/catalog/hyundai/h1/"
+    },
+    {
+      "slug": "h100",
+      "name": "H100",
+      "href": "https://www.drom.ru/catalog/hyundai/h100/"
+    },
+    {
+      "slug": "hg",
+      "name": "XG",
+      "href": "https://www.drom.ru/catalog/hyundai/hg/"
+    },
+    {
+      "slug": "i10",
+      "name": "i10",
+      "href": "https://www.drom.ru/catalog/hyundai/i10/"
+    },
+    {
+      "slug": "i20",
+      "name": "i20",
+      "href": "https://www.drom.ru/catalog/hyundai/i20/"
+    },
+    {
+      "slug": "i20_active",
+      "name": "i20 Active",
+      "href": "https://www.drom.ru/catalog/hyundai/i20_active/"
+    },
+    {
+      "slug": "i30",
+      "name": "i30",
+      "href": "https://www.drom.ru/catalog/hyundai/i30/"
+    },
+    {
+      "slug": "i40",
+      "name": "i40",
+      "href": "https://www.drom.ru/catalog/hyundai/i40/"
+    },
+    {
+      "slug": "inster",
+      "name": "Inster",
+      "href": "https://www.drom.ru/catalog/hyundai/inster/"
+    },
+    {
+      "slug": "ioniq",
+      "name": "Ioniq",
+      "href": "https://www.drom.ru/catalog/hyundai/ioniq/"
+    },
+    {
+      "slug": "ioniq_3",
+      "name": "Ioniq 3",
+      "href": "https://www.drom.ru/catalog/hyundai/ioniq_3/"
+    },
+    {
+      "slug": "ioniq_5",
+      "name": "Ioniq 5",
+      "href": "https://www.drom.ru/catalog/hyundai/ioniq_5/"
+    },
+    {
+      "slug": "ioniq_6",
+      "name": "Ioniq 6",
+      "href": "https://www.drom.ru/catalog/hyundai/ioniq_6/"
+    },
+    {
+      "slug": "ioniq_9",
+      "name": "Ioniq 9",
+      "href": "https://www.drom.ru/catalog/hyundai/ioniq_9/"
+    },
+    {
+      "slug": "ix25",
+      "name": "ix25",
+      "href": "https://www.drom.ru/catalog/hyundai/ix25/"
+    },
+    {
+      "slug": "ix35",
+      "name": "ix35",
+      "href": "https://www.drom.ru/catalog/hyundai/ix35/"
+    },
+    {
+      "slug": "ix55",
+      "name": "ix55",
+      "href": "https://www.drom.ru/catalog/hyundai/ix55/"
+    },
+    {
+      "slug": "kona",
+      "name": "Kona",
+      "href": "https://www.drom.ru/catalog/hyundai/kona/"
+    },
+    {
+      "slug": "kona_electric",
+      "name": "Kona Electric",
+      "href": "https://www.drom.ru/catalog/hyundai/kona_electric/"
+    },
+    {
+      "slug": "lafesta",
+      "name": "Lafesta",
+      "href": "https://www.drom.ru/catalog/hyundai/lafesta/"
+    },
+    {
+      "slug": "lantra",
+      "name": "Lantra",
+      "href": "https://www.drom.ru/catalog/hyundai/lantra/"
+    },
+    {
+      "slug": "lavita",
+      "name": "Lavita",
+      "href": "https://www.drom.ru/catalog/hyundai/lavita/"
+    },
+    {
+      "slug": "matrix",
+      "name": "Matrix",
+      "href": "https://www.drom.ru/catalog/hyundai/matrix/"
+    },
+    {
+      "slug": "maxcruze",
+      "name": "Maxcruze",
+      "href": "https://www.drom.ru/catalog/hyundai/maxcruze/"
+    },
+    {
+      "slug": "mistra",
+      "name": "Mistra",
+      "href": "https://www.drom.ru/catalog/hyundai/mistra/"
+    },
+    {
+      "slug": "mufasa",
+      "name": "Mufasa",
+      "href": "https://www.drom.ru/catalog/hyundai/mufasa/"
+    },
+    {
+      "slug": "nexo",
+      "name": "Nexo",
+      "href": "https://www.drom.ru/catalog/hyundai/nexo/"
+    },
+    {
+      "slug": "nf",
+      "name": "NF",
+      "href": "https://www.drom.ru/catalog/hyundai/nf/"
+    },
+    {
+      "slug": "palisade",
+      "name": "Palisade",
+      "href": "https://www.drom.ru/catalog/hyundai/palisade/"
+    },
+    {
+      "slug": "presto",
+      "name": "Presto",
+      "href": "https://www.drom.ru/catalog/hyundai/presto/"
+    },
+    {
+      "slug": "s_coupe",
+      "name": "S Coupe",
+      "href": "https://www.drom.ru/catalog/hyundai/s_coupe/"
+    },
+    {
+      "slug": "santa_cruz",
+      "name": "Santa Cruz",
+      "href": "https://www.drom.ru/catalog/hyundai/santa_cruz/"
+    },
+    {
+      "slug": "santa_fe",
+      "name": "Santa Fe",
+      "href": "https://www.drom.ru/catalog/hyundai/santa_fe/"
+    },
+    {
+      "slug": "santa_fe_classic",
+      "name": "Santa Fe Classic",
+      "href": "https://www.drom.ru/catalog/hyundai/santa_fe_classic/"
+    },
+    {
+      "slug": "solaris",
+      "name": "Solaris",
+      "href": "https://www.drom.ru/catalog/hyundai/solaris/"
+    },
+    {
+      "slug": "sonata",
+      "name": "Sonata",
+      "href": "https://www.drom.ru/catalog/hyundai/sonata/"
+    },
+    {
+      "slug": "starex",
+      "name": "Starex",
+      "href": "https://www.drom.ru/catalog/hyundai/starex/"
+    },
+    {
+      "slug": "stargazer",
+      "name": "Stargazer",
+      "href": "https://www.drom.ru/catalog/hyundai/stargazer/"
+    },
+    {
+      "slug": "staria",
+      "name": "Staria",
+      "href": "https://www.drom.ru/catalog/hyundai/staria/"
+    },
+    {
+      "slug": "terracan",
+      "name": "Terracan",
+      "href": "https://www.drom.ru/catalog/hyundai/terracan/"
+    },
+    {
+      "slug": "tiburon",
+      "name": "Tiburon",
+      "href": "https://www.drom.ru/catalog/hyundai/tiburon/"
+    },
+    {
+      "slug": "trajet",
+      "name": "Trajet",
+      "href": "https://www.drom.ru/catalog/hyundai/trajet/"
+    },
+    {
+      "slug": "tucson",
+      "name": "Tucson",
+      "href": "https://www.drom.ru/catalog/hyundai/tucson/"
+    },
+    {
+      "slug": "tuscani",
+      "name": "Tuscani",
+      "href": "https://www.drom.ru/catalog/hyundai/tuscani/"
+    },
+    {
+      "slug": "veloster",
+      "name": "Veloster",
+      "href": "https://www.drom.ru/catalog/hyundai/veloster/"
+    },
+    {
+      "slug": "venue",
+      "name": "Venue",
+      "href": "https://www.drom.ru/catalog/hyundai/venue/"
+    },
+    {
+      "slug": "veracruz",
+      "name": "Veracruz",
+      "href": "https://www.drom.ru/catalog/hyundai/veracruz/"
+    },
+    {
+      "slug": "verna",
+      "name": "Verna",
+      "href": "https://www.drom.ru/catalog/hyundai/verna/"
+    }
+  ]
+}

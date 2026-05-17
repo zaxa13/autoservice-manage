@@ -1,0 +1,277 @@
+{
+  "brand": {
+    "slug": "dongfeng",
+    "name": "Dongfeng",
+    "href": "https://www.drom.ru/catalog/dongfeng/"
+  },
+  "source": "https://www.drom.ru/catalog/dongfeng/",
+  "collected_at": "2026-05-17",
+  "count": 53,
+  "models": [
+    {
+      "slug": "580",
+      "name": "580",
+      "href": "https://www.drom.ru/catalog/dongfeng/580/"
+    },
+    {
+      "slug": "a9",
+      "name": "A9",
+      "href": "https://www.drom.ru/catalog/dongfeng/a9/"
+    },
+    {
+      "slug": "aeolus_a30",
+      "name": "Aeolus A30",
+      "href": "https://www.drom.ru/catalog/dongfeng/aeolus_a30/"
+    },
+    {
+      "slug": "aeolus_a60",
+      "name": "Aeolus A60",
+      "href": "https://www.drom.ru/catalog/dongfeng/aeolus_a60/"
+    },
+    {
+      "slug": "aeolus_ax3",
+      "name": "Aeolus AX3",
+      "href": "https://www.drom.ru/catalog/dongfeng/aeolus_ax3/"
+    },
+    {
+      "slug": "aeolus_ax4",
+      "name": "Aeolus AX4",
+      "href": "https://www.drom.ru/catalog/dongfeng/aeolus_ax4/"
+    },
+    {
+      "slug": "aeolus_ax5",
+      "name": "Aeolus AX5",
+      "href": "https://www.drom.ru/catalog/dongfeng/aeolus_ax5/"
+    },
+    {
+      "slug": "aeolus_ax7",
+      "name": "Aeolus AX7",
+      "href": "https://www.drom.ru/catalog/dongfeng/aeolus_ax7/"
+    },
+    {
+      "slug": "aeolus_ax7_plus",
+      "name": "Aeolus AX7 Plus",
+      "href": "https://www.drom.ru/catalog/dongfeng/aeolus_ax7_plus/"
+    },
+    {
+      "slug": "aeolus_ax7_pro",
+      "name": "Aeolus AX7 Pro",
+      "href": "https://www.drom.ru/catalog/dongfeng/aeolus_ax7_pro/"
+    },
+    {
+      "slug": "aeolus_e70",
+      "name": "Aeolus E70",
+      "href": "https://www.drom.ru/catalog/dongfeng/aeolus_e70/"
+    },
+    {
+      "slug": "aeolus_haohan",
+      "name": "Aeolus Haohan",
+      "href": "https://www.drom.ru/catalog/dongfeng/aeolus_haohan/"
+    },
+    {
+      "slug": "aeolus_haoji",
+      "name": "Aeolus Huge",
+      "href": "https://www.drom.ru/catalog/dongfeng/aeolus_haoji/"
+    },
+    {
+      "slug": "aeolus_yixuan",
+      "name": "Aeolus Yixuan",
+      "href": "https://www.drom.ru/catalog/dongfeng/aeolus_yixuan/"
+    },
+    {
+      "slug": "aeolus_yixuan_gs",
+      "name": "Aeolus Yixuan GS",
+      "href": "https://www.drom.ru/catalog/dongfeng/aeolus_yixuan_gs/"
+    },
+    {
+      "slug": "aeolus_yixuan_max",
+      "name": "Aeolus Yixuan Max",
+      "href": "https://www.drom.ru/catalog/dongfeng/aeolus_yixuan_max/"
+    },
+    {
+      "slug": "ax4",
+      "name": "AX4",
+      "href": "https://www.drom.ru/catalog/dongfeng/ax4/"
+    },
+    {
+      "slug": "ax7",
+      "name": "AX7",
+      "href": "https://www.drom.ru/catalog/dongfeng/ax7/"
+    },
+    {
+      "slug": "c-series",
+      "name": "C-Series",
+      "href": "https://www.drom.ru/catalog/dongfeng/c-series/"
+    },
+    {
+      "slug": "df6",
+      "name": "DF6",
+      "href": "https://www.drom.ru/catalog/dongfeng/df6/"
+    },
+    {
+      "slug": "e11k",
+      "name": "E11K",
+      "href": "https://www.drom.ru/catalog/dongfeng/e11k/"
+    },
+    {
+      "slug": "ec36",
+      "name": "EC36",
+      "href": "https://www.drom.ru/catalog/dongfeng/ec36/"
+    },
+    {
+      "slug": "ep_007",
+      "name": "EP 007",
+      "href": "https://www.drom.ru/catalog/dongfeng/ep_007/"
+    },
+    {
+      "slug": "ep_008",
+      "name": "EP 008",
+      "href": "https://www.drom.ru/catalog/dongfeng/ep_008/"
+    },
+    {
+      "slug": "ex1",
+      "name": "Nano EX1",
+      "href": "https://www.drom.ru/catalog/dongfeng/ex1/"
+    },
+    {
+      "slug": "fengon_370",
+      "name": "Fengon 370",
+      "href": "https://www.drom.ru/catalog/dongfeng/fengon_370/"
+    },
+    {
+      "slug": "fengon_500",
+      "name": "DFSK Fengon 500",
+      "href": "https://www.drom.ru/catalog/dongfeng/fengon_500/"
+    },
+    {
+      "slug": "fengon_580",
+      "name": "Fengon 580",
+      "href": "https://www.drom.ru/catalog/dongfeng/fengon_580/"
+    },
+    {
+      "slug": "fengon_580_pro",
+      "name": "Fengon 580 Pro",
+      "href": "https://www.drom.ru/catalog/dongfeng/fengon_580_pro/"
+    },
+    {
+      "slug": "fengon_e3",
+      "name": "Fengon e3",
+      "href": "https://www.drom.ru/catalog/dongfeng/fengon_e3/"
+    },
+    {
+      "slug": "fengon_ix5",
+      "name": "DFSK Fengon ix5",
+      "href": "https://www.drom.ru/catalog/dongfeng/fengon_ix5/"
+    },
+    {
+      "slug": "fengon_ix7",
+      "name": "DFSK Fengon ix7",
+      "href": "https://www.drom.ru/catalog/dongfeng/fengon_ix7/"
+    },
+    {
+      "slug": "fengon_mini_ev",
+      "name": "Fengon Mini EV",
+      "href": "https://www.drom.ru/catalog/dongfeng/fengon_mini_ev/"
+    },
+    {
+      "slug": "fengon_s560",
+      "name": "Fengon S560",
+      "href": "https://www.drom.ru/catalog/dongfeng/fengon_s560/"
+    },
+    {
+      "slug": "h30_cross",
+      "name": "H30 Cross",
+      "href": "https://www.drom.ru/catalog/dongfeng/h30_cross/"
+    },
+    {
+      "slug": "huge",
+      "name": "Huge",
+      "href": "https://www.drom.ru/catalog/dongfeng/huge/"
+    },
+    {
+      "slug": "k33-561",
+      "name": "K33-561",
+      "href": "https://www.drom.ru/catalog/dongfeng/k33-561/"
+    },
+    {
+      "slug": "landian_e5",
+      "name": "Landian E5",
+      "href": "https://www.drom.ru/catalog/dongfeng/landian_e5/"
+    },
+    {
+      "slug": "landian_e5_plus",
+      "name": "Landian E5 Plus",
+      "href": "https://www.drom.ru/catalog/dongfeng/landian_e5_plus/"
+    },
+    {
+      "slug": "mage",
+      "name": "Mage",
+      "href": "https://www.drom.ru/catalog/dongfeng/mage/"
+    },
+    {
+      "slug": "mengshi_ms600",
+      "name": "Mengshi MS600",
+      "href": "https://www.drom.ru/catalog/dongfeng/mengshi_ms600/"
+    },
+    {
+      "slug": "mpv",
+      "name": "MPV",
+      "href": "https://www.drom.ru/catalog/dongfeng/mpv/"
+    },
+    {
+      "slug": "nammi_01",
+      "name": "Nammi 01",
+      "href": "https://www.drom.ru/catalog/dongfeng/nammi_01/"
+    },
+    {
+      "slug": "nammi_06",
+      "name": "Nammi 06",
+      "href": "https://www.drom.ru/catalog/dongfeng/nammi_06/"
+    },
+    {
+      "slug": "oting",
+      "name": "Oting",
+      "href": "https://www.drom.ru/catalog/dongfeng/oting/"
+    },
+    {
+      "slug": "rich",
+      "name": "Rich",
+      "href": "https://www.drom.ru/catalog/dongfeng/rich/"
+    },
+    {
+      "slug": "rich_6",
+      "name": "Rich 6",
+      "href": "https://www.drom.ru/catalog/dongfeng/rich_6/"
+    },
+    {
+      "slug": "rich_7",
+      "name": "Rich 7",
+      "href": "https://www.drom.ru/catalog/dongfeng/rich_7/"
+    },
+    {
+      "slug": "s30",
+      "name": "S30",
+      "href": "https://www.drom.ru/catalog/dongfeng/s30/"
+    },
+    {
+      "slug": "shine_gs",
+      "name": "Shine GS",
+      "href": "https://www.drom.ru/catalog/dongfeng/shine_gs/"
+    },
+    {
+      "slug": "shine_max",
+      "name": "Shine Max",
+      "href": "https://www.drom.ru/catalog/dongfeng/shine_max/"
+    },
+    {
+      "slug": "sky_ev01",
+      "name": "Aeolus Sky EV01",
+      "href": "https://www.drom.ru/catalog/dongfeng/sky_ev01/"
+    },
+    {
+      "slug": "z9",
+      "name": "Z9",
+      "href": "https://www.drom.ru/catalog/dongfeng/z9/"
+    }
+  ]
+}

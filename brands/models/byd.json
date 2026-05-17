@@ -1,0 +1,372 @@
+{
+  "brand": {
+    "slug": "byd",
+    "name": "BYD",
+    "href": "https://www.drom.ru/catalog/byd/"
+  },
+  "source": "https://www.drom.ru/catalog/byd/",
+  "collected_at": "2026-05-17",
+  "count": 72,
+  "models": [
+    {
+      "slug": "d1",
+      "name": "D1",
+      "href": "https://www.drom.ru/catalog/byd/d1/"
+    },
+    {
+      "slug": "datang",
+      "name": "Datang",
+      "href": "https://www.drom.ru/catalog/byd/datang/"
+    },
+    {
+      "slug": "destroyer_05",
+      "name": "Destroyer 05",
+      "href": "https://www.drom.ru/catalog/byd/destroyer_05/"
+    },
+    {
+      "slug": "dolphin",
+      "name": "Dolphin",
+      "href": "https://www.drom.ru/catalog/byd/dolphin/"
+    },
+    {
+      "slug": "e1",
+      "name": "e1",
+      "href": "https://www.drom.ru/catalog/byd/e1/"
+    },
+    {
+      "slug": "e2",
+      "name": "e2",
+      "href": "https://www.drom.ru/catalog/byd/e2/"
+    },
+    {
+      "slug": "e3",
+      "name": "e3",
+      "href": "https://www.drom.ru/catalog/byd/e3/"
+    },
+    {
+      "slug": "e5",
+      "name": "e5",
+      "href": "https://www.drom.ru/catalog/byd/e5/"
+    },
+    {
+      "slug": "e6",
+      "name": "e6",
+      "href": "https://www.drom.ru/catalog/byd/e6/"
+    },
+    {
+      "slug": "e7",
+      "name": "e7",
+      "href": "https://www.drom.ru/catalog/byd/e7/"
+    },
+    {
+      "slug": "e9",
+      "name": "e9",
+      "href": "https://www.drom.ru/catalog/byd/e9/"
+    },
+    {
+      "slug": "f0",
+      "name": "F0",
+      "href": "https://www.drom.ru/catalog/byd/f0/"
+    },
+    {
+      "slug": "f3",
+      "name": "F3",
+      "href": "https://www.drom.ru/catalog/byd/f3/"
+    },
+    {
+      "slug": "f5",
+      "name": "F5",
+      "href": "https://www.drom.ru/catalog/byd/f5/"
+    },
+    {
+      "slug": "f6",
+      "name": "F6",
+      "href": "https://www.drom.ru/catalog/byd/f6/"
+    },
+    {
+      "slug": "f7",
+      "name": "F7",
+      "href": "https://www.drom.ru/catalog/byd/f7/"
+    },
+    {
+      "slug": "fangchengbao_leopard_5",
+      "name": "FangChengBao Leopard 5",
+      "href": "https://www.drom.ru/catalog/byd/fangchengbao_leopard_5/"
+    },
+    {
+      "slug": "fangchengbao_leopard_8",
+      "name": "FangChengBao Leopard 8",
+      "href": "https://www.drom.ru/catalog/byd/fangchengbao_leopard_8/"
+    },
+    {
+      "slug": "fangchengbao_titanium_3",
+      "name": "FangChengBao Titanium 3",
+      "href": "https://www.drom.ru/catalog/byd/fangchengbao_titanium_3/"
+    },
+    {
+      "slug": "fangchengbao_titanium_7",
+      "name": "FangChengBao Titanium 7",
+      "href": "https://www.drom.ru/catalog/byd/fangchengbao_titanium_7/"
+    },
+    {
+      "slug": "flyer",
+      "name": "Flyer",
+      "href": "https://www.drom.ru/catalog/byd/flyer/"
+    },
+    {
+      "slug": "frigate_07",
+      "name": "Frigate 07",
+      "href": "https://www.drom.ru/catalog/byd/frigate_07/"
+    },
+    {
+      "slug": "g3",
+      "name": "G3",
+      "href": "https://www.drom.ru/catalog/byd/g3/"
+    },
+    {
+      "slug": "g6",
+      "name": "G6",
+      "href": "https://www.drom.ru/catalog/byd/g6/"
+    },
+    {
+      "slug": "han",
+      "name": "Han",
+      "href": "https://www.drom.ru/catalog/byd/han/"
+    },
+    {
+      "slug": "han_l",
+      "name": "Han L",
+      "href": "https://www.drom.ru/catalog/byd/han_l/"
+    },
+    {
+      "slug": "l3",
+      "name": "L3",
+      "href": "https://www.drom.ru/catalog/byd/l3/"
+    },
+    {
+      "slug": "linghui_e5",
+      "name": "Linghui e5",
+      "href": "https://www.drom.ru/catalog/byd/linghui_e5/"
+    },
+    {
+      "slug": "linghui_e7",
+      "name": "Linghui e7",
+      "href": "https://www.drom.ru/catalog/byd/linghui_e7/"
+    },
+    {
+      "slug": "linghui_e9",
+      "name": "Linghui e9",
+      "href": "https://www.drom.ru/catalog/byd/linghui_e9/"
+    },
+    {
+      "slug": "linghui_m9",
+      "name": "Linghui M9",
+      "href": "https://www.drom.ru/catalog/byd/linghui_m9/"
+    },
+    {
+      "slug": "m6",
+      "name": "M6",
+      "href": "https://www.drom.ru/catalog/byd/m6/"
+    },
+    {
+      "slug": "qin",
+      "name": "Qin",
+      "href": "https://www.drom.ru/catalog/byd/qin/"
+    },
+    {
+      "slug": "qin_l",
+      "name": "Qin L DM",
+      "href": "https://www.drom.ru/catalog/byd/qin_l/"
+    },
+    {
+      "slug": "qin_l_ev",
+      "name": "Qin L EV",
+      "href": "https://www.drom.ru/catalog/byd/qin_l_ev/"
+    },
+    {
+      "slug": "qin_max",
+      "name": "Qin Max",
+      "href": "https://www.drom.ru/catalog/byd/qin_max/"
+    },
+    {
+      "slug": "qin_plus",
+      "name": "Qin Plus",
+      "href": "https://www.drom.ru/catalog/byd/qin_plus/"
+    },
+    {
+      "slug": "qin_pro",
+      "name": "Qin Pro",
+      "href": "https://www.drom.ru/catalog/byd/qin_pro/"
+    },
+    {
+      "slug": "s6",
+      "name": "S6",
+      "href": "https://www.drom.ru/catalog/byd/s6/"
+    },
+    {
+      "slug": "s7",
+      "name": "S7",
+      "href": "https://www.drom.ru/catalog/byd/s7/"
+    },
+    {
+      "slug": "sea-lion-05",
+      "name": "Sea Lion 05 DM",
+      "href": "https://www.drom.ru/catalog/byd/sea-lion-05/"
+    },
+    {
+      "slug": "sea-lion-05-ev",
+      "name": "Sea Lion 05 EV",
+      "href": "https://www.drom.ru/catalog/byd/sea-lion-05-ev/"
+    },
+    {
+      "slug": "sea-lion-06",
+      "name": "Sea Lion 06",
+      "href": "https://www.drom.ru/catalog/byd/sea-lion-06/"
+    },
+    {
+      "slug": "sea_lion_07",
+      "name": "Sea Lion 07 EV",
+      "href": "https://www.drom.ru/catalog/byd/sea_lion_07/"
+    },
+    {
+      "slug": "sea_lion_07_dm",
+      "name": "Sea Lion 07 DM",
+      "href": "https://www.drom.ru/catalog/byd/sea_lion_07_dm/"
+    },
+    {
+      "slug": "sea_lion_08",
+      "name": "Sea Lion 08",
+      "href": "https://www.drom.ru/catalog/byd/sea_lion_08/"
+    },
+    {
+      "slug": "seagull",
+      "name": "Seagull",
+      "href": "https://www.drom.ru/catalog/byd/seagull/"
+    },
+    {
+      "slug": "seal",
+      "name": "Seal",
+      "href": "https://www.drom.ru/catalog/byd/seal/"
+    },
+    {
+      "slug": "seal_06",
+      "name": "Seal 06 DM",
+      "href": "https://www.drom.ru/catalog/byd/seal_06/"
+    },
+    {
+      "slug": "seal_06_ev",
+      "name": "Seal 06 EV",
+      "href": "https://www.drom.ru/catalog/byd/seal_06_ev/"
+    },
+    {
+      "slug": "seal_06_gt",
+      "name": "Seal 06 GT",
+      "href": "https://www.drom.ru/catalog/byd/seal_06_gt/"
+    },
+    {
+      "slug": "seal_07",
+      "name": "Seal 07",
+      "href": "https://www.drom.ru/catalog/byd/seal_07/"
+    },
+    {
+      "slug": "seal_08",
+      "name": "Seal 08",
+      "href": "https://www.drom.ru/catalog/byd/seal_08/"
+    },
+    {
+      "slug": "seal_5",
+      "name": "Seal 05",
+      "href": "https://www.drom.ru/catalog/byd/seal_5/"
+    },
+    {
+      "slug": "shark",
+      "name": "Shark",
+      "href": "https://www.drom.ru/catalog/byd/shark/"
+    },
+    {
+      "slug": "song",
+      "name": "Song",
+      "href": "https://www.drom.ru/catalog/byd/song/"
+    },
+    {
+      "slug": "song_l",
+      "name": "Song L EV",
+      "href": "https://www.drom.ru/catalog/byd/song_l/"
+    },
+    {
+      "slug": "song_l_dm",
+      "name": "Song L DM",
+      "href": "https://www.drom.ru/catalog/byd/song_l_dm/"
+    },
+    {
+      "slug": "song_max",
+      "name": "Song Max",
+      "href": "https://www.drom.ru/catalog/byd/song_max/"
+    },
+    {
+      "slug": "song_plus",
+      "name": "Song Plus",
+      "href": "https://www.drom.ru/catalog/byd/song_plus/"
+    },
+    {
+      "slug": "song_pro",
+      "name": "Song Pro",
+      "href": "https://www.drom.ru/catalog/byd/song_pro/"
+    },
+    {
+      "slug": "song_ultra",
+      "name": "Song Ultra",
+      "href": "https://www.drom.ru/catalog/byd/song_ultra/"
+    },
+    {
+      "slug": "tang",
+      "name": "Tang",
+      "href": "https://www.drom.ru/catalog/byd/tang/"
+    },
+    {
+      "slug": "tang_l",
+      "name": "Tang L",
+      "href": "https://www.drom.ru/catalog/byd/tang_l/"
+    },
+    {
+      "slug": "xia",
+      "name": "Xia",
+      "href": "https://www.drom.ru/catalog/byd/xia/"
+    },
+    {
+      "slug": "yangwang_u7",
+      "name": "Yangwang U7",
+      "href": "https://www.drom.ru/catalog/byd/yangwang_u7/"
+    },
+    {
+      "slug": "yangwang_u8",
+      "name": "Yangwang U8",
+      "href": "https://www.drom.ru/catalog/byd/yangwang_u8/"
+    },
+    {
+      "slug": "yangwang_u9",
+      "name": "Yangwang U9",
+      "href": "https://www.drom.ru/catalog/byd/yangwang_u9/"
+    },
+    {
+      "slug": "yuan",
+      "name": "Yuan",
+      "href": "https://www.drom.ru/catalog/byd/yuan/"
+    },
+    {
+      "slug": "yuan_plus",
+      "name": "Yuan Plus",
+      "href": "https://www.drom.ru/catalog/byd/yuan_plus/"
+    },
+    {
+      "slug": "yuan_pro",
+      "name": "Yuan Pro",
+      "href": "https://www.drom.ru/catalog/byd/yuan_pro/"
+    },
+    {
+      "slug": "yuan_up",
+      "name": "Yuan Up",
+      "href": "https://www.drom.ru/catalog/byd/yuan_up/"
+    }
+  ]
+}

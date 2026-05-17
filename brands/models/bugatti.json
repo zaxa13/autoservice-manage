@@ -1,0 +1,27 @@
+{
+  "brand": {
+    "slug": "bugatti",
+    "name": "Bugatti",
+    "href": "https://www.drom.ru/catalog/bugatti/"
+  },
+  "source": "https://www.drom.ru/catalog/bugatti/",
+  "collected_at": "2026-05-17",
+  "count": 3,
+  "models": [
+    {
+      "slug": "chiron",
+      "name": "Chiron",
+      "href": "https://www.drom.ru/catalog/bugatti/chiron/"
+    },
+    {
+      "slug": "tourbillon",
+      "name": "Tourbillon",
+      "href": "https://www.drom.ru/catalog/bugatti/tourbillon/"
+    },
+    {
+      "slug": "veyron",
+      "name": "Veyron",
+      "href": "https://www.drom.ru/catalog/bugatti/veyron/"
+    }
+  ]
+}

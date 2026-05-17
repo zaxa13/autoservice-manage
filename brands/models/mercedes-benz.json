@@ -1,0 +1,327 @@
+{
+  "brand": {
+    "slug": "mercedes-benz",
+    "name": "Mercedes-Benz",
+    "href": "https://www.drom.ru/catalog/mercedes-benz/"
+  },
+  "source": "https://www.drom.ru/catalog/mercedes-benz/",
+  "collected_at": "2026-05-17",
+  "count": 63,
+  "models": [
+    {
+      "slug": "190",
+      "name": "190",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/190/"
+    },
+    {
+      "slug": "a-class",
+      "name": "A-Class",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/a-class/"
+    },
+    {
+      "slug": "amg_gt",
+      "name": "AMG GT",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/amg_gt/"
+    },
+    {
+      "slug": "amg_one",
+      "name": "AMG One",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/amg_one/"
+    },
+    {
+      "slug": "b-class",
+      "name": "B-Class",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/b-class/"
+    },
+    {
+      "slug": "c-class",
+      "name": "C-Class",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/c-class/"
+    },
+    {
+      "slug": "citan",
+      "name": "Citan",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/citan/"
+    },
+    {
+      "slug": "cl-class",
+      "name": "CL-Class",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/cl-class/"
+    },
+    {
+      "slug": "cla-class",
+      "name": "CLA-Class",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/cla-class/"
+    },
+    {
+      "slug": "clc-class",
+      "name": "CLC-Class",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/clc-class/"
+    },
+    {
+      "slug": "cle-class",
+      "name": "CLE-Class",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/cle-class/"
+    },
+    {
+      "slug": "clk-class",
+      "name": "CLK-Class",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/clk-class/"
+    },
+    {
+      "slug": "cls-class",
+      "name": "CLS-Class",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/cls-class/"
+    },
+    {
+      "slug": "e-class",
+      "name": "E-Class",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/e-class/"
+    },
+    {
+      "slug": "eqa",
+      "name": "EQA",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/eqa/"
+    },
+    {
+      "slug": "eqb",
+      "name": "EQB",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/eqb/"
+    },
+    {
+      "slug": "eqc",
+      "name": "EQC",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/eqc/"
+    },
+    {
+      "slug": "eqe",
+      "name": "EQE",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/eqe/"
+    },
+    {
+      "slug": "eqe_suv",
+      "name": "EQE SUV",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/eqe_suv/"
+    },
+    {
+      "slug": "eqs",
+      "name": "EQS",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/eqs/"
+    },
+    {
+      "slug": "eqs_suv",
+      "name": "EQS SUV",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/eqs_suv/"
+    },
+    {
+      "slug": "eqv",
+      "name": "EQV",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/eqv/"
+    },
+    {
+      "slug": "g-class",
+      "name": "G-Class",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/g-class/"
+    },
+    {
+      "slug": "gl-class",
+      "name": "GL-Class",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/gl-class/"
+    },
+    {
+      "slug": "gla-class",
+      "name": "GLA-Class",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/gla-class/"
+    },
+    {
+      "slug": "glb",
+      "name": "GLB-Class",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/glb/"
+    },
+    {
+      "slug": "glc-class",
+      "name": "GLC-Class",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/glc-class/"
+    },
+    {
+      "slug": "glc_coupe",
+      "name": "GLC Coupe",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/glc_coupe/"
+    },
+    {
+      "slug": "glc_eq",
+      "name": "GLC EQ",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/glc_eq/"
+    },
+    {
+      "slug": "gle-class",
+      "name": "GLE-Class",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/gle-class/"
+    },
+    {
+      "slug": "gle_coupe",
+      "name": "GLE Coupe",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/gle_coupe/"
+    },
+    {
+      "slug": "glk-class",
+      "name": "GLK-Class",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/glk-class/"
+    },
+    {
+      "slug": "gls-class",
+      "name": "GLS-Class",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/gls-class/"
+    },
+    {
+      "slug": "m-class",
+      "name": "M-Class",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/m-class/"
+    },
+    {
+      "slug": "metris",
+      "name": "Metris",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/metris/"
+    },
+    {
+      "slug": "r-class",
+      "name": "R-Class",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/r-class/"
+    },
+    {
+      "slug": "s-class",
+      "name": "S-Class",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/s-class/"
+    },
+    {
+      "slug": "sl-class",
+      "name": "SL-Class",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/sl-class/"
+    },
+    {
+      "slug": "slc-class",
+      "name": "SLC-Class",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/slc-class/"
+    },
+    {
+      "slug": "slk-class",
+      "name": "SLK-Class",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/slk-class/"
+    },
+    {
+      "slug": "slr_mclaren",
+      "name": "SLR McLaren",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/slr_mclaren/"
+    },
+    {
+      "slug": "sls_amg",
+      "name": "SLS AMG",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/sls_amg/"
+    },
+    {
+      "slug": "v-class",
+      "name": "V-Class",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/v-class/"
+    },
+    {
+      "slug": "vaneo",
+      "name": "Vaneo",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/vaneo/"
+    },
+    {
+      "slug": "viano",
+      "name": "Viano",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/viano/"
+    },
+    {
+      "slug": "vito",
+      "name": "Vito",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/vito/"
+    },
+    {
+      "slug": "vle",
+      "name": "VLE",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/vle/"
+    },
+    {
+      "slug": "w108",
+      "name": "W108",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/w108/"
+    },
+    {
+      "slug": "w111",
+      "name": "W111",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/w111/"
+    },
+    {
+      "slug": "w114",
+      "name": "W114",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/w114/"
+    },
+    {
+      "slug": "w115",
+      "name": "W115",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/w115/"
+    },
+    {
+      "slug": "w120",
+      "name": "W120",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/w120/"
+    },
+    {
+      "slug": "w121",
+      "name": "W121",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/w121/"
+    },
+    {
+      "slug": "w123",
+      "name": "W123",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/w123/"
+    },
+    {
+      "slug": "w128",
+      "name": "W128",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/w128/"
+    },
+    {
+      "slug": "w136",
+      "name": "W136",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/w136/"
+    },
+    {
+      "slug": "w142",
+      "name": "W142",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/w142/"
+    },
+    {
+      "slug": "w143",
+      "name": "W143",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/w143/"
+    },
+    {
+      "slug": "w180",
+      "name": "W180",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/w180/"
+    },
+    {
+      "slug": "w187",
+      "name": "W187",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/w187/"
+    },
+    {
+      "slug": "w189",
+      "name": "W189",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/w189/"
+    },
+    {
+      "slug": "w21",
+      "name": "W21",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/w21/"
+    },
+    {
+      "slug": "x-class",
+      "name": "X-Class",
+      "href": "https://www.drom.ru/catalog/mercedes-benz/x-class/"
+    }
+  ]
+}

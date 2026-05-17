@@ -1,0 +1,537 @@
+{
+  "brand": {
+    "slug": "honda",
+    "name": "Honda",
+    "href": "https://www.drom.ru/catalog/honda/"
+  },
+  "source": "https://www.drom.ru/catalog/honda/",
+  "collected_at": "2026-05-17",
+  "count": 105,
+  "models": [
+    {
+      "slug": "1300",
+      "name": "1300",
+      "href": "https://www.drom.ru/catalog/honda/1300/"
+    },
+    {
+      "slug": "145",
+      "name": "145",
+      "href": "https://www.drom.ru/catalog/honda/145/"
+    },
+    {
+      "slug": "accord",
+      "name": "Accord",
+      "href": "https://www.drom.ru/catalog/honda/accord/"
+    },
+    {
+      "slug": "accord_inspire",
+      "name": "Accord Inspire",
+      "href": "https://www.drom.ru/catalog/honda/accord_inspire/"
+    },
+    {
+      "slug": "acty",
+      "name": "Acty",
+      "href": "https://www.drom.ru/catalog/honda/acty/"
+    },
+    {
+      "slug": "airwave",
+      "name": "Airwave",
+      "href": "https://www.drom.ru/catalog/honda/airwave/"
+    },
+    {
+      "slug": "ascot",
+      "name": "Ascot",
+      "href": "https://www.drom.ru/catalog/honda/ascot/"
+    },
+    {
+      "slug": "ascot_innova",
+      "name": "Ascot Innova",
+      "href": "https://www.drom.ru/catalog/honda/ascot_innova/"
+    },
+    {
+      "slug": "avancier",
+      "name": "Avancier",
+      "href": "https://www.drom.ru/catalog/honda/avancier/"
+    },
+    {
+      "slug": "ballade",
+      "name": "Ballade",
+      "href": "https://www.drom.ru/catalog/honda/ballade/"
+    },
+    {
+      "slug": "beat",
+      "name": "Beat",
+      "href": "https://www.drom.ru/catalog/honda/beat/"
+    },
+    {
+      "slug": "breeze",
+      "name": "Breeze",
+      "href": "https://www.drom.ru/catalog/honda/breeze/"
+    },
+    {
+      "slug": "capa",
+      "name": "Capa",
+      "href": "https://www.drom.ru/catalog/honda/capa/"
+    },
+    {
+      "slug": "city",
+      "name": "City",
+      "href": "https://www.drom.ru/catalog/honda/city/"
+    },
+    {
+      "slug": "civic",
+      "name": "Civic",
+      "href": "https://www.drom.ru/catalog/honda/civic/"
+    },
+    {
+      "slug": "civic_ferio",
+      "name": "Civic Ferio",
+      "href": "https://www.drom.ru/catalog/honda/civic_ferio/"
+    },
+    {
+      "slug": "civic_shuttle",
+      "name": "Civic Shuttle",
+      "href": "https://www.drom.ru/catalog/honda/civic_shuttle/"
+    },
+    {
+      "slug": "civic_type_r",
+      "name": "Civic Type R",
+      "href": "https://www.drom.ru/catalog/honda/civic_type_r/"
+    },
+    {
+      "slug": "concerto",
+      "name": "Concerto",
+      "href": "https://www.drom.ru/catalog/honda/concerto/"
+    },
+    {
+      "slug": "cr-v",
+      "name": "CR-V",
+      "href": "https://www.drom.ru/catalog/honda/cr-v/"
+    },
+    {
+      "slug": "cr-x",
+      "name": "CR-X",
+      "href": "https://www.drom.ru/catalog/honda/cr-x/"
+    },
+    {
+      "slug": "cr-x_delsol",
+      "name": "CR-X del Sol",
+      "href": "https://www.drom.ru/catalog/honda/cr-x_delsol/"
+    },
+    {
+      "slug": "cr-z",
+      "name": "CR-Z",
+      "href": "https://www.drom.ru/catalog/honda/cr-z/"
+    },
+    {
+      "slug": "crider",
+      "name": "Crider",
+      "href": "https://www.drom.ru/catalog/honda/crider/"
+    },
+    {
+      "slug": "crossroad",
+      "name": "Crossroad",
+      "href": "https://www.drom.ru/catalog/honda/crossroad/"
+    },
+    {
+      "slug": "crosstour",
+      "name": "Crosstour",
+      "href": "https://www.drom.ru/catalog/honda/crosstour/"
+    },
+    {
+      "slug": "domani",
+      "name": "Domani",
+      "href": "https://www.drom.ru/catalog/honda/domani/"
+    },
+    {
+      "slug": "e",
+      "name": "e",
+      "href": "https://www.drom.ru/catalog/honda/e/"
+    },
+    {
+      "slug": "e-np1",
+      "name": "e:NP1",
+      "href": "https://www.drom.ru/catalog/honda/e-np1/"
+    },
+    {
+      "slug": "e-np2",
+      "name": "e:NP2",
+      "href": "https://www.drom.ru/catalog/honda/e-np2/"
+    },
+    {
+      "slug": "e-ns1",
+      "name": "e:NS1",
+      "href": "https://www.drom.ru/catalog/honda/e-ns1/"
+    },
+    {
+      "slug": "e-ns2",
+      "name": "e:NS2",
+      "href": "https://www.drom.ru/catalog/honda/e-ns2/"
+    },
+    {
+      "slug": "e_ny1",
+      "name": "e:NY1",
+      "href": "https://www.drom.ru/catalog/honda/e_ny1/"
+    },
+    {
+      "slug": "edix",
+      "name": "Edix",
+      "href": "https://www.drom.ru/catalog/honda/edix/"
+    },
+    {
+      "slug": "element",
+      "name": "Element",
+      "href": "https://www.drom.ru/catalog/honda/element/"
+    },
+    {
+      "slug": "elysion",
+      "name": "Elysion",
+      "href": "https://www.drom.ru/catalog/honda/elysion/"
+    },
+    {
+      "slug": "envix",
+      "name": "Envix",
+      "href": "https://www.drom.ru/catalog/honda/envix/"
+    },
+    {
+      "slug": "fcx_clarity",
+      "name": "Clarity",
+      "href": "https://www.drom.ru/catalog/honda/fcx_clarity/"
+    },
+    {
+      "slug": "fit",
+      "name": "Fit",
+      "href": "https://www.drom.ru/catalog/honda/fit/"
+    },
+    {
+      "slug": "fit_aria",
+      "name": "Fit Aria",
+      "href": "https://www.drom.ru/catalog/honda/fit_aria/"
+    },
+    {
+      "slug": "fit_shuttle",
+      "name": "Fit Shuttle",
+      "href": "https://www.drom.ru/catalog/honda/fit_shuttle/"
+    },
+    {
+      "slug": "fr-v",
+      "name": "FR-V",
+      "href": "https://www.drom.ru/catalog/honda/fr-v/"
+    },
+    {
+      "slug": "freed",
+      "name": "Freed",
+      "href": "https://www.drom.ru/catalog/honda/freed/"
+    },
+    {
+      "slug": "freed_plus",
+      "name": "Freed+",
+      "href": "https://www.drom.ru/catalog/honda/freed_plus/"
+    },
+    {
+      "slug": "freed_spike",
+      "name": "Freed Spike",
+      "href": "https://www.drom.ru/catalog/honda/freed_spike/"
+    },
+    {
+      "slug": "grace",
+      "name": "Grace",
+      "href": "https://www.drom.ru/catalog/honda/grace/"
+    },
+    {
+      "slug": "horizon",
+      "name": "Horizon",
+      "href": "https://www.drom.ru/catalog/honda/horizon/"
+    },
+    {
+      "slug": "hr-v",
+      "name": "HR-V",
+      "href": "https://www.drom.ru/catalog/honda/hr-v/"
+    },
+    {
+      "slug": "insight",
+      "name": "Insight",
+      "href": "https://www.drom.ru/catalog/honda/insight/"
+    },
+    {
+      "slug": "inspire",
+      "name": "Inspire",
+      "href": "https://www.drom.ru/catalog/honda/inspire/"
+    },
+    {
+      "slug": "integra",
+      "name": "Integra",
+      "href": "https://www.drom.ru/catalog/honda/integra/"
+    },
+    {
+      "slug": "integra_sj",
+      "name": "Integra SJ",
+      "href": "https://www.drom.ru/catalog/honda/integra_sj/"
+    },
+    {
+      "slug": "jade",
+      "name": "Jade",
+      "href": "https://www.drom.ru/catalog/honda/jade/"
+    },
+    {
+      "slug": "jazz",
+      "name": "Jazz",
+      "href": "https://www.drom.ru/catalog/honda/jazz/"
+    },
+    {
+      "slug": "lagreat",
+      "name": "Lagreat",
+      "href": "https://www.drom.ru/catalog/honda/lagreat/"
+    },
+    {
+      "slug": "legend",
+      "name": "Legend",
+      "href": "https://www.drom.ru/catalog/honda/legend/"
+    },
+    {
+      "slug": "life",
+      "name": "Life",
+      "href": "https://www.drom.ru/catalog/honda/life/"
+    },
+    {
+      "slug": "life_dunk",
+      "name": "Life Dunk",
+      "href": "https://www.drom.ru/catalog/honda/life_dunk/"
+    },
+    {
+      "slug": "logo",
+      "name": "Logo",
+      "href": "https://www.drom.ru/catalog/honda/logo/"
+    },
+    {
+      "slug": "mdx",
+      "name": "MDX",
+      "href": "https://www.drom.ru/catalog/honda/mdx/"
+    },
+    {
+      "slug": "mn-v",
+      "name": "M-NV",
+      "href": "https://www.drom.ru/catalog/honda/mn-v/"
+    },
+    {
+      "slug": "mobilio",
+      "name": "Mobilio",
+      "href": "https://www.drom.ru/catalog/honda/mobilio/"
+    },
+    {
+      "slug": "mobilio_spike",
+      "name": "Mobilio Spike",
+      "href": "https://www.drom.ru/catalog/honda/mobilio_spike/"
+    },
+    {
+      "slug": "n-box",
+      "name": "N-BOX",
+      "href": "https://www.drom.ru/catalog/honda/n-box/"
+    },
+    {
+      "slug": "n-box_plus",
+      "name": "N-BOX+",
+      "href": "https://www.drom.ru/catalog/honda/n-box_plus/"
+    },
+    {
+      "slug": "n-one",
+      "name": "N-ONE",
+      "href": "https://www.drom.ru/catalog/honda/n-one/"
+    },
+    {
+      "slug": "n-van",
+      "name": "N-VAN",
+      "href": "https://www.drom.ru/catalog/honda/n-van/"
+    },
+    {
+      "slug": "n-wgn",
+      "name": "N-WGN",
+      "href": "https://www.drom.ru/catalog/honda/n-wgn/"
+    },
+    {
+      "slug": "n_box_slash",
+      "name": "N-BOX Slash",
+      "href": "https://www.drom.ru/catalog/honda/n_box_slash/"
+    },
+    {
+      "slug": "nsx",
+      "name": "NSX",
+      "href": "https://www.drom.ru/catalog/honda/nsx/"
+    },
+    {
+      "slug": "odyssey",
+      "name": "Odyssey",
+      "href": "https://www.drom.ru/catalog/honda/odyssey/"
+    },
+    {
+      "slug": "orthia",
+      "name": "Orthia",
+      "href": "https://www.drom.ru/catalog/honda/orthia/"
+    },
+    {
+      "slug": "p7",
+      "name": "P7",
+      "href": "https://www.drom.ru/catalog/honda/p7/"
+    },
+    {
+      "slug": "partner",
+      "name": "Partner",
+      "href": "https://www.drom.ru/catalog/honda/partner/"
+    },
+    {
+      "slug": "passport",
+      "name": "Passport",
+      "href": "https://www.drom.ru/catalog/honda/passport/"
+    },
+    {
+      "slug": "pilot",
+      "name": "Pilot",
+      "href": "https://www.drom.ru/catalog/honda/pilot/"
+    },
+    {
+      "slug": "prelude",
+      "name": "Prelude",
+      "href": "https://www.drom.ru/catalog/honda/prelude/"
+    },
+    {
+      "slug": "prologue",
+      "name": "Prologue",
+      "href": "https://www.drom.ru/catalog/honda/prologue/"
+    },
+    {
+      "slug": "quint",
+      "name": "Quint",
+      "href": "https://www.drom.ru/catalog/honda/quint/"
+    },
+    {
+      "slug": "rafaga",
+      "name": "Rafaga",
+      "href": "https://www.drom.ru/catalog/honda/rafaga/"
+    },
+    {
+      "slug": "ridgeline",
+      "name": "Ridgeline",
+      "href": "https://www.drom.ru/catalog/honda/ridgeline/"
+    },
+    {
+      "slug": "s-mx",
+      "name": "S-MX",
+      "href": "https://www.drom.ru/catalog/honda/s-mx/"
+    },
+    {
+      "slug": "s2000",
+      "name": "S2000",
+      "href": "https://www.drom.ru/catalog/honda/s2000/"
+    },
+    {
+      "slug": "s660",
+      "name": "S660",
+      "href": "https://www.drom.ru/catalog/honda/s660/"
+    },
+    {
+      "slug": "s7",
+      "name": "S7",
+      "href": "https://www.drom.ru/catalog/honda/s7/"
+    },
+    {
+      "slug": "saber",
+      "name": "Saber",
+      "href": "https://www.drom.ru/catalog/honda/saber/"
+    },
+    {
+      "slug": "shuttle",
+      "name": "Shuttle",
+      "href": "https://www.drom.ru/catalog/honda/shuttle/"
+    },
+    {
+      "slug": "stepwgn",
+      "name": "Stepwgn",
+      "href": "https://www.drom.ru/catalog/honda/stepwgn/"
+    },
+    {
+      "slug": "stream",
+      "name": "Stream",
+      "href": "https://www.drom.ru/catalog/honda/stream/"
+    },
+    {
+      "slug": "street",
+      "name": "Street",
+      "href": "https://www.drom.ru/catalog/honda/street/"
+    },
+    {
+      "slug": "super_one",
+      "name": "Super-ONE",
+      "href": "https://www.drom.ru/catalog/honda/super_one/"
+    },
+    {
+      "slug": "today",
+      "name": "Today",
+      "href": "https://www.drom.ru/catalog/honda/today/"
+    },
+    {
+      "slug": "torneo",
+      "name": "Torneo",
+      "href": "https://www.drom.ru/catalog/honda/torneo/"
+    },
+    {
+      "slug": "ur-v",
+      "name": "UR-V",
+      "href": "https://www.drom.ru/catalog/honda/ur-v/"
+    },
+    {
+      "slug": "vamos",
+      "name": "Vamos",
+      "href": "https://www.drom.ru/catalog/honda/vamos/"
+    },
+    {
+      "slug": "vamos_hobio",
+      "name": "Vamos Hobio",
+      "href": "https://www.drom.ru/catalog/honda/vamos_hobio/"
+    },
+    {
+      "slug": "ve-1",
+      "name": "Everus VE-1",
+      "href": "https://www.drom.ru/catalog/honda/ve-1/"
+    },
+    {
+      "slug": "vezel",
+      "name": "Vezel",
+      "href": "https://www.drom.ru/catalog/honda/vezel/"
+    },
+    {
+      "slug": "vigor",
+      "name": "Vigor",
+      "href": "https://www.drom.ru/catalog/honda/vigor/"
+    },
+    {
+      "slug": "wr-v",
+      "name": "WR-V",
+      "href": "https://www.drom.ru/catalog/honda/wr-v/"
+    },
+    {
+      "slug": "x-nv",
+      "name": "X-NV",
+      "href": "https://www.drom.ru/catalog/honda/x-nv/"
+    },
+    {
+      "slug": "xr-v",
+      "name": "XR-V",
+      "href": "https://www.drom.ru/catalog/honda/xr-v/"
+    },
+    {
+      "slug": "z",
+      "name": "Z",
+      "href": "https://www.drom.ru/catalog/honda/z/"
+    },
+    {
+      "slug": "zest",
+      "name": "Zest",
+      "href": "https://www.drom.ru/catalog/honda/zest/"
+    },
+    {
+      "slug": "zr-v",
+      "name": "ZR-V",
+      "href": "https://www.drom.ru/catalog/honda/zr-v/"
+    }
+  ]
+}

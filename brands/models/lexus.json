@@ -1,0 +1,547 @@
+{
+  "brand": {
+    "slug": "lexus",
+    "name": "Lexus",
+    "href": "https://www.drom.ru/catalog/lexus/"
+  },
+  "source": "https://www.drom.ru/catalog/lexus/",
+  "collected_at": "2026-05-17",
+  "count": 107,
+  "models": [
+    {
+      "slug": "ct200h",
+      "name": "CT200h",
+      "href": "https://www.drom.ru/catalog/lexus/ct200h/"
+    },
+    {
+      "slug": "es200",
+      "name": "ES200",
+      "href": "https://www.drom.ru/catalog/lexus/es200/"
+    },
+    {
+      "slug": "es250",
+      "name": "ES250",
+      "href": "https://www.drom.ru/catalog/lexus/es250/"
+    },
+    {
+      "slug": "es260",
+      "name": "ES260",
+      "href": "https://www.drom.ru/catalog/lexus/es260/"
+    },
+    {
+      "slug": "es300",
+      "name": "ES300",
+      "href": "https://www.drom.ru/catalog/lexus/es300/"
+    },
+    {
+      "slug": "es300h",
+      "name": "ES300h",
+      "href": "https://www.drom.ru/catalog/lexus/es300h/"
+    },
+    {
+      "slug": "es330",
+      "name": "ES330",
+      "href": "https://www.drom.ru/catalog/lexus/es330/"
+    },
+    {
+      "slug": "es350",
+      "name": "ES350",
+      "href": "https://www.drom.ru/catalog/lexus/es350/"
+    },
+    {
+      "slug": "es350e",
+      "name": "ES350e",
+      "href": "https://www.drom.ru/catalog/lexus/es350e/"
+    },
+    {
+      "slug": "es350h",
+      "name": "ES350h",
+      "href": "https://www.drom.ru/catalog/lexus/es350h/"
+    },
+    {
+      "slug": "es500e",
+      "name": "ES500e",
+      "href": "https://www.drom.ru/catalog/lexus/es500e/"
+    },
+    {
+      "slug": "gs200t",
+      "name": "GS200t",
+      "href": "https://www.drom.ru/catalog/lexus/gs200t/"
+    },
+    {
+      "slug": "gs250",
+      "name": "GS250",
+      "href": "https://www.drom.ru/catalog/lexus/gs250/"
+    },
+    {
+      "slug": "gs300",
+      "name": "GS300",
+      "href": "https://www.drom.ru/catalog/lexus/gs300/"
+    },
+    {
+      "slug": "gs300h",
+      "name": "GS300h",
+      "href": "https://www.drom.ru/catalog/lexus/gs300h/"
+    },
+    {
+      "slug": "gs350",
+      "name": "GS350",
+      "href": "https://www.drom.ru/catalog/lexus/gs350/"
+    },
+    {
+      "slug": "gs400",
+      "name": "GS400",
+      "href": "https://www.drom.ru/catalog/lexus/gs400/"
+    },
+    {
+      "slug": "gs430",
+      "name": "GS430",
+      "href": "https://www.drom.ru/catalog/lexus/gs430/"
+    },
+    {
+      "slug": "gs450h",
+      "name": "GS450h",
+      "href": "https://www.drom.ru/catalog/lexus/gs450h/"
+    },
+    {
+      "slug": "gs460",
+      "name": "GS460",
+      "href": "https://www.drom.ru/catalog/lexus/gs460/"
+    },
+    {
+      "slug": "gs_f",
+      "name": "GS F",
+      "href": "https://www.drom.ru/catalog/lexus/gs_f/"
+    },
+    {
+      "slug": "gx460",
+      "name": "GX460",
+      "href": "https://www.drom.ru/catalog/lexus/gx460/"
+    },
+    {
+      "slug": "gx470",
+      "name": "GX470",
+      "href": "https://www.drom.ru/catalog/lexus/gx470/"
+    },
+    {
+      "slug": "gx550",
+      "name": "GX550",
+      "href": "https://www.drom.ru/catalog/lexus/gx550/"
+    },
+    {
+      "slug": "gx550h",
+      "name": "GX550h",
+      "href": "https://www.drom.ru/catalog/lexus/gx550h/"
+    },
+    {
+      "slug": "hs250h",
+      "name": "HS250h",
+      "href": "https://www.drom.ru/catalog/lexus/hs250h/"
+    },
+    {
+      "slug": "is200",
+      "name": "IS200",
+      "href": "https://www.drom.ru/catalog/lexus/is200/"
+    },
+    {
+      "slug": "is200d",
+      "name": "IS200d",
+      "href": "https://www.drom.ru/catalog/lexus/is200d/"
+    },
+    {
+      "slug": "is200t",
+      "name": "IS200t",
+      "href": "https://www.drom.ru/catalog/lexus/is200t/"
+    },
+    {
+      "slug": "is220d",
+      "name": "IS220d",
+      "href": "https://www.drom.ru/catalog/lexus/is220d/"
+    },
+    {
+      "slug": "is250",
+      "name": "IS250",
+      "href": "https://www.drom.ru/catalog/lexus/is250/"
+    },
+    {
+      "slug": "is250c",
+      "name": "IS250C",
+      "href": "https://www.drom.ru/catalog/lexus/is250c/"
+    },
+    {
+      "slug": "is300",
+      "name": "IS300",
+      "href": "https://www.drom.ru/catalog/lexus/is300/"
+    },
+    {
+      "slug": "is300c",
+      "name": "IS300C",
+      "href": "https://www.drom.ru/catalog/lexus/is300c/"
+    },
+    {
+      "slug": "is300h",
+      "name": "IS300h",
+      "href": "https://www.drom.ru/catalog/lexus/is300h/"
+    },
+    {
+      "slug": "is350",
+      "name": "IS350",
+      "href": "https://www.drom.ru/catalog/lexus/is350/"
+    },
+    {
+      "slug": "is350c",
+      "name": "IS350C",
+      "href": "https://www.drom.ru/catalog/lexus/is350c/"
+    },
+    {
+      "slug": "is500",
+      "name": "IS500",
+      "href": "https://www.drom.ru/catalog/lexus/is500/"
+    },
+    {
+      "slug": "is_f",
+      "name": "IS F",
+      "href": "https://www.drom.ru/catalog/lexus/is_f/"
+    },
+    {
+      "slug": "lbx",
+      "name": "LBX",
+      "href": "https://www.drom.ru/catalog/lexus/lbx/"
+    },
+    {
+      "slug": "lc500",
+      "name": "LC500",
+      "href": "https://www.drom.ru/catalog/lexus/lc500/"
+    },
+    {
+      "slug": "lc500h",
+      "name": "LC500h",
+      "href": "https://www.drom.ru/catalog/lexus/lc500h/"
+    },
+    {
+      "slug": "lfa",
+      "name": "LFA",
+      "href": "https://www.drom.ru/catalog/lexus/lfa/"
+    },
+    {
+      "slug": "lm300h",
+      "name": "LM300h",
+      "href": "https://www.drom.ru/catalog/lexus/lm300h/"
+    },
+    {
+      "slug": "lm350",
+      "name": "LM350",
+      "href": "https://www.drom.ru/catalog/lexus/lm350/"
+    },
+    {
+      "slug": "lm350h",
+      "name": "LM350h",
+      "href": "https://www.drom.ru/catalog/lexus/lm350h/"
+    },
+    {
+      "slug": "lm500h",
+      "name": "LM500h",
+      "href": "https://www.drom.ru/catalog/lexus/lm500h/"
+    },
+    {
+      "slug": "ls350",
+      "name": "LS350",
+      "href": "https://www.drom.ru/catalog/lexus/ls350/"
+    },
+    {
+      "slug": "ls400",
+      "name": "LS400",
+      "href": "https://www.drom.ru/catalog/lexus/ls400/"
+    },
+    {
+      "slug": "ls430",
+      "name": "LS430",
+      "href": "https://www.drom.ru/catalog/lexus/ls430/"
+    },
+    {
+      "slug": "ls460",
+      "name": "LS460",
+      "href": "https://www.drom.ru/catalog/lexus/ls460/"
+    },
+    {
+      "slug": "ls460l",
+      "name": "LS460L",
+      "href": "https://www.drom.ru/catalog/lexus/ls460l/"
+    },
+    {
+      "slug": "ls500",
+      "name": "LS500",
+      "href": "https://www.drom.ru/catalog/lexus/ls500/"
+    },
+    {
+      "slug": "ls500h",
+      "name": "LS500h",
+      "href": "https://www.drom.ru/catalog/lexus/ls500h/"
+    },
+    {
+      "slug": "ls600h",
+      "name": "LS600h",
+      "href": "https://www.drom.ru/catalog/lexus/ls600h/"
+    },
+    {
+      "slug": "ls600hl",
+      "name": "LS600hL",
+      "href": "https://www.drom.ru/catalog/lexus/ls600hl/"
+    },
+    {
+      "slug": "lx450",
+      "name": "LX450",
+      "href": "https://www.drom.ru/catalog/lexus/lx450/"
+    },
+    {
+      "slug": "lx450d",
+      "name": "LX450d",
+      "href": "https://www.drom.ru/catalog/lexus/lx450d/"
+    },
+    {
+      "slug": "lx470",
+      "name": "LX470",
+      "href": "https://www.drom.ru/catalog/lexus/lx470/"
+    },
+    {
+      "slug": "lx500d",
+      "name": "LX500d",
+      "href": "https://www.drom.ru/catalog/lexus/lx500d/"
+    },
+    {
+      "slug": "lx570",
+      "name": "LX570",
+      "href": "https://www.drom.ru/catalog/lexus/lx570/"
+    },
+    {
+      "slug": "lx600",
+      "name": "LX600",
+      "href": "https://www.drom.ru/catalog/lexus/lx600/"
+    },
+    {
+      "slug": "lx700h",
+      "name": "LX700h",
+      "href": "https://www.drom.ru/catalog/lexus/lx700h/"
+    },
+    {
+      "slug": "nx200",
+      "name": "NX200",
+      "href": "https://www.drom.ru/catalog/lexus/nx200/"
+    },
+    {
+      "slug": "nx200t",
+      "name": "NX200t",
+      "href": "https://www.drom.ru/catalog/lexus/nx200t/"
+    },
+    {
+      "slug": "nx250",
+      "name": "NX250",
+      "href": "https://www.drom.ru/catalog/lexus/nx250/"
+    },
+    {
+      "slug": "nx260",
+      "name": "NX260",
+      "href": "https://www.drom.ru/catalog/lexus/nx260/"
+    },
+    {
+      "slug": "nx300",
+      "name": "NX300",
+      "href": "https://www.drom.ru/catalog/lexus/nx300/"
+    },
+    {
+      "slug": "nx300h",
+      "name": "NX300h",
+      "href": "https://www.drom.ru/catalog/lexus/nx300h/"
+    },
+    {
+      "slug": "nx350",
+      "name": "NX350",
+      "href": "https://www.drom.ru/catalog/lexus/nx350/"
+    },
+    {
+      "slug": "nx350h",
+      "name": "NX350h",
+      "href": "https://www.drom.ru/catalog/lexus/nx350h/"
+    },
+    {
+      "slug": "nx400hplus",
+      "name": "NX400h+",
+      "href": "https://www.drom.ru/catalog/lexus/nx400hplus/"
+    },
+    {
+      "slug": "nx450hplus",
+      "name": "NX450h+",
+      "href": "https://www.drom.ru/catalog/lexus/nx450hplus/"
+    },
+    {
+      "slug": "rc200t",
+      "name": "RC200t",
+      "href": "https://www.drom.ru/catalog/lexus/rc200t/"
+    },
+    {
+      "slug": "rc300",
+      "name": "RC300",
+      "href": "https://www.drom.ru/catalog/lexus/rc300/"
+    },
+    {
+      "slug": "rc300h",
+      "name": "RC300h",
+      "href": "https://www.drom.ru/catalog/lexus/rc300h/"
+    },
+    {
+      "slug": "rc350",
+      "name": "RC350",
+      "href": "https://www.drom.ru/catalog/lexus/rc350/"
+    },
+    {
+      "slug": "rc_f",
+      "name": "RC F",
+      "href": "https://www.drom.ru/catalog/lexus/rc_f/"
+    },
+    {
+      "slug": "rx200t",
+      "name": "RX200t",
+      "href": "https://www.drom.ru/catalog/lexus/rx200t/"
+    },
+    {
+      "slug": "rx270",
+      "name": "RX270",
+      "href": "https://www.drom.ru/catalog/lexus/rx270/"
+    },
+    {
+      "slug": "rx300",
+      "name": "RX300",
+      "href": "https://www.drom.ru/catalog/lexus/rx300/"
+    },
+    {
+      "slug": "rx330",
+      "name": "RX330",
+      "href": "https://www.drom.ru/catalog/lexus/rx330/"
+    },
+    {
+      "slug": "rx350",
+      "name": "RX350",
+      "href": "https://www.drom.ru/catalog/lexus/rx350/"
+    },
+    {
+      "slug": "rx350h",
+      "name": "RX350h",
+      "href": "https://www.drom.ru/catalog/lexus/rx350h/"
+    },
+    {
+      "slug": "rx350l",
+      "name": "RX350L",
+      "href": "https://www.drom.ru/catalog/lexus/rx350l/"
+    },
+    {
+      "slug": "rx400h",
+      "name": "RX400h",
+      "href": "https://www.drom.ru/catalog/lexus/rx400h/"
+    },
+    {
+      "slug": "rx450h",
+      "name": "RX450h",
+      "href": "https://www.drom.ru/catalog/lexus/rx450h/"
+    },
+    {
+      "slug": "rx450hl",
+      "name": "RX450hL",
+      "href": "https://www.drom.ru/catalog/lexus/rx450hl/"
+    },
+    {
+      "slug": "rx450hplus",
+      "name": "RX450h+",
+      "href": "https://www.drom.ru/catalog/lexus/rx450hplus/"
+    },
+    {
+      "slug": "rx500h",
+      "name": "RX500h",
+      "href": "https://www.drom.ru/catalog/lexus/rx500h/"
+    },
+    {
+      "slug": "rz300e",
+      "name": "RZ300e",
+      "href": "https://www.drom.ru/catalog/lexus/rz300e/"
+    },
+    {
+      "slug": "rz350e",
+      "name": "RZ350e",
+      "href": "https://www.drom.ru/catalog/lexus/rz350e/"
+    },
+    {
+      "slug": "rz450e",
+      "name": "RZ450e",
+      "href": "https://www.drom.ru/catalog/lexus/rz450e/"
+    },
+    {
+      "slug": "rz500e",
+      "name": "RZ500e",
+      "href": "https://www.drom.ru/catalog/lexus/rz500e/"
+    },
+    {
+      "slug": "rz550e",
+      "name": "RZ550e",
+      "href": "https://www.drom.ru/catalog/lexus/rz550e/"
+    },
+    {
+      "slug": "rz600e",
+      "name": "RZ600e",
+      "href": "https://www.drom.ru/catalog/lexus/rz600e/"
+    },
+    {
+      "slug": "sc300",
+      "name": "SC300",
+      "href": "https://www.drom.ru/catalog/lexus/sc300/"
+    },
+    {
+      "slug": "sc400",
+      "name": "SC400",
+      "href": "https://www.drom.ru/catalog/lexus/sc400/"
+    },
+    {
+      "slug": "sc430",
+      "name": "SC430",
+      "href": "https://www.drom.ru/catalog/lexus/sc430/"
+    },
+    {
+      "slug": "tx350",
+      "name": "TX350",
+      "href": "https://www.drom.ru/catalog/lexus/tx350/"
+    },
+    {
+      "slug": "tx500h",
+      "name": "TX500h",
+      "href": "https://www.drom.ru/catalog/lexus/tx500h/"
+    },
+    {
+      "slug": "tx550hplus",
+      "name": "TX550h+",
+      "href": "https://www.drom.ru/catalog/lexus/tx550hplus/"
+    },
+    {
+      "slug": "ux200",
+      "name": "UX200",
+      "href": "https://www.drom.ru/catalog/lexus/ux200/"
+    },
+    {
+      "slug": "ux250h",
+      "name": "UX250h",
+      "href": "https://www.drom.ru/catalog/lexus/ux250h/"
+    },
+    {
+      "slug": "ux260h",
+      "name": "UX260h",
+      "href": "https://www.drom.ru/catalog/lexus/ux260h/"
+    },
+    {
+      "slug": "ux300e",
+      "name": "UX300e",
+      "href": "https://www.drom.ru/catalog/lexus/ux300e/"
+    },
+    {
+      "slug": "ux300h",
+      "name": "UX300h",
+      "href": "https://www.drom.ru/catalog/lexus/ux300h/"
+    }
+  ]
+}

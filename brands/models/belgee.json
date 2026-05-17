@@ -1,0 +1,37 @@
+{
+  "brand": {
+    "slug": "belgee",
+    "name": "Belgee",
+    "href": "https://www.drom.ru/catalog/belgee/"
+  },
+  "source": "https://www.drom.ru/catalog/belgee/",
+  "collected_at": "2026-05-17",
+  "count": 5,
+  "models": [
+    {
+      "slug": "s50",
+      "name": "S50",
+      "href": "https://www.drom.ru/catalog/belgee/s50/"
+    },
+    {
+      "slug": "x50",
+      "name": "X50",
+      "href": "https://www.drom.ru/catalog/belgee/x50/"
+    },
+    {
+      "slug": "x50_plus",
+      "name": "X50+",
+      "href": "https://www.drom.ru/catalog/belgee/x50_plus/"
+    },
+    {
+      "slug": "x70",
+      "name": "X70",
+      "href": "https://www.drom.ru/catalog/belgee/x70/"
+    },
+    {
+      "slug": "x80",
+      "name": "X80",
+      "href": "https://www.drom.ru/catalog/belgee/x80/"
+    }
+  ]
+}

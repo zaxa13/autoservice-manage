@@ -1,0 +1,107 @@
+{
+  "brand": {
+    "slug": "acura",
+    "name": "Acura",
+    "href": "https://www.drom.ru/catalog/acura/"
+  },
+  "source": "https://www.drom.ru/catalog/acura/",
+  "collected_at": "2026-05-17",
+  "count": 19,
+  "models": [
+    {
+      "slug": "adx",
+      "name": "ADX",
+      "href": "https://www.drom.ru/catalog/acura/adx/"
+    },
+    {
+      "slug": "cdx",
+      "name": "CDX",
+      "href": "https://www.drom.ru/catalog/acura/cdx/"
+    },
+    {
+      "slug": "cl",
+      "name": "CL",
+      "href": "https://www.drom.ru/catalog/acura/cl/"
+    },
+    {
+      "slug": "el",
+      "name": "EL",
+      "href": "https://www.drom.ru/catalog/acura/el/"
+    },
+    {
+      "slug": "ilx",
+      "name": "ILX",
+      "href": "https://www.drom.ru/catalog/acura/ilx/"
+    },
+    {
+      "slug": "integra",
+      "name": "Integra",
+      "href": "https://www.drom.ru/catalog/acura/integra/"
+    },
+    {
+      "slug": "legend",
+      "name": "Legend",
+      "href": "https://www.drom.ru/catalog/acura/legend/"
+    },
+    {
+      "slug": "mdx",
+      "name": "MDX",
+      "href": "https://www.drom.ru/catalog/acura/mdx/"
+    },
+    {
+      "slug": "nsx",
+      "name": "NSX",
+      "href": "https://www.drom.ru/catalog/acura/nsx/"
+    },
+    {
+      "slug": "rdx",
+      "name": "RDX",
+      "href": "https://www.drom.ru/catalog/acura/rdx/"
+    },
+    {
+      "slug": "rl",
+      "name": "RL",
+      "href": "https://www.drom.ru/catalog/acura/rl/"
+    },
+    {
+      "slug": "rlx",
+      "name": "RLX",
+      "href": "https://www.drom.ru/catalog/acura/rlx/"
+    },
+    {
+      "slug": "rsx",
+      "name": "RSX",
+      "href": "https://www.drom.ru/catalog/acura/rsx/"
+    },
+    {
+      "slug": "slx",
+      "name": "SLX",
+      "href": "https://www.drom.ru/catalog/acura/slx/"
+    },
+    {
+      "slug": "tl",
+      "name": "TL",
+      "href": "https://www.drom.ru/catalog/acura/tl/"
+    },
+    {
+      "slug": "tlx",
+      "name": "TLX",
+      "href": "https://www.drom.ru/catalog/acura/tlx/"
+    },
+    {
+      "slug": "tsx",
+      "name": "TSX",
+      "href": "https://www.drom.ru/catalog/acura/tsx/"
+    },
+    {
+      "slug": "vigor",
+      "name": "Vigor",
+      "href": "https://www.drom.ru/catalog/acura/vigor/"
+    },
+    {
+      "slug": "zdx",
+      "name": "ZDX",
+      "href": "https://www.drom.ru/catalog/acura/zdx/"
+    }
+  ]
+}

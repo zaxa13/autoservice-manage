@@ -1,0 +1,157 @@
+{
+  "brand": {
+    "slug": "skoda",
+    "name": "Skoda",
+    "href": "https://www.drom.ru/catalog/skoda/"
+  },
+  "source": "https://www.drom.ru/catalog/skoda/",
+  "collected_at": "2026-05-17",
+  "count": 29,
+  "models": [
+    {
+      "slug": "100",
+      "name": "100",
+      "href": "https://www.drom.ru/catalog/skoda/100/"
+    },
+    {
+      "slug": "1000-1100_mb",
+      "name": "1000/1100 MB",
+      "href": "https://www.drom.ru/catalog/skoda/1000-1100_mb/"
+    },
+    {
+      "slug": "105-120-125",
+      "name": "105/120/125",
+      "href": "https://www.drom.ru/catalog/skoda/105-120-125/"
+    },
+    {
+      "slug": "1101-1102",
+      "name": "1101/1102",
+      "href": "https://www.drom.ru/catalog/skoda/1101-1102/"
+    },
+    {
+      "slug": "1201",
+      "name": "1201",
+      "href": "https://www.drom.ru/catalog/skoda/1201/"
+    },
+    {
+      "slug": "1202",
+      "name": "1202",
+      "href": "https://www.drom.ru/catalog/skoda/1202/"
+    },
+    {
+      "slug": "1203",
+      "name": "1203",
+      "href": "https://www.drom.ru/catalog/skoda/1203/"
+    },
+    {
+      "slug": "440-445-450",
+      "name": "440/445/450",
+      "href": "https://www.drom.ru/catalog/skoda/440-445-450/"
+    },
+    {
+      "slug": "citigo",
+      "name": "Citigo",
+      "href": "https://www.drom.ru/catalog/skoda/citigo/"
+    },
+    {
+      "slug": "elroq",
+      "name": "Elroq",
+      "href": "https://www.drom.ru/catalog/skoda/elroq/"
+    },
+    {
+      "slug": "enyaq_iv",
+      "name": "Enyaq iV",
+      "href": "https://www.drom.ru/catalog/skoda/enyaq_iv/"
+    },
+    {
+      "slug": "enyaq_iv_coupe",
+      "name": "Enyaq iV Coupe",
+      "href": "https://www.drom.ru/catalog/skoda/enyaq_iv_coupe/"
+    },
+    {
+      "slug": "fabia",
+      "name": "Fabia",
+      "href": "https://www.drom.ru/catalog/skoda/fabia/"
+    },
+    {
+      "slug": "favorit",
+      "name": "Favorit",
+      "href": "https://www.drom.ru/catalog/skoda/favorit/"
+    },
+    {
+      "slug": "felicia",
+      "name": "Felicia",
+      "href": "https://www.drom.ru/catalog/skoda/felicia/"
+    },
+    {
+      "slug": "forman",
+      "name": "Forman",
+      "href": "https://www.drom.ru/catalog/skoda/forman/"
+    },
+    {
+      "slug": "garde",
+      "name": "Garde",
+      "href": "https://www.drom.ru/catalog/skoda/garde/"
+    },
+    {
+      "slug": "kamiq",
+      "name": "Kamiq",
+      "href": "https://www.drom.ru/catalog/skoda/kamiq/"
+    },
+    {
+      "slug": "karoq",
+      "name": "Karoq",
+      "href": "https://www.drom.ru/catalog/skoda/karoq/"
+    },
+    {
+      "slug": "kodiaq",
+      "name": "Kodiaq",
+      "href": "https://www.drom.ru/catalog/skoda/kodiaq/"
+    },
+    {
+      "slug": "kodiaq_gt",
+      "name": "Kodiaq GT",
+      "href": "https://www.drom.ru/catalog/skoda/kodiaq_gt/"
+    },
+    {
+      "slug": "kushaq",
+      "name": "Kushaq",
+      "href": "https://www.drom.ru/catalog/skoda/kushaq/"
+    },
+    {
+      "slug": "octavia",
+      "name": "Octavia",
+      "href": "https://www.drom.ru/catalog/skoda/octavia/"
+    },
+    {
+      "slug": "popular",
+      "name": "Popular",
+      "href": "https://www.drom.ru/catalog/skoda/popular/"
+    },
+    {
+      "slug": "rapid",
+      "name": "Rapid",
+      "href": "https://www.drom.ru/catalog/skoda/rapid/"
+    },
+    {
+      "slug": "roomster",
+      "name": "Roomster",
+      "href": "https://www.drom.ru/catalog/skoda/roomster/"
+    },
+    {
+      "slug": "scala",
+      "name": "Scala",
+      "href": "https://www.drom.ru/catalog/skoda/scala/"
+    },
+    {
+      "slug": "superb",
+      "name": "Superb",
+      "href": "https://www.drom.ru/catalog/skoda/superb/"
+    },
+    {
+      "slug": "yeti",
+      "name": "Yeti",
+      "href": "https://www.drom.ru/catalog/skoda/yeti/"
+    }
+  ]
+}

@@ -1,0 +1,137 @@
+{
+  "brand": {
+    "slug": "alfa_romeo",
+    "name": "Alfa Romeo",
+    "href": "https://www.drom.ru/catalog/alfa_romeo/"
+  },
+  "source": "https://www.drom.ru/catalog/alfa_romeo/",
+  "collected_at": "2026-05-17",
+  "count": 25,
+  "models": [
+    {
+      "slug": "145",
+      "name": "145",
+      "href": "https://www.drom.ru/catalog/alfa_romeo/145/"
+    },
+    {
+      "slug": "146",
+      "name": "146",
+      "href": "https://www.drom.ru/catalog/alfa_romeo/146/"
+    },
+    {
+      "slug": "147",
+      "name": "147",
+      "href": "https://www.drom.ru/catalog/alfa_romeo/147/"
+    },
+    {
+      "slug": "155",
+      "name": "155",
+      "href": "https://www.drom.ru/catalog/alfa_romeo/155/"
+    },
+    {
+      "slug": "156",
+      "name": "156",
+      "href": "https://www.drom.ru/catalog/alfa_romeo/156/"
+    },
+    {
+      "slug": "159",
+      "name": "159",
+      "href": "https://www.drom.ru/catalog/alfa_romeo/159/"
+    },
+    {
+      "slug": "164",
+      "name": "164",
+      "href": "https://www.drom.ru/catalog/alfa_romeo/164/"
+    },
+    {
+      "slug": "166",
+      "name": "166",
+      "href": "https://www.drom.ru/catalog/alfa_romeo/166/"
+    },
+    {
+      "slug": "33",
+      "name": "33",
+      "href": "https://www.drom.ru/catalog/alfa_romeo/33/"
+    },
+    {
+      "slug": "33_stradale",
+      "name": "33 Stradale",
+      "href": "https://www.drom.ru/catalog/alfa_romeo/33_stradale/"
+    },
+    {
+      "slug": "4c",
+      "name": "4C",
+      "href": "https://www.drom.ru/catalog/alfa_romeo/4c/"
+    },
+    {
+      "slug": "75",
+      "name": "75",
+      "href": "https://www.drom.ru/catalog/alfa_romeo/75/"
+    },
+    {
+      "slug": "8c",
+      "name": "8C",
+      "href": "https://www.drom.ru/catalog/alfa_romeo/8c/"
+    },
+    {
+      "slug": "90",
+      "name": "90",
+      "href": "https://www.drom.ru/catalog/alfa_romeo/90/"
+    },
+    {
+      "slug": "brera",
+      "name": "Brera",
+      "href": "https://www.drom.ru/catalog/alfa_romeo/brera/"
+    },
+    {
+      "slug": "giulia",
+      "name": "Giulia",
+      "href": "https://www.drom.ru/catalog/alfa_romeo/giulia/"
+    },
+    {
+      "slug": "giulietta",
+      "name": "Giulietta",
+      "href": "https://www.drom.ru/catalog/alfa_romeo/giulietta/"
+    },
+    {
+      "slug": "gt",
+      "name": "GT",
+      "href": "https://www.drom.ru/catalog/alfa_romeo/gt/"
+    },
+    {
+      "slug": "gtv",
+      "name": "GTV",
+      "href": "https://www.drom.ru/catalog/alfa_romeo/gtv/"
+    },
+    {
+      "slug": "junior",
+      "name": "Junior",
+      "href": "https://www.drom.ru/catalog/alfa_romeo/junior/"
+    },
+    {
+      "slug": "mi-to",
+      "name": "MiTo",
+      "href": "https://www.drom.ru/catalog/alfa_romeo/mi-to/"
+    },
+    {
+      "slug": "milano",
+      "name": "Milano",
+      "href": "https://www.drom.ru/catalog/alfa_romeo/milano/"
+    },
+    {
+      "slug": "spider",
+      "name": "Spider",
+      "href": "https://www.drom.ru/catalog/alfa_romeo/spider/"
+    },
+    {
+      "slug": "stelvio",
+      "name": "Stelvio",
+      "href": "https://www.drom.ru/catalog/alfa_romeo/stelvio/"
+    },
+    {
+      "slug": "tonale",
+      "name": "Tonale",
+      "href": "https://www.drom.ru/catalog/alfa_romeo/tonale/"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "brand": {
+    "slug": "omoda",
+    "name": "OMODA",
+    "href": "https://www.drom.ru/catalog/omoda/"
+  },
+  "source": "https://www.drom.ru/catalog/omoda/",
+  "collected_at": "2026-05-17",
+  "count": 4,
+  "models": [
+    {
+      "slug": "c5",
+      "name": "C5",
+      "href": "https://www.drom.ru/catalog/omoda/c5/"
+    },
+    {
+      "slug": "c7",
+      "name": "C7",
+      "href": "https://www.drom.ru/catalog/omoda/c7/"
+    },
+    {
+      "slug": "s5",
+      "name": "S5",
+      "href": "https://www.drom.ru/catalog/omoda/s5/"
+    },
+    {
+      "slug": "s5_gt",
+      "name": "S5 GT",
+      "href": "https://www.drom.ru/catalog/omoda/s5_gt/"
+    }
+  ]
+}

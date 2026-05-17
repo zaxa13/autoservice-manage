@@ -1,0 +1,282 @@
+{
+  "brand": {
+    "slug": "gac",
+    "name": "GAC",
+    "href": "https://www.drom.ru/catalog/gac/"
+  },
+  "source": "https://www.drom.ru/catalog/gac/",
+  "collected_at": "2026-05-17",
+  "count": 54,
+  "models": [
+    {
+      "slug": "aion_hyper_gt",
+      "name": "Aion Hyper GT",
+      "href": "https://www.drom.ru/catalog/gac/aion_hyper_gt/"
+    },
+    {
+      "slug": "aion_hyper_hl",
+      "name": "Aion Hyper HL",
+      "href": "https://www.drom.ru/catalog/gac/aion_hyper_hl/"
+    },
+    {
+      "slug": "aion_hyper_ht",
+      "name": "Aion Hyper HT",
+      "href": "https://www.drom.ru/catalog/gac/aion_hyper_ht/"
+    },
+    {
+      "slug": "aion_hyper_ssr",
+      "name": "Aion Hyper SSR",
+      "href": "https://www.drom.ru/catalog/gac/aion_hyper_ssr/"
+    },
+    {
+      "slug": "aion_lx",
+      "name": "Aion LX",
+      "href": "https://www.drom.ru/catalog/gac/aion_lx/"
+    },
+    {
+      "slug": "aion_lx_plus",
+      "name": "Aion LX Plus",
+      "href": "https://www.drom.ru/catalog/gac/aion_lx_plus/"
+    },
+    {
+      "slug": "aion_s",
+      "name": "Aion S",
+      "href": "https://www.drom.ru/catalog/gac/aion_s/"
+    },
+    {
+      "slug": "aion_s_plus",
+      "name": "Aion S Plus",
+      "href": "https://www.drom.ru/catalog/gac/aion_s_plus/"
+    },
+    {
+      "slug": "aion_ut",
+      "name": "Aion UT",
+      "href": "https://www.drom.ru/catalog/gac/aion_ut/"
+    },
+    {
+      "slug": "aion_v",
+      "name": "Aion V",
+      "href": "https://www.drom.ru/catalog/gac/aion_v/"
+    },
+    {
+      "slug": "aion_v_plus",
+      "name": "Aion V Plus",
+      "href": "https://www.drom.ru/catalog/gac/aion_v_plus/"
+    },
+    {
+      "slug": "aion_y",
+      "name": "Aion Y",
+      "href": "https://www.drom.ru/catalog/gac/aion_y/"
+    },
+    {
+      "slug": "aion_y_plus",
+      "name": "Aion Y Plus",
+      "href": "https://www.drom.ru/catalog/gac/aion_y_plus/"
+    },
+    {
+      "slug": "ea6",
+      "name": "EA6",
+      "href": "https://www.drom.ru/catalog/gac/ea6/"
+    },
+    {
+      "slug": "empow",
+      "name": "Empow",
+      "href": "https://www.drom.ru/catalog/gac/empow/"
+    },
+    {
+      "slug": "gn8",
+      "name": "GN8",
+      "href": "https://www.drom.ru/catalog/gac/gn8/"
+    },
+    {
+      "slug": "gs4",
+      "name": "GS4",
+      "href": "https://www.drom.ru/catalog/gac/gs4/"
+    },
+    {
+      "slug": "gs5",
+      "name": "GS5",
+      "href": "https://www.drom.ru/catalog/gac/gs5/"
+    },
+    {
+      "slug": "gs8",
+      "name": "GS8",
+      "href": "https://www.drom.ru/catalog/gac/gs8/"
+    },
+    {
+      "slug": "ia5",
+      "name": "iA5",
+      "href": "https://www.drom.ru/catalog/gac/ia5/"
+    },
+    {
+      "slug": "s7",
+      "name": "S7",
+      "href": "https://www.drom.ru/catalog/gac/s7/"
+    },
+    {
+      "slug": "trumpchi",
+      "name": "Trumpchi",
+      "href": "https://www.drom.ru/catalog/gac/trumpchi/"
+    },
+    {
+      "slug": "trumpchi_e8",
+      "name": "Trumpchi E8",
+      "href": "https://www.drom.ru/catalog/gac/trumpchi_e8/"
+    },
+    {
+      "slug": "trumpchi_e9",
+      "name": "Trumpchi E9",
+      "href": "https://www.drom.ru/catalog/gac/trumpchi_e9/"
+    },
+    {
+      "slug": "trumpchi_emkoo",
+      "name": "Trumpchi Emkoo",
+      "href": "https://www.drom.ru/catalog/gac/trumpchi_emkoo/"
+    },
+    {
+      "slug": "trumpchi_empow",
+      "name": "Trumpchi Empow",
+      "href": "https://www.drom.ru/catalog/gac/trumpchi_empow/"
+    },
+    {
+      "slug": "trumpchi_es9_phev",
+      "name": "Trumpchi ES9",
+      "href": "https://www.drom.ru/catalog/gac/trumpchi_es9_phev/"
+    },
+    {
+      "slug": "trumpchi_ga3",
+      "name": "Trumpchi GA3",
+      "href": "https://www.drom.ru/catalog/gac/trumpchi_ga3/"
+    },
+    {
+      "slug": "trumpchi_ga3s",
+      "name": "Trumpchi GA3S",
+      "href": "https://www.drom.ru/catalog/gac/trumpchi_ga3s/"
+    },
+    {
+      "slug": "trumpchi_ga4",
+      "name": "Trumpchi GA4",
+      "href": "https://www.drom.ru/catalog/gac/trumpchi_ga4/"
+    },
+    {
+      "slug": "trumpchi_ga4_plus",
+      "name": "Trumpchi GA4 Plus",
+      "href": "https://www.drom.ru/catalog/gac/trumpchi_ga4_plus/"
+    },
+    {
+      "slug": "trumpchi_ga5",
+      "name": "Trumpchi GA5",
+      "href": "https://www.drom.ru/catalog/gac/trumpchi_ga5/"
+    },
+    {
+      "slug": "trumpchi_ga6",
+      "name": "Trumpchi GA6",
+      "href": "https://www.drom.ru/catalog/gac/trumpchi_ga6/"
+    },
+    {
+      "slug": "trumpchi_ga8",
+      "name": "Trumpchi GA8",
+      "href": "https://www.drom.ru/catalog/gac/trumpchi_ga8/"
+    },
+    {
+      "slug": "trumpchi_ge3",
+      "name": "Trumpchi GE3",
+      "href": "https://www.drom.ru/catalog/gac/trumpchi_ge3/"
+    },
+    {
+      "slug": "trumpchi_gm6",
+      "name": "Trumpchi GM6",
+      "href": "https://www.drom.ru/catalog/gac/trumpchi_gm6/"
+    },
+    {
+      "slug": "trumpchi_gm8",
+      "name": "Trumpchi GM8",
+      "href": "https://www.drom.ru/catalog/gac/trumpchi_gm8/"
+    },
+    {
+      "slug": "trumpchi_gs3",
+      "name": "GS3",
+      "href": "https://www.drom.ru/catalog/gac/trumpchi_gs3/"
+    },
+    {
+      "slug": "trumpchi_gs3_power",
+      "name": "Trumpchi GS3 Power",
+      "href": "https://www.drom.ru/catalog/gac/trumpchi_gs3_power/"
+    },
+    {
+      "slug": "trumpchi_gs4",
+      "name": "Trumpchi GS4",
+      "href": "https://www.drom.ru/catalog/gac/trumpchi_gs4/"
+    },
+    {
+      "slug": "trumpchi_gs4_coupe",
+      "name": "Trumpchi GS4 Coupe",
+      "href": "https://www.drom.ru/catalog/gac/trumpchi_gs4_coupe/"
+    },
+    {
+      "slug": "trumpchi_gs4_max",
+      "name": "Trumpchi GS4 Max",
+      "href": "https://www.drom.ru/catalog/gac/trumpchi_gs4_max/"
+    },
+    {
+      "slug": "trumpchi_gs4_plus",
+      "name": "Trumpchi GS4 Plus",
+      "href": "https://www.drom.ru/catalog/gac/trumpchi_gs4_plus/"
+    },
+    {
+      "slug": "trumpchi_gs5",
+      "name": "Trumpchi GS5",
+      "href": "https://www.drom.ru/catalog/gac/trumpchi_gs5/"
+    },
+    {
+      "slug": "trumpchi_gs5_super",
+      "name": "Trumpchi GS5 Super",
+      "href": "https://www.drom.ru/catalog/gac/trumpchi_gs5_super/"
+    },
+    {
+      "slug": "trumpchi_gs7",
+      "name": "Trumpchi GS7",
+      "href": "https://www.drom.ru/catalog/gac/trumpchi_gs7/"
+    },
+    {
+      "slug": "trumpchi_gs8",
+      "name": "Trumpchi GS8",
+      "href": "https://www.drom.ru/catalog/gac/trumpchi_gs8/"
+    },
+    {
+      "slug": "trumpchi_gs8s",
+      "name": "Trumpchi GS8S",
+      "href": "https://www.drom.ru/catalog/gac/trumpchi_gs8s/"
+    },
+    {
+      "slug": "trumpchi_m6",
+      "name": "Trumpchi M6",
+      "href": "https://www.drom.ru/catalog/gac/trumpchi_m6/"
+    },
+    {
+      "slug": "trumpchi_m6_pro",
+      "name": "Trumpchi M6 Pro",
+      "href": "https://www.drom.ru/catalog/gac/trumpchi_m6_pro/"
+    },
+    {
+      "slug": "trumpchi_m8",
+      "name": "M8",
+      "href": "https://www.drom.ru/catalog/gac/trumpchi_m8/"
+    },
+    {
+      "slug": "trumpchi_s7",
+      "name": "Trumpchi S7",
+      "href": "https://www.drom.ru/catalog/gac/trumpchi_s7/"
+    },
+    {
+      "slug": "trumpchi_s9",
+      "name": "Trumpchi S9",
+      "href": "https://www.drom.ru/catalog/gac/trumpchi_s9/"
+    },
+    {
+      "slug": "way",
+      "name": "Way",
+      "href": "https://www.drom.ru/catalog/gac/way/"
+    }
+  ]
+}

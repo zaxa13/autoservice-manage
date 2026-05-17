@@ -1,0 +1,17 @@
+{
+  "brand": {
+    "slug": "knewstar",
+    "name": "Knewstar",
+    "href": "https://www.drom.ru/catalog/knewstar/"
+  },
+  "source": "https://www.drom.ru/catalog/knewstar/",
+  "collected_at": "2026-05-17",
+  "count": 1,
+  "models": [
+    {
+      "slug": "001",
+      "name": "001",
+      "href": "https://www.drom.ru/catalog/knewstar/001/"
+    }
+  ]
+}

@@ -1,0 +1,1142 @@
+{
+  "brand": {
+    "slug": "toyota",
+    "name": "Toyota",
+    "href": "https://www.drom.ru/catalog/toyota/"
+  },
+  "source": "https://www.drom.ru/catalog/toyota/",
+  "collected_at": "2026-05-17",
+  "count": 226,
+  "models": [
+    {
+      "slug": "2000gt",
+      "name": "2000GT",
+      "href": "https://www.drom.ru/catalog/toyota/2000gt/"
+    },
+    {
+      "slug": "4runner",
+      "name": "4Runner",
+      "href": "https://www.drom.ru/catalog/toyota/4runner/"
+    },
+    {
+      "slug": "allex",
+      "name": "Allex",
+      "href": "https://www.drom.ru/catalog/toyota/allex/"
+    },
+    {
+      "slug": "allion",
+      "name": "Allion",
+      "href": "https://www.drom.ru/catalog/toyota/allion/"
+    },
+    {
+      "slug": "alphard",
+      "name": "Alphard",
+      "href": "https://www.drom.ru/catalog/toyota/alphard/"
+    },
+    {
+      "slug": "altezza",
+      "name": "Altezza",
+      "href": "https://www.drom.ru/catalog/toyota/altezza/"
+    },
+    {
+      "slug": "aqua",
+      "name": "Aqua",
+      "href": "https://www.drom.ru/catalog/toyota/aqua/"
+    },
+    {
+      "slug": "aristo",
+      "name": "Aristo",
+      "href": "https://www.drom.ru/catalog/toyota/aristo/"
+    },
+    {
+      "slug": "aurion",
+      "name": "Aurion",
+      "href": "https://www.drom.ru/catalog/toyota/aurion/"
+    },
+    {
+      "slug": "auris",
+      "name": "Auris",
+      "href": "https://www.drom.ru/catalog/toyota/auris/"
+    },
+    {
+      "slug": "avalon",
+      "name": "Avalon",
+      "href": "https://www.drom.ru/catalog/toyota/avalon/"
+    },
+    {
+      "slug": "avanza",
+      "name": "Avanza",
+      "href": "https://www.drom.ru/catalog/toyota/avanza/"
+    },
+    {
+      "slug": "avensis",
+      "name": "Avensis",
+      "href": "https://www.drom.ru/catalog/toyota/avensis/"
+    },
+    {
+      "slug": "avensis_verso",
+      "name": "Avensis Verso",
+      "href": "https://www.drom.ru/catalog/toyota/avensis_verso/"
+    },
+    {
+      "slug": "aygo",
+      "name": "Aygo",
+      "href": "https://www.drom.ru/catalog/toyota/aygo/"
+    },
+    {
+      "slug": "bb",
+      "name": "bB",
+      "href": "https://www.drom.ru/catalog/toyota/bb/"
+    },
+    {
+      "slug": "belta",
+      "name": "Belta",
+      "href": "https://www.drom.ru/catalog/toyota/belta/"
+    },
+    {
+      "slug": "blade",
+      "name": "Blade",
+      "href": "https://www.drom.ru/catalog/toyota/blade/"
+    },
+    {
+      "slug": "blizzard",
+      "name": "Blizzard",
+      "href": "https://www.drom.ru/catalog/toyota/blizzard/"
+    },
+    {
+      "slug": "brevis",
+      "name": "Brevis",
+      "href": "https://www.drom.ru/catalog/toyota/brevis/"
+    },
+    {
+      "slug": "bz",
+      "name": "bZ",
+      "href": "https://www.drom.ru/catalog/toyota/bz/"
+    },
+    {
+      "slug": "bz3",
+      "name": "bZ3",
+      "href": "https://www.drom.ru/catalog/toyota/bz3/"
+    },
+    {
+      "slug": "bz3x",
+      "name": "bZ3X",
+      "href": "https://www.drom.ru/catalog/toyota/bz3x/"
+    },
+    {
+      "slug": "bz4x",
+      "name": "bZ4X",
+      "href": "https://www.drom.ru/catalog/toyota/bz4x/"
+    },
+    {
+      "slug": "bz4x_touring",
+      "name": "bZ4X Touring",
+      "href": "https://www.drom.ru/catalog/toyota/bz4x_touring/"
+    },
+    {
+      "slug": "bz5",
+      "name": "bZ5",
+      "href": "https://www.drom.ru/catalog/toyota/bz5/"
+    },
+    {
+      "slug": "bz7",
+      "name": "bZ7",
+      "href": "https://www.drom.ru/catalog/toyota/bz7/"
+    },
+    {
+      "slug": "bz_woodland",
+      "name": "bZ Woodland",
+      "href": "https://www.drom.ru/catalog/toyota/bz_woodland/"
+    },
+    {
+      "slug": "c-hr",
+      "name": "C-HR",
+      "href": "https://www.drom.ru/catalog/toyota/c-hr/"
+    },
+    {
+      "slug": "c-hr_plus",
+      "name": "C-HR+",
+      "href": "https://www.drom.ru/catalog/toyota/c-hr_plus/"
+    },
+    {
+      "slug": "c_pod",
+      "name": "C+pod",
+      "href": "https://www.drom.ru/catalog/toyota/c_pod/"
+    },
+    {
+      "slug": "caldina",
+      "name": "Caldina",
+      "href": "https://www.drom.ru/catalog/toyota/caldina/"
+    },
+    {
+      "slug": "cami",
+      "name": "Cami",
+      "href": "https://www.drom.ru/catalog/toyota/cami/"
+    },
+    {
+      "slug": "camry",
+      "name": "Camry",
+      "href": "https://www.drom.ru/catalog/toyota/camry/"
+    },
+    {
+      "slug": "camry_gracia",
+      "name": "Camry Gracia",
+      "href": "https://www.drom.ru/catalog/toyota/camry_gracia/"
+    },
+    {
+      "slug": "camry_prominent",
+      "name": "Camry Prominent",
+      "href": "https://www.drom.ru/catalog/toyota/camry_prominent/"
+    },
+    {
+      "slug": "carina",
+      "name": "Carina",
+      "href": "https://www.drom.ru/catalog/toyota/carina/"
+    },
+    {
+      "slug": "carina_e",
+      "name": "Carina E",
+      "href": "https://www.drom.ru/catalog/toyota/carina_e/"
+    },
+    {
+      "slug": "carina_ed",
+      "name": "Carina ED",
+      "href": "https://www.drom.ru/catalog/toyota/carina_ed/"
+    },
+    {
+      "slug": "carina_ii",
+      "name": "Carina II",
+      "href": "https://www.drom.ru/catalog/toyota/carina_ii/"
+    },
+    {
+      "slug": "cavalier",
+      "name": "Cavalier",
+      "href": "https://www.drom.ru/catalog/toyota/cavalier/"
+    },
+    {
+      "slug": "celica",
+      "name": "Celica",
+      "href": "https://www.drom.ru/catalog/toyota/celica/"
+    },
+    {
+      "slug": "celsior",
+      "name": "Celsior",
+      "href": "https://www.drom.ru/catalog/toyota/celsior/"
+    },
+    {
+      "slug": "century",
+      "name": "Century",
+      "href": "https://www.drom.ru/catalog/toyota/century/"
+    },
+    {
+      "slug": "chaser",
+      "name": "Chaser",
+      "href": "https://www.drom.ru/catalog/toyota/chaser/"
+    },
+    {
+      "slug": "classic",
+      "name": "Classic",
+      "href": "https://www.drom.ru/catalog/toyota/classic/"
+    },
+    {
+      "slug": "comfort",
+      "name": "Comfort",
+      "href": "https://www.drom.ru/catalog/toyota/comfort/"
+    },
+    {
+      "slug": "coms",
+      "name": "COMS",
+      "href": "https://www.drom.ru/catalog/toyota/coms/"
+    },
+    {
+      "slug": "corolla",
+      "name": "Corolla",
+      "href": "https://www.drom.ru/catalog/toyota/corolla/"
+    },
+    {
+      "slug": "corolla_altis",
+      "name": "Corolla Altis",
+      "href": "https://www.drom.ru/catalog/toyota/corolla_altis/"
+    },
+    {
+      "slug": "corolla_axio",
+      "name": "Corolla Axio",
+      "href": "https://www.drom.ru/catalog/toyota/corolla_axio/"
+    },
+    {
+      "slug": "corolla_ceres",
+      "name": "Corolla Ceres",
+      "href": "https://www.drom.ru/catalog/toyota/corolla_ceres/"
+    },
+    {
+      "slug": "corolla_cross",
+      "name": "Corolla Cross",
+      "href": "https://www.drom.ru/catalog/toyota/corolla_cross/"
+    },
+    {
+      "slug": "corolla_fielder",
+      "name": "Corolla Fielder",
+      "href": "https://www.drom.ru/catalog/toyota/corolla_fielder/"
+    },
+    {
+      "slug": "corolla_fx",
+      "name": "Corolla FX",
+      "href": "https://www.drom.ru/catalog/toyota/corolla_fx/"
+    },
+    {
+      "slug": "corolla_ii",
+      "name": "Corolla II",
+      "href": "https://www.drom.ru/catalog/toyota/corolla_ii/"
+    },
+    {
+      "slug": "corolla_im",
+      "name": "Corolla iM",
+      "href": "https://www.drom.ru/catalog/toyota/corolla_im/"
+    },
+    {
+      "slug": "corolla_levin",
+      "name": "Corolla Levin",
+      "href": "https://www.drom.ru/catalog/toyota/corolla_levin/"
+    },
+    {
+      "slug": "corolla_rumion",
+      "name": "Corolla Rumion",
+      "href": "https://www.drom.ru/catalog/toyota/corolla_rumion/"
+    },
+    {
+      "slug": "corolla_runx",
+      "name": "Corolla Runx",
+      "href": "https://www.drom.ru/catalog/toyota/corolla_runx/"
+    },
+    {
+      "slug": "corolla_spacio",
+      "name": "Corolla Spacio",
+      "href": "https://www.drom.ru/catalog/toyota/corolla_spacio/"
+    },
+    {
+      "slug": "corolla_verso",
+      "name": "Corolla Verso",
+      "href": "https://www.drom.ru/catalog/toyota/corolla_verso/"
+    },
+    {
+      "slug": "corona",
+      "name": "Corona",
+      "href": "https://www.drom.ru/catalog/toyota/corona/"
+    },
+    {
+      "slug": "corona_exiv",
+      "name": "Corona Exiv",
+      "href": "https://www.drom.ru/catalog/toyota/corona_exiv/"
+    },
+    {
+      "slug": "corona_premio",
+      "name": "Corona Premio",
+      "href": "https://www.drom.ru/catalog/toyota/corona_premio/"
+    },
+    {
+      "slug": "corona_sf",
+      "name": "Corona SF",
+      "href": "https://www.drom.ru/catalog/toyota/corona_sf/"
+    },
+    {
+      "slug": "corsa",
+      "name": "Corsa",
+      "href": "https://www.drom.ru/catalog/toyota/corsa/"
+    },
+    {
+      "slug": "cressida",
+      "name": "Cressida",
+      "href": "https://www.drom.ru/catalog/toyota/cressida/"
+    },
+    {
+      "slug": "cresta",
+      "name": "Cresta",
+      "href": "https://www.drom.ru/catalog/toyota/cresta/"
+    },
+    {
+      "slug": "crown",
+      "name": "Crown",
+      "href": "https://www.drom.ru/catalog/toyota/crown/"
+    },
+    {
+      "slug": "crown_kluger",
+      "name": "Crown Kluger",
+      "href": "https://www.drom.ru/catalog/toyota/crown_kluger/"
+    },
+    {
+      "slug": "crown_majesta",
+      "name": "Crown Majesta",
+      "href": "https://www.drom.ru/catalog/toyota/crown_majesta/"
+    },
+    {
+      "slug": "crown_signia",
+      "name": "Crown Signia",
+      "href": "https://www.drom.ru/catalog/toyota/crown_signia/"
+    },
+    {
+      "slug": "crown_vellfire",
+      "name": "Crown Vellfire",
+      "href": "https://www.drom.ru/catalog/toyota/crown_vellfire/"
+    },
+    {
+      "slug": "curren",
+      "name": "Curren",
+      "href": "https://www.drom.ru/catalog/toyota/curren/"
+    },
+    {
+      "slug": "cynos",
+      "name": "Cynos",
+      "href": "https://www.drom.ru/catalog/toyota/cynos/"
+    },
+    {
+      "slug": "duet",
+      "name": "Duet",
+      "href": "https://www.drom.ru/catalog/toyota/duet/"
+    },
+    {
+      "slug": "echo",
+      "name": "Echo",
+      "href": "https://www.drom.ru/catalog/toyota/echo/"
+    },
+    {
+      "slug": "esquire",
+      "name": "Esquire",
+      "href": "https://www.drom.ru/catalog/toyota/esquire/"
+    },
+    {
+      "slug": "estima",
+      "name": "Estima",
+      "href": "https://www.drom.ru/catalog/toyota/estima/"
+    },
+    {
+      "slug": "estima_emina",
+      "name": "Estima Emina",
+      "href": "https://www.drom.ru/catalog/toyota/estima_emina/"
+    },
+    {
+      "slug": "estima_lucida",
+      "name": "Estima Lucida",
+      "href": "https://www.drom.ru/catalog/toyota/estima_lucida/"
+    },
+    {
+      "slug": "etios",
+      "name": "Etios",
+      "href": "https://www.drom.ru/catalog/toyota/etios/"
+    },
+    {
+      "slug": "etios_cross",
+      "name": "Etios Cross",
+      "href": "https://www.drom.ru/catalog/toyota/etios_cross/"
+    },
+    {
+      "slug": "fj_cruiser",
+      "name": "FJ Cruiser",
+      "href": "https://www.drom.ru/catalog/toyota/fj_cruiser/"
+    },
+    {
+      "slug": "fortuner",
+      "name": "Fortuner",
+      "href": "https://www.drom.ru/catalog/toyota/fortuner/"
+    },
+    {
+      "slug": "frontlander",
+      "name": "Frontlander",
+      "href": "https://www.drom.ru/catalog/toyota/frontlander/"
+    },
+    {
+      "slug": "funcargo",
+      "name": "Funcargo",
+      "href": "https://www.drom.ru/catalog/toyota/funcargo/"
+    },
+    {
+      "slug": "gaia",
+      "name": "Gaia",
+      "href": "https://www.drom.ru/catalog/toyota/gaia/"
+    },
+    {
+      "slug": "gr_86",
+      "name": "GR 86",
+      "href": "https://www.drom.ru/catalog/toyota/gr_86/"
+    },
+    {
+      "slug": "gr_corolla",
+      "name": "GR Corolla",
+      "href": "https://www.drom.ru/catalog/toyota/gr_corolla/"
+    },
+    {
+      "slug": "gr_yaris",
+      "name": "GR Yaris",
+      "href": "https://www.drom.ru/catalog/toyota/gr_yaris/"
+    },
+    {
+      "slug": "granace",
+      "name": "GranAce",
+      "href": "https://www.drom.ru/catalog/toyota/granace/"
+    },
+    {
+      "slug": "grand_hiace",
+      "name": "Grand Hiace",
+      "href": "https://www.drom.ru/catalog/toyota/grand_hiace/"
+    },
+    {
+      "slug": "grand_highlander",
+      "name": "Grand Highlander",
+      "href": "https://www.drom.ru/catalog/toyota/grand_highlander/"
+    },
+    {
+      "slug": "granvia",
+      "name": "Granvia",
+      "href": "https://www.drom.ru/catalog/toyota/granvia/"
+    },
+    {
+      "slug": "gt_86",
+      "name": "GT 86",
+      "href": "https://www.drom.ru/catalog/toyota/gt_86/"
+    },
+    {
+      "slug": "harrier",
+      "name": "Harrier",
+      "href": "https://www.drom.ru/catalog/toyota/harrier/"
+    },
+    {
+      "slug": "hiace",
+      "name": "Hiace",
+      "href": "https://www.drom.ru/catalog/toyota/hiace/"
+    },
+    {
+      "slug": "hiace_regius",
+      "name": "Hiace Regius",
+      "href": "https://www.drom.ru/catalog/toyota/hiace_regius/"
+    },
+    {
+      "slug": "highlander",
+      "name": "Highlander",
+      "href": "https://www.drom.ru/catalog/toyota/highlander/"
+    },
+    {
+      "slug": "hilux_champ",
+      "name": "Hilux Champ",
+      "href": "https://www.drom.ru/catalog/toyota/hilux_champ/"
+    },
+    {
+      "slug": "hilux_pick_up",
+      "name": "Hilux",
+      "href": "https://www.drom.ru/catalog/toyota/hilux_pick_up/"
+    },
+    {
+      "slug": "hilux_surf",
+      "name": "Hilux Surf",
+      "href": "https://www.drom.ru/catalog/toyota/hilux_surf/"
+    },
+    {
+      "slug": "ipsum",
+      "name": "Ipsum",
+      "href": "https://www.drom.ru/catalog/toyota/ipsum/"
+    },
+    {
+      "slug": "iq",
+      "name": "iQ",
+      "href": "https://www.drom.ru/catalog/toyota/iq/"
+    },
+    {
+      "slug": "isis",
+      "name": "Isis",
+      "href": "https://www.drom.ru/catalog/toyota/isis/"
+    },
+    {
+      "slug": "ist",
+      "name": "ist",
+      "href": "https://www.drom.ru/catalog/toyota/ist/"
+    },
+    {
+      "slug": "izoa",
+      "name": "Izoa",
+      "href": "https://www.drom.ru/catalog/toyota/izoa/"
+    },
+    {
+      "slug": "jpn-taxi",
+      "name": "JPN TAXI",
+      "href": "https://www.drom.ru/catalog/toyota/jpn-taxi/"
+    },
+    {
+      "slug": "kluger_v",
+      "name": "Kluger V",
+      "href": "https://www.drom.ru/catalog/toyota/kluger_v/"
+    },
+    {
+      "slug": "land_cruiser",
+      "name": "Land Cruiser",
+      "href": "https://www.drom.ru/catalog/toyota/land_cruiser/"
+    },
+    {
+      "slug": "land_cruiser_cygnus",
+      "name": "Land Cruiser Cygnus",
+      "href": "https://www.drom.ru/catalog/toyota/land_cruiser_cygnus/"
+    },
+    {
+      "slug": "land_cruiser_fj",
+      "name": "Land Cruiser FJ",
+      "href": "https://www.drom.ru/catalog/toyota/land_cruiser_fj/"
+    },
+    {
+      "slug": "land_cruiser_prado",
+      "name": "Land Cruiser Prado",
+      "href": "https://www.drom.ru/catalog/toyota/land_cruiser_prado/"
+    },
+    {
+      "slug": "levin",
+      "name": "Levin",
+      "href": "https://www.drom.ru/catalog/toyota/levin/"
+    },
+    {
+      "slug": "lite_ace",
+      "name": "Lite Ace",
+      "href": "https://www.drom.ru/catalog/toyota/lite_ace/"
+    },
+    {
+      "slug": "lite_ace_noah",
+      "name": "Lite Ace Noah",
+      "href": "https://www.drom.ru/catalog/toyota/lite_ace_noah/"
+    },
+    {
+      "slug": "mark_ii",
+      "name": "Mark II",
+      "href": "https://www.drom.ru/catalog/toyota/mark_ii/"
+    },
+    {
+      "slug": "mark_ii_wagon_blit",
+      "name": "Mark II Wagon Blit",
+      "href": "https://www.drom.ru/catalog/toyota/mark_ii_wagon_blit/"
+    },
+    {
+      "slug": "mark_ii_wagon_qualis",
+      "name": "Mark II Wagon Qualis",
+      "href": "https://www.drom.ru/catalog/toyota/mark_ii_wagon_qualis/"
+    },
+    {
+      "slug": "mark_x",
+      "name": "Mark X",
+      "href": "https://www.drom.ru/catalog/toyota/mark_x/"
+    },
+    {
+      "slug": "mark_x_zio",
+      "name": "Mark X Zio",
+      "href": "https://www.drom.ru/catalog/toyota/mark_x_zio/"
+    },
+    {
+      "slug": "master_ace_surf",
+      "name": "Master Ace Surf",
+      "href": "https://www.drom.ru/catalog/toyota/master_ace_surf/"
+    },
+    {
+      "slug": "matrix",
+      "name": "Matrix",
+      "href": "https://www.drom.ru/catalog/toyota/matrix/"
+    },
+    {
+      "slug": "mega_cruiser",
+      "name": "Mega Cruiser",
+      "href": "https://www.drom.ru/catalog/toyota/mega_cruiser/"
+    },
+    {
+      "slug": "mirai",
+      "name": "Mirai",
+      "href": "https://www.drom.ru/catalog/toyota/mirai/"
+    },
+    {
+      "slug": "model_f",
+      "name": "Model F",
+      "href": "https://www.drom.ru/catalog/toyota/model_f/"
+    },
+    {
+      "slug": "mr-s",
+      "name": "MR-S",
+      "href": "https://www.drom.ru/catalog/toyota/mr-s/"
+    },
+    {
+      "slug": "mr2",
+      "name": "MR2",
+      "href": "https://www.drom.ru/catalog/toyota/mr2/"
+    },
+    {
+      "slug": "nadia",
+      "name": "Nadia",
+      "href": "https://www.drom.ru/catalog/toyota/nadia/"
+    },
+    {
+      "slug": "noah",
+      "name": "Noah",
+      "href": "https://www.drom.ru/catalog/toyota/noah/"
+    },
+    {
+      "slug": "opa",
+      "name": "Opa",
+      "href": "https://www.drom.ru/catalog/toyota/opa/"
+    },
+    {
+      "slug": "origin",
+      "name": "Origin",
+      "href": "https://www.drom.ru/catalog/toyota/origin/"
+    },
+    {
+      "slug": "paseo",
+      "name": "Paseo",
+      "href": "https://www.drom.ru/catalog/toyota/paseo/"
+    },
+    {
+      "slug": "passo",
+      "name": "Passo",
+      "href": "https://www.drom.ru/catalog/toyota/passo/"
+    },
+    {
+      "slug": "passo_sette",
+      "name": "Passo Sette",
+      "href": "https://www.drom.ru/catalog/toyota/passo_sette/"
+    },
+    {
+      "slug": "picnic",
+      "name": "Picnic",
+      "href": "https://www.drom.ru/catalog/toyota/picnic/"
+    },
+    {
+      "slug": "pixis_epoch",
+      "name": "Pixis Epoch",
+      "href": "https://www.drom.ru/catalog/toyota/pixis_epoch/"
+    },
+    {
+      "slug": "pixis_joy",
+      "name": "Pixis Joy",
+      "href": "https://www.drom.ru/catalog/toyota/pixis_joy/"
+    },
+    {
+      "slug": "pixis_mega",
+      "name": "Pixis Mega",
+      "href": "https://www.drom.ru/catalog/toyota/pixis_mega/"
+    },
+    {
+      "slug": "pixis_space",
+      "name": "Pixis Space",
+      "href": "https://www.drom.ru/catalog/toyota/pixis_space/"
+    },
+    {
+      "slug": "pixis_van",
+      "name": "Pixis Van",
+      "href": "https://www.drom.ru/catalog/toyota/pixis_van/"
+    },
+    {
+      "slug": "platz",
+      "name": "Platz",
+      "href": "https://www.drom.ru/catalog/toyota/platz/"
+    },
+    {
+      "slug": "porte",
+      "name": "Porte",
+      "href": "https://www.drom.ru/catalog/toyota/porte/"
+    },
+    {
+      "slug": "premio",
+      "name": "Premio",
+      "href": "https://www.drom.ru/catalog/toyota/premio/"
+    },
+    {
+      "slug": "previa",
+      "name": "Previa",
+      "href": "https://www.drom.ru/catalog/toyota/previa/"
+    },
+    {
+      "slug": "prius",
+      "name": "Prius",
+      "href": "https://www.drom.ru/catalog/toyota/prius/"
+    },
+    {
+      "slug": "prius_a",
+      "name": "Prius Alpha",
+      "href": "https://www.drom.ru/catalog/toyota/prius_a/"
+    },
+    {
+      "slug": "prius_c",
+      "name": "Prius C",
+      "href": "https://www.drom.ru/catalog/toyota/prius_c/"
+    },
+    {
+      "slug": "prius_phv",
+      "name": "Prius PHV",
+      "href": "https://www.drom.ru/catalog/toyota/prius_phv/"
+    },
+    {
+      "slug": "prius_plus",
+      "name": "Prius Plus",
+      "href": "https://www.drom.ru/catalog/toyota/prius_plus/"
+    },
+    {
+      "slug": "prius_prime",
+      "name": "Prius Prime",
+      "href": "https://www.drom.ru/catalog/toyota/prius_prime/"
+    },
+    {
+      "slug": "prius_v",
+      "name": "Prius v",
+      "href": "https://www.drom.ru/catalog/toyota/prius_v/"
+    },
+    {
+      "slug": "proace",
+      "name": "Proace",
+      "href": "https://www.drom.ru/catalog/toyota/proace/"
+    },
+    {
+      "slug": "proace_city",
+      "name": "Proace City",
+      "href": "https://www.drom.ru/catalog/toyota/proace_city/"
+    },
+    {
+      "slug": "proace_verso",
+      "name": "Proace Verso",
+      "href": "https://www.drom.ru/catalog/toyota/proace_verso/"
+    },
+    {
+      "slug": "probox",
+      "name": "Probox",
+      "href": "https://www.drom.ru/catalog/toyota/probox/"
+    },
+    {
+      "slug": "progres",
+      "name": "Progres",
+      "href": "https://www.drom.ru/catalog/toyota/progres/"
+    },
+    {
+      "slug": "pronard",
+      "name": "Pronard",
+      "href": "https://www.drom.ru/catalog/toyota/pronard/"
+    },
+    {
+      "slug": "publica",
+      "name": "Publica",
+      "href": "https://www.drom.ru/catalog/toyota/publica/"
+    },
+    {
+      "slug": "ractis",
+      "name": "Ractis",
+      "href": "https://www.drom.ru/catalog/toyota/ractis/"
+    },
+    {
+      "slug": "raize",
+      "name": "Raize",
+      "href": "https://www.drom.ru/catalog/toyota/raize/"
+    },
+    {
+      "slug": "raum",
+      "name": "Raum",
+      "href": "https://www.drom.ru/catalog/toyota/raum/"
+    },
+    {
+      "slug": "rav4",
+      "name": "RAV4",
+      "href": "https://www.drom.ru/catalog/toyota/rav4/"
+    },
+    {
+      "slug": "regius",
+      "name": "Regius",
+      "href": "https://www.drom.ru/catalog/toyota/regius/"
+    },
+    {
+      "slug": "regius_ace",
+      "name": "Regius Ace",
+      "href": "https://www.drom.ru/catalog/toyota/regius_ace/"
+    },
+    {
+      "slug": "reiz",
+      "name": "Reiz",
+      "href": "https://www.drom.ru/catalog/toyota/reiz/"
+    },
+    {
+      "slug": "roomy",
+      "name": "Roomy",
+      "href": "https://www.drom.ru/catalog/toyota/roomy/"
+    },
+    {
+      "slug": "rush",
+      "name": "Rush",
+      "href": "https://www.drom.ru/catalog/toyota/rush/"
+    },
+    {
+      "slug": "sai",
+      "name": "Sai",
+      "href": "https://www.drom.ru/catalog/toyota/sai/"
+    },
+    {
+      "slug": "scepter",
+      "name": "Scepter",
+      "href": "https://www.drom.ru/catalog/toyota/scepter/"
+    },
+    {
+      "slug": "sd",
+      "name": "SD",
+      "href": "https://www.drom.ru/catalog/toyota/sd/"
+    },
+    {
+      "slug": "sequoia",
+      "name": "Sequoia",
+      "href": "https://www.drom.ru/catalog/toyota/sequoia/"
+    },
+    {
+      "slug": "sera",
+      "name": "Sera",
+      "href": "https://www.drom.ru/catalog/toyota/sera/"
+    },
+    {
+      "slug": "sf",
+      "name": "SF",
+      "href": "https://www.drom.ru/catalog/toyota/sf/"
+    },
+    {
+      "slug": "sienna",
+      "name": "Sienna",
+      "href": "https://www.drom.ru/catalog/toyota/sienna/"
+    },
+    {
+      "slug": "sienta",
+      "name": "Sienta",
+      "href": "https://www.drom.ru/catalog/toyota/sienta/"
+    },
+    {
+      "slug": "soarer",
+      "name": "Soarer",
+      "href": "https://www.drom.ru/catalog/toyota/soarer/"
+    },
+    {
+      "slug": "solara",
+      "name": "Solara",
+      "href": "https://www.drom.ru/catalog/toyota/solara/"
+    },
+    {
+      "slug": "soluna",
+      "name": "Soluna",
+      "href": "https://www.drom.ru/catalog/toyota/soluna/"
+    },
+    {
+      "slug": "spade",
+      "name": "Spade",
+      "href": "https://www.drom.ru/catalog/toyota/spade/"
+    },
+    {
+      "slug": "sparky",
+      "name": "Sparky",
+      "href": "https://www.drom.ru/catalog/toyota/sparky/"
+    },
+    {
+      "slug": "sprinter",
+      "name": "Sprinter",
+      "href": "https://www.drom.ru/catalog/toyota/sprinter/"
+    },
+    {
+      "slug": "sprinter_carib",
+      "name": "Sprinter Carib",
+      "href": "https://www.drom.ru/catalog/toyota/sprinter_carib/"
+    },
+    {
+      "slug": "sprinter_marino",
+      "name": "Sprinter Marino",
+      "href": "https://www.drom.ru/catalog/toyota/sprinter_marino/"
+    },
+    {
+      "slug": "sprinter_trueno",
+      "name": "Sprinter Trueno",
+      "href": "https://www.drom.ru/catalog/toyota/sprinter_trueno/"
+    },
+    {
+      "slug": "starlet",
+      "name": "Starlet",
+      "href": "https://www.drom.ru/catalog/toyota/starlet/"
+    },
+    {
+      "slug": "succeed",
+      "name": "Succeed",
+      "href": "https://www.drom.ru/catalog/toyota/succeed/"
+    },
+    {
+      "slug": "supra",
+      "name": "Supra",
+      "href": "https://www.drom.ru/catalog/toyota/supra/"
+    },
+    {
+      "slug": "t100",
+      "name": "T100",
+      "href": "https://www.drom.ru/catalog/toyota/t100/"
+    },
+    {
+      "slug": "tacoma",
+      "name": "Tacoma",
+      "href": "https://www.drom.ru/catalog/toyota/tacoma/"
+    },
+    {
+      "slug": "tank",
+      "name": "Tank",
+      "href": "https://www.drom.ru/catalog/toyota/tank/"
+    },
+    {
+      "slug": "tercel",
+      "name": "Tercel",
+      "href": "https://www.drom.ru/catalog/toyota/tercel/"
+    },
+    {
+      "slug": "touring_hiace",
+      "name": "Touring Hiace",
+      "href": "https://www.drom.ru/catalog/toyota/touring_hiace/"
+    },
+    {
+      "slug": "town_ace",
+      "name": "Town Ace",
+      "href": "https://www.drom.ru/catalog/toyota/town_ace/"
+    },
+    {
+      "slug": "town_ace_noah",
+      "name": "Town Ace Noah",
+      "href": "https://www.drom.ru/catalog/toyota/town_ace_noah/"
+    },
+    {
+      "slug": "tundra",
+      "name": "Tundra",
+      "href": "https://www.drom.ru/catalog/toyota/tundra/"
+    },
+    {
+      "slug": "urban_cruiser",
+      "name": "Urban Cruiser",
+      "href": "https://www.drom.ru/catalog/toyota/urban_cruiser/"
+    },
+    {
+      "slug": "vanguard",
+      "name": "Vanguard",
+      "href": "https://www.drom.ru/catalog/toyota/vanguard/"
+    },
+    {
+      "slug": "vellfire",
+      "name": "Vellfire",
+      "href": "https://www.drom.ru/catalog/toyota/vellfire/"
+    },
+    {
+      "slug": "veloz",
+      "name": "Veloz",
+      "href": "https://www.drom.ru/catalog/toyota/veloz/"
+    },
+    {
+      "slug": "venza",
+      "name": "Venza",
+      "href": "https://www.drom.ru/catalog/toyota/venza/"
+    },
+    {
+      "slug": "verossa",
+      "name": "Verossa",
+      "href": "https://www.drom.ru/catalog/toyota/verossa/"
+    },
+    {
+      "slug": "verso",
+      "name": "Verso",
+      "href": "https://www.drom.ru/catalog/toyota/verso/"
+    },
+    {
+      "slug": "verso-s",
+      "name": "Verso-S",
+      "href": "https://www.drom.ru/catalog/toyota/verso-s/"
+    },
+    {
+      "slug": "vios",
+      "name": "Vios",
+      "href": "https://www.drom.ru/catalog/toyota/vios/"
+    },
+    {
+      "slug": "vista",
+      "name": "Vista",
+      "href": "https://www.drom.ru/catalog/toyota/vista/"
+    },
+    {
+      "slug": "vista_ardeo",
+      "name": "Vista Ardeo",
+      "href": "https://www.drom.ru/catalog/toyota/vista_ardeo/"
+    },
+    {
+      "slug": "vitz",
+      "name": "Vitz",
+      "href": "https://www.drom.ru/catalog/toyota/vitz/"
+    },
+    {
+      "slug": "voltz",
+      "name": "Voltz",
+      "href": "https://www.drom.ru/catalog/toyota/voltz/"
+    },
+    {
+      "slug": "voxy",
+      "name": "Voxy",
+      "href": "https://www.drom.ru/catalog/toyota/voxy/"
+    },
+    {
+      "slug": "wigo",
+      "name": "Wigo",
+      "href": "https://www.drom.ru/catalog/toyota/wigo/"
+    },
+    {
+      "slug": "wildlander",
+      "name": "Wildlander",
+      "href": "https://www.drom.ru/catalog/toyota/wildlander/"
+    },
+    {
+      "slug": "will_cypha",
+      "name": "WiLL Cypha",
+      "href": "https://www.drom.ru/catalog/toyota/will_cypha/"
+    },
+    {
+      "slug": "will_vi",
+      "name": "WiLL Vi",
+      "href": "https://www.drom.ru/catalog/toyota/will_vi/"
+    },
+    {
+      "slug": "will_vs",
+      "name": "WiLL VS",
+      "href": "https://www.drom.ru/catalog/toyota/will_vs/"
+    },
+    {
+      "slug": "windom",
+      "name": "Windom",
+      "href": "https://www.drom.ru/catalog/toyota/windom/"
+    },
+    {
+      "slug": "wish",
+      "name": "Wish",
+      "href": "https://www.drom.ru/catalog/toyota/wish/"
+    },
+    {
+      "slug": "xa",
+      "name": "xA",
+      "href": "https://www.drom.ru/catalog/toyota/xa/"
+    },
+    {
+      "slug": "yaris",
+      "name": "Yaris",
+      "href": "https://www.drom.ru/catalog/toyota/yaris/"
+    },
+    {
+      "slug": "yaris_ativ",
+      "name": "Yaris Ativ",
+      "href": "https://www.drom.ru/catalog/toyota/yaris_ativ/"
+    },
+    {
+      "slug": "yaris_cross",
+      "name": "Yaris Cross",
+      "href": "https://www.drom.ru/catalog/toyota/yaris_cross/"
+    },
+    {
+      "slug": "yaris_ia",
+      "name": "Yaris iA",
+      "href": "https://www.drom.ru/catalog/toyota/yaris_ia/"
+    },
+    {
+      "slug": "yaris_l",
+      "name": "Yaris L",
+      "href": "https://www.drom.ru/catalog/toyota/yaris_l/"
+    },
+    {
+      "slug": "yaris_verso",
+      "name": "Yaris Verso",
+      "href": "https://www.drom.ru/catalog/toyota/yaris_verso/"
+    }
+  ]
+}

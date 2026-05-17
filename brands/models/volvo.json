@@ -1,0 +1,177 @@
+{
+  "brand": {
+    "slug": "volvo",
+    "name": "Volvo",
+    "href": "https://www.drom.ru/catalog/volvo/"
+  },
+  "source": "https://www.drom.ru/catalog/volvo/",
+  "collected_at": "2026-05-17",
+  "count": 33,
+  "models": [
+    {
+      "slug": "260",
+      "name": "260",
+      "href": "https://www.drom.ru/catalog/volvo/260/"
+    },
+    {
+      "slug": "340",
+      "name": "340",
+      "href": "https://www.drom.ru/catalog/volvo/340/"
+    },
+    {
+      "slug": "343",
+      "name": "343",
+      "href": "https://www.drom.ru/catalog/volvo/343/"
+    },
+    {
+      "slug": "345",
+      "name": "345",
+      "href": "https://www.drom.ru/catalog/volvo/345/"
+    },
+    {
+      "slug": "360",
+      "name": "360",
+      "href": "https://www.drom.ru/catalog/volvo/360/"
+    },
+    {
+      "slug": "440",
+      "name": "440",
+      "href": "https://www.drom.ru/catalog/volvo/440/"
+    },
+    {
+      "slug": "460",
+      "name": "460",
+      "href": "https://www.drom.ru/catalog/volvo/460/"
+    },
+    {
+      "slug": "480",
+      "name": "480",
+      "href": "https://www.drom.ru/catalog/volvo/480/"
+    },
+    {
+      "slug": "850",
+      "name": "850",
+      "href": "https://www.drom.ru/catalog/volvo/850/"
+    },
+    {
+      "slug": "960",
+      "name": "960",
+      "href": "https://www.drom.ru/catalog/volvo/960/"
+    },
+    {
+      "slug": "c30",
+      "name": "C30",
+      "href": "https://www.drom.ru/catalog/volvo/c30/"
+    },
+    {
+      "slug": "c40",
+      "name": "C40",
+      "href": "https://www.drom.ru/catalog/volvo/c40/"
+    },
+    {
+      "slug": "c70",
+      "name": "C70",
+      "href": "https://www.drom.ru/catalog/volvo/c70/"
+    },
+    {
+      "slug": "em90",
+      "name": "EM90",
+      "href": "https://www.drom.ru/catalog/volvo/em90/"
+    },
+    {
+      "slug": "es90",
+      "name": "ES90",
+      "href": "https://www.drom.ru/catalog/volvo/es90/"
+    },
+    {
+      "slug": "ex30",
+      "name": "EX30",
+      "href": "https://www.drom.ru/catalog/volvo/ex30/"
+    },
+    {
+      "slug": "ex40",
+      "name": "EX40",
+      "href": "https://www.drom.ru/catalog/volvo/ex40/"
+    },
+    {
+      "slug": "ex60",
+      "name": "EX60",
+      "href": "https://www.drom.ru/catalog/volvo/ex60/"
+    },
+    {
+      "slug": "ex90",
+      "name": "EX90",
+      "href": "https://www.drom.ru/catalog/volvo/ex90/"
+    },
+    {
+      "slug": "s40",
+      "name": "S40",
+      "href": "https://www.drom.ru/catalog/volvo/s40/"
+    },
+    {
+      "slug": "s60",
+      "name": "S60",
+      "href": "https://www.drom.ru/catalog/volvo/s60/"
+    },
+    {
+      "slug": "s70",
+      "name": "S70",
+      "href": "https://www.drom.ru/catalog/volvo/s70/"
+    },
+    {
+      "slug": "s80",
+      "name": "S80",
+      "href": "https://www.drom.ru/catalog/volvo/s80/"
+    },
+    {
+      "slug": "s90",
+      "name": "S90",
+      "href": "https://www.drom.ru/catalog/volvo/s90/"
+    },
+    {
+      "slug": "v40",
+      "name": "V40",
+      "href": "https://www.drom.ru/catalog/volvo/v40/"
+    },
+    {
+      "slug": "v50",
+      "name": "V50",
+      "href": "https://www.drom.ru/catalog/volvo/v50/"
+    },
+    {
+      "slug": "v60",
+      "name": "V60",
+      "href": "https://www.drom.ru/catalog/volvo/v60/"
+    },
+    {
+      "slug": "v70",
+      "name": "V70",
+      "href": "https://www.drom.ru/catalog/volvo/v70/"
+    },
+    {
+      "slug": "v90",
+      "name": "V90",
+      "href": "https://www.drom.ru/catalog/volvo/v90/"
+    },
+    {
+      "slug": "xc40",
+      "name": "XC40",
+      "href": "https://www.drom.ru/catalog/volvo/xc40/"
+    },
+    {
+      "slug": "xc60",
+      "name": "XC60",
+      "href": "https://www.drom.ru/catalog/volvo/xc60/"
+    },
+    {
+      "slug": "xc70",
+      "name": "XC70",
+      "href": "https://www.drom.ru/catalog/volvo/xc70/"
+    },
+    {
+      "slug": "xc90",
+      "name": "XC90",
+      "href": "https://www.drom.ru/catalog/volvo/xc90/"
+    }
+  ]
+}

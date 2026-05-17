@@ -1,0 +1,157 @@
+{
+  "brand": {
+    "slug": "faw",
+    "name": "FAW",
+    "href": "https://www.drom.ru/catalog/faw/"
+  },
+  "source": "https://www.drom.ru/catalog/faw/",
+  "collected_at": "2026-05-17",
+  "count": 29,
+  "models": [
+    {
+      "slug": "6350",
+      "name": "6350",
+      "href": "https://www.drom.ru/catalog/faw/6350/"
+    },
+    {
+      "slug": "6371",
+      "name": "6371",
+      "href": "https://www.drom.ru/catalog/faw/6371/"
+    },
+    {
+      "slug": "bestune_b70",
+      "name": "Bestune B70",
+      "href": "https://www.drom.ru/catalog/faw/bestune_b70/"
+    },
+    {
+      "slug": "bestune_b70s",
+      "name": "Bestune B70S",
+      "href": "https://www.drom.ru/catalog/faw/bestune_b70s/"
+    },
+    {
+      "slug": "bestune_e01",
+      "name": "Bestune E01",
+      "href": "https://www.drom.ru/catalog/faw/bestune_e01/"
+    },
+    {
+      "slug": "bestune_m9",
+      "name": "Bestune M9",
+      "href": "https://www.drom.ru/catalog/faw/bestune_m9/"
+    },
+    {
+      "slug": "bestune_nat",
+      "name": "Bestune NAT",
+      "href": "https://www.drom.ru/catalog/faw/bestune_nat/"
+    },
+    {
+      "slug": "bestune_pony",
+      "name": "Bestune Pony",
+      "href": "https://www.drom.ru/catalog/faw/bestune_pony/"
+    },
+    {
+      "slug": "bestune_t33",
+      "name": "Bestune T33",
+      "href": "https://www.drom.ru/catalog/faw/bestune_t33/"
+    },
+    {
+      "slug": "bestune_t55",
+      "name": "Bestune T55",
+      "href": "https://www.drom.ru/catalog/faw/bestune_t55/"
+    },
+    {
+      "slug": "bestune_t77",
+      "name": "Bestune T77",
+      "href": "https://www.drom.ru/catalog/faw/bestune_t77/"
+    },
+    {
+      "slug": "bestune_t90",
+      "name": "Bestune T90",
+      "href": "https://www.drom.ru/catalog/faw/bestune_t90/"
+    },
+    {
+      "slug": "bestune_t99",
+      "name": "Bestune T99",
+      "href": "https://www.drom.ru/catalog/faw/bestune_t99/"
+    },
+    {
+      "slug": "bestune_yueyi_07",
+      "name": "Bestune Yueyi 07",
+      "href": "https://www.drom.ru/catalog/faw/bestune_yueyi_07/"
+    },
+    {
+      "slug": "besturn_b30",
+      "name": "Besturn B30",
+      "href": "https://www.drom.ru/catalog/faw/besturn_b30/"
+    },
+    {
+      "slug": "besturn_b50",
+      "name": "Besturn B50",
+      "href": "https://www.drom.ru/catalog/faw/besturn_b50/"
+    },
+    {
+      "slug": "besturn_b70",
+      "name": "Besturn B70",
+      "href": "https://www.drom.ru/catalog/faw/besturn_b70/"
+    },
+    {
+      "slug": "besturn_x40",
+      "name": "Besturn X40",
+      "href": "https://www.drom.ru/catalog/faw/besturn_x40/"
+    },
+    {
+      "slug": "besturn_x40_ev",
+      "name": "Besturn X40 EV",
+      "href": "https://www.drom.ru/catalog/faw/besturn_x40_ev/"
+    },
+    {
+      "slug": "besturn_x80",
+      "name": "Besturn X80",
+      "href": "https://www.drom.ru/catalog/faw/besturn_x80/"
+    },
+    {
+      "slug": "jinn",
+      "name": "Jinn",
+      "href": "https://www.drom.ru/catalog/faw/jinn/"
+    },
+    {
+      "slug": "junpai_d60",
+      "name": "Junpai D60",
+      "href": "https://www.drom.ru/catalog/faw/junpai_d60/"
+    },
+    {
+      "slug": "landmark_old",
+      "name": "Landmark",
+      "href": "https://www.drom.ru/catalog/faw/landmark_old/"
+    },
+    {
+      "slug": "oley",
+      "name": "Oley",
+      "href": "https://www.drom.ru/catalog/faw/oley/"
+    },
+    {
+      "slug": "senia_r7",
+      "name": "Senia R7",
+      "href": "https://www.drom.ru/catalog/faw/senia_r7/"
+    },
+    {
+      "slug": "senia_r9",
+      "name": "Senia R9",
+      "href": "https://www.drom.ru/catalog/faw/senia_r9/"
+    },
+    {
+      "slug": "v2",
+      "name": "V2",
+      "href": "https://www.drom.ru/catalog/faw/v2/"
+    },
+    {
+      "slug": "v5",
+      "name": "V5",
+      "href": "https://www.drom.ru/catalog/faw/v5/"
+    },
+    {
+      "slug": "vita",
+      "name": "Vita",
+      "href": "https://www.drom.ru/catalog/faw/vita/"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "brand": {
+    "slug": "ram",
+    "name": "RAM",
+    "href": "https://www.drom.ru/catalog/ram/"
+  },
+  "source": "https://www.drom.ru/catalog/ram/",
+  "collected_at": "2026-05-17",
+  "count": 3,
+  "models": [
+    {
+      "slug": "1500",
+      "name": "1500",
+      "href": "https://www.drom.ru/catalog/ram/1500/"
+    },
+    {
+      "slug": "2500",
+      "name": "2500",
+      "href": "https://www.drom.ru/catalog/ram/2500/"
+    },
+    {
+      "slug": "3500",
+      "name": "3500",
+      "href": "https://www.drom.ru/catalog/ram/3500/"
+    }
+  ]
+}

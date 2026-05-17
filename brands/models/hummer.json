@@ -1,0 +1,27 @@
+{
+  "brand": {
+    "slug": "hummer",
+    "name": "Hummer",
+    "href": "https://www.drom.ru/catalog/hummer/"
+  },
+  "source": "https://www.drom.ru/catalog/hummer/",
+  "collected_at": "2026-05-17",
+  "count": 3,
+  "models": [
+    {
+      "slug": "h1_alpha",
+      "name": "H1",
+      "href": "https://www.drom.ru/catalog/hummer/h1_alpha/"
+    },
+    {
+      "slug": "h2",
+      "name": "H2",
+      "href": "https://www.drom.ru/catalog/hummer/h2/"
+    },
+    {
+      "slug": "h3",
+      "name": "H3",
+      "href": "https://www.drom.ru/catalog/hummer/h3/"
+    }
+  ]
+}

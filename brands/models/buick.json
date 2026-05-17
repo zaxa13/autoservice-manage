@@ -1,0 +1,212 @@
+{
+  "brand": {
+    "slug": "buick",
+    "name": "Buick",
+    "href": "https://www.drom.ru/catalog/buick/"
+  },
+  "source": "https://www.drom.ru/catalog/buick/",
+  "collected_at": "2026-05-17",
+  "count": 40,
+  "models": [
+    {
+      "slug": "cascada",
+      "name": "Cascada",
+      "href": "https://www.drom.ru/catalog/buick/cascada/"
+    },
+    {
+      "slug": "century",
+      "name": "Century",
+      "href": "https://www.drom.ru/catalog/buick/century/"
+    },
+    {
+      "slug": "electra_e5",
+      "name": "Electra E5",
+      "href": "https://www.drom.ru/catalog/buick/electra_e5/"
+    },
+    {
+      "slug": "electra_e7",
+      "name": "Electra E7",
+      "href": "https://www.drom.ru/catalog/buick/electra_e7/"
+    },
+    {
+      "slug": "electra_l7",
+      "name": "Electra L7",
+      "href": "https://www.drom.ru/catalog/buick/electra_l7/"
+    },
+    {
+      "slug": "enclave",
+      "name": "Enclave",
+      "href": "https://www.drom.ru/catalog/buick/enclave/"
+    },
+    {
+      "slug": "encore",
+      "name": "Encore",
+      "href": "https://www.drom.ru/catalog/buick/encore/"
+    },
+    {
+      "slug": "encore_gx",
+      "name": "Encore GX",
+      "href": "https://www.drom.ru/catalog/buick/encore_gx/"
+    },
+    {
+      "slug": "envision",
+      "name": "Envision",
+      "href": "https://www.drom.ru/catalog/buick/envision/"
+    },
+    {
+      "slug": "envision_plus",
+      "name": "Envision Plus",
+      "href": "https://www.drom.ru/catalog/buick/envision_plus/"
+    },
+    {
+      "slug": "envista",
+      "name": "Envista",
+      "href": "https://www.drom.ru/catalog/buick/envista/"
+    },
+    {
+      "slug": "excelle",
+      "name": "Excelle",
+      "href": "https://www.drom.ru/catalog/buick/excelle/"
+    },
+    {
+      "slug": "excelle_gt",
+      "name": "Excelle GT",
+      "href": "https://www.drom.ru/catalog/buick/excelle_gt/"
+    },
+    {
+      "slug": "excelle_gx",
+      "name": "Excelle GX",
+      "href": "https://www.drom.ru/catalog/buick/excelle_gx/"
+    },
+    {
+      "slug": "excelle_xt",
+      "name": "Excelle XT",
+      "href": "https://www.drom.ru/catalog/buick/excelle_xt/"
+    },
+    {
+      "slug": "gl6",
+      "name": "GL6",
+      "href": "https://www.drom.ru/catalog/buick/gl6/"
+    },
+    {
+      "slug": "gl8",
+      "name": "GL8",
+      "href": "https://www.drom.ru/catalog/buick/gl8/"
+    },
+    {
+      "slug": "gl8_avenir",
+      "name": "GL8 Avenir",
+      "href": "https://www.drom.ru/catalog/buick/gl8_avenir/"
+    },
+    {
+      "slug": "gl8_century",
+      "name": "GL8 Century",
+      "href": "https://www.drom.ru/catalog/buick/gl8_century/"
+    },
+    {
+      "slug": "gl8_encasa",
+      "name": "GL8 Encasa",
+      "href": "https://www.drom.ru/catalog/buick/gl8_encasa/"
+    },
+    {
+      "slug": "gl8_es",
+      "name": "GL8 ES",
+      "href": "https://www.drom.ru/catalog/buick/gl8_es/"
+    },
+    {
+      "slug": "gl8_firstland",
+      "name": "GL8 Firstland",
+      "href": "https://www.drom.ru/catalog/buick/gl8_firstland/"
+    },
+    {
+      "slug": "lacrosse",
+      "name": "LaCrosse",
+      "href": "https://www.drom.ru/catalog/buick/lacrosse/"
+    },
+    {
+      "slug": "lesabre",
+      "name": "LeSabre",
+      "href": "https://www.drom.ru/catalog/buick/lesabre/"
+    },
+    {
+      "slug": "lucerne",
+      "name": "Lucerne",
+      "href": "https://www.drom.ru/catalog/buick/lucerne/"
+    },
+    {
+      "slug": "park_avenue",
+      "name": "Park Avenue",
+      "href": "https://www.drom.ru/catalog/buick/park_avenue/"
+    },
+    {
+      "slug": "rainier",
+      "name": "Rainier",
+      "href": "https://www.drom.ru/catalog/buick/rainier/"
+    },
+    {
+      "slug": "regal",
+      "name": "Regal",
+      "href": "https://www.drom.ru/catalog/buick/regal/"
+    },
+    {
+      "slug": "rendezvous",
+      "name": "Rendezvous",
+      "href": "https://www.drom.ru/catalog/buick/rendezvous/"
+    },
+    {
+      "slug": "riviera",
+      "name": "Riviera",
+      "href": "https://www.drom.ru/catalog/buick/riviera/"
+    },
+    {
+      "slug": "sail",
+      "name": "Sail",
+      "href": "https://www.drom.ru/catalog/buick/sail/"
+    },
+    {
+      "slug": "skylark",
+      "name": "Skylark",
+      "href": "https://www.drom.ru/catalog/buick/skylark/"
+    },
+    {
+      "slug": "special",
+      "name": "Special",
+      "href": "https://www.drom.ru/catalog/buick/special/"
+    },
+    {
+      "slug": "terraza",
+      "name": "Terraza",
+      "href": "https://www.drom.ru/catalog/buick/terraza/"
+    },
+    {
+      "slug": "velite_5",
+      "name": "Velite 5",
+      "href": "https://www.drom.ru/catalog/buick/velite_5/"
+    },
+    {
+      "slug": "velite_6",
+      "name": "Velite 6",
+      "href": "https://www.drom.ru/catalog/buick/velite_6/"
+    },
+    {
+      "slug": "velite_7",
+      "name": "Velite 7",
+      "href": "https://www.drom.ru/catalog/buick/velite_7/"
+    },
+    {
+      "slug": "verano",
+      "name": "Verano",
+      "href": "https://www.drom.ru/catalog/buick/verano/"
+    },
+    {
+      "slug": "verano_gs",
+      "name": "Verano GS",
+      "href": "https://www.drom.ru/catalog/buick/verano_gs/"
+    },
+    {
+      "slug": "verano_pro",
+      "name": "Verano Pro",
+      "href": "https://www.drom.ru/catalog/buick/verano_pro/"
+    }
+  ]
+}

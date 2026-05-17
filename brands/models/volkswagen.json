@@ -1,0 +1,417 @@
+{
+  "brand": {
+    "slug": "volkswagen",
+    "name": "Volkswagen",
+    "href": "https://www.drom.ru/catalog/volkswagen/"
+  },
+  "source": "https://www.drom.ru/catalog/volkswagen/",
+  "collected_at": "2026-05-17",
+  "count": 81,
+  "models": [
+    {
+      "slug": "amarok",
+      "name": "Amarok",
+      "href": "https://www.drom.ru/catalog/volkswagen/amarok/"
+    },
+    {
+      "slug": "arteon",
+      "name": "Arteon",
+      "href": "https://www.drom.ru/catalog/volkswagen/arteon/"
+    },
+    {
+      "slug": "atlas",
+      "name": "Atlas",
+      "href": "https://www.drom.ru/catalog/volkswagen/atlas/"
+    },
+    {
+      "slug": "atlas_cross_sport",
+      "name": "Atlas Cross Sport",
+      "href": "https://www.drom.ru/catalog/volkswagen/atlas_cross_sport/"
+    },
+    {
+      "slug": "beetle",
+      "name": "Beetle",
+      "href": "https://www.drom.ru/catalog/volkswagen/beetle/"
+    },
+    {
+      "slug": "bora",
+      "name": "Bora",
+      "href": "https://www.drom.ru/catalog/volkswagen/bora/"
+    },
+    {
+      "slug": "c_trek",
+      "name": "C-Trek",
+      "href": "https://www.drom.ru/catalog/volkswagen/c_trek/"
+    },
+    {
+      "slug": "caddy",
+      "name": "Caddy",
+      "href": "https://www.drom.ru/catalog/volkswagen/caddy/"
+    },
+    {
+      "slug": "california",
+      "name": "California",
+      "href": "https://www.drom.ru/catalog/volkswagen/california/"
+    },
+    {
+      "slug": "caravelle",
+      "name": "Caravelle",
+      "href": "https://www.drom.ru/catalog/volkswagen/caravelle/"
+    },
+    {
+      "slug": "corrado",
+      "name": "Corrado",
+      "href": "https://www.drom.ru/catalog/volkswagen/corrado/"
+    },
+    {
+      "slug": "country",
+      "name": "Golf Country",
+      "href": "https://www.drom.ru/catalog/volkswagen/country/"
+    },
+    {
+      "slug": "eos",
+      "name": "Eos",
+      "href": "https://www.drom.ru/catalog/volkswagen/eos/"
+    },
+    {
+      "slug": "fox",
+      "name": "Fox",
+      "href": "https://www.drom.ru/catalog/volkswagen/fox/"
+    },
+    {
+      "slug": "golf",
+      "name": "Golf",
+      "href": "https://www.drom.ru/catalog/volkswagen/golf/"
+    },
+    {
+      "slug": "golf_plus",
+      "name": "Golf Plus",
+      "href": "https://www.drom.ru/catalog/volkswagen/golf_plus/"
+    },
+    {
+      "slug": "golf_sportsvan",
+      "name": "Golf Sportsvan",
+      "href": "https://www.drom.ru/catalog/volkswagen/golf_sportsvan/"
+    },
+    {
+      "slug": "id3",
+      "name": "ID.3",
+      "href": "https://www.drom.ru/catalog/volkswagen/id3/"
+    },
+    {
+      "slug": "id4",
+      "name": "ID.4",
+      "href": "https://www.drom.ru/catalog/volkswagen/id4/"
+    },
+    {
+      "slug": "id4_crozz",
+      "name": "ID.4 Crozz",
+      "href": "https://www.drom.ru/catalog/volkswagen/id4_crozz/"
+    },
+    {
+      "slug": "id4_x",
+      "name": "ID.4 X",
+      "href": "https://www.drom.ru/catalog/volkswagen/id4_x/"
+    },
+    {
+      "slug": "id5",
+      "name": "ID.5",
+      "href": "https://www.drom.ru/catalog/volkswagen/id5/"
+    },
+    {
+      "slug": "id6_crozz",
+      "name": "ID.6 Crozz",
+      "href": "https://www.drom.ru/catalog/volkswagen/id6_crozz/"
+    },
+    {
+      "slug": "id6_x",
+      "name": "ID.6 X",
+      "href": "https://www.drom.ru/catalog/volkswagen/id6_x/"
+    },
+    {
+      "slug": "id7",
+      "name": "ID.7",
+      "href": "https://www.drom.ru/catalog/volkswagen/id7/"
+    },
+    {
+      "slug": "id_unix",
+      "name": "ID.Unyx",
+      "href": "https://www.drom.ru/catalog/volkswagen/id_unix/"
+    },
+    {
+      "slug": "id_unyx_08",
+      "name": "ID.Unyx 08",
+      "href": "https://www.drom.ru/catalog/volkswagen/id_unyx_08/"
+    },
+    {
+      "slug": "idbuzz",
+      "name": "ID.Buzz",
+      "href": "https://www.drom.ru/catalog/volkswagen/idbuzz/"
+    },
+    {
+      "slug": "idera_9x",
+      "name": "ID.Era 9X",
+      "href": "https://www.drom.ru/catalog/volkswagen/idera_9x/"
+    },
+    {
+      "slug": "jetta",
+      "name": "Jetta",
+      "href": "https://www.drom.ru/catalog/volkswagen/jetta/"
+    },
+    {
+      "slug": "k70",
+      "name": "K70",
+      "href": "https://www.drom.ru/catalog/volkswagen/k70/"
+    },
+    {
+      "slug": "kaefer",
+      "name": "Kaefer",
+      "href": "https://www.drom.ru/catalog/volkswagen/kaefer/"
+    },
+    {
+      "slug": "lamando",
+      "name": "Lamando",
+      "href": "https://www.drom.ru/catalog/volkswagen/lamando/"
+    },
+    {
+      "slug": "lamando_l",
+      "name": "Lamando L",
+      "href": "https://www.drom.ru/catalog/volkswagen/lamando_l/"
+    },
+    {
+      "slug": "lavida",
+      "name": "Lavida",
+      "href": "https://www.drom.ru/catalog/volkswagen/lavida/"
+    },
+    {
+      "slug": "lavida_xr",
+      "name": "Lavida XR",
+      "href": "https://www.drom.ru/catalog/volkswagen/lavida_xr/"
+    },
+    {
+      "slug": "lupo",
+      "name": "Lupo",
+      "href": "https://www.drom.ru/catalog/volkswagen/lupo/"
+    },
+    {
+      "slug": "magotan",
+      "name": "Magotan",
+      "href": "https://www.drom.ru/catalog/volkswagen/magotan/"
+    },
+    {
+      "slug": "multivan",
+      "name": "Multivan",
+      "href": "https://www.drom.ru/catalog/volkswagen/multivan/"
+    },
+    {
+      "slug": "passat",
+      "name": "Passat",
+      "href": "https://www.drom.ru/catalog/volkswagen/passat/"
+    },
+    {
+      "slug": "passat_cc",
+      "name": "Passat CC",
+      "href": "https://www.drom.ru/catalog/volkswagen/passat_cc/"
+    },
+    {
+      "slug": "passat_pro",
+      "name": "Passat Pro",
+      "href": "https://www.drom.ru/catalog/volkswagen/passat_pro/"
+    },
+    {
+      "slug": "phaeton",
+      "name": "Phaeton",
+      "href": "https://www.drom.ru/catalog/volkswagen/phaeton/"
+    },
+    {
+      "slug": "phideon",
+      "name": "Phideon",
+      "href": "https://www.drom.ru/catalog/volkswagen/phideon/"
+    },
+    {
+      "slug": "pointer",
+      "name": "Pointer",
+      "href": "https://www.drom.ru/catalog/volkswagen/pointer/"
+    },
+    {
+      "slug": "polo",
+      "name": "Polo",
+      "href": "https://www.drom.ru/catalog/volkswagen/polo/"
+    },
+    {
+      "slug": "rabbit",
+      "name": "Rabbit",
+      "href": "https://www.drom.ru/catalog/volkswagen/rabbit/"
+    },
+    {
+      "slug": "routan",
+      "name": "Routan",
+      "href": "https://www.drom.ru/catalog/volkswagen/routan/"
+    },
+    {
+      "slug": "sagitar",
+      "name": "Sagitar",
+      "href": "https://www.drom.ru/catalog/volkswagen/sagitar/"
+    },
+    {
+      "slug": "sagitar_l",
+      "name": "Sagitar L",
+      "href": "https://www.drom.ru/catalog/volkswagen/sagitar_l/"
+    },
+    {
+      "slug": "santana",
+      "name": "Santana",
+      "href": "https://www.drom.ru/catalog/volkswagen/santana/"
+    },
+    {
+      "slug": "saveiro",
+      "name": "Saveiro",
+      "href": "https://www.drom.ru/catalog/volkswagen/saveiro/"
+    },
+    {
+      "slug": "scirocco",
+      "name": "Scirocco",
+      "href": "https://www.drom.ru/catalog/volkswagen/scirocco/"
+    },
+    {
+      "slug": "sharan",
+      "name": "Sharan",
+      "href": "https://www.drom.ru/catalog/volkswagen/sharan/"
+    },
+    {
+      "slug": "t-cross",
+      "name": "T-Cross",
+      "href": "https://www.drom.ru/catalog/volkswagen/t-cross/"
+    },
+    {
+      "slug": "t-roc",
+      "name": "T-Roc",
+      "href": "https://www.drom.ru/catalog/volkswagen/t-roc/"
+    },
+    {
+      "slug": "tacqua",
+      "name": "Tacqua",
+      "href": "https://www.drom.ru/catalog/volkswagen/tacqua/"
+    },
+    {
+      "slug": "talagon",
+      "name": "Talagon",
+      "href": "https://www.drom.ru/catalog/volkswagen/talagon/"
+    },
+    {
+      "slug": "taos",
+      "name": "Taos",
+      "href": "https://www.drom.ru/catalog/volkswagen/taos/"
+    },
+    {
+      "slug": "tavendor",
+      "name": "Tavendor",
+      "href": "https://www.drom.ru/catalog/volkswagen/tavendor/"
+    },
+    {
+      "slug": "tayron",
+      "name": "Tayron",
+      "href": "https://www.drom.ru/catalog/volkswagen/tayron/"
+    },
+    {
+      "slug": "tayron_l",
+      "name": "Tayron L",
+      "href": "https://www.drom.ru/catalog/volkswagen/tayron_l/"
+    },
+    {
+      "slug": "tayron_x",
+      "name": "Tayron X",
+      "href": "https://www.drom.ru/catalog/volkswagen/tayron_x/"
+    },
+    {
+      "slug": "teramont",
+      "name": "Teramont",
+      "href": "https://www.drom.ru/catalog/volkswagen/teramont/"
+    },
+    {
+      "slug": "teramont_pro",
+      "name": "Teramont Pro",
+      "href": "https://www.drom.ru/catalog/volkswagen/teramont_pro/"
+    },
+    {
+      "slug": "teramont_x",
+      "name": "Teramont X",
+      "href": "https://www.drom.ru/catalog/volkswagen/teramont_x/"
+    },
+    {
+      "slug": "tharu",
+      "name": "Tharu",
+      "href": "https://www.drom.ru/catalog/volkswagen/tharu/"
+    },
+    {
+      "slug": "tharu_xr",
+      "name": "Tharu XR",
+      "href": "https://www.drom.ru/catalog/volkswagen/tharu_xr/"
+    },
+    {
+      "slug": "tiguan",
+      "name": "Tiguan",
+      "href": "https://www.drom.ru/catalog/volkswagen/tiguan/"
+    },
+    {
+      "slug": "tiguan_allspace",
+      "name": "Tiguan Allspace",
+      "href": "https://www.drom.ru/catalog/volkswagen/tiguan_allspace/"
+    },
+    {
+      "slug": "tiguan_l",
+      "name": "Tiguan L",
+      "href": "https://www.drom.ru/catalog/volkswagen/tiguan_l/"
+    },
+    {
+      "slug": "tiguan_x",
+      "name": "Tiguan X",
+      "href": "https://www.drom.ru/catalog/volkswagen/tiguan_x/"
+    },
+    {
+      "slug": "touareg",
+      "name": "Touareg",
+      "href": "https://www.drom.ru/catalog/volkswagen/touareg/"
+    },
+    {
+      "slug": "touran",
+      "name": "Touran",
+      "href": "https://www.drom.ru/catalog/volkswagen/touran/"
+    },
+    {
+      "slug": "touran_l",
+      "name": "Touran L",
+      "href": "https://www.drom.ru/catalog/volkswagen/touran_l/"
+    },
+    {
+      "slug": "transporter",
+      "name": "Transporter",
+      "href": "https://www.drom.ru/catalog/volkswagen/transporter/"
+    },
+    {
+      "slug": "type_2",
+      "name": "Type 2",
+      "href": "https://www.drom.ru/catalog/volkswagen/type_2/"
+    },
+    {
+      "slug": "up",
+      "name": "up!",
+      "href": "https://www.drom.ru/catalog/volkswagen/up/"
+    },
+    {
+      "slug": "vento",
+      "name": "Vento",
+      "href": "https://www.drom.ru/catalog/volkswagen/vento/"
+    },
+    {
+      "slug": "viloran",
+      "name": "Viloran",
+      "href": "https://www.drom.ru/catalog/volkswagen/viloran/"
+    },
+    {
+      "slug": "xl1",
+      "name": "XL1",
+      "href": "https://www.drom.ru/catalog/volkswagen/xl1/"
+    }
+  ]
+}

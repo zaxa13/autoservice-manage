@@ -1,0 +1,52 @@
+{
+  "brand": {
+    "slug": "li",
+    "name": "Li",
+    "href": "https://www.drom.ru/catalog/li/"
+  },
+  "source": "https://www.drom.ru/catalog/li/",
+  "collected_at": "2026-05-17",
+  "count": 8,
+  "models": [
+    {
+      "slug": "i6",
+      "name": "i6",
+      "href": "https://www.drom.ru/catalog/li/i6/"
+    },
+    {
+      "slug": "i8",
+      "name": "i8",
+      "href": "https://www.drom.ru/catalog/li/i8/"
+    },
+    {
+      "slug": "l6",
+      "name": "L6",
+      "href": "https://www.drom.ru/catalog/li/l6/"
+    },
+    {
+      "slug": "l7",
+      "name": "L7",
+      "href": "https://www.drom.ru/catalog/li/l7/"
+    },
+    {
+      "slug": "l8",
+      "name": "L8",
+      "href": "https://www.drom.ru/catalog/li/l8/"
+    },
+    {
+      "slug": "l9",
+      "name": "L9",
+      "href": "https://www.drom.ru/catalog/li/l9/"
+    },
+    {
+      "slug": "mega",
+      "name": "Mega",
+      "href": "https://www.drom.ru/catalog/li/mega/"
+    },
+    {
+      "slug": "one",
+      "name": "ONE",
+      "href": "https://www.drom.ru/catalog/li/one/"
+    }
+  ]
+}

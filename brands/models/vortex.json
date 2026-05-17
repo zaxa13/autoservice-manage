@@ -1,0 +1,27 @@
+{
+  "brand": {
+    "slug": "vortex",
+    "name": "Vortex",
+    "href": "https://www.drom.ru/catalog/vortex/"
+  },
+  "source": "https://www.drom.ru/catalog/vortex/",
+  "collected_at": "2026-05-17",
+  "count": 3,
+  "models": [
+    {
+      "slug": "corda",
+      "name": "Corda",
+      "href": "https://www.drom.ru/catalog/vortex/corda/"
+    },
+    {
+      "slug": "estina",
+      "name": "Estina",
+      "href": "https://www.drom.ru/catalog/vortex/estina/"
+    },
+    {
+      "slug": "tingo",
+      "name": "Tingo",
+      "href": "https://www.drom.ru/catalog/vortex/tingo/"
+    }
+  ]
+}

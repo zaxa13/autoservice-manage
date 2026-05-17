@@ -1,0 +1,17 @@
+{
+  "brand": {
+    "slug": "huazi",
+    "name": "Huazi",
+    "href": "https://www.drom.ru/catalog/huazi/"
+  },
+  "source": "https://www.drom.ru/catalog/huazi/",
+  "collected_at": "2026-05-17",
+  "count": 1,
+  "models": [
+    {
+      "slug": "omega",
+      "name": "Omega",
+      "href": "https://www.drom.ru/catalog/huazi/omega/"
+    }
+  ]
+}

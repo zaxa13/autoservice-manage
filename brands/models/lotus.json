@@ -1,0 +1,62 @@
+{
+  "brand": {
+    "slug": "lotus",
+    "name": "Lotus",
+    "href": "https://www.drom.ru/catalog/lotus/"
+  },
+  "source": "https://www.drom.ru/catalog/lotus/",
+  "collected_at": "2026-05-17",
+  "count": 10,
+  "models": [
+    {
+      "slug": "2-eleven",
+      "name": "2-Eleven",
+      "href": "https://www.drom.ru/catalog/lotus/2-eleven/"
+    },
+    {
+      "slug": "eletre",
+      "name": "Eletre",
+      "href": "https://www.drom.ru/catalog/lotus/eletre/"
+    },
+    {
+      "slug": "elise",
+      "name": "Elise",
+      "href": "https://www.drom.ru/catalog/lotus/elise/"
+    },
+    {
+      "slug": "emeya",
+      "name": "Emeya",
+      "href": "https://www.drom.ru/catalog/lotus/emeya/"
+    },
+    {
+      "slug": "emira",
+      "name": "Emira",
+      "href": "https://www.drom.ru/catalog/lotus/emira/"
+    },
+    {
+      "slug": "esprit",
+      "name": "Esprit",
+      "href": "https://www.drom.ru/catalog/lotus/esprit/"
+    },
+    {
+      "slug": "europa_s",
+      "name": "Europa S",
+      "href": "https://www.drom.ru/catalog/lotus/europa_s/"
+    },
+    {
+      "slug": "evora",
+      "name": "Evora",
+      "href": "https://www.drom.ru/catalog/lotus/evora/"
+    },
+    {
+      "slug": "exige",
+      "name": "Exige",
+      "href": "https://www.drom.ru/catalog/lotus/exige/"
+    },
+    {
+      "slug": "for_me",
+      "name": "For Me",
+      "href": "https://www.drom.ru/catalog/lotus/for_me/"
+    }
+  ]
+}

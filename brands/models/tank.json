@@ -1,0 +1,32 @@
+{
+  "brand": {
+    "slug": "tank",
+    "name": "Tank",
+    "href": "https://www.drom.ru/catalog/tank/"
+  },
+  "source": "https://www.drom.ru/catalog/tank/",
+  "collected_at": "2026-05-17",
+  "count": 4,
+  "models": [
+    {
+      "slug": "300",
+      "name": "300",
+      "href": "https://www.drom.ru/catalog/tank/300/"
+    },
+    {
+      "slug": "400",
+      "name": "400",
+      "href": "https://www.drom.ru/catalog/tank/400/"
+    },
+    {
+      "slug": "500",
+      "name": "500",
+      "href": "https://www.drom.ru/catalog/tank/500/"
+    },
+    {
+      "slug": "700",
+      "name": "700",
+      "href": "https://www.drom.ru/catalog/tank/700/"
+    }
+  ]
+}

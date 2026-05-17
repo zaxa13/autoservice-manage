@@ -1,0 +1,22 @@
+{
+  "brand": {
+    "slug": "maybach",
+    "name": "Maybach",
+    "href": "https://www.drom.ru/catalog/maybach/"
+  },
+  "source": "https://www.drom.ru/catalog/maybach/",
+  "collected_at": "2026-05-17",
+  "count": 2,
+  "models": [
+    {
+      "slug": "57",
+      "name": "57",
+      "href": "https://www.drom.ru/catalog/maybach/57/"
+    },
+    {
+      "slug": "62",
+      "name": "62",
+      "href": "https://www.drom.ru/catalog/maybach/62/"
+    }
+  ]
+}

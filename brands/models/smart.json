@@ -1,0 +1,52 @@
+{
+  "brand": {
+    "slug": "smart",
+    "name": "Smart",
+    "href": "https://www.drom.ru/catalog/smart/"
+  },
+  "source": "https://www.drom.ru/catalog/smart/",
+  "collected_at": "2026-05-17",
+  "count": 8,
+  "models": [
+    {
+      "slug": "1",
+      "name": "#1",
+      "href": "https://www.drom.ru/catalog/smart/1/"
+    },
+    {
+      "slug": "3",
+      "name": "#3",
+      "href": "https://www.drom.ru/catalog/smart/3/"
+    },
+    {
+      "slug": "5",
+      "name": "#5",
+      "href": "https://www.drom.ru/catalog/smart/5/"
+    },
+    {
+      "slug": "city",
+      "name": "City",
+      "href": "https://www.drom.ru/catalog/smart/city/"
+    },
+    {
+      "slug": "forfour",
+      "name": "Forfour",
+      "href": "https://www.drom.ru/catalog/smart/forfour/"
+    },
+    {
+      "slug": "fortwo",
+      "name": "Fortwo",
+      "href": "https://www.drom.ru/catalog/smart/fortwo/"
+    },
+    {
+      "slug": "roadster",
+      "name": "Roadster",
+      "href": "https://www.drom.ru/catalog/smart/roadster/"
+    },
+    {
+      "slug": "rossblade",
+      "name": "Crossblade",
+      "href": "https://www.drom.ru/catalog/smart/rossblade/"
+    }
+  ]
+}

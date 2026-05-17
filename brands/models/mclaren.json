@@ -1,0 +1,62 @@
+{
+  "brand": {
+    "slug": "mclaren",
+    "name": "McLaren",
+    "href": "https://www.drom.ru/catalog/mclaren/"
+  },
+  "source": "https://www.drom.ru/catalog/mclaren/",
+  "collected_at": "2026-05-17",
+  "count": 10,
+  "models": [
+    {
+      "slug": "520s",
+      "name": "520S",
+      "href": "https://www.drom.ru/catalog/mclaren/520s/"
+    },
+    {
+      "slug": "540c",
+      "name": "540C",
+      "href": "https://www.drom.ru/catalog/mclaren/540c/"
+    },
+    {
+      "slug": "570gt",
+      "name": "570GT",
+      "href": "https://www.drom.ru/catalog/mclaren/570gt/"
+    },
+    {
+      "slug": "570s",
+      "name": "570S",
+      "href": "https://www.drom.ru/catalog/mclaren/570s/"
+    },
+    {
+      "slug": "720s",
+      "name": "720S",
+      "href": "https://www.drom.ru/catalog/mclaren/720s/"
+    },
+    {
+      "slug": "750s",
+      "name": "750S",
+      "href": "https://www.drom.ru/catalog/mclaren/750s/"
+    },
+    {
+      "slug": "artura",
+      "name": "Artura",
+      "href": "https://www.drom.ru/catalog/mclaren/artura/"
+    },
+    {
+      "slug": "gt",
+      "name": "GT",
+      "href": "https://www.drom.ru/catalog/mclaren/gt/"
+    },
+    {
+      "slug": "p1",
+      "name": "P1",
+      "href": "https://www.drom.ru/catalog/mclaren/p1/"
+    },
+    {
+      "slug": "w1",
+      "name": "W1",
+      "href": "https://www.drom.ru/catalog/mclaren/w1/"
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "brand": {
+    "slug": "maserati",
+    "name": "Maserati",
+    "href": "https://www.drom.ru/catalog/maserati/"
+  },
+  "source": "https://www.drom.ru/catalog/maserati/",
+  "collected_at": "2026-05-17",
+  "count": 11,
+  "models": [
+    {
+      "slug": "3200gt",
+      "name": "3200 GT",
+      "href": "https://www.drom.ru/catalog/maserati/3200gt/"
+    },
+    {
+      "slug": "coupe-model",
+      "name": "Coupe",
+      "href": "https://www.drom.ru/catalog/maserati/coupe-model/"
+    },
+    {
+      "slug": "ghibli",
+      "name": "Ghibli",
+      "href": "https://www.drom.ru/catalog/maserati/ghibli/"
+    },
+    {
+      "slug": "grancabrio",
+      "name": "GranCabrio",
+      "href": "https://www.drom.ru/catalog/maserati/grancabrio/"
+    },
+    {
+      "slug": "gransport",
+      "name": "GranSport",
+      "href": "https://www.drom.ru/catalog/maserati/gransport/"
+    },
+    {
+      "slug": "granturismo",
+      "name": "GranTurismo",
+      "href": "https://www.drom.ru/catalog/maserati/granturismo/"
+    },
+    {
+      "slug": "grecale",
+      "name": "Grecale",
+      "href": "https://www.drom.ru/catalog/maserati/grecale/"
+    },
+    {
+      "slug": "levante",
+      "name": "Levante",
+      "href": "https://www.drom.ru/catalog/maserati/levante/"
+    },
+    {
+      "slug": "mc20",
+      "name": "MC20",
+      "href": "https://www.drom.ru/catalog/maserati/mc20/"
+    },
+    {
+      "slug": "quattroporte",
+      "name": "Quattroporte",
+      "href": "https://www.drom.ru/catalog/maserati/quattroporte/"
+    },
+    {
+      "slug": "spyder",
+      "name": "Spyder",
+      "href": "https://www.drom.ru/catalog/maserati/spyder/"
+    }
+  ]
+}

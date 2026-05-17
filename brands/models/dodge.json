@@ -1,0 +1,152 @@
+{
+  "brand": {
+    "slug": "dodge",
+    "name": "Dodge",
+    "href": "https://www.drom.ru/catalog/dodge/"
+  },
+  "source": "https://www.drom.ru/catalog/dodge/",
+  "collected_at": "2026-05-17",
+  "count": 28,
+  "models": [
+    {
+      "slug": "aries",
+      "name": "Aries",
+      "href": "https://www.drom.ru/catalog/dodge/aries/"
+    },
+    {
+      "slug": "avenger",
+      "name": "Avenger",
+      "href": "https://www.drom.ru/catalog/dodge/avenger/"
+    },
+    {
+      "slug": "caliber",
+      "name": "Caliber",
+      "href": "https://www.drom.ru/catalog/dodge/caliber/"
+    },
+    {
+      "slug": "caravan",
+      "name": "Caravan",
+      "href": "https://www.drom.ru/catalog/dodge/caravan/"
+    },
+    {
+      "slug": "challenger",
+      "name": "Challenger",
+      "href": "https://www.drom.ru/catalog/dodge/challenger/"
+    },
+    {
+      "slug": "charger",
+      "name": "Charger",
+      "href": "https://www.drom.ru/catalog/dodge/charger/"
+    },
+    {
+      "slug": "dakota",
+      "name": "Dakota",
+      "href": "https://www.drom.ru/catalog/dodge/dakota/"
+    },
+    {
+      "slug": "dart",
+      "name": "Dart",
+      "href": "https://www.drom.ru/catalog/dodge/dart/"
+    },
+    {
+      "slug": "durango",
+      "name": "Durango",
+      "href": "https://www.drom.ru/catalog/dodge/durango/"
+    },
+    {
+      "slug": "dynasty",
+      "name": "Dynasty",
+      "href": "https://www.drom.ru/catalog/dodge/dynasty/"
+    },
+    {
+      "slug": "grand_caravan",
+      "name": "Grand Caravan",
+      "href": "https://www.drom.ru/catalog/dodge/grand_caravan/"
+    },
+    {
+      "slug": "hornet",
+      "name": "Hornet",
+      "href": "https://www.drom.ru/catalog/dodge/hornet/"
+    },
+    {
+      "slug": "intrepid",
+      "name": "Intrepid",
+      "href": "https://www.drom.ru/catalog/dodge/intrepid/"
+    },
+    {
+      "slug": "jcuv",
+      "name": "JCUV",
+      "href": "https://www.drom.ru/catalog/dodge/jcuv/"
+    },
+    {
+      "slug": "journey",
+      "name": "Journey",
+      "href": "https://www.drom.ru/catalog/dodge/journey/"
+    },
+    {
+      "slug": "magnum",
+      "name": "Magnum",
+      "href": "https://www.drom.ru/catalog/dodge/magnum/"
+    },
+    {
+      "slug": "mirada",
+      "name": "Mirada",
+      "href": "https://www.drom.ru/catalog/dodge/mirada/"
+    },
+    {
+      "slug": "neon",
+      "name": "Neon",
+      "href": "https://www.drom.ru/catalog/dodge/neon/"
+    },
+    {
+      "slug": "nitro",
+      "name": "Nitro",
+      "href": "https://www.drom.ru/catalog/dodge/nitro/"
+    },
+    {
+      "slug": "omni",
+      "name": "Omni",
+      "href": "https://www.drom.ru/catalog/dodge/omni/"
+    },
+    {
+      "slug": "raider",
+      "name": "Raider",
+      "href": "https://www.drom.ru/catalog/dodge/raider/"
+    },
+    {
+      "slug": "ram",
+      "name": "Ram",
+      "href": "https://www.drom.ru/catalog/dodge/ram/"
+    },
+    {
+      "slug": "ramcharger",
+      "name": "Ramcharger",
+      "href": "https://www.drom.ru/catalog/dodge/ramcharger/"
+    },
+    {
+      "slug": "shadow",
+      "name": "Shadow",
+      "href": "https://www.drom.ru/catalog/dodge/shadow/"
+    },
+    {
+      "slug": "spirit",
+      "name": "Spirit",
+      "href": "https://www.drom.ru/catalog/dodge/spirit/"
+    },
+    {
+      "slug": "stealth",
+      "name": "Stealth",
+      "href": "https://www.drom.ru/catalog/dodge/stealth/"
+    },
+    {
+      "slug": "stratus",
+      "name": "Stratus",
+      "href": "https://www.drom.ru/catalog/dodge/stratus/"
+    },
+    {
+      "slug": "viper",
+      "name": "Viper",
+      "href": "https://www.drom.ru/catalog/dodge/viper/"
+    }
+  ]
+}

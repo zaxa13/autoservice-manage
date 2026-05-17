@@ -1,0 +1,72 @@
+{
+  "brand": {
+    "slug": "cheryexeed",
+    "name": "EXEED",
+    "href": "https://www.drom.ru/catalog/cheryexeed/"
+  },
+  "source": "https://www.drom.ru/catalog/cheryexeed/",
+  "collected_at": "2026-05-17",
+  "count": 12,
+  "models": [
+    {
+      "slug": "et5",
+      "name": "ET5",
+      "href": "https://www.drom.ru/catalog/cheryexeed/et5/"
+    },
+    {
+      "slug": "ex7",
+      "name": "EX7",
+      "href": "https://www.drom.ru/catalog/cheryexeed/ex7/"
+    },
+    {
+      "slug": "exlantix_es",
+      "name": "Exlantix ES",
+      "href": "https://www.drom.ru/catalog/cheryexeed/exlantix_es/"
+    },
+    {
+      "slug": "exlantix_et",
+      "name": "Exlantix ET",
+      "href": "https://www.drom.ru/catalog/cheryexeed/exlantix_et/"
+    },
+    {
+      "slug": "lx",
+      "name": "LX",
+      "href": "https://www.drom.ru/catalog/cheryexeed/lx/"
+    },
+    {
+      "slug": "rx",
+      "name": "RX",
+      "href": "https://www.drom.ru/catalog/cheryexeed/rx/"
+    },
+    {
+      "slug": "sterra_es",
+      "name": "Sterra ES",
+      "href": "https://www.drom.ru/catalog/cheryexeed/sterra_es/"
+    },
+    {
+      "slug": "sterra_et",
+      "name": "Sterra ET",
+      "href": "https://www.drom.ru/catalog/cheryexeed/sterra_et/"
+    },
+    {
+      "slug": "tx",
+      "name": "TX",
+      "href": "https://www.drom.ru/catalog/cheryexeed/tx/"
+    },
+    {
+      "slug": "txl",
+      "name": "TXL",
+      "href": "https://www.drom.ru/catalog/cheryexeed/txl/"
+    },
+    {
+      "slug": "vx",
+      "name": "VX",
+      "href": "https://www.drom.ru/catalog/cheryexeed/vx/"
+    },
+    {
+      "slug": "yaoguang",
+      "name": "Yaoguang",
+      "href": "https://www.drom.ru/catalog/cheryexeed/yaoguang/"
+    }
+  ]
+}

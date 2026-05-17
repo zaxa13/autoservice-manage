@@ -1,0 +1,147 @@
+{
+  "brand": {
+    "slug": "isuzu",
+    "name": "Isuzu",
+    "href": "https://www.drom.ru/catalog/isuzu/"
+  },
+  "source": "https://www.drom.ru/catalog/isuzu/",
+  "collected_at": "2026-05-17",
+  "count": 27,
+  "models": [
+    {
+      "slug": "117",
+      "name": "117 Coupe",
+      "href": "https://www.drom.ru/catalog/isuzu/117/"
+    },
+    {
+      "slug": "amigo",
+      "name": "Amigo",
+      "href": "https://www.drom.ru/catalog/isuzu/amigo/"
+    },
+    {
+      "slug": "aska",
+      "name": "Aska",
+      "href": "https://www.drom.ru/catalog/isuzu/aska/"
+    },
+    {
+      "slug": "axiom",
+      "name": "Axiom",
+      "href": "https://www.drom.ru/catalog/isuzu/axiom/"
+    },
+    {
+      "slug": "bighorn",
+      "name": "Bighorn",
+      "href": "https://www.drom.ru/catalog/isuzu/bighorn/"
+    },
+    {
+      "slug": "como",
+      "name": "Como",
+      "href": "https://www.drom.ru/catalog/isuzu/como/"
+    },
+    {
+      "slug": "d-max",
+      "name": "D-MAX",
+      "href": "https://www.drom.ru/catalog/isuzu/d-max/"
+    },
+    {
+      "slug": "fargo",
+      "name": "Fargo",
+      "href": "https://www.drom.ru/catalog/isuzu/fargo/"
+    },
+    {
+      "slug": "fargo_filly",
+      "name": "Fargo Filly",
+      "href": "https://www.drom.ru/catalog/isuzu/fargo_filly/"
+    },
+    {
+      "slug": "faster",
+      "name": "Faster",
+      "href": "https://www.drom.ru/catalog/isuzu/faster/"
+    },
+    {
+      "slug": "filly",
+      "name": "Filly",
+      "href": "https://www.drom.ru/catalog/isuzu/filly/"
+    },
+    {
+      "slug": "florian",
+      "name": "Florian",
+      "href": "https://www.drom.ru/catalog/isuzu/florian/"
+    },
+    {
+      "slug": "gemini",
+      "name": "Gemini",
+      "href": "https://www.drom.ru/catalog/isuzu/gemini/"
+    },
+    {
+      "slug": "i-mark",
+      "name": "I-Mark",
+      "href": "https://www.drom.ru/catalog/isuzu/i-mark/"
+    },
+    {
+      "slug": "lingtuo",
+      "name": "Lingtuo",
+      "href": "https://www.drom.ru/catalog/isuzu/lingtuo/"
+    },
+    {
+      "slug": "midi",
+      "name": "Midi",
+      "href": "https://www.drom.ru/catalog/isuzu/midi/"
+    },
+    {
+      "slug": "mu",
+      "name": "MU",
+      "href": "https://www.drom.ru/catalog/isuzu/mu/"
+    },
+    {
+      "slug": "mu-x",
+      "name": "MU-X",
+      "href": "https://www.drom.ru/catalog/isuzu/mu-x/"
+    },
+    {
+      "slug": "pa_nero",
+      "name": "Pa Nero",
+      "href": "https://www.drom.ru/catalog/isuzu/pa_nero/"
+    },
+    {
+      "slug": "piazza",
+      "name": "Piazza",
+      "href": "https://www.drom.ru/catalog/isuzu/piazza/"
+    },
+    {
+      "slug": "piazza_nero",
+      "name": "Piazza Nero",
+      "href": "https://www.drom.ru/catalog/isuzu/piazza_nero/"
+    },
+    {
+      "slug": "rodeo",
+      "name": "Rodeo",
+      "href": "https://www.drom.ru/catalog/isuzu/rodeo/"
+    },
+    {
+      "slug": "ruimai",
+      "name": "RE-MAX Ruimai",
+      "href": "https://www.drom.ru/catalog/isuzu/ruimai/"
+    },
+    {
+      "slug": "t30_explorer",
+      "name": "T30 Explorer",
+      "href": "https://www.drom.ru/catalog/isuzu/t30_explorer/"
+    },
+    {
+      "slug": "trooper",
+      "name": "Trooper",
+      "href": "https://www.drom.ru/catalog/isuzu/trooper/"
+    },
+    {
+      "slug": "vehicross",
+      "name": "VehiCross",
+      "href": "https://www.drom.ru/catalog/isuzu/vehicross/"
+    },
+    {
+      "slug": "wizard",
+      "name": "Wizard",
+      "href": "https://www.drom.ru/catalog/isuzu/wizard/"
+    }
+  ]
+}

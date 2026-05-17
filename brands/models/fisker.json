@@ -1,0 +1,22 @@
+{
+  "brand": {
+    "slug": "fisker",
+    "name": "Fisker",
+    "href": "https://www.drom.ru/catalog/fisker/"
+  },
+  "source": "https://www.drom.ru/catalog/fisker/",
+  "collected_at": "2026-05-17",
+  "count": 2,
+  "models": [
+    {
+      "slug": "karma",
+      "name": "Karma",
+      "href": "https://www.drom.ru/catalog/fisker/karma/"
+    },
+    {
+      "slug": "ocean",
+      "name": "Ocean",
+      "href": "https://www.drom.ru/catalog/fisker/ocean/"
+    }
+  ]
+}

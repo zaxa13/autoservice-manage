@@ -1,0 +1,102 @@
+{
+  "brand": {
+    "slug": "jaguar",
+    "name": "Jaguar",
+    "href": "https://www.drom.ru/catalog/jaguar/"
+  },
+  "source": "https://www.drom.ru/catalog/jaguar/",
+  "collected_at": "2026-05-17",
+  "count": 18,
+  "models": [
+    {
+      "slug": "240",
+      "name": "240",
+      "href": "https://www.drom.ru/catalog/jaguar/240/"
+    },
+    {
+      "slug": "340",
+      "name": "340",
+      "href": "https://www.drom.ru/catalog/jaguar/340/"
+    },
+    {
+      "slug": "e-pace",
+      "name": "E-Pace",
+      "href": "https://www.drom.ru/catalog/jaguar/e-pace/"
+    },
+    {
+      "slug": "f-pace",
+      "name": "F-Pace",
+      "href": "https://www.drom.ru/catalog/jaguar/f-pace/"
+    },
+    {
+      "slug": "f-type",
+      "name": "F-Type",
+      "href": "https://www.drom.ru/catalog/jaguar/f-type/"
+    },
+    {
+      "slug": "i-pace",
+      "name": "I-Pace",
+      "href": "https://www.drom.ru/catalog/jaguar/i-pace/"
+    },
+    {
+      "slug": "mark_i",
+      "name": "Mark I",
+      "href": "https://www.drom.ru/catalog/jaguar/mark_i/"
+    },
+    {
+      "slug": "mark_ii",
+      "name": "Mark II",
+      "href": "https://www.drom.ru/catalog/jaguar/mark_ii/"
+    },
+    {
+      "slug": "mark_ix",
+      "name": "Mark IX",
+      "href": "https://www.drom.ru/catalog/jaguar/mark_ix/"
+    },
+    {
+      "slug": "s-type",
+      "name": "S-type",
+      "href": "https://www.drom.ru/catalog/jaguar/s-type/"
+    },
+    {
+      "slug": "sovereign",
+      "name": "Sovereign",
+      "href": "https://www.drom.ru/catalog/jaguar/sovereign/"
+    },
+    {
+      "slug": "x-type",
+      "name": "X-Type",
+      "href": "https://www.drom.ru/catalog/jaguar/x-type/"
+    },
+    {
+      "slug": "xe",
+      "name": "XE",
+      "href": "https://www.drom.ru/catalog/jaguar/xe/"
+    },
+    {
+      "slug": "xf",
+      "name": "XF",
+      "href": "https://www.drom.ru/catalog/jaguar/xf/"
+    },
+    {
+      "slug": "xgs",
+      "name": "XJS",
+      "href": "https://www.drom.ru/catalog/jaguar/xgs/"
+    },
+    {
+      "slug": "xj",
+      "name": "XJ",
+      "href": "https://www.drom.ru/catalog/jaguar/xj/"
+    },
+    {
+      "slug": "xj220",
+      "name": "XJ220",
+      "href": "https://www.drom.ru/catalog/jaguar/xj220/"
+    },
+    {
+      "slug": "xk",
+      "name": "XK",
+      "href": "https://www.drom.ru/catalog/jaguar/xk/"
+    }
+  ]
+}

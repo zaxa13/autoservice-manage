@@ -1,0 +1,397 @@
+{
+  "brand": {
+    "slug": "geely",
+    "name": "Geely",
+    "href": "https://www.drom.ru/catalog/geely/"
+  },
+  "source": "https://www.drom.ru/catalog/geely/",
+  "collected_at": "2026-05-17",
+  "count": 77,
+  "models": [
+    {
+      "slug": "atlas",
+      "name": "Atlas",
+      "href": "https://www.drom.ru/catalog/geely/atlas/"
+    },
+    {
+      "slug": "atlas_pro",
+      "name": "Atlas Pro",
+      "href": "https://www.drom.ru/catalog/geely/atlas_pro/"
+    },
+    {
+      "slug": "azkarra",
+      "name": "Azkarra",
+      "href": "https://www.drom.ru/catalog/geely/azkarra/"
+    },
+    {
+      "slug": "binrui",
+      "name": "Binrui",
+      "href": "https://www.drom.ru/catalog/geely/binrui/"
+    },
+    {
+      "slug": "binrui_cool",
+      "name": "Binrui Cool",
+      "href": "https://www.drom.ru/catalog/geely/binrui_cool/"
+    },
+    {
+      "slug": "binyue",
+      "name": "Binyue",
+      "href": "https://www.drom.ru/catalog/geely/binyue/"
+    },
+    {
+      "slug": "binyue_cool",
+      "name": "Binyue Cool",
+      "href": "https://www.drom.ru/catalog/geely/binyue_cool/"
+    },
+    {
+      "slug": "binyue_l",
+      "name": "Binyue L",
+      "href": "https://www.drom.ru/catalog/geely/binyue_l/"
+    },
+    {
+      "slug": "borui",
+      "name": "Borui",
+      "href": "https://www.drom.ru/catalog/geely/borui/"
+    },
+    {
+      "slug": "borui_ge",
+      "name": "Borui GE",
+      "href": "https://www.drom.ru/catalog/geely/borui_ge/"
+    },
+    {
+      "slug": "boyue",
+      "name": "Boyue",
+      "href": "https://www.drom.ru/catalog/geely/boyue/"
+    },
+    {
+      "slug": "boyue_cool",
+      "name": "Boyue Cool",
+      "href": "https://www.drom.ru/catalog/geely/boyue_cool/"
+    },
+    {
+      "slug": "boyue_l",
+      "name": "Boyue L",
+      "href": "https://www.drom.ru/catalog/geely/boyue_l/"
+    },
+    {
+      "slug": "boyue_pro",
+      "name": "Boyue Pro",
+      "href": "https://www.drom.ru/catalog/geely/boyue_pro/"
+    },
+    {
+      "slug": "boyue_x",
+      "name": "Boyue X",
+      "href": "https://www.drom.ru/catalog/geely/boyue_x/"
+    },
+    {
+      "slug": "cityray",
+      "name": "Cityray",
+      "href": "https://www.drom.ru/catalog/geely/cityray/"
+    },
+    {
+      "slug": "ck",
+      "name": "CK Otaka",
+      "href": "https://www.drom.ru/catalog/geely/ck/"
+    },
+    {
+      "slug": "cowboy",
+      "name": "Cowboy",
+      "href": "https://www.drom.ru/catalog/geely/cowboy/"
+    },
+    {
+      "slug": "emgrand",
+      "name": "Emgrand EC7",
+      "href": "https://www.drom.ru/catalog/geely/emgrand/"
+    },
+    {
+      "slug": "emgrand_ec8",
+      "name": "Emgrand EC8",
+      "href": "https://www.drom.ru/catalog/geely/emgrand_ec8/"
+    },
+    {
+      "slug": "emgrand_gl",
+      "name": "Emgrand GL",
+      "href": "https://www.drom.ru/catalog/geely/emgrand_gl/"
+    },
+    {
+      "slug": "emgrand_gt",
+      "name": "Emgrand GT",
+      "href": "https://www.drom.ru/catalog/geely/emgrand_gt/"
+    },
+    {
+      "slug": "emgrand_iv",
+      "name": "Emgrand",
+      "href": "https://www.drom.ru/catalog/geely/emgrand_iv/"
+    },
+    {
+      "slug": "emgrand_l",
+      "name": "Emgrand L",
+      "href": "https://www.drom.ru/catalog/geely/emgrand_l/"
+    },
+    {
+      "slug": "emgrand_s",
+      "name": "Emgrand S",
+      "href": "https://www.drom.ru/catalog/geely/emgrand_s/"
+    },
+    {
+      "slug": "ex5",
+      "name": "EX5",
+      "href": "https://www.drom.ru/catalog/geely/ex5/"
+    },
+    {
+      "slug": "ex5_em-i",
+      "name": "EX5 EM-i",
+      "href": "https://www.drom.ru/catalog/geely/ex5_em-i/"
+    },
+    {
+      "slug": "ex7",
+      "name": "Emgrand X7",
+      "href": "https://www.drom.ru/catalog/geely/ex7/"
+    },
+    {
+      "slug": "farizon_fx",
+      "name": "Farizon FX",
+      "href": "https://www.drom.ru/catalog/geely/farizon_fx/"
+    },
+    {
+      "slug": "galaxy_a7",
+      "name": "Galaxy A7",
+      "href": "https://www.drom.ru/catalog/geely/galaxy_a7/"
+    },
+    {
+      "slug": "galaxy_e5",
+      "name": "Galaxy E5",
+      "href": "https://www.drom.ru/catalog/geely/galaxy_e5/"
+    },
+    {
+      "slug": "galaxy_e8",
+      "name": "Galaxy E8",
+      "href": "https://www.drom.ru/catalog/geely/galaxy_e8/"
+    },
+    {
+      "slug": "galaxy_l380",
+      "name": "Galaxy L380",
+      "href": "https://www.drom.ru/catalog/geely/galaxy_l380/"
+    },
+    {
+      "slug": "galaxy_l6",
+      "name": "Galaxy L6",
+      "href": "https://www.drom.ru/catalog/geely/galaxy_l6/"
+    },
+    {
+      "slug": "galaxy_l7",
+      "name": "Galaxy L7",
+      "href": "https://www.drom.ru/catalog/geely/galaxy_l7/"
+    },
+    {
+      "slug": "galaxy_m9",
+      "name": "Galaxy M9",
+      "href": "https://www.drom.ru/catalog/geely/galaxy_m9/"
+    },
+    {
+      "slug": "galaxy_star_6",
+      "name": "Galaxy Starshine 6",
+      "href": "https://www.drom.ru/catalog/geely/galaxy_star_6/"
+    },
+    {
+      "slug": "galaxy_starshine_8",
+      "name": "Galaxy Starshine 8",
+      "href": "https://www.drom.ru/catalog/geely/galaxy_starshine_8/"
+    },
+    {
+      "slug": "galaxy_starship_7",
+      "name": "Galaxy Starship 7",
+      "href": "https://www.drom.ru/catalog/geely/galaxy_starship_7/"
+    },
+    {
+      "slug": "gc6",
+      "name": "GC6",
+      "href": "https://www.drom.ru/catalog/geely/gc6/"
+    },
+    {
+      "slug": "ge11",
+      "name": "Geometry A",
+      "href": "https://www.drom.ru/catalog/geely/ge11/"
+    },
+    {
+      "slug": "ge11_pro",
+      "name": "Geometry A Pro",
+      "href": "https://www.drom.ru/catalog/geely/ge11_pro/"
+    },
+    {
+      "slug": "geometry_c",
+      "name": "Geometry C",
+      "href": "https://www.drom.ru/catalog/geely/geometry_c/"
+    },
+    {
+      "slug": "geometry_e",
+      "name": "Geometry E",
+      "href": "https://www.drom.ru/catalog/geely/geometry_e/"
+    },
+    {
+      "slug": "geometry_g6",
+      "name": "Geometry G6",
+      "href": "https://www.drom.ru/catalog/geely/geometry_g6/"
+    },
+    {
+      "slug": "geometry_m6",
+      "name": "Geometry M6",
+      "href": "https://www.drom.ru/catalog/geely/geometry_m6/"
+    },
+    {
+      "slug": "geometry_panda_mini",
+      "name": "Geometry Panda Mini",
+      "href": "https://www.drom.ru/catalog/geely/geometry_panda_mini/"
+    },
+    {
+      "slug": "gs",
+      "name": "GS",
+      "href": "https://www.drom.ru/catalog/geely/gs/"
+    },
+    {
+      "slug": "haoyue",
+      "name": "Haoyue",
+      "href": "https://www.drom.ru/catalog/geely/haoyue/"
+    },
+    {
+      "slug": "haoyue_l",
+      "name": "Haoyue L",
+      "href": "https://www.drom.ru/catalog/geely/haoyue_l/"
+    },
+    {
+      "slug": "haoyue_pro",
+      "name": "Haoyue Pro",
+      "href": "https://www.drom.ru/catalog/geely/haoyue_pro/"
+    },
+    {
+      "slug": "icon",
+      "name": "ICON",
+      "href": "https://www.drom.ru/catalog/geely/icon/"
+    },
+    {
+      "slug": "ji_yue_01",
+      "name": "Jiyue Robo 01",
+      "href": "https://www.drom.ru/catalog/geely/ji_yue_01/"
+    },
+    {
+      "slug": "jiaji",
+      "name": "Jiaji",
+      "href": "https://www.drom.ru/catalog/geely/jiaji/"
+    },
+    {
+      "slug": "jiyue_robo_07",
+      "name": "Jiyue Robo 07",
+      "href": "https://www.drom.ru/catalog/geely/jiyue_robo_07/"
+    },
+    {
+      "slug": "lc_cross",
+      "name": "LC Cross",
+      "href": "https://www.drom.ru/catalog/geely/lc_cross/"
+    },
+    {
+      "slug": "mk",
+      "name": "MK",
+      "href": "https://www.drom.ru/catalog/geely/mk/"
+    },
+    {
+      "slug": "mk_cross",
+      "name": "MK Cross",
+      "href": "https://www.drom.ru/catalog/geely/mk_cross/"
+    },
+    {
+      "slug": "monjaro",
+      "name": "Monjaro",
+      "href": "https://www.drom.ru/catalog/geely/monjaro/"
+    },
+    {
+      "slug": "okavango",
+      "name": "Okavango",
+      "href": "https://www.drom.ru/catalog/geely/okavango/"
+    },
+    {
+      "slug": "preface",
+      "name": "Preface",
+      "href": "https://www.drom.ru/catalog/geely/preface/"
+    },
+    {
+      "slug": "sc7",
+      "name": "SC7",
+      "href": "https://www.drom.ru/catalog/geely/sc7/"
+    },
+    {
+      "slug": "sl",
+      "name": "SL",
+      "href": "https://www.drom.ru/catalog/geely/sl/"
+    },
+    {
+      "slug": "sx11",
+      "name": "Coolray",
+      "href": "https://www.drom.ru/catalog/geely/sx11/"
+    },
+    {
+      "slug": "tugella",
+      "name": "Tugella",
+      "href": "https://www.drom.ru/catalog/geely/tugella/"
+    },
+    {
+      "slug": "tx4",
+      "name": "TX4",
+      "href": "https://www.drom.ru/catalog/geely/tx4/"
+    },
+    {
+      "slug": "vision",
+      "name": "Vision FC",
+      "href": "https://www.drom.ru/catalog/geely/vision/"
+    },
+    {
+      "slug": "vision_s1",
+      "name": "Vision S1",
+      "href": "https://www.drom.ru/catalog/geely/vision_s1/"
+    },
+    {
+      "slug": "vision_x1",
+      "name": "Vision X1",
+      "href": "https://www.drom.ru/catalog/geely/vision_x1/"
+    },
+    {
+      "slug": "vision_x3",
+      "name": "Vision X3",
+      "href": "https://www.drom.ru/catalog/geely/vision_x3/"
+    },
+    {
+      "slug": "vision_x3_pro",
+      "name": "Vision X3 Pro",
+      "href": "https://www.drom.ru/catalog/geely/vision_x3_pro/"
+    },
+    {
+      "slug": "vision_x6",
+      "name": "Vision X6",
+      "href": "https://www.drom.ru/catalog/geely/vision_x6/"
+    },
+    {
+      "slug": "vision_x6_pro",
+      "name": "Vision X6 Pro",
+      "href": "https://www.drom.ru/catalog/geely/vision_x6_pro/"
+    },
+    {
+      "slug": "xingyuan",
+      "name": "Geome Xingyuan",
+      "href": "https://www.drom.ru/catalog/geely/xingyuan/"
+    },
+    {
+      "slug": "xingyue",
+      "name": "Xingyue",
+      "href": "https://www.drom.ru/catalog/geely/xingyue/"
+    },
+    {
+      "slug": "xingyue_l",
+      "name": "Xingyue L",
+      "href": "https://www.drom.ru/catalog/geely/xingyue_l/"
+    },
+    {
+      "slug": "xingyue_s",
+      "name": "Xingyue S",
+      "href": "https://www.drom.ru/catalog/geely/xingyue_s/"
+    }
+  ]
+}

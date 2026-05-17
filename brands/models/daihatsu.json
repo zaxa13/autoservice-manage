@@ -1,0 +1,282 @@
+{
+  "brand": {
+    "slug": "daihatsu",
+    "name": "Daihatsu",
+    "href": "https://www.drom.ru/catalog/daihatsu/"
+  },
+  "source": "https://www.drom.ru/catalog/daihatsu/",
+  "collected_at": "2026-05-17",
+  "count": 54,
+  "models": [
+    {
+      "slug": "altis",
+      "name": "Altis",
+      "href": "https://www.drom.ru/catalog/daihatsu/altis/"
+    },
+    {
+      "slug": "applause",
+      "name": "Applause",
+      "href": "https://www.drom.ru/catalog/daihatsu/applause/"
+    },
+    {
+      "slug": "atrai",
+      "name": "Atrai",
+      "href": "https://www.drom.ru/catalog/daihatsu/atrai/"
+    },
+    {
+      "slug": "atrai7",
+      "name": "Atrai7",
+      "href": "https://www.drom.ru/catalog/daihatsu/atrai7/"
+    },
+    {
+      "slug": "be-go",
+      "name": "Be-Go",
+      "href": "https://www.drom.ru/catalog/daihatsu/be-go/"
+    },
+    {
+      "slug": "boon",
+      "name": "Boon",
+      "href": "https://www.drom.ru/catalog/daihatsu/boon/"
+    },
+    {
+      "slug": "boon_luminas",
+      "name": "Boon Luminas",
+      "href": "https://www.drom.ru/catalog/daihatsu/boon_luminas/"
+    },
+    {
+      "slug": "caddie",
+      "name": "Hijet Caddie",
+      "href": "https://www.drom.ru/catalog/daihatsu/caddie/"
+    },
+    {
+      "slug": "cast",
+      "name": "Cast",
+      "href": "https://www.drom.ru/catalog/daihatsu/cast/"
+    },
+    {
+      "slug": "charade",
+      "name": "Charade",
+      "href": "https://www.drom.ru/catalog/daihatsu/charade/"
+    },
+    {
+      "slug": "charade_social",
+      "name": "Charade Social",
+      "href": "https://www.drom.ru/catalog/daihatsu/charade_social/"
+    },
+    {
+      "slug": "charmant",
+      "name": "Charmant",
+      "href": "https://www.drom.ru/catalog/daihatsu/charmant/"
+    },
+    {
+      "slug": "coo",
+      "name": "Coo",
+      "href": "https://www.drom.ru/catalog/daihatsu/coo/"
+    },
+    {
+      "slug": "copen",
+      "name": "Copen",
+      "href": "https://www.drom.ru/catalog/daihatsu/copen/"
+    },
+    {
+      "slug": "cuore",
+      "name": "Cuore",
+      "href": "https://www.drom.ru/catalog/daihatsu/cuore/"
+    },
+    {
+      "slug": "delta",
+      "name": "Delta",
+      "href": "https://www.drom.ru/catalog/daihatsu/delta/"
+    },
+    {
+      "slug": "esse",
+      "name": "Esse",
+      "href": "https://www.drom.ru/catalog/daihatsu/esse/"
+    },
+    {
+      "slug": "gran_max",
+      "name": "Gran Max",
+      "href": "https://www.drom.ru/catalog/daihatsu/gran_max/"
+    },
+    {
+      "slug": "hijet",
+      "name": "Hijet",
+      "href": "https://www.drom.ru/catalog/daihatsu/hijet/"
+    },
+    {
+      "slug": "leeza",
+      "name": "Leeza",
+      "href": "https://www.drom.ru/catalog/daihatsu/leeza/"
+    },
+    {
+      "slug": "materia",
+      "name": "Materia",
+      "href": "https://www.drom.ru/catalog/daihatsu/materia/"
+    },
+    {
+      "slug": "max",
+      "name": "Max",
+      "href": "https://www.drom.ru/catalog/daihatsu/max/"
+    },
+    {
+      "slug": "mebius",
+      "name": "Mebius",
+      "href": "https://www.drom.ru/catalog/daihatsu/mebius/"
+    },
+    {
+      "slug": "midget_ii",
+      "name": "Midget II",
+      "href": "https://www.drom.ru/catalog/daihatsu/midget_ii/"
+    },
+    {
+      "slug": "mira",
+      "name": "Mira",
+      "href": "https://www.drom.ru/catalog/daihatsu/mira/"
+    },
+    {
+      "slug": "mira_avy",
+      "name": "Mira Avy",
+      "href": "https://www.drom.ru/catalog/daihatsu/mira_avy/"
+    },
+    {
+      "slug": "mira_cocoa",
+      "name": "Mira Cocoa",
+      "href": "https://www.drom.ru/catalog/daihatsu/mira_cocoa/"
+    },
+    {
+      "slug": "mira_e-s",
+      "name": "Mira e:S",
+      "href": "https://www.drom.ru/catalog/daihatsu/mira_e-s/"
+    },
+    {
+      "slug": "mira_gino",
+      "name": "Mira Gino",
+      "href": "https://www.drom.ru/catalog/daihatsu/mira_gino/"
+    },
+    {
+      "slug": "mira_gino_1000",
+      "name": "Mira Gino 1000",
+      "href": "https://www.drom.ru/catalog/daihatsu/mira_gino_1000/"
+    },
+    {
+      "slug": "mira_moderno",
+      "name": "Mira Moderno",
+      "href": "https://www.drom.ru/catalog/daihatsu/mira_moderno/"
+    },
+    {
+      "slug": "mira_tocot",
+      "name": "Mira Tocot",
+      "href": "https://www.drom.ru/catalog/daihatsu/mira_tocot/"
+    },
+    {
+      "slug": "move",
+      "name": "Move",
+      "href": "https://www.drom.ru/catalog/daihatsu/move/"
+    },
+    {
+      "slug": "move_canbus",
+      "name": "Move Canbus",
+      "href": "https://www.drom.ru/catalog/daihatsu/move_canbus/"
+    },
+    {
+      "slug": "move_conte",
+      "name": "Move Conte",
+      "href": "https://www.drom.ru/catalog/daihatsu/move_conte/"
+    },
+    {
+      "slug": "move_latte",
+      "name": "Move Latte",
+      "href": "https://www.drom.ru/catalog/daihatsu/move_latte/"
+    },
+    {
+      "slug": "naked",
+      "name": "Naked",
+      "href": "https://www.drom.ru/catalog/daihatsu/naked/"
+    },
+    {
+      "slug": "opti",
+      "name": "Opti",
+      "href": "https://www.drom.ru/catalog/daihatsu/opti/"
+    },
+    {
+      "slug": "pyzar",
+      "name": "Pyzar",
+      "href": "https://www.drom.ru/catalog/daihatsu/pyzar/"
+    },
+    {
+      "slug": "rocky",
+      "name": "Rocky",
+      "href": "https://www.drom.ru/catalog/daihatsu/rocky/"
+    },
+    {
+      "slug": "rugger",
+      "name": "Rugger",
+      "href": "https://www.drom.ru/catalog/daihatsu/rugger/"
+    },
+    {
+      "slug": "sirion",
+      "name": "Sirion",
+      "href": "https://www.drom.ru/catalog/daihatsu/sirion/"
+    },
+    {
+      "slug": "sonica",
+      "name": "Sonica",
+      "href": "https://www.drom.ru/catalog/daihatsu/sonica/"
+    },
+    {
+      "slug": "storia",
+      "name": "Storia",
+      "href": "https://www.drom.ru/catalog/daihatsu/storia/"
+    },
+    {
+      "slug": "taft",
+      "name": "Taft",
+      "href": "https://www.drom.ru/catalog/daihatsu/taft/"
+    },
+    {
+      "slug": "tanto",
+      "name": "Tanto",
+      "href": "https://www.drom.ru/catalog/daihatsu/tanto/"
+    },
+    {
+      "slug": "tanto_exe",
+      "name": "Tanto Exe",
+      "href": "https://www.drom.ru/catalog/daihatsu/tanto_exe/"
+    },
+    {
+      "slug": "terios",
+      "name": "Terios",
+      "href": "https://www.drom.ru/catalog/daihatsu/terios/"
+    },
+    {
+      "slug": "terios_kid",
+      "name": "Terios Kid",
+      "href": "https://www.drom.ru/catalog/daihatsu/terios_kid/"
+    },
+    {
+      "slug": "terios_lucia",
+      "name": "Terios Lucia",
+      "href": "https://www.drom.ru/catalog/daihatsu/terios_lucia/"
+    },
+    {
+      "slug": "thor",
+      "name": "Thor",
+      "href": "https://www.drom.ru/catalog/daihatsu/thor/"
+    },
+    {
+      "slug": "wake",
+      "name": "Wake",
+      "href": "https://www.drom.ru/catalog/daihatsu/wake/"
+    },
+    {
+      "slug": "xenia",
+      "name": "Xenia",
+      "href": "https://www.drom.ru/catalog/daihatsu/xenia/"
+    },
+    {
+      "slug": "yrv",
+      "name": "YRV",
+      "href": "https://www.drom.ru/catalog/daihatsu/yrv/"
+    }
+  ]
+}

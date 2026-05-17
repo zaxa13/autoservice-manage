@@ -1,0 +1,32 @@
+{
+  "brand": {
+    "slug": "avatr",
+    "name": "Avatr",
+    "href": "https://www.drom.ru/catalog/avatr/"
+  },
+  "source": "https://www.drom.ru/catalog/avatr/",
+  "collected_at": "2026-05-17",
+  "count": 4,
+  "models": [
+    {
+      "slug": "06",
+      "name": "06",
+      "href": "https://www.drom.ru/catalog/avatr/06/"
+    },
+    {
+      "slug": "07",
+      "name": "07",
+      "href": "https://www.drom.ru/catalog/avatr/07/"
+    },
+    {
+      "slug": "11",
+      "name": "11",
+      "href": "https://www.drom.ru/catalog/avatr/11/"
+    },
+    {
+      "slug": "12",
+      "name": "12",
+      "href": "https://www.drom.ru/catalog/avatr/12/"
+    }
+  ]
+}

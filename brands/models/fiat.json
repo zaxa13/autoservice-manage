@@ -1,0 +1,172 @@
+{
+  "brand": {
+    "slug": "fiat",
+    "name": "Fiat",
+    "href": "https://www.drom.ru/catalog/fiat/"
+  },
+  "source": "https://www.drom.ru/catalog/fiat/",
+  "collected_at": "2026-05-17",
+  "count": 32,
+  "models": [
+    {
+      "slug": "124",
+      "name": "124",
+      "href": "https://www.drom.ru/catalog/fiat/124/"
+    },
+    {
+      "slug": "124_spider",
+      "name": "124 Spider",
+      "href": "https://www.drom.ru/catalog/fiat/124_spider/"
+    },
+    {
+      "slug": "125",
+      "name": "125",
+      "href": "https://www.drom.ru/catalog/fiat/125/"
+    },
+    {
+      "slug": "128",
+      "name": "128",
+      "href": "https://www.drom.ru/catalog/fiat/128/"
+    },
+    {
+      "slug": "500",
+      "name": "500",
+      "href": "https://www.drom.ru/catalog/fiat/500/"
+    },
+    {
+      "slug": "500x",
+      "name": "500X",
+      "href": "https://www.drom.ru/catalog/fiat/500x/"
+    },
+    {
+      "slug": "albea",
+      "name": "Albea",
+      "href": "https://www.drom.ru/catalog/fiat/albea/"
+    },
+    {
+      "slug": "brava",
+      "name": "Brava",
+      "href": "https://www.drom.ru/catalog/fiat/brava/"
+    },
+    {
+      "slug": "bravo",
+      "name": "Bravo",
+      "href": "https://www.drom.ru/catalog/fiat/bravo/"
+    },
+    {
+      "slug": "coupe-model",
+      "name": "Coupe",
+      "href": "https://www.drom.ru/catalog/fiat/coupe-model/"
+    },
+    {
+      "slug": "croma",
+      "name": "Croma",
+      "href": "https://www.drom.ru/catalog/fiat/croma/"
+    },
+    {
+      "slug": "doblo",
+      "name": "Doblo",
+      "href": "https://www.drom.ru/catalog/fiat/doblo/"
+    },
+    {
+      "slug": "freemont",
+      "name": "Freemont",
+      "href": "https://www.drom.ru/catalog/fiat/freemont/"
+    },
+    {
+      "slug": "fullback",
+      "name": "Fullback",
+      "href": "https://www.drom.ru/catalog/fiat/fullback/"
+    },
+    {
+      "slug": "grande_punto",
+      "name": "Grande Punto",
+      "href": "https://www.drom.ru/catalog/fiat/grande_punto/"
+    },
+    {
+      "slug": "linea",
+      "name": "Linea",
+      "href": "https://www.drom.ru/catalog/fiat/linea/"
+    },
+    {
+      "slug": "multipla",
+      "name": "Multipla",
+      "href": "https://www.drom.ru/catalog/fiat/multipla/"
+    },
+    {
+      "slug": "palio",
+      "name": "Palio",
+      "href": "https://www.drom.ru/catalog/fiat/palio/"
+    },
+    {
+      "slug": "panda",
+      "name": "Panda",
+      "href": "https://www.drom.ru/catalog/fiat/panda/"
+    },
+    {
+      "slug": "punto",
+      "name": "Punto",
+      "href": "https://www.drom.ru/catalog/fiat/punto/"
+    },
+    {
+      "slug": "qubo",
+      "name": "Qubo",
+      "href": "https://www.drom.ru/catalog/fiat/qubo/"
+    },
+    {
+      "slug": "regata",
+      "name": "Regata",
+      "href": "https://www.drom.ru/catalog/fiat/regata/"
+    },
+    {
+      "slug": "ritmo",
+      "name": "Ritmo",
+      "href": "https://www.drom.ru/catalog/fiat/ritmo/"
+    },
+    {
+      "slug": "scudo",
+      "name": "Scudo",
+      "href": "https://www.drom.ru/catalog/fiat/scudo/"
+    },
+    {
+      "slug": "sedici",
+      "name": "Sedici",
+      "href": "https://www.drom.ru/catalog/fiat/sedici/"
+    },
+    {
+      "slug": "seicento",
+      "name": "Seicento",
+      "href": "https://www.drom.ru/catalog/fiat/seicento/"
+    },
+    {
+      "slug": "stilo",
+      "name": "Stilo",
+      "href": "https://www.drom.ru/catalog/fiat/stilo/"
+    },
+    {
+      "slug": "strada",
+      "name": "Strada",
+      "href": "https://www.drom.ru/catalog/fiat/strada/"
+    },
+    {
+      "slug": "talento",
+      "name": "Talento",
+      "href": "https://www.drom.ru/catalog/fiat/talento/"
+    },
+    {
+      "slug": "tipo",
+      "name": "Tipo",
+      "href": "https://www.drom.ru/catalog/fiat/tipo/"
+    },
+    {
+      "slug": "ulysse",
+      "name": "Ulysse",
+      "href": "https://www.drom.ru/catalog/fiat/ulysse/"
+    },
+    {
+      "slug": "uno",
+      "name": "Uno",
+      "href": "https://www.drom.ru/catalog/fiat/uno/"
+    }
+  ]
+}

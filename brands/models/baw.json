@@ -1,0 +1,47 @@
+{
+  "brand": {
+    "slug": "baw",
+    "name": "BAW",
+    "href": "https://www.drom.ru/catalog/baw/"
+  },
+  "source": "https://www.drom.ru/catalog/baw/",
+  "collected_at": "2026-05-17",
+  "count": 7,
+  "models": [
+    {
+      "slug": "007",
+      "name": "Yusheng 007",
+      "href": "https://www.drom.ru/catalog/baw/007/"
+    },
+    {
+      "slug": "ace_m7",
+      "name": "Ace M7",
+      "href": "https://www.drom.ru/catalog/baw/ace_m7/"
+    },
+    {
+      "slug": "bj212",
+      "name": "BJ 212",
+      "href": "https://www.drom.ru/catalog/baw/bj212/"
+    },
+    {
+      "slug": "calorie",
+      "name": "Calorie",
+      "href": "https://www.drom.ru/catalog/baw/calorie/"
+    },
+    {
+      "slug": "leichi",
+      "name": "Leichi",
+      "href": "https://www.drom.ru/catalog/baw/leichi/"
+    },
+    {
+      "slug": "luba",
+      "name": "Luba",
+      "href": "https://www.drom.ru/catalog/baw/luba/"
+    },
+    {
+      "slug": "mpv",
+      "name": "MPV",
+      "href": "https://www.drom.ru/catalog/baw/mpv/"
+    }
+  ]
+}

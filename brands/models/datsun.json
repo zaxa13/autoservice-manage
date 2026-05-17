@@ -1,0 +1,32 @@
+{
+  "brand": {
+    "slug": "datsun",
+    "name": "Datsun",
+    "href": "https://www.drom.ru/catalog/datsun/"
+  },
+  "source": "https://www.drom.ru/catalog/datsun/",
+  "collected_at": "2026-05-17",
+  "count": 4,
+  "models": [
+    {
+      "slug": "cross",
+      "name": "Cross",
+      "href": "https://www.drom.ru/catalog/datsun/cross/"
+    },
+    {
+      "slug": "go",
+      "name": "Go",
+      "href": "https://www.drom.ru/catalog/datsun/go/"
+    },
+    {
+      "slug": "mi-do",
+      "name": "mi-Do",
+      "href": "https://www.drom.ru/catalog/datsun/mi-do/"
+    },
+    {
+      "slug": "on-do",
+      "name": "on-DO",
+      "href": "https://www.drom.ru/catalog/datsun/on-do/"
+    }
+  ]
+}

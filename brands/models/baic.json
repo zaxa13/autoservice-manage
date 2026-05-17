@@ -1,0 +1,172 @@
+{
+  "brand": {
+    "slug": "baic",
+    "name": "BAIC",
+    "href": "https://www.drom.ru/catalog/baic/"
+  },
+  "source": "https://www.drom.ru/catalog/baic/",
+  "collected_at": "2026-05-17",
+  "count": 32,
+  "models": [
+    {
+      "slug": "EX3",
+      "name": "EX3",
+      "href": "https://www.drom.ru/catalog/baic/EX3/"
+    },
+    {
+      "slug": "beijing_bj30",
+      "name": "BJ30",
+      "href": "https://www.drom.ru/catalog/baic/beijing_bj30/"
+    },
+    {
+      "slug": "beijing_bj40",
+      "name": "BJ40",
+      "href": "https://www.drom.ru/catalog/baic/beijing_bj40/"
+    },
+    {
+      "slug": "beijing_bj60",
+      "name": "BJ60",
+      "href": "https://www.drom.ru/catalog/baic/beijing_bj60/"
+    },
+    {
+      "slug": "beijing_bj80",
+      "name": "BJ80",
+      "href": "https://www.drom.ru/catalog/baic/beijing_bj80/"
+    },
+    {
+      "slug": "beijing_bj90",
+      "name": "BJ90",
+      "href": "https://www.drom.ru/catalog/baic/beijing_bj90/"
+    },
+    {
+      "slug": "beijing_eu5_plus",
+      "name": "EU5 Plus",
+      "href": "https://www.drom.ru/catalog/baic/beijing_eu5_plus/"
+    },
+    {
+      "slug": "beijing_eu7",
+      "name": "EU7",
+      "href": "https://www.drom.ru/catalog/baic/beijing_eu7/"
+    },
+    {
+      "slug": "beijing_rubics_cube",
+      "name": "Rubics Cube",
+      "href": "https://www.drom.ru/catalog/baic/beijing_rubics_cube/"
+    },
+    {
+      "slug": "beijing_x3",
+      "name": "X3",
+      "href": "https://www.drom.ru/catalog/baic/beijing_x3/"
+    },
+    {
+      "slug": "beijing_x5",
+      "name": "X5",
+      "href": "https://www.drom.ru/catalog/baic/beijing_x5/"
+    },
+    {
+      "slug": "beijing_x7",
+      "name": "X7",
+      "href": "https://www.drom.ru/catalog/baic/beijing_x7/"
+    },
+    {
+      "slug": "bj40_plus",
+      "name": "BJ40 Plus",
+      "href": "https://www.drom.ru/catalog/baic/bj40_plus/"
+    },
+    {
+      "slug": "bj41",
+      "name": "BJ41",
+      "href": "https://www.drom.ru/catalog/baic/bj41/"
+    },
+    {
+      "slug": "bj60_thunder",
+      "name": "BJ60 Thunder",
+      "href": "https://www.drom.ru/catalog/baic/bj60_thunder/"
+    },
+    {
+      "slug": "bj81",
+      "name": "BJ81",
+      "href": "https://www.drom.ru/catalog/baic/bj81/"
+    },
+    {
+      "slug": "bjev_ex5",
+      "name": "BJEV EX5",
+      "href": "https://www.drom.ru/catalog/baic/bjev_ex5/"
+    },
+    {
+      "slug": "eu5",
+      "name": "EU5",
+      "href": "https://www.drom.ru/catalog/baic/eu5/"
+    },
+    {
+      "slug": "eu8",
+      "name": "EU8",
+      "href": "https://www.drom.ru/catalog/baic/eu8/"
+    },
+    {
+      "slug": "huansu_s6",
+      "name": "Huansu S6",
+      "href": "https://www.drom.ru/catalog/baic/huansu_s6/"
+    },
+    {
+      "slug": "jeep_2500",
+      "name": "Jeep 2500",
+      "href": "https://www.drom.ru/catalog/baic/jeep_2500/"
+    },
+    {
+      "slug": "ruixiang_x3",
+      "name": "Ruixiang X3",
+      "href": "https://www.drom.ru/catalog/baic/ruixiang_x3/"
+    },
+    {
+      "slug": "ruixiang_x5",
+      "name": "Ruixiang X5",
+      "href": "https://www.drom.ru/catalog/baic/ruixiang_x5/"
+    },
+    {
+      "slug": "senova_e_series",
+      "name": "Senova E-Series",
+      "href": "https://www.drom.ru/catalog/baic/senova_e_series/"
+    },
+    {
+      "slug": "senova_x55",
+      "name": "Senova X55",
+      "href": "https://www.drom.ru/catalog/baic/senova_x55/"
+    },
+    {
+      "slug": "senova_zhixing",
+      "name": "Senova Zhixing",
+      "href": "https://www.drom.ru/catalog/baic/senova_zhixing/"
+    },
+    {
+      "slug": "u5",
+      "name": "U5",
+      "href": "https://www.drom.ru/catalog/baic/u5/"
+    },
+    {
+      "slug": "u5_plus",
+      "name": "U5 Plus",
+      "href": "https://www.drom.ru/catalog/baic/u5_plus/"
+    },
+    {
+      "slug": "u7",
+      "name": "U7",
+      "href": "https://www.drom.ru/catalog/baic/u7/"
+    },
+    {
+      "slug": "x35",
+      "name": "X35",
+      "href": "https://www.drom.ru/catalog/baic/x35/"
+    },
+    {
+      "slug": "x55",
+      "name": "X55",
+      "href": "https://www.drom.ru/catalog/baic/x55/"
+    },
+    {
+      "slug": "x75",
+      "name": "X75",
+      "href": "https://www.drom.ru/catalog/baic/x75/"
+    }
+  ]
+}

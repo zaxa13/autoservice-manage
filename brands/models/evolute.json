@@ -1,0 +1,42 @@
+{
+  "brand": {
+    "slug": "evolute",
+    "name": "Evolute",
+    "href": "https://www.drom.ru/catalog/evolute/"
+  },
+  "source": "https://www.drom.ru/catalog/evolute/",
+  "collected_at": "2026-05-17",
+  "count": 6,
+  "models": [
+    {
+      "slug": "i-jet",
+      "name": "i-Jet",
+      "href": "https://www.drom.ru/catalog/evolute/i-jet/"
+    },
+    {
+      "slug": "i-joy",
+      "name": "i-Joy",
+      "href": "https://www.drom.ru/catalog/evolute/i-joy/"
+    },
+    {
+      "slug": "i-pro",
+      "name": "i-Pro",
+      "href": "https://www.drom.ru/catalog/evolute/i-pro/"
+    },
+    {
+      "slug": "i-sky",
+      "name": "i-Sky",
+      "href": "https://www.drom.ru/catalog/evolute/i-sky/"
+    },
+    {
+      "slug": "i-space",
+      "name": "i-Space",
+      "href": "https://www.drom.ru/catalog/evolute/i-space/"
+    },
+    {
+      "slug": "i-van",
+      "name": "i-Van",
+      "href": "https://www.drom.ru/catalog/evolute/i-van/"
+    }
+  ]
+}

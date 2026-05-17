@@ -1,0 +1,72 @@
+{
+  "brand": {
+    "slug": "lynk_and_co",
+    "name": "Lynk & Co",
+    "href": "https://www.drom.ru/catalog/lynk_and_co/"
+  },
+  "source": "https://www.drom.ru/catalog/lynk_and_co/",
+  "collected_at": "2026-05-17",
+  "count": 12,
+  "models": [
+    {
+      "slug": "01",
+      "name": "01",
+      "href": "https://www.drom.ru/catalog/lynk_and_co/01/"
+    },
+    {
+      "slug": "02",
+      "name": "02",
+      "href": "https://www.drom.ru/catalog/lynk_and_co/02/"
+    },
+    {
+      "slug": "03",
+      "name": "03",
+      "href": "https://www.drom.ru/catalog/lynk_and_co/03/"
+    },
+    {
+      "slug": "05",
+      "name": "05",
+      "href": "https://www.drom.ru/catalog/lynk_and_co/05/"
+    },
+    {
+      "slug": "06",
+      "name": "06",
+      "href": "https://www.drom.ru/catalog/lynk_and_co/06/"
+    },
+    {
+      "slug": "07",
+      "name": "07",
+      "href": "https://www.drom.ru/catalog/lynk_and_co/07/"
+    },
+    {
+      "slug": "08",
+      "name": "08",
+      "href": "https://www.drom.ru/catalog/lynk_and_co/08/"
+    },
+    {
+      "slug": "09",
+      "name": "09",
+      "href": "https://www.drom.ru/catalog/lynk_and_co/09/"
+    },
+    {
+      "slug": "10",
+      "name": "10",
+      "href": "https://www.drom.ru/catalog/lynk_and_co/10/"
+    },
+    {
+      "slug": "900",
+      "name": "900",
+      "href": "https://www.drom.ru/catalog/lynk_and_co/900/"
+    },
+    {
+      "slug": "z10",
+      "name": "Z10",
+      "href": "https://www.drom.ru/catalog/lynk_and_co/z10/"
+    },
+    {
+      "slug": "z20",
+      "name": "Z20",
+      "href": "https://www.drom.ru/catalog/lynk_and_co/z20/"
+    }
+  ]
+}

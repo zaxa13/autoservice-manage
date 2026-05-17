@@ -1,0 +1,27 @@
+{
+  "brand": {
+    "slug": "tenet",
+    "name": "TENET",
+    "href": "https://www.drom.ru/catalog/tenet/"
+  },
+  "source": "https://www.drom.ru/catalog/tenet/",
+  "collected_at": "2026-05-17",
+  "count": 3,
+  "models": [
+    {
+      "slug": "t4",
+      "name": "T4",
+      "href": "https://www.drom.ru/catalog/tenet/t4/"
+    },
+    {
+      "slug": "t7",
+      "name": "T7",
+      "href": "https://www.drom.ru/catalog/tenet/t7/"
+    },
+    {
+      "slug": "t8",
+      "name": "T8",
+      "href": "https://www.drom.ru/catalog/tenet/t8/"
+    }
+  ]
+}

@@ -1,0 +1,357 @@
+{
+  "brand": {
+    "slug": "chevrolet",
+    "name": "Chevrolet",
+    "href": "https://www.drom.ru/catalog/chevrolet/"
+  },
+  "source": "https://www.drom.ru/catalog/chevrolet/",
+  "collected_at": "2026-05-17",
+  "count": 69,
+  "models": [
+    {
+      "slug": "3600",
+      "name": "3600",
+      "href": "https://www.drom.ru/catalog/chevrolet/3600/"
+    },
+    {
+      "slug": "alero",
+      "name": "Alero",
+      "href": "https://www.drom.ru/catalog/chevrolet/alero/"
+    },
+    {
+      "slug": "astro",
+      "name": "Astro",
+      "href": "https://www.drom.ru/catalog/chevrolet/astro/"
+    },
+    {
+      "slug": "avalanche",
+      "name": "Avalanche",
+      "href": "https://www.drom.ru/catalog/chevrolet/avalanche/"
+    },
+    {
+      "slug": "aveo",
+      "name": "Aveo",
+      "href": "https://www.drom.ru/catalog/chevrolet/aveo/"
+    },
+    {
+      "slug": "beretta",
+      "name": "Beretta",
+      "href": "https://www.drom.ru/catalog/chevrolet/beretta/"
+    },
+    {
+      "slug": "blazer",
+      "name": "Blazer",
+      "href": "https://www.drom.ru/catalog/chevrolet/blazer/"
+    },
+    {
+      "slug": "blazer_ev",
+      "name": "Blazer EV",
+      "href": "https://www.drom.ru/catalog/chevrolet/blazer_ev/"
+    },
+    {
+      "slug": "blazer_k5",
+      "name": "Blazer K5",
+      "href": "https://www.drom.ru/catalog/chevrolet/blazer_k5/"
+    },
+    {
+      "slug": "blazer_s-10",
+      "name": "Blazer S-10",
+      "href": "https://www.drom.ru/catalog/chevrolet/blazer_s-10/"
+    },
+    {
+      "slug": "bolt",
+      "name": "Bolt",
+      "href": "https://www.drom.ru/catalog/chevrolet/bolt/"
+    },
+    {
+      "slug": "c10",
+      "name": "C10",
+      "href": "https://www.drom.ru/catalog/chevrolet/c10/"
+    },
+    {
+      "slug": "camaro",
+      "name": "Camaro",
+      "href": "https://www.drom.ru/catalog/chevrolet/camaro/"
+    },
+    {
+      "slug": "caprice",
+      "name": "Caprice",
+      "href": "https://www.drom.ru/catalog/chevrolet/caprice/"
+    },
+    {
+      "slug": "captiva",
+      "name": "Captiva",
+      "href": "https://www.drom.ru/catalog/chevrolet/captiva/"
+    },
+    {
+      "slug": "cavalier",
+      "name": "Cavalier",
+      "href": "https://www.drom.ru/catalog/chevrolet/cavalier/"
+    },
+    {
+      "slug": "celebrity",
+      "name": "Celebrity",
+      "href": "https://www.drom.ru/catalog/chevrolet/celebrity/"
+    },
+    {
+      "slug": "cobalt",
+      "name": "Cobalt",
+      "href": "https://www.drom.ru/catalog/chevrolet/cobalt/"
+    },
+    {
+      "slug": "colorado",
+      "name": "Colorado",
+      "href": "https://www.drom.ru/catalog/chevrolet/colorado/"
+    },
+    {
+      "slug": "corsica",
+      "name": "Corsica",
+      "href": "https://www.drom.ru/catalog/chevrolet/corsica/"
+    },
+    {
+      "slug": "corvette",
+      "name": "Corvette",
+      "href": "https://www.drom.ru/catalog/chevrolet/corvette/"
+    },
+    {
+      "slug": "cruze",
+      "name": "Cruze",
+      "href": "https://www.drom.ru/catalog/chevrolet/cruze/"
+    },
+    {
+      "slug": "damas",
+      "name": "Damas",
+      "href": "https://www.drom.ru/catalog/chevrolet/damas/"
+    },
+    {
+      "slug": "epica",
+      "name": "Epica",
+      "href": "https://www.drom.ru/catalog/chevrolet/epica/"
+    },
+    {
+      "slug": "equinox",
+      "name": "Equinox",
+      "href": "https://www.drom.ru/catalog/chevrolet/equinox/"
+    },
+    {
+      "slug": "equinox_ev",
+      "name": "Equinox EV",
+      "href": "https://www.drom.ru/catalog/chevrolet/equinox_ev/"
+    },
+    {
+      "slug": "equinox_plus",
+      "name": "Equinox Plus",
+      "href": "https://www.drom.ru/catalog/chevrolet/equinox_plus/"
+    },
+    {
+      "slug": "evanda",
+      "name": "Evanda",
+      "href": "https://www.drom.ru/catalog/chevrolet/evanda/"
+    },
+    {
+      "slug": "groove",
+      "name": "Groove",
+      "href": "https://www.drom.ru/catalog/chevrolet/groove/"
+    },
+    {
+      "slug": "hhr",
+      "name": "HHR",
+      "href": "https://www.drom.ru/catalog/chevrolet/hhr/"
+    },
+    {
+      "slug": "impala",
+      "name": "Impala",
+      "href": "https://www.drom.ru/catalog/chevrolet/impala/"
+    },
+    {
+      "slug": "lacetti",
+      "name": "Lacetti",
+      "href": "https://www.drom.ru/catalog/chevrolet/lacetti/"
+    },
+    {
+      "slug": "lanos",
+      "name": "Lanos",
+      "href": "https://www.drom.ru/catalog/chevrolet/lanos/"
+    },
+    {
+      "slug": "lumina",
+      "name": "Lumina",
+      "href": "https://www.drom.ru/catalog/chevrolet/lumina/"
+    },
+    {
+      "slug": "lumina_apv",
+      "name": "Lumina APV",
+      "href": "https://www.drom.ru/catalog/chevrolet/lumina_apv/"
+    },
+    {
+      "slug": "malibu",
+      "name": "Malibu",
+      "href": "https://www.drom.ru/catalog/chevrolet/malibu/"
+    },
+    {
+      "slug": "menlo",
+      "name": "Menlo",
+      "href": "https://www.drom.ru/catalog/chevrolet/menlo/"
+    },
+    {
+      "slug": "metro",
+      "name": "Metro",
+      "href": "https://www.drom.ru/catalog/chevrolet/metro/"
+    },
+    {
+      "slug": "monte_carlo",
+      "name": "Monte Carlo",
+      "href": "https://www.drom.ru/catalog/chevrolet/monte_carlo/"
+    },
+    {
+      "slug": "monza",
+      "name": "Monza",
+      "href": "https://www.drom.ru/catalog/chevrolet/monza/"
+    },
+    {
+      "slug": "mw",
+      "name": "MW",
+      "href": "https://www.drom.ru/catalog/chevrolet/mw/"
+    },
+    {
+      "slug": "nexia",
+      "name": "Nexia",
+      "href": "https://www.drom.ru/catalog/chevrolet/nexia/"
+    },
+    {
+      "slug": "niva",
+      "name": "Niva",
+      "href": "https://www.drom.ru/catalog/chevrolet/niva/"
+    },
+    {
+      "slug": "nova",
+      "name": "Nova",
+      "href": "https://www.drom.ru/catalog/chevrolet/nova/"
+    },
+    {
+      "slug": "nubira",
+      "name": "Nubira",
+      "href": "https://www.drom.ru/catalog/chevrolet/nubira/"
+    },
+    {
+      "slug": "onix",
+      "name": "Onix",
+      "href": "https://www.drom.ru/catalog/chevrolet/onix/"
+    },
+    {
+      "slug": "optra",
+      "name": "Optra",
+      "href": "https://www.drom.ru/catalog/chevrolet/optra/"
+    },
+    {
+      "slug": "orlando",
+      "name": "Orlando",
+      "href": "https://www.drom.ru/catalog/chevrolet/orlando/"
+    },
+    {
+      "slug": "prizm",
+      "name": "Prizm",
+      "href": "https://www.drom.ru/catalog/chevrolet/prizm/"
+    },
+    {
+      "slug": "rezzo",
+      "name": "Rezzo",
+      "href": "https://www.drom.ru/catalog/chevrolet/rezzo/"
+    },
+    {
+      "slug": "s10",
+      "name": "S10",
+      "href": "https://www.drom.ru/catalog/chevrolet/s10/"
+    },
+    {
+      "slug": "seeker",
+      "name": "Seeker",
+      "href": "https://www.drom.ru/catalog/chevrolet/seeker/"
+    },
+    {
+      "slug": "silverado",
+      "name": "Silverado",
+      "href": "https://www.drom.ru/catalog/chevrolet/silverado/"
+    },
+    {
+      "slug": "sonic",
+      "name": "Sonic",
+      "href": "https://www.drom.ru/catalog/chevrolet/sonic/"
+    },
+    {
+      "slug": "spark",
+      "name": "Spark",
+      "href": "https://www.drom.ru/catalog/chevrolet/spark/"
+    },
+    {
+      "slug": "ssr",
+      "name": "SSR",
+      "href": "https://www.drom.ru/catalog/chevrolet/ssr/"
+    },
+    {
+      "slug": "suburban",
+      "name": "Suburban",
+      "href": "https://www.drom.ru/catalog/chevrolet/suburban/"
+    },
+    {
+      "slug": "tacuma",
+      "name": "Tacuma",
+      "href": "https://www.drom.ru/catalog/chevrolet/tacuma/"
+    },
+    {
+      "slug": "tahoe",
+      "name": "Tahoe",
+      "href": "https://www.drom.ru/catalog/chevrolet/tahoe/"
+    },
+    {
+      "slug": "tracker",
+      "name": "Tracker",
+      "href": "https://www.drom.ru/catalog/chevrolet/tracker/"
+    },
+    {
+      "slug": "trailblazer",
+      "name": "TrailBlazer",
+      "href": "https://www.drom.ru/catalog/chevrolet/trailblazer/"
+    },
+    {
+      "slug": "trans_sport",
+      "name": "Trans Sport",
+      "href": "https://www.drom.ru/catalog/chevrolet/trans_sport/"
+    },
+    {
+      "slug": "traverse",
+      "name": "Traverse",
+      "href": "https://www.drom.ru/catalog/chevrolet/traverse/"
+    },
+    {
+      "slug": "trax",
+      "name": "Trax",
+      "href": "https://www.drom.ru/catalog/chevrolet/trax/"
+    },
+    {
+      "slug": "uplander",
+      "name": "Uplander",
+      "href": "https://www.drom.ru/catalog/chevrolet/uplander/"
+    },
+    {
+      "slug": "van-model",
+      "name": "Van",
+      "href": "https://www.drom.ru/catalog/chevrolet/van-model/"
+    },
+    {
+      "slug": "venture",
+      "name": "Venture",
+      "href": "https://www.drom.ru/catalog/chevrolet/venture/"
+    },
+    {
+      "slug": "viva",
+      "name": "Viva",
+      "href": "https://www.drom.ru/catalog/chevrolet/viva/"
+    },
+    {
+      "slug": "volt",
+      "name": "Volt",
+      "href": "https://www.drom.ru/catalog/chevrolet/volt/"
+    }
+  ]
+}

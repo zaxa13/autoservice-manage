@@ -1,0 +1,152 @@
+{
+  "brand": {
+    "slug": "cadillac",
+    "name": "Cadillac",
+    "href": "https://www.drom.ru/catalog/cadillac/"
+  },
+  "source": "https://www.drom.ru/catalog/cadillac/",
+  "collected_at": "2026-05-17",
+  "count": 28,
+  "models": [
+    {
+      "slug": "ats",
+      "name": "ATS",
+      "href": "https://www.drom.ru/catalog/cadillac/ats/"
+    },
+    {
+      "slug": "bls",
+      "name": "BLS",
+      "href": "https://www.drom.ru/catalog/cadillac/bls/"
+    },
+    {
+      "slug": "brougham",
+      "name": "Brougham",
+      "href": "https://www.drom.ru/catalog/cadillac/brougham/"
+    },
+    {
+      "slug": "catera",
+      "name": "Catera",
+      "href": "https://www.drom.ru/catalog/cadillac/catera/"
+    },
+    {
+      "slug": "celestiq",
+      "name": "Celestiq",
+      "href": "https://www.drom.ru/catalog/cadillac/celestiq/"
+    },
+    {
+      "slug": "ct4",
+      "name": "CT4",
+      "href": "https://www.drom.ru/catalog/cadillac/ct4/"
+    },
+    {
+      "slug": "ct5",
+      "name": "CT5",
+      "href": "https://www.drom.ru/catalog/cadillac/ct5/"
+    },
+    {
+      "slug": "ct6",
+      "name": "CT6",
+      "href": "https://www.drom.ru/catalog/cadillac/ct6/"
+    },
+    {
+      "slug": "cts",
+      "name": "CTS",
+      "href": "https://www.drom.ru/catalog/cadillac/cts/"
+    },
+    {
+      "slug": "deville",
+      "name": "DeVille",
+      "href": "https://www.drom.ru/catalog/cadillac/deville/"
+    },
+    {
+      "slug": "dts",
+      "name": "DTS",
+      "href": "https://www.drom.ru/catalog/cadillac/dts/"
+    },
+    {
+      "slug": "eldorado",
+      "name": "Eldorado",
+      "href": "https://www.drom.ru/catalog/cadillac/eldorado/"
+    },
+    {
+      "slug": "elr",
+      "name": "ELR",
+      "href": "https://www.drom.ru/catalog/cadillac/elr/"
+    },
+    {
+      "slug": "escalade",
+      "name": "Escalade",
+      "href": "https://www.drom.ru/catalog/cadillac/escalade/"
+    },
+    {
+      "slug": "escalade_iq",
+      "name": "Escalade IQ",
+      "href": "https://www.drom.ru/catalog/cadillac/escalade_iq/"
+    },
+    {
+      "slug": "fleetwood",
+      "name": "Fleetwood",
+      "href": "https://www.drom.ru/catalog/cadillac/fleetwood/"
+    },
+    {
+      "slug": "gt4",
+      "name": "GT4",
+      "href": "https://www.drom.ru/catalog/cadillac/gt4/"
+    },
+    {
+      "slug": "lyriq",
+      "name": "Lyriq",
+      "href": "https://www.drom.ru/catalog/cadillac/lyriq/"
+    },
+    {
+      "slug": "optiq",
+      "name": "Optiq",
+      "href": "https://www.drom.ru/catalog/cadillac/optiq/"
+    },
+    {
+      "slug": "seville",
+      "name": "Seville",
+      "href": "https://www.drom.ru/catalog/cadillac/seville/"
+    },
+    {
+      "slug": "srx",
+      "name": "SRX",
+      "href": "https://www.drom.ru/catalog/cadillac/srx/"
+    },
+    {
+      "slug": "sts",
+      "name": "STS",
+      "href": "https://www.drom.ru/catalog/cadillac/sts/"
+    },
+    {
+      "slug": "vistiq",
+      "name": "Vistiq",
+      "href": "https://www.drom.ru/catalog/cadillac/vistiq/"
+    },
+    {
+      "slug": "xlr",
+      "name": "XLR",
+      "href": "https://www.drom.ru/catalog/cadillac/xlr/"
+    },
+    {
+      "slug": "xt4",
+      "name": "XT4",
+      "href": "https://www.drom.ru/catalog/cadillac/xt4/"
+    },
+    {
+      "slug": "xt5",
+      "name": "XT5",
+      "href": "https://www.drom.ru/catalog/cadillac/xt5/"
+    },
+    {
+      "slug": "xt6",
+      "name": "XT6",
+      "href": "https://www.drom.ru/catalog/cadillac/xt6/"
+    },
+    {
+      "slug": "xts",
+      "name": "XTS",
+      "href": "https://www.drom.ru/catalog/cadillac/xts/"
+    }
+  ]
+}

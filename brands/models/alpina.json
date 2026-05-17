@@ -1,0 +1,112 @@
+{
+  "brand": {
+    "slug": "alpina",
+    "name": "Alpina",
+    "href": "https://www.drom.ru/catalog/alpina/"
+  },
+  "source": "https://www.drom.ru/catalog/alpina/",
+  "collected_at": "2026-05-17",
+  "count": 20,
+  "models": [
+    {
+      "slug": "b10",
+      "name": "B10",
+      "href": "https://www.drom.ru/catalog/alpina/b10/"
+    },
+    {
+      "slug": "b11",
+      "name": "B11",
+      "href": "https://www.drom.ru/catalog/alpina/b11/"
+    },
+    {
+      "slug": "b12",
+      "name": "B12",
+      "href": "https://www.drom.ru/catalog/alpina/b12/"
+    },
+    {
+      "slug": "b3",
+      "name": "B3",
+      "href": "https://www.drom.ru/catalog/alpina/b3/"
+    },
+    {
+      "slug": "b4",
+      "name": "B4",
+      "href": "https://www.drom.ru/catalog/alpina/b4/"
+    },
+    {
+      "slug": "b5",
+      "name": "B5",
+      "href": "https://www.drom.ru/catalog/alpina/b5/"
+    },
+    {
+      "slug": "b6",
+      "name": "B6",
+      "href": "https://www.drom.ru/catalog/alpina/b6/"
+    },
+    {
+      "slug": "b7",
+      "name": "B7",
+      "href": "https://www.drom.ru/catalog/alpina/b7/"
+    },
+    {
+      "slug": "b8",
+      "name": "B8",
+      "href": "https://www.drom.ru/catalog/alpina/b8/"
+    },
+    {
+      "slug": "b9",
+      "name": "B9",
+      "href": "https://www.drom.ru/catalog/alpina/b9/"
+    },
+    {
+      "slug": "c1",
+      "name": "C1",
+      "href": "https://www.drom.ru/catalog/alpina/c1/"
+    },
+    {
+      "slug": "c2",
+      "name": "C2",
+      "href": "https://www.drom.ru/catalog/alpina/c2/"
+    },
+    {
+      "slug": "d10",
+      "name": "D10",
+      "href": "https://www.drom.ru/catalog/alpina/d10/"
+    },
+    {
+      "slug": "d3",
+      "name": "D3",
+      "href": "https://www.drom.ru/catalog/alpina/d3/"
+    },
+    {
+      "slug": "d4",
+      "name": "D4",
+      "href": "https://www.drom.ru/catalog/alpina/d4/"
+    },
+    {
+      "slug": "d5",
+      "name": "D5",
+      "href": "https://www.drom.ru/catalog/alpina/d5/"
+    },
+    {
+      "slug": "roadster",
+      "name": "Roadster",
+      "href": "https://www.drom.ru/catalog/alpina/roadster/"
+    },
+    {
+      "slug": "xb7",
+      "name": "XB7",
+      "href": "https://www.drom.ru/catalog/alpina/xb7/"
+    },
+    {
+      "slug": "xd3",
+      "name": "XD3",
+      "href": "https://www.drom.ru/catalog/alpina/xd3/"
+    },
+    {
+      "slug": "xd4",
+      "name": "XD4",
+      "href": "https://www.drom.ru/catalog/alpina/xd4/"
+    }
+  ]
+}

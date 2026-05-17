@@ -1,0 +1,217 @@
+{
+  "brand": {
+    "slug": "ferrari",
+    "name": "Ferrari",
+    "href": "https://www.drom.ru/catalog/ferrari/"
+  },
+  "source": "https://www.drom.ru/catalog/ferrari/",
+  "collected_at": "2026-05-17",
+  "count": 41,
+  "models": [
+    {
+      "slug": "12cilindri",
+      "name": "12Cilindri",
+      "href": "https://www.drom.ru/catalog/ferrari/12cilindri/"
+    },
+    {
+      "slug": "296_gtb",
+      "name": "296 GTB",
+      "href": "https://www.drom.ru/catalog/ferrari/296_gtb/"
+    },
+    {
+      "slug": "296_gts",
+      "name": "296 GTS",
+      "href": "https://www.drom.ru/catalog/ferrari/296_gts/"
+    },
+    {
+      "slug": "328",
+      "name": "328",
+      "href": "https://www.drom.ru/catalog/ferrari/328/"
+    },
+    {
+      "slug": "348",
+      "name": "348",
+      "href": "https://www.drom.ru/catalog/ferrari/348/"
+    },
+    {
+      "slug": "360",
+      "name": "360",
+      "href": "https://www.drom.ru/catalog/ferrari/360/"
+    },
+    {
+      "slug": "458_italia",
+      "name": "458 Italia",
+      "href": "https://www.drom.ru/catalog/ferrari/458_italia/"
+    },
+    {
+      "slug": "458_speciale",
+      "name": "458 Speciale",
+      "href": "https://www.drom.ru/catalog/ferrari/458_speciale/"
+    },
+    {
+      "slug": "458_spider",
+      "name": "458 Spider",
+      "href": "https://www.drom.ru/catalog/ferrari/458_spider/"
+    },
+    {
+      "slug": "488_gtb",
+      "name": "488 GTB",
+      "href": "https://www.drom.ru/catalog/ferrari/488_gtb/"
+    },
+    {
+      "slug": "488_pista",
+      "name": "488 Pista",
+      "href": "https://www.drom.ru/catalog/ferrari/488_pista/"
+    },
+    {
+      "slug": "488_spider",
+      "name": "488 Spider",
+      "href": "https://www.drom.ru/catalog/ferrari/488_spider/"
+    },
+    {
+      "slug": "575m_maranello",
+      "name": "575M Maranello",
+      "href": "https://www.drom.ru/catalog/ferrari/575m_maranello/"
+    },
+    {
+      "slug": "599_gtb_fiorano",
+      "name": "599 GTB Fiorano",
+      "href": "https://www.drom.ru/catalog/ferrari/599_gtb_fiorano/"
+    },
+    {
+      "slug": "599_gto",
+      "name": "599 GTO",
+      "href": "https://www.drom.ru/catalog/ferrari/599_gto/"
+    },
+    {
+      "slug": "612_scaglietti",
+      "name": "612 Scaglietti",
+      "href": "https://www.drom.ru/catalog/ferrari/612_scaglietti/"
+    },
+    {
+      "slug": "812_gts",
+      "name": "812 GTS",
+      "href": "https://www.drom.ru/catalog/ferrari/812_gts/"
+    },
+    {
+      "slug": "812_superfast",
+      "name": "812 Superfast",
+      "href": "https://www.drom.ru/catalog/ferrari/812_superfast/"
+    },
+    {
+      "slug": "849_testarossa",
+      "name": "849 Testarossa",
+      "href": "https://www.drom.ru/catalog/ferrari/849_testarossa/"
+    },
+    {
+      "slug": "amalfi",
+      "name": "Amalfi",
+      "href": "https://www.drom.ru/catalog/ferrari/amalfi/"
+    },
+    {
+      "slug": "california",
+      "name": "California",
+      "href": "https://www.drom.ru/catalog/ferrari/california/"
+    },
+    {
+      "slug": "daytona_sp3",
+      "name": "Daytona SP3",
+      "href": "https://www.drom.ru/catalog/ferrari/daytona_sp3/"
+    },
+    {
+      "slug": "enzo_ferrari",
+      "name": "Enzo Ferrari",
+      "href": "https://www.drom.ru/catalog/ferrari/enzo_ferrari/"
+    },
+    {
+      "slug": "f12_berlinetta",
+      "name": "F12 Berlinetta",
+      "href": "https://www.drom.ru/catalog/ferrari/f12_berlinetta/"
+    },
+    {
+      "slug": "f12_tdf",
+      "name": "F12 TDF",
+      "href": "https://www.drom.ru/catalog/ferrari/f12_tdf/"
+    },
+    {
+      "slug": "f355",
+      "name": "F355",
+      "href": "https://www.drom.ru/catalog/ferrari/f355/"
+    },
+    {
+      "slug": "f40",
+      "name": "F40",
+      "href": "https://www.drom.ru/catalog/ferrari/f40/"
+    },
+    {
+      "slug": "f430",
+      "name": "F430",
+      "href": "https://www.drom.ru/catalog/ferrari/f430/"
+    },
+    {
+      "slug": "f50",
+      "name": "F50",
+      "href": "https://www.drom.ru/catalog/ferrari/f50/"
+    },
+    {
+      "slug": "f80",
+      "name": "F80",
+      "href": "https://www.drom.ru/catalog/ferrari/f80/"
+    },
+    {
+      "slug": "f8_spider",
+      "name": "F8 Spider",
+      "href": "https://www.drom.ru/catalog/ferrari/f8_spider/"
+    },
+    {
+      "slug": "f8_tributo",
+      "name": "F8 Tributo",
+      "href": "https://www.drom.ru/catalog/ferrari/f8_tributo/"
+    },
+    {
+      "slug": "ff",
+      "name": "FF",
+      "href": "https://www.drom.ru/catalog/ferrari/ff/"
+    },
+    {
+      "slug": "gtc4lusso",
+      "name": "GTC4Lusso",
+      "href": "https://www.drom.ru/catalog/ferrari/gtc4lusso/"
+    },
+    {
+      "slug": "laferrari",
+      "name": "LaFerrari",
+      "href": "https://www.drom.ru/catalog/ferrari/laferrari/"
+    },
+    {
+      "slug": "monza_sp",
+      "name": "Monza SP",
+      "href": "https://www.drom.ru/catalog/ferrari/monza_sp/"
+    },
+    {
+      "slug": "portofino",
+      "name": "Portofino",
+      "href": "https://www.drom.ru/catalog/ferrari/portofino/"
+    },
+    {
+      "slug": "purosangue",
+      "name": "Purosangue",
+      "href": "https://www.drom.ru/catalog/ferrari/purosangue/"
+    },
+    {
+      "slug": "roma",
+      "name": "Roma",
+      "href": "https://www.drom.ru/catalog/ferrari/roma/"
+    },
+    {
+      "slug": "sf90_stradale",
+      "name": "SF90 Stradale",
+      "href": "https://www.drom.ru/catalog/ferrari/sf90_stradale/"
+    },
+    {
+      "slug": "testarossa",
+      "name": "Testarossa",
+      "href": "https://www.drom.ru/catalog/ferrari/testarossa/"
+    }
+  ]
+}

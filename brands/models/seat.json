@@ -1,0 +1,82 @@
+{
+  "brand": {
+    "slug": "seat",
+    "name": "SEAT",
+    "href": "https://www.drom.ru/catalog/seat/"
+  },
+  "source": "https://www.drom.ru/catalog/seat/",
+  "collected_at": "2026-05-17",
+  "count": 14,
+  "models": [
+    {
+      "slug": "131",
+      "name": "131",
+      "href": "https://www.drom.ru/catalog/seat/131/"
+    },
+    {
+      "slug": "133",
+      "name": "133",
+      "href": "https://www.drom.ru/catalog/seat/133/"
+    },
+    {
+      "slug": "alhambra",
+      "name": "Alhambra",
+      "href": "https://www.drom.ru/catalog/seat/alhambra/"
+    },
+    {
+      "slug": "altea",
+      "name": "Altea",
+      "href": "https://www.drom.ru/catalog/seat/altea/"
+    },
+    {
+      "slug": "arona",
+      "name": "Arona",
+      "href": "https://www.drom.ru/catalog/seat/arona/"
+    },
+    {
+      "slug": "arosa",
+      "name": "Arosa",
+      "href": "https://www.drom.ru/catalog/seat/arosa/"
+    },
+    {
+      "slug": "cordoba",
+      "name": "Cordoba",
+      "href": "https://www.drom.ru/catalog/seat/cordoba/"
+    },
+    {
+      "slug": "exeo",
+      "name": "Exeo",
+      "href": "https://www.drom.ru/catalog/seat/exeo/"
+    },
+    {
+      "slug": "ibiza",
+      "name": "Ibiza",
+      "href": "https://www.drom.ru/catalog/seat/ibiza/"
+    },
+    {
+      "slug": "inca",
+      "name": "Inca",
+      "href": "https://www.drom.ru/catalog/seat/inca/"
+    },
+    {
+      "slug": "leon",
+      "name": "Leon",
+      "href": "https://www.drom.ru/catalog/seat/leon/"
+    },
+    {
+      "slug": "tarraco",
+      "name": "Tarraco",
+      "href": "https://www.drom.ru/catalog/seat/tarraco/"
+    },
+    {
+      "slug": "terra",
+      "name": "Terra",
+      "href": "https://www.drom.ru/catalog/seat/terra/"
+    },
+    {
+      "slug": "toledo",
+      "name": "Toledo",
+      "href": "https://www.drom.ru/catalog/seat/toledo/"
+    }
+  ]
+}

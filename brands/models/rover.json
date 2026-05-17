@@ -1,0 +1,52 @@
+{
+  "brand": {
+    "slug": "rover",
+    "name": "Rover",
+    "href": "https://www.drom.ru/catalog/rover/"
+  },
+  "source": "https://www.drom.ru/catalog/rover/",
+  "collected_at": "2026-05-17",
+  "count": 8,
+  "models": [
+    {
+      "slug": "200",
+      "name": "200",
+      "href": "https://www.drom.ru/catalog/rover/200/"
+    },
+    {
+      "slug": "25",
+      "name": "25",
+      "href": "https://www.drom.ru/catalog/rover/25/"
+    },
+    {
+      "slug": "400",
+      "name": "400",
+      "href": "https://www.drom.ru/catalog/rover/400/"
+    },
+    {
+      "slug": "45",
+      "name": "45",
+      "href": "https://www.drom.ru/catalog/rover/45/"
+    },
+    {
+      "slug": "600",
+      "name": "600",
+      "href": "https://www.drom.ru/catalog/rover/600/"
+    },
+    {
+      "slug": "75",
+      "name": "75",
+      "href": "https://www.drom.ru/catalog/rover/75/"
+    },
+    {
+      "slug": "800",
+      "name": "800",
+      "href": "https://www.drom.ru/catalog/rover/800/"
+    },
+    {
+      "slug": "streetwise",
+      "name": "Streetwise",
+      "href": "https://www.drom.ru/catalog/rover/streetwise/"
+    }
+  ]
+}

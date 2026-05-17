@@ -1,0 +1,22 @@
+{
+  "brand": {
+    "slug": "marussia",
+    "name": "Marussia",
+    "href": "https://www.drom.ru/catalog/marussia/"
+  },
+  "source": "https://www.drom.ru/catalog/marussia/",
+  "collected_at": "2026-05-17",
+  "count": 2,
+  "models": [
+    {
+      "slug": "b1",
+      "name": "B1",
+      "href": "https://www.drom.ru/catalog/marussia/b1/"
+    },
+    {
+      "slug": "b2",
+      "name": "B2",
+      "href": "https://www.drom.ru/catalog/marussia/b2/"
+    }
+  ]
+}

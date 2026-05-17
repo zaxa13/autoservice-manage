@@ -1,0 +1,42 @@
+{
+  "brand": {
+    "slug": "cupra",
+    "name": "Cupra",
+    "href": "https://www.drom.ru/catalog/cupra/"
+  },
+  "source": "https://www.drom.ru/catalog/cupra/",
+  "collected_at": "2026-05-17",
+  "count": 6,
+  "models": [
+    {
+      "slug": "ateca",
+      "name": "Ateca",
+      "href": "https://www.drom.ru/catalog/cupra/ateca/"
+    },
+    {
+      "slug": "born",
+      "name": "Born",
+      "href": "https://www.drom.ru/catalog/cupra/born/"
+    },
+    {
+      "slug": "formentor",
+      "name": "Formentor",
+      "href": "https://www.drom.ru/catalog/cupra/formentor/"
+    },
+    {
+      "slug": "leon",
+      "name": "Leon",
+      "href": "https://www.drom.ru/catalog/cupra/leon/"
+    },
+    {
+      "slug": "tavascan",
+      "name": "Tavascan",
+      "href": "https://www.drom.ru/catalog/cupra/tavascan/"
+    },
+    {
+      "slug": "terramar",
+      "name": "Terramar",
+      "href": "https://www.drom.ru/catalog/cupra/terramar/"
+    }
+  ]
+}

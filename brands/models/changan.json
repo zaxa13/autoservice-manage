@@ -1,0 +1,257 @@
+{
+  "brand": {
+    "slug": "changan",
+    "name": "Changan",
+    "href": "https://www.drom.ru/catalog/changan/"
+  },
+  "source": "https://www.drom.ru/catalog/changan/",
+  "collected_at": "2026-05-17",
+  "count": 49,
+  "models": [
+    {
+      "slug": "alsvin",
+      "name": "Alsvin",
+      "href": "https://www.drom.ru/catalog/changan/alsvin/"
+    },
+    {
+      "slug": "alsvin_v7",
+      "name": "Alsvin V7",
+      "href": "https://www.drom.ru/catalog/changan/alsvin_v7/"
+    },
+    {
+      "slug": "benben",
+      "name": "Benben",
+      "href": "https://www.drom.ru/catalog/changan/benben/"
+    },
+    {
+      "slug": "cs15",
+      "name": "CS15",
+      "href": "https://www.drom.ru/catalog/changan/cs15/"
+    },
+    {
+      "slug": "cs35",
+      "name": "CS35",
+      "href": "https://www.drom.ru/catalog/changan/cs35/"
+    },
+    {
+      "slug": "cs35_max",
+      "name": "CS35 Max",
+      "href": "https://www.drom.ru/catalog/changan/cs35_max/"
+    },
+    {
+      "slug": "cs35_plus",
+      "name": "CS35 Plus",
+      "href": "https://www.drom.ru/catalog/changan/cs35_plus/"
+    },
+    {
+      "slug": "cs55",
+      "name": "CS55",
+      "href": "https://www.drom.ru/catalog/changan/cs55/"
+    },
+    {
+      "slug": "cs55_e_rock",
+      "name": "CS55 E-Rock",
+      "href": "https://www.drom.ru/catalog/changan/cs55_e_rock/"
+    },
+    {
+      "slug": "cs55_plus",
+      "name": "CS55 Plus",
+      "href": "https://www.drom.ru/catalog/changan/cs55_plus/"
+    },
+    {
+      "slug": "cs75",
+      "name": "CS75",
+      "href": "https://www.drom.ru/catalog/changan/cs75/"
+    },
+    {
+      "slug": "cs75_plus",
+      "name": "CS75 Plus",
+      "href": "https://www.drom.ru/catalog/changan/cs75_plus/"
+    },
+    {
+      "slug": "cs75_pro",
+      "name": "CS75 Pro",
+      "href": "https://www.drom.ru/catalog/changan/cs75_pro/"
+    },
+    {
+      "slug": "cs85_coupe",
+      "name": "CS85 Coupe",
+      "href": "https://www.drom.ru/catalog/changan/cs85_coupe/"
+    },
+    {
+      "slug": "cs95",
+      "name": "CS95",
+      "href": "https://www.drom.ru/catalog/changan/cs95/"
+    },
+    {
+      "slug": "cs95_plus",
+      "name": "CS95 Plus",
+      "href": "https://www.drom.ru/catalog/changan/cs95_plus/"
+    },
+    {
+      "slug": "cx20",
+      "name": "CX20",
+      "href": "https://www.drom.ru/catalog/changan/cx20/"
+    },
+    {
+      "slug": "eado",
+      "name": "Eado",
+      "href": "https://www.drom.ru/catalog/changan/eado/"
+    },
+    {
+      "slug": "eado_dt",
+      "name": "Eado DT",
+      "href": "https://www.drom.ru/catalog/changan/eado_dt/"
+    },
+    {
+      "slug": "eado_plus",
+      "name": "Eado Plus",
+      "href": "https://www.drom.ru/catalog/changan/eado_plus/"
+    },
+    {
+      "slug": "eado_xt",
+      "name": "Eado XT",
+      "href": "https://www.drom.ru/catalog/changan/eado_xt/"
+    },
+    {
+      "slug": "hunter",
+      "name": "Hunter",
+      "href": "https://www.drom.ru/catalog/changan/hunter/"
+    },
+    {
+      "slug": "hunter_plus",
+      "name": "Hunter Plus",
+      "href": "https://www.drom.ru/catalog/changan/hunter_plus/"
+    },
+    {
+      "slug": "kaicene_f70",
+      "name": "Kaicene F70",
+      "href": "https://www.drom.ru/catalog/changan/kaicene_f70/"
+    },
+    {
+      "slug": "kaicene_m60",
+      "name": "Kaicene Ruixing M60",
+      "href": "https://www.drom.ru/catalog/changan/kaicene_m60/"
+    },
+    {
+      "slug": "kaicene_star_5",
+      "name": "Kaicene Star 5",
+      "href": "https://www.drom.ru/catalog/changan/kaicene_star_5/"
+    },
+    {
+      "slug": "lamore",
+      "name": "Lamore",
+      "href": "https://www.drom.ru/catalog/changan/lamore/"
+    },
+    {
+      "slug": "lantop",
+      "name": "Lantop",
+      "href": "https://www.drom.ru/catalog/changan/lantop/"
+    },
+    {
+      "slug": "linmax",
+      "name": "Linmax",
+      "href": "https://www.drom.ru/catalog/changan/linmax/"
+    },
+    {
+      "slug": "lumin",
+      "name": "Lumin",
+      "href": "https://www.drom.ru/catalog/changan/lumin/"
+    },
+    {
+      "slug": "qiyuan_a05",
+      "name": "Qiyuan Nevo A05",
+      "href": "https://www.drom.ru/catalog/changan/qiyuan_a05/"
+    },
+    {
+      "slug": "qiyuan_a06",
+      "name": "Qiyuan Nevo A06",
+      "href": "https://www.drom.ru/catalog/changan/qiyuan_a06/"
+    },
+    {
+      "slug": "qiyuan_a07",
+      "name": "Qiyuan Nevo A07",
+      "href": "https://www.drom.ru/catalog/changan/qiyuan_a07/"
+    },
+    {
+      "slug": "qiyuan_e07",
+      "name": "Qiyuan Nevo E07",
+      "href": "https://www.drom.ru/catalog/changan/qiyuan_e07/"
+    },
+    {
+      "slug": "qiyuan_hunter_k50",
+      "name": "Qiyuan Nevo Hunter K50",
+      "href": "https://www.drom.ru/catalog/changan/qiyuan_hunter_k50/"
+    },
+    {
+      "slug": "qiyuan_q05",
+      "name": "Qiyuan Nevo Q05",
+      "href": "https://www.drom.ru/catalog/changan/qiyuan_q05/"
+    },
+    {
+      "slug": "qiyuan_q06",
+      "name": "Qiyuan Nevo Q06",
+      "href": "https://www.drom.ru/catalog/changan/qiyuan_q06/"
+    },
+    {
+      "slug": "qiyuan_q07",
+      "name": "Qiyuan Nevo Q07",
+      "href": "https://www.drom.ru/catalog/changan/qiyuan_q07/"
+    },
+    {
+      "slug": "raeton",
+      "name": "Raeton",
+      "href": "https://www.drom.ru/catalog/changan/raeton/"
+    },
+    {
+      "slug": "raeton_cc",
+      "name": "Raeton CC",
+      "href": "https://www.drom.ru/catalog/changan/raeton_cc/"
+    },
+    {
+      "slug": "raeton_plus",
+      "name": "Raeton Plus",
+      "href": "https://www.drom.ru/catalog/changan/raeton_plus/"
+    },
+    {
+      "slug": "uni-k",
+      "name": "UNI-K",
+      "href": "https://www.drom.ru/catalog/changan/uni-k/"
+    },
+    {
+      "slug": "uni-s",
+      "name": "UNI-S",
+      "href": "https://www.drom.ru/catalog/changan/uni-s/"
+    },
+    {
+      "slug": "uni-t",
+      "name": "UNI-T",
+      "href": "https://www.drom.ru/catalog/changan/uni-t/"
+    },
+    {
+      "slug": "uni-v",
+      "name": "UNI-V",
+      "href": "https://www.drom.ru/catalog/changan/uni-v/"
+    },
+    {
+      "slug": "uni-z",
+      "name": "UNI-Z",
+      "href": "https://www.drom.ru/catalog/changan/uni-z/"
+    },
+    {
+      "slug": "x5_plus",
+      "name": "X5 Plus",
+      "href": "https://www.drom.ru/catalog/changan/x5_plus/"
+    },
+    {
+      "slug": "x7_plus",
+      "name": "X7 Plus",
+      "href": "https://www.drom.ru/catalog/changan/x7_plus/"
+    },
+    {
+      "slug": "yida",
+      "name": "Yida",
+      "href": "https://www.drom.ru/catalog/changan/yida/"
+    }
+  ]
+}

@@ -1,0 +1,137 @@
+{
+  "brand": {
+    "slug": "mg",
+    "name": "MG",
+    "href": "https://www.drom.ru/catalog/mg/"
+  },
+  "source": "https://www.drom.ru/catalog/mg/",
+  "collected_at": "2026-05-17",
+  "count": 25,
+  "models": [
+    {
+      "slug": "3",
+      "name": "3",
+      "href": "https://www.drom.ru/catalog/mg/3/"
+    },
+    {
+      "slug": "4_ev",
+      "name": "4 EV",
+      "href": "https://www.drom.ru/catalog/mg/4_ev/"
+    },
+    {
+      "slug": "4x",
+      "name": "4X",
+      "href": "https://www.drom.ru/catalog/mg/4x/"
+    },
+    {
+      "slug": "5",
+      "name": "5",
+      "href": "https://www.drom.ru/catalog/mg/5/"
+    },
+    {
+      "slug": "5_scorpio",
+      "name": "5 Scorpio",
+      "href": "https://www.drom.ru/catalog/mg/5_scorpio/"
+    },
+    {
+      "slug": "6",
+      "name": "6",
+      "href": "https://www.drom.ru/catalog/mg/6/"
+    },
+    {
+      "slug": "6_pro",
+      "name": "6 Pro",
+      "href": "https://www.drom.ru/catalog/mg/6_pro/"
+    },
+    {
+      "slug": "7",
+      "name": "7",
+      "href": "https://www.drom.ru/catalog/mg/7/"
+    },
+    {
+      "slug": "cyberster",
+      "name": "Cyberster",
+      "href": "https://www.drom.ru/catalog/mg/cyberster/"
+    },
+    {
+      "slug": "es5",
+      "name": "ES5",
+      "href": "https://www.drom.ru/catalog/mg/es5/"
+    },
+    {
+      "slug": "ezs",
+      "name": "EZS",
+      "href": "https://www.drom.ru/catalog/mg/ezs/"
+    },
+    {
+      "slug": "f",
+      "name": "F",
+      "href": "https://www.drom.ru/catalog/mg/f/"
+    },
+    {
+      "slug": "hs",
+      "name": "HS",
+      "href": "https://www.drom.ru/catalog/mg/hs/"
+    },
+    {
+      "slug": "mgb",
+      "name": "MGB",
+      "href": "https://www.drom.ru/catalog/mg/mgb/"
+    },
+    {
+      "slug": "mulan",
+      "name": "Mulan",
+      "href": "https://www.drom.ru/catalog/mg/mulan/"
+    },
+    {
+      "slug": "one",
+      "name": "One",
+      "href": "https://www.drom.ru/catalog/mg/one/"
+    },
+    {
+      "slug": "pilot",
+      "name": "Pilot",
+      "href": "https://www.drom.ru/catalog/mg/pilot/"
+    },
+    {
+      "slug": "rui_teng",
+      "name": "Rui Teng",
+      "href": "https://www.drom.ru/catalog/mg/rui_teng/"
+    },
+    {
+      "slug": "rx5_plus",
+      "name": "RX5 Plus",
+      "href": "https://www.drom.ru/catalog/mg/rx5_plus/"
+    },
+    {
+      "slug": "rx8",
+      "name": "RX8",
+      "href": "https://www.drom.ru/catalog/mg/rx8/"
+    },
+    {
+      "slug": "rx9",
+      "name": "RX9",
+      "href": "https://www.drom.ru/catalog/mg/rx9/"
+    },
+    {
+      "slug": "sharp",
+      "name": "Sharp",
+      "href": "https://www.drom.ru/catalog/mg/sharp/"
+    },
+    {
+      "slug": "tf",
+      "name": "TF",
+      "href": "https://www.drom.ru/catalog/mg/tf/"
+    },
+    {
+      "slug": "u9",
+      "name": "U9",
+      "href": "https://www.drom.ru/catalog/mg/u9/"
+    },
+    {
+      "slug": "zs",
+      "name": "ZS",
+      "href": "https://www.drom.ru/catalog/mg/zs/"
+    }
+  ]
+}

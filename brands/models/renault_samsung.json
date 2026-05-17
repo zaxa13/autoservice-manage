@@ -1,0 +1,57 @@
+{
+  "brand": {
+    "slug": "renault_samsung",
+    "name": "Renault Samsung",
+    "href": "https://www.drom.ru/catalog/renault_samsung/"
+  },
+  "source": "https://www.drom.ru/catalog/renault_samsung/",
+  "collected_at": "2026-05-17",
+  "count": 9,
+  "models": [
+    {
+      "slug": "qm3",
+      "name": "QM3",
+      "href": "https://www.drom.ru/catalog/renault_samsung/qm3/"
+    },
+    {
+      "slug": "qm5",
+      "name": "QM5",
+      "href": "https://www.drom.ru/catalog/renault_samsung/qm5/"
+    },
+    {
+      "slug": "qm6",
+      "name": "QM6",
+      "href": "https://www.drom.ru/catalog/renault_samsung/qm6/"
+    },
+    {
+      "slug": "sm3",
+      "name": "SM3",
+      "href": "https://www.drom.ru/catalog/renault_samsung/sm3/"
+    },
+    {
+      "slug": "sm3_ze",
+      "name": "SM3 Z.E.",
+      "href": "https://www.drom.ru/catalog/renault_samsung/sm3_ze/"
+    },
+    {
+      "slug": "sm5",
+      "name": "SM5",
+      "href": "https://www.drom.ru/catalog/renault_samsung/sm5/"
+    },
+    {
+      "slug": "sm6",
+      "name": "SM6",
+      "href": "https://www.drom.ru/catalog/renault_samsung/sm6/"
+    },
+    {
+      "slug": "sm7",
+      "name": "SM7",
+      "href": "https://www.drom.ru/catalog/renault_samsung/sm7/"
+    },
+    {
+      "slug": "xm3",
+      "name": "XM3",
+      "href": "https://www.drom.ru/catalog/renault_samsung/xm3/"
+    }
+  ]
+}

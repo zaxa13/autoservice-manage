@@ -1,0 +1,17 @@
+{
+  "brand": {
+    "slug": "iveco",
+    "name": "IVECO",
+    "href": "https://www.drom.ru/catalog/iveco/"
+  },
+  "source": "https://www.drom.ru/catalog/iveco/",
+  "collected_at": "2026-05-17",
+  "count": 1,
+  "models": [
+    {
+      "slug": "massif",
+      "name": "Massif",
+      "href": "https://www.drom.ru/catalog/iveco/massif/"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "brand": {
+    "slug": "xiaomi",
+    "name": "Xiaomi",
+    "href": "https://www.drom.ru/catalog/xiaomi/"
+  },
+  "source": "https://www.drom.ru/catalog/xiaomi/",
+  "collected_at": "2026-05-17",
+  "count": 2,
+  "models": [
+    {
+      "slug": "su7",
+      "name": "SU7",
+      "href": "https://www.drom.ru/catalog/xiaomi/su7/"
+    },
+    {
+      "slug": "yu7",
+      "name": "YU7",
+      "href": "https://www.drom.ru/catalog/xiaomi/yu7/"
+    }
+  ]
+}

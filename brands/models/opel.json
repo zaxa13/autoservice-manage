@@ -1,0 +1,247 @@
+{
+  "brand": {
+    "slug": "opel",
+    "name": "Opel",
+    "href": "https://www.drom.ru/catalog/opel/"
+  },
+  "source": "https://www.drom.ru/catalog/opel/",
+  "collected_at": "2026-05-17",
+  "count": 47,
+  "models": [
+    {
+      "slug": "1200",
+      "name": "1200",
+      "href": "https://www.drom.ru/catalog/opel/1200/"
+    },
+    {
+      "slug": "1900",
+      "name": "1900",
+      "href": "https://www.drom.ru/catalog/opel/1900/"
+    },
+    {
+      "slug": "adam",
+      "name": "Adam",
+      "href": "https://www.drom.ru/catalog/opel/adam/"
+    },
+    {
+      "slug": "admiral",
+      "name": "Admiral",
+      "href": "https://www.drom.ru/catalog/opel/admiral/"
+    },
+    {
+      "slug": "agila",
+      "name": "Agila",
+      "href": "https://www.drom.ru/catalog/opel/agila/"
+    },
+    {
+      "slug": "ampera",
+      "name": "Ampera",
+      "href": "https://www.drom.ru/catalog/opel/ampera/"
+    },
+    {
+      "slug": "antara",
+      "name": "Antara",
+      "href": "https://www.drom.ru/catalog/opel/antara/"
+    },
+    {
+      "slug": "ascona",
+      "name": "Ascona",
+      "href": "https://www.drom.ru/catalog/opel/ascona/"
+    },
+    {
+      "slug": "astra",
+      "name": "Astra",
+      "href": "https://www.drom.ru/catalog/opel/astra/"
+    },
+    {
+      "slug": "astra_family",
+      "name": "Astra Family",
+      "href": "https://www.drom.ru/catalog/opel/astra_family/"
+    },
+    {
+      "slug": "astra_gtc",
+      "name": "Astra GTC",
+      "href": "https://www.drom.ru/catalog/opel/astra_gtc/"
+    },
+    {
+      "slug": "calibra",
+      "name": "Calibra",
+      "href": "https://www.drom.ru/catalog/opel/calibra/"
+    },
+    {
+      "slug": "campo",
+      "name": "Campo",
+      "href": "https://www.drom.ru/catalog/opel/campo/"
+    },
+    {
+      "slug": "cascada",
+      "name": "Cascada",
+      "href": "https://www.drom.ru/catalog/opel/cascada/"
+    },
+    {
+      "slug": "combo",
+      "name": "Combo",
+      "href": "https://www.drom.ru/catalog/opel/combo/"
+    },
+    {
+      "slug": "commodore",
+      "name": "Commodore",
+      "href": "https://www.drom.ru/catalog/opel/commodore/"
+    },
+    {
+      "slug": "corsa",
+      "name": "Corsa",
+      "href": "https://www.drom.ru/catalog/opel/corsa/"
+    },
+    {
+      "slug": "crossland_x",
+      "name": "Crossland",
+      "href": "https://www.drom.ru/catalog/opel/crossland_x/"
+    },
+    {
+      "slug": "diplomat",
+      "name": "Diplomat",
+      "href": "https://www.drom.ru/catalog/opel/diplomat/"
+    },
+    {
+      "slug": "frontera",
+      "name": "Frontera",
+      "href": "https://www.drom.ru/catalog/opel/frontera/"
+    },
+    {
+      "slug": "grandland_x",
+      "name": "Grandland X",
+      "href": "https://www.drom.ru/catalog/opel/grandland_x/"
+    },
+    {
+      "slug": "gt",
+      "name": "GT",
+      "href": "https://www.drom.ru/catalog/opel/gt/"
+    },
+    {
+      "slug": "insignia",
+      "name": "Insignia",
+      "href": "https://www.drom.ru/catalog/opel/insignia/"
+    },
+    {
+      "slug": "kadett",
+      "name": "Kadett",
+      "href": "https://www.drom.ru/catalog/opel/kadett/"
+    },
+    {
+      "slug": "kapitan",
+      "name": "Kapitan",
+      "href": "https://www.drom.ru/catalog/opel/kapitan/"
+    },
+    {
+      "slug": "karl",
+      "name": "Karl",
+      "href": "https://www.drom.ru/catalog/opel/karl/"
+    },
+    {
+      "slug": "manta",
+      "name": "Manta",
+      "href": "https://www.drom.ru/catalog/opel/manta/"
+    },
+    {
+      "slug": "meriva",
+      "name": "Meriva",
+      "href": "https://www.drom.ru/catalog/opel/meriva/"
+    },
+    {
+      "slug": "mokka",
+      "name": "Mokka",
+      "href": "https://www.drom.ru/catalog/opel/mokka/"
+    },
+    {
+      "slug": "monterey",
+      "name": "Monterey",
+      "href": "https://www.drom.ru/catalog/opel/monterey/"
+    },
+    {
+      "slug": "monza",
+      "name": "Monza",
+      "href": "https://www.drom.ru/catalog/opel/monza/"
+    },
+    {
+      "slug": "olympia",
+      "name": "Olympia",
+      "href": "https://www.drom.ru/catalog/opel/olympia/"
+    },
+    {
+      "slug": "omega",
+      "name": "Omega",
+      "href": "https://www.drom.ru/catalog/opel/omega/"
+    },
+    {
+      "slug": "p4",
+      "name": "P4",
+      "href": "https://www.drom.ru/catalog/opel/p4/"
+    },
+    {
+      "slug": "rekord",
+      "name": "Rekord",
+      "href": "https://www.drom.ru/catalog/opel/rekord/"
+    },
+    {
+      "slug": "rocks-e",
+      "name": "Rocks-e",
+      "href": "https://www.drom.ru/catalog/opel/rocks-e/"
+    },
+    {
+      "slug": "senator",
+      "name": "Senator",
+      "href": "https://www.drom.ru/catalog/opel/senator/"
+    },
+    {
+      "slug": "signum",
+      "name": "Signum",
+      "href": "https://www.drom.ru/catalog/opel/signum/"
+    },
+    {
+      "slug": "sintra",
+      "name": "Sintra",
+      "href": "https://www.drom.ru/catalog/opel/sintra/"
+    },
+    {
+      "slug": "speedster",
+      "name": "Speedster",
+      "href": "https://www.drom.ru/catalog/opel/speedster/"
+    },
+    {
+      "slug": "super_6",
+      "name": "Super 6",
+      "href": "https://www.drom.ru/catalog/opel/super_6/"
+    },
+    {
+      "slug": "tigra",
+      "name": "Tigra",
+      "href": "https://www.drom.ru/catalog/opel/tigra/"
+    },
+    {
+      "slug": "vectra",
+      "name": "Vectra",
+      "href": "https://www.drom.ru/catalog/opel/vectra/"
+    },
+    {
+      "slug": "vita",
+      "name": "Vita",
+      "href": "https://www.drom.ru/catalog/opel/vita/"
+    },
+    {
+      "slug": "vivaro",
+      "name": "Vivaro",
+      "href": "https://www.drom.ru/catalog/opel/vivaro/"
+    },
+    {
+      "slug": "zafira",
+      "name": "Zafira",
+      "href": "https://www.drom.ru/catalog/opel/zafira/"
+    },
+    {
+      "slug": "zafira_life",
+      "name": "Zafira Life",
+      "href": "https://www.drom.ru/catalog/opel/zafira_life/"
+    }
+  ]
+}

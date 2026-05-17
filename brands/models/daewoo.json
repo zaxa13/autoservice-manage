@@ -1,0 +1,147 @@
+{
+  "brand": {
+    "slug": "daewoo",
+    "name": "Daewoo",
+    "href": "https://www.drom.ru/catalog/daewoo/"
+  },
+  "source": "https://www.drom.ru/catalog/daewoo/",
+  "collected_at": "2026-05-17",
+  "count": 27,
+  "models": [
+    {
+      "slug": "alpheon",
+      "name": "Alpheon",
+      "href": "https://www.drom.ru/catalog/daewoo/alpheon/"
+    },
+    {
+      "slug": "cielo",
+      "name": "Cielo",
+      "href": "https://www.drom.ru/catalog/daewoo/cielo/"
+    },
+    {
+      "slug": "damas",
+      "name": "Damas",
+      "href": "https://www.drom.ru/catalog/daewoo/damas/"
+    },
+    {
+      "slug": "espero",
+      "name": "Espero",
+      "href": "https://www.drom.ru/catalog/daewoo/espero/"
+    },
+    {
+      "slug": "evanda",
+      "name": "Evanda",
+      "href": "https://www.drom.ru/catalog/daewoo/evanda/"
+    },
+    {
+      "slug": "g2x",
+      "name": "G2X",
+      "href": "https://www.drom.ru/catalog/daewoo/g2x/"
+    },
+    {
+      "slug": "gentra",
+      "name": "Gentra",
+      "href": "https://www.drom.ru/catalog/daewoo/gentra/"
+    },
+    {
+      "slug": "kalos",
+      "name": "Kalos",
+      "href": "https://www.drom.ru/catalog/daewoo/kalos/"
+    },
+    {
+      "slug": "korando",
+      "name": "Korando",
+      "href": "https://www.drom.ru/catalog/daewoo/korando/"
+    },
+    {
+      "slug": "lacetti",
+      "name": "Lacetti",
+      "href": "https://www.drom.ru/catalog/daewoo/lacetti/"
+    },
+    {
+      "slug": "lanos",
+      "name": "Lanos",
+      "href": "https://www.drom.ru/catalog/daewoo/lanos/"
+    },
+    {
+      "slug": "leganza",
+      "name": "Leganza",
+      "href": "https://www.drom.ru/catalog/daewoo/leganza/"
+    },
+    {
+      "slug": "lemans",
+      "name": "LeMans",
+      "href": "https://www.drom.ru/catalog/daewoo/lemans/"
+    },
+    {
+      "slug": "lublin_3",
+      "name": "Lublin 3",
+      "href": "https://www.drom.ru/catalog/daewoo/lublin_3/"
+    },
+    {
+      "slug": "magnus",
+      "name": "Magnus",
+      "href": "https://www.drom.ru/catalog/daewoo/magnus/"
+    },
+    {
+      "slug": "matiz",
+      "name": "Matiz",
+      "href": "https://www.drom.ru/catalog/daewoo/matiz/"
+    },
+    {
+      "slug": "nexia",
+      "name": "Nexia",
+      "href": "https://www.drom.ru/catalog/daewoo/nexia/"
+    },
+    {
+      "slug": "nubira",
+      "name": "Nubira",
+      "href": "https://www.drom.ru/catalog/daewoo/nubira/"
+    },
+    {
+      "slug": "prince",
+      "name": "Prince",
+      "href": "https://www.drom.ru/catalog/daewoo/prince/"
+    },
+    {
+      "slug": "racer",
+      "name": "Racer",
+      "href": "https://www.drom.ru/catalog/daewoo/racer/"
+    },
+    {
+      "slug": "rezzo",
+      "name": "Rezzo",
+      "href": "https://www.drom.ru/catalog/daewoo/rezzo/"
+    },
+    {
+      "slug": "royale",
+      "name": "Royale",
+      "href": "https://www.drom.ru/catalog/daewoo/royale/"
+    },
+    {
+      "slug": "sens",
+      "name": "Sens",
+      "href": "https://www.drom.ru/catalog/daewoo/sens/"
+    },
+    {
+      "slug": "tacuma",
+      "name": "Tacuma",
+      "href": "https://www.drom.ru/catalog/daewoo/tacuma/"
+    },
+    {
+      "slug": "tico",
+      "name": "Tico",
+      "href": "https://www.drom.ru/catalog/daewoo/tico/"
+    },
+    {
+      "slug": "tosca",
+      "name": "Tosca",
+      "href": "https://www.drom.ru/catalog/daewoo/tosca/"
+    },
+    {
+      "slug": "winstorm",
+      "name": "Winstorm",
+      "href": "https://www.drom.ru/catalog/daewoo/winstorm/"
+    }
+  ]
+}

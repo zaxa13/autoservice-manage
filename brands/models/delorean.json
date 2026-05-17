@@ -1,0 +1,17 @@
+{
+  "brand": {
+    "slug": "delorean",
+    "name": "DeLorean",
+    "href": "https://www.drom.ru/catalog/delorean/"
+  },
+  "source": "https://www.drom.ru/catalog/delorean/",
+  "collected_at": "2026-05-17",
+  "count": 1,
+  "models": [
+    {
+      "slug": "dmc-12",
+      "name": "DMC-12",
+      "href": "https://www.drom.ru/catalog/delorean/dmc-12/"
+    }
+  ]
+}

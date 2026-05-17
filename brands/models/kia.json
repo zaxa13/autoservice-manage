@@ -1,0 +1,342 @@
+{
+  "brand": {
+    "slug": "kia",
+    "name": "Kia",
+    "href": "https://www.drom.ru/catalog/kia/"
+  },
+  "source": "https://www.drom.ru/catalog/kia/",
+  "collected_at": "2026-05-17",
+  "count": 66,
+  "models": [
+    {
+      "slug": "avella",
+      "name": "Avella",
+      "href": "https://www.drom.ru/catalog/kia/avella/"
+    },
+    {
+      "slug": "besta",
+      "name": "Besta",
+      "href": "https://www.drom.ru/catalog/kia/besta/"
+    },
+    {
+      "slug": "bongo",
+      "name": "Bongo",
+      "href": "https://www.drom.ru/catalog/kia/bongo/"
+    },
+    {
+      "slug": "borrego",
+      "name": "Borrego",
+      "href": "https://www.drom.ru/catalog/kia/borrego/"
+    },
+    {
+      "slug": "cadenza",
+      "name": "Cadenza",
+      "href": "https://www.drom.ru/catalog/kia/cadenza/"
+    },
+    {
+      "slug": "capital",
+      "name": "Capital",
+      "href": "https://www.drom.ru/catalog/kia/capital/"
+    },
+    {
+      "slug": "carens",
+      "name": "Carens",
+      "href": "https://www.drom.ru/catalog/kia/carens/"
+    },
+    {
+      "slug": "carnival",
+      "name": "Carnival",
+      "href": "https://www.drom.ru/catalog/kia/carnival/"
+    },
+    {
+      "slug": "cerato",
+      "name": "Cerato",
+      "href": "https://www.drom.ru/catalog/kia/cerato/"
+    },
+    {
+      "slug": "cerato_koup",
+      "name": "Cerato Koup",
+      "href": "https://www.drom.ru/catalog/kia/cerato_koup/"
+    },
+    {
+      "slug": "clarus",
+      "name": "Clarus",
+      "href": "https://www.drom.ru/catalog/kia/clarus/"
+    },
+    {
+      "slug": "credos",
+      "name": "Credos",
+      "href": "https://www.drom.ru/catalog/kia/credos/"
+    },
+    {
+      "slug": "ev3",
+      "name": "EV3",
+      "href": "https://www.drom.ru/catalog/kia/ev3/"
+    },
+    {
+      "slug": "ev4",
+      "name": "EV4",
+      "href": "https://www.drom.ru/catalog/kia/ev4/"
+    },
+    {
+      "slug": "ev5",
+      "name": "EV5",
+      "href": "https://www.drom.ru/catalog/kia/ev5/"
+    },
+    {
+      "slug": "ev6",
+      "name": "EV6",
+      "href": "https://www.drom.ru/catalog/kia/ev6/"
+    },
+    {
+      "slug": "ev9",
+      "name": "EV9",
+      "href": "https://www.drom.ru/catalog/kia/ev9/"
+    },
+    {
+      "slug": "forte",
+      "name": "Forte",
+      "href": "https://www.drom.ru/catalog/kia/forte/"
+    },
+    {
+      "slug": "k2",
+      "name": "K2",
+      "href": "https://www.drom.ru/catalog/kia/k2/"
+    },
+    {
+      "slug": "k3",
+      "name": "K3",
+      "href": "https://www.drom.ru/catalog/kia/k3/"
+    },
+    {
+      "slug": "k4",
+      "name": "K4",
+      "href": "https://www.drom.ru/catalog/kia/k4/"
+    },
+    {
+      "slug": "k5",
+      "name": "K5",
+      "href": "https://www.drom.ru/catalog/kia/k5/"
+    },
+    {
+      "slug": "k7",
+      "name": "K7",
+      "href": "https://www.drom.ru/catalog/kia/k7/"
+    },
+    {
+      "slug": "k8",
+      "name": "K8",
+      "href": "https://www.drom.ru/catalog/kia/k8/"
+    },
+    {
+      "slug": "k9",
+      "name": "K9",
+      "href": "https://www.drom.ru/catalog/kia/k9/"
+    },
+    {
+      "slug": "k900",
+      "name": "K900",
+      "href": "https://www.drom.ru/catalog/kia/k900/"
+    },
+    {
+      "slug": "kx1",
+      "name": "KX1",
+      "href": "https://www.drom.ru/catalog/kia/kx1/"
+    },
+    {
+      "slug": "kx3",
+      "name": "KX3",
+      "href": "https://www.drom.ru/catalog/kia/kx3/"
+    },
+    {
+      "slug": "kx5",
+      "name": "KX5",
+      "href": "https://www.drom.ru/catalog/kia/kx5/"
+    },
+    {
+      "slug": "kx7",
+      "name": "KX7",
+      "href": "https://www.drom.ru/catalog/kia/kx7/"
+    },
+    {
+      "slug": "kx_cross",
+      "name": "KX Cross",
+      "href": "https://www.drom.ru/catalog/kia/kx_cross/"
+    },
+    {
+      "slug": "lotze",
+      "name": "Lotze",
+      "href": "https://www.drom.ru/catalog/kia/lotze/"
+    },
+    {
+      "slug": "magentis",
+      "name": "Magentis",
+      "href": "https://www.drom.ru/catalog/kia/magentis/"
+    },
+    {
+      "slug": "mohave",
+      "name": "Mohave",
+      "href": "https://www.drom.ru/catalog/kia/mohave/"
+    },
+    {
+      "slug": "morning",
+      "name": "Morning",
+      "href": "https://www.drom.ru/catalog/kia/morning/"
+    },
+    {
+      "slug": "niro",
+      "name": "Niro",
+      "href": "https://www.drom.ru/catalog/kia/niro/"
+    },
+    {
+      "slug": "opirus",
+      "name": "Opirus",
+      "href": "https://www.drom.ru/catalog/kia/opirus/"
+    },
+    {
+      "slug": "optima",
+      "name": "Optima",
+      "href": "https://www.drom.ru/catalog/kia/optima/"
+    },
+    {
+      "slug": "pegas",
+      "name": "Pegas",
+      "href": "https://www.drom.ru/catalog/kia/pegas/"
+    },
+    {
+      "slug": "picanto",
+      "name": "Picanto",
+      "href": "https://www.drom.ru/catalog/kia/picanto/"
+    },
+    {
+      "slug": "pregio",
+      "name": "Pregio",
+      "href": "https://www.drom.ru/catalog/kia/pregio/"
+    },
+    {
+      "slug": "pride",
+      "name": "Pride",
+      "href": "https://www.drom.ru/catalog/kia/pride/"
+    },
+    {
+      "slug": "pv5",
+      "name": "PV5",
+      "href": "https://www.drom.ru/catalog/kia/pv5/"
+    },
+    {
+      "slug": "quoris",
+      "name": "Quoris",
+      "href": "https://www.drom.ru/catalog/kia/quoris/"
+    },
+    {
+      "slug": "ray",
+      "name": "Ray",
+      "href": "https://www.drom.ru/catalog/kia/ray/"
+    },
+    {
+      "slug": "retona",
+      "name": "Retona",
+      "href": "https://www.drom.ru/catalog/kia/retona/"
+    },
+    {
+      "slug": "rio",
+      "name": "Rio",
+      "href": "https://www.drom.ru/catalog/kia/rio/"
+    },
+    {
+      "slug": "rio_x-line",
+      "name": "Rio X (X-Line)",
+      "href": "https://www.drom.ru/catalog/kia/rio_x-line/"
+    },
+    {
+      "slug": "rondo",
+      "name": "Rondo",
+      "href": "https://www.drom.ru/catalog/kia/rondo/"
+    },
+    {
+      "slug": "sedona",
+      "name": "Sedona",
+      "href": "https://www.drom.ru/catalog/kia/sedona/"
+    },
+    {
+      "slug": "seltos",
+      "name": "Seltos",
+      "href": "https://www.drom.ru/catalog/kia/seltos/"
+    },
+    {
+      "slug": "sephia",
+      "name": "Sephia",
+      "href": "https://www.drom.ru/catalog/kia/sephia/"
+    },
+    {
+      "slug": "shuma",
+      "name": "Shuma",
+      "href": "https://www.drom.ru/catalog/kia/shuma/"
+    },
+    {
+      "slug": "soluto",
+      "name": "Soluto",
+      "href": "https://www.drom.ru/catalog/kia/soluto/"
+    },
+    {
+      "slug": "sonet",
+      "name": "Sonet",
+      "href": "https://www.drom.ru/catalog/kia/sonet/"
+    },
+    {
+      "slug": "sorento",
+      "name": "Sorento",
+      "href": "https://www.drom.ru/catalog/kia/sorento/"
+    },
+    {
+      "slug": "soul",
+      "name": "Soul",
+      "href": "https://www.drom.ru/catalog/kia/soul/"
+    },
+    {
+      "slug": "spectra",
+      "name": "Spectra",
+      "href": "https://www.drom.ru/catalog/kia/spectra/"
+    },
+    {
+      "slug": "sportage",
+      "name": "Sportage",
+      "href": "https://www.drom.ru/catalog/kia/sportage/"
+    },
+    {
+      "slug": "stinger",
+      "name": "Stinger",
+      "href": "https://www.drom.ru/catalog/kia/stinger/"
+    },
+    {
+      "slug": "stonic",
+      "name": "Stonic",
+      "href": "https://www.drom.ru/catalog/kia/stonic/"
+    },
+    {
+      "slug": "tasman",
+      "name": "Tasman",
+      "href": "https://www.drom.ru/catalog/kia/tasman/"
+    },
+    {
+      "slug": "telluride",
+      "name": "Telluride",
+      "href": "https://www.drom.ru/catalog/kia/telluride/"
+    },
+    {
+      "slug": "venga",
+      "name": "Venga",
+      "href": "https://www.drom.ru/catalog/kia/venga/"
+    },
+    {
+      "slug": "x-trek",
+      "name": "X-Trek",
+      "href": "https://www.drom.ru/catalog/kia/x-trek/"
+    },
+    {
+      "slug": "xceed",
+      "name": "Xceed",
+      "href": "https://www.drom.ru/catalog/kia/xceed/"
+    }
+  ]
+}

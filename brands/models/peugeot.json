@@ -1,0 +1,262 @@
+{
+  "brand": {
+    "slug": "peugeot",
+    "name": "Peugeot",
+    "href": "https://www.drom.ru/catalog/peugeot/"
+  },
+  "source": "https://www.drom.ru/catalog/peugeot/",
+  "collected_at": "2026-05-17",
+  "count": 50,
+  "models": [
+    {
+      "slug": "1007",
+      "name": "1007",
+      "href": "https://www.drom.ru/catalog/peugeot/1007/"
+    },
+    {
+      "slug": "104",
+      "name": "104",
+      "href": "https://www.drom.ru/catalog/peugeot/104/"
+    },
+    {
+      "slug": "106",
+      "name": "106",
+      "href": "https://www.drom.ru/catalog/peugeot/106/"
+    },
+    {
+      "slug": "107",
+      "name": "107",
+      "href": "https://www.drom.ru/catalog/peugeot/107/"
+    },
+    {
+      "slug": "108",
+      "name": "108",
+      "href": "https://www.drom.ru/catalog/peugeot/108/"
+    },
+    {
+      "slug": "2008",
+      "name": "2008",
+      "href": "https://www.drom.ru/catalog/peugeot/2008/"
+    },
+    {
+      "slug": "201",
+      "name": "201",
+      "href": "https://www.drom.ru/catalog/peugeot/201/"
+    },
+    {
+      "slug": "202",
+      "name": "202",
+      "href": "https://www.drom.ru/catalog/peugeot/202/"
+    },
+    {
+      "slug": "203",
+      "name": "203",
+      "href": "https://www.drom.ru/catalog/peugeot/203/"
+    },
+    {
+      "slug": "204",
+      "name": "204",
+      "href": "https://www.drom.ru/catalog/peugeot/204/"
+    },
+    {
+      "slug": "205",
+      "name": "205",
+      "href": "https://www.drom.ru/catalog/peugeot/205/"
+    },
+    {
+      "slug": "206",
+      "name": "206",
+      "href": "https://www.drom.ru/catalog/peugeot/206/"
+    },
+    {
+      "slug": "207",
+      "name": "207",
+      "href": "https://www.drom.ru/catalog/peugeot/207/"
+    },
+    {
+      "slug": "207i",
+      "name": "207i",
+      "href": "https://www.drom.ru/catalog/peugeot/207i/"
+    },
+    {
+      "slug": "208",
+      "name": "208",
+      "href": "https://www.drom.ru/catalog/peugeot/208/"
+    },
+    {
+      "slug": "3008",
+      "name": "3008",
+      "href": "https://www.drom.ru/catalog/peugeot/3008/"
+    },
+    {
+      "slug": "301",
+      "name": "301",
+      "href": "https://www.drom.ru/catalog/peugeot/301/"
+    },
+    {
+      "slug": "304",
+      "name": "304",
+      "href": "https://www.drom.ru/catalog/peugeot/304/"
+    },
+    {
+      "slug": "305",
+      "name": "305",
+      "href": "https://www.drom.ru/catalog/peugeot/305/"
+    },
+    {
+      "slug": "306",
+      "name": "306",
+      "href": "https://www.drom.ru/catalog/peugeot/306/"
+    },
+    {
+      "slug": "307",
+      "name": "307",
+      "href": "https://www.drom.ru/catalog/peugeot/307/"
+    },
+    {
+      "slug": "308",
+      "name": "308",
+      "href": "https://www.drom.ru/catalog/peugeot/308/"
+    },
+    {
+      "slug": "309",
+      "name": "309",
+      "href": "https://www.drom.ru/catalog/peugeot/309/"
+    },
+    {
+      "slug": "4007",
+      "name": "4007",
+      "href": "https://www.drom.ru/catalog/peugeot/4007/"
+    },
+    {
+      "slug": "4008",
+      "name": "4008",
+      "href": "https://www.drom.ru/catalog/peugeot/4008/"
+    },
+    {
+      "slug": "403",
+      "name": "403",
+      "href": "https://www.drom.ru/catalog/peugeot/403/"
+    },
+    {
+      "slug": "404",
+      "name": "404",
+      "href": "https://www.drom.ru/catalog/peugeot/404/"
+    },
+    {
+      "slug": "405",
+      "name": "405",
+      "href": "https://www.drom.ru/catalog/peugeot/405/"
+    },
+    {
+      "slug": "406",
+      "name": "406",
+      "href": "https://www.drom.ru/catalog/peugeot/406/"
+    },
+    {
+      "slug": "407",
+      "name": "407",
+      "href": "https://www.drom.ru/catalog/peugeot/407/"
+    },
+    {
+      "slug": "408",
+      "name": "408",
+      "href": "https://www.drom.ru/catalog/peugeot/408/"
+    },
+    {
+      "slug": "5008",
+      "name": "5008",
+      "href": "https://www.drom.ru/catalog/peugeot/5008/"
+    },
+    {
+      "slug": "504",
+      "name": "504",
+      "href": "https://www.drom.ru/catalog/peugeot/504/"
+    },
+    {
+      "slug": "505",
+      "name": "505",
+      "href": "https://www.drom.ru/catalog/peugeot/505/"
+    },
+    {
+      "slug": "508",
+      "name": "508",
+      "href": "https://www.drom.ru/catalog/peugeot/508/"
+    },
+    {
+      "slug": "604",
+      "name": "604",
+      "href": "https://www.drom.ru/catalog/peugeot/604/"
+    },
+    {
+      "slug": "605",
+      "name": "605",
+      "href": "https://www.drom.ru/catalog/peugeot/605/"
+    },
+    {
+      "slug": "607",
+      "name": "607",
+      "href": "https://www.drom.ru/catalog/peugeot/607/"
+    },
+    {
+      "slug": "806",
+      "name": "806",
+      "href": "https://www.drom.ru/catalog/peugeot/806/"
+    },
+    {
+      "slug": "807",
+      "name": "807",
+      "href": "https://www.drom.ru/catalog/peugeot/807/"
+    },
+    {
+      "slug": "bipper",
+      "name": "Bipper",
+      "href": "https://www.drom.ru/catalog/peugeot/bipper/"
+    },
+    {
+      "slug": "expert",
+      "name": "Expert",
+      "href": "https://www.drom.ru/catalog/peugeot/expert/"
+    },
+    {
+      "slug": "hoggar",
+      "name": "Hoggar",
+      "href": "https://www.drom.ru/catalog/peugeot/hoggar/"
+    },
+    {
+      "slug": "ion",
+      "name": "iOn",
+      "href": "https://www.drom.ru/catalog/peugeot/ion/"
+    },
+    {
+      "slug": "partner",
+      "name": "Partner",
+      "href": "https://www.drom.ru/catalog/peugeot/partner/"
+    },
+    {
+      "slug": "partner_origin",
+      "name": "Partner Origin",
+      "href": "https://www.drom.ru/catalog/peugeot/partner_origin/"
+    },
+    {
+      "slug": "partner_tepee",
+      "name": "Partner Tepee",
+      "href": "https://www.drom.ru/catalog/peugeot/partner_tepee/"
+    },
+    {
+      "slug": "rcz",
+      "name": "RCZ",
+      "href": "https://www.drom.ru/catalog/peugeot/rcz/"
+    },
+    {
+      "slug": "rifter",
+      "name": "Rifter",
+      "href": "https://www.drom.ru/catalog/peugeot/rifter/"
+    },
+    {
+      "slug": "traveller",
+      "name": "Traveller",
+      "href": "https://www.drom.ru/catalog/peugeot/traveller/"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "brand": {
+    "slug": "tesla",
+    "name": "Tesla",
+    "href": "https://www.drom.ru/catalog/tesla/"
+  },
+  "source": "https://www.drom.ru/catalog/tesla/",
+  "collected_at": "2026-05-17",
+  "count": 6,
+  "models": [
+    {
+      "slug": "cybertruck",
+      "name": "Cybertruck",
+      "href": "https://www.drom.ru/catalog/tesla/cybertruck/"
+    },
+    {
+      "slug": "model_3",
+      "name": "Model 3",
+      "href": "https://www.drom.ru/catalog/tesla/model_3/"
+    },
+    {
+      "slug": "model_s",
+      "name": "Model S",
+      "href": "https://www.drom.ru/catalog/tesla/model_s/"
+    },
+    {
+      "slug": "model_x",
+      "name": "Model X",
+      "href": "https://www.drom.ru/catalog/tesla/model_x/"
+    },
+    {
+      "slug": "model_y",
+      "name": "Model Y",
+      "href": "https://www.drom.ru/catalog/tesla/model_y/"
+    },
+    {
+      "slug": "roadster",
+      "name": "Roadster",
+      "href": "https://www.drom.ru/catalog/tesla/roadster/"
+    }
+  ]
+}

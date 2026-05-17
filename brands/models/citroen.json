@@ -1,0 +1,267 @@
+{
+  "brand": {
+    "slug": "citroen",
+    "name": "Citroen",
+    "href": "https://www.drom.ru/catalog/citroen/"
+  },
+  "source": "https://www.drom.ru/catalog/citroen/",
+  "collected_at": "2026-05-17",
+  "count": 51,
+  "models": [
+    {
+      "slug": "2cv",
+      "name": "2CV",
+      "href": "https://www.drom.ru/catalog/citroen/2cv/"
+    },
+    {
+      "slug": "ami",
+      "name": "Ami",
+      "href": "https://www.drom.ru/catalog/citroen/ami/"
+    },
+    {
+      "slug": "berlingo",
+      "name": "Berlingo",
+      "href": "https://www.drom.ru/catalog/citroen/berlingo/"
+    },
+    {
+      "slug": "bx",
+      "name": "BX",
+      "href": "https://www.drom.ru/catalog/citroen/bx/"
+    },
+    {
+      "slug": "c-crosser",
+      "name": "C-Crosser",
+      "href": "https://www.drom.ru/catalog/citroen/c-crosser/"
+    },
+    {
+      "slug": "c-elysee",
+      "name": "C-Elysee",
+      "href": "https://www.drom.ru/catalog/citroen/c-elysee/"
+    },
+    {
+      "slug": "c-zero",
+      "name": "C-Zero",
+      "href": "https://www.drom.ru/catalog/citroen/c-zero/"
+    },
+    {
+      "slug": "c1",
+      "name": "C1",
+      "href": "https://www.drom.ru/catalog/citroen/c1/"
+    },
+    {
+      "slug": "c15",
+      "name": "C15",
+      "href": "https://www.drom.ru/catalog/citroen/c15/"
+    },
+    {
+      "slug": "c2",
+      "name": "C2",
+      "href": "https://www.drom.ru/catalog/citroen/c2/"
+    },
+    {
+      "slug": "c25",
+      "name": "C25",
+      "href": "https://www.drom.ru/catalog/citroen/c25/"
+    },
+    {
+      "slug": "c3",
+      "name": "C3",
+      "href": "https://www.drom.ru/catalog/citroen/c3/"
+    },
+    {
+      "slug": "c3-xr",
+      "name": "C3-XR",
+      "href": "https://www.drom.ru/catalog/citroen/c3-xr/"
+    },
+    {
+      "slug": "c3_aircross",
+      "name": "C3 Aircross",
+      "href": "https://www.drom.ru/catalog/citroen/c3_aircross/"
+    },
+    {
+      "slug": "c3_picasso",
+      "name": "C3 Picasso",
+      "href": "https://www.drom.ru/catalog/citroen/c3_picasso/"
+    },
+    {
+      "slug": "c3l",
+      "name": "C3L",
+      "href": "https://www.drom.ru/catalog/citroen/c3l/"
+    },
+    {
+      "slug": "c4",
+      "name": "C4",
+      "href": "https://www.drom.ru/catalog/citroen/c4/"
+    },
+    {
+      "slug": "c4_aircross",
+      "name": "C4 Aircross",
+      "href": "https://www.drom.ru/catalog/citroen/c4_aircross/"
+    },
+    {
+      "slug": "c4_cactus",
+      "name": "C4 Cactus",
+      "href": "https://www.drom.ru/catalog/citroen/c4_cactus/"
+    },
+    {
+      "slug": "c4_picasso",
+      "name": "C4 Picasso",
+      "href": "https://www.drom.ru/catalog/citroen/c4_picasso/"
+    },
+    {
+      "slug": "c4_spacetourer",
+      "name": "C4 Spacetourer",
+      "href": "https://www.drom.ru/catalog/citroen/c4_spacetourer/"
+    },
+    {
+      "slug": "c4_x",
+      "name": "C4 X",
+      "href": "https://www.drom.ru/catalog/citroen/c4_x/"
+    },
+    {
+      "slug": "c5",
+      "name": "C5",
+      "href": "https://www.drom.ru/catalog/citroen/c5/"
+    },
+    {
+      "slug": "c5_aircross",
+      "name": "C5 Aircross",
+      "href": "https://www.drom.ru/catalog/citroen/c5_aircross/"
+    },
+    {
+      "slug": "c5_x",
+      "name": "C5 X",
+      "href": "https://www.drom.ru/catalog/citroen/c5_x/"
+    },
+    {
+      "slug": "c6",
+      "name": "C6",
+      "href": "https://www.drom.ru/catalog/citroen/c6/"
+    },
+    {
+      "slug": "c8",
+      "name": "C8",
+      "href": "https://www.drom.ru/catalog/citroen/c8/"
+    },
+    {
+      "slug": "ds3",
+      "name": "DS3",
+      "href": "https://www.drom.ru/catalog/citroen/ds3/"
+    },
+    {
+      "slug": "ds3_crossback",
+      "name": "DS3 Crossback",
+      "href": "https://www.drom.ru/catalog/citroen/ds3_crossback/"
+    },
+    {
+      "slug": "ds4",
+      "name": "DS4",
+      "href": "https://www.drom.ru/catalog/citroen/ds4/"
+    },
+    {
+      "slug": "ds4_cross",
+      "name": "DS4 Cross",
+      "href": "https://www.drom.ru/catalog/citroen/ds4_cross/"
+    },
+    {
+      "slug": "ds5",
+      "name": "DS5",
+      "href": "https://www.drom.ru/catalog/citroen/ds5/"
+    },
+    {
+      "slug": "ds7",
+      "name": "DS7",
+      "href": "https://www.drom.ru/catalog/citroen/ds7/"
+    },
+    {
+      "slug": "ds8",
+      "name": "DS N°8",
+      "href": "https://www.drom.ru/catalog/citroen/ds8/"
+    },
+    {
+      "slug": "ds9",
+      "name": "DS9",
+      "href": "https://www.drom.ru/catalog/citroen/ds9/"
+    },
+    {
+      "slug": "e-mehari",
+      "name": "E-Mehari",
+      "href": "https://www.drom.ru/catalog/citroen/e-mehari/"
+    },
+    {
+      "slug": "evasion",
+      "name": "Evasion",
+      "href": "https://www.drom.ru/catalog/citroen/evasion/"
+    },
+    {
+      "slug": "grand_c4_picasso",
+      "name": "Grand C4 Picasso",
+      "href": "https://www.drom.ru/catalog/citroen/grand_c4_picasso/"
+    },
+    {
+      "slug": "grand_c4_spacetourer",
+      "name": "Grand C4 Spacetourer",
+      "href": "https://www.drom.ru/catalog/citroen/grand_c4_spacetourer/"
+    },
+    {
+      "slug": "gs",
+      "name": "GS",
+      "href": "https://www.drom.ru/catalog/citroen/gs/"
+    },
+    {
+      "slug": "jumper",
+      "name": "Jumper",
+      "href": "https://www.drom.ru/catalog/citroen/jumper/"
+    },
+    {
+      "slug": "jumpy",
+      "name": "Jumpy",
+      "href": "https://www.drom.ru/catalog/citroen/jumpy/"
+    },
+    {
+      "slug": "nemo",
+      "name": "Nemo",
+      "href": "https://www.drom.ru/catalog/citroen/nemo/"
+    },
+    {
+      "slug": "saxo",
+      "name": "Saxo",
+      "href": "https://www.drom.ru/catalog/citroen/saxo/"
+    },
+    {
+      "slug": "spacetourer",
+      "name": "Spacetourer",
+      "href": "https://www.drom.ru/catalog/citroen/spacetourer/"
+    },
+    {
+      "slug": "visa",
+      "name": "Visa",
+      "href": "https://www.drom.ru/catalog/citroen/visa/"
+    },
+    {
+      "slug": "xantia",
+      "name": "Xantia",
+      "href": "https://www.drom.ru/catalog/citroen/xantia/"
+    },
+    {
+      "slug": "xm",
+      "name": "XM",
+      "href": "https://www.drom.ru/catalog/citroen/xm/"
+    },
+    {
+      "slug": "xsara",
+      "name": "Xsara",
+      "href": "https://www.drom.ru/catalog/citroen/xsara/"
+    },
+    {
+      "slug": "xsara_picasso",
+      "name": "Xsara Picasso",
+      "href": "https://www.drom.ru/catalog/citroen/xsara_picasso/"
+    },
+    {
+      "slug": "zx",
+      "name": "ZX",
+      "href": "https://www.drom.ru/catalog/citroen/zx/"
+    }
+  ]
+}

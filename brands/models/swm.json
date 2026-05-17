@@ -1,0 +1,72 @@
+{
+  "brand": {
+    "slug": "swm",
+    "name": "SWM",
+    "href": "https://www.drom.ru/catalog/swm/"
+  },
+  "source": "https://www.drom.ru/catalog/swm/",
+  "collected_at": "2026-05-17",
+  "count": 12,
+  "models": [
+    {
+      "slug": "g01",
+      "name": "G01",
+      "href": "https://www.drom.ru/catalog/swm/g01/"
+    },
+    {
+      "slug": "g01_pro",
+      "name": "G01 Pro",
+      "href": "https://www.drom.ru/catalog/swm/g01_pro/"
+    },
+    {
+      "slug": "g01f",
+      "name": "G01F",
+      "href": "https://www.drom.ru/catalog/swm/g01f/"
+    },
+    {
+      "slug": "g01ff",
+      "name": "G01FF",
+      "href": "https://www.drom.ru/catalog/swm/g01ff/"
+    },
+    {
+      "slug": "g03f",
+      "name": "G03F",
+      "href": "https://www.drom.ru/catalog/swm/g03f/"
+    },
+    {
+      "slug": "g05",
+      "name": "G05",
+      "href": "https://www.drom.ru/catalog/swm/g05/"
+    },
+    {
+      "slug": "g05_pro",
+      "name": "G05 Pro",
+      "href": "https://www.drom.ru/catalog/swm/g05_pro/"
+    },
+    {
+      "slug": "iron_man",
+      "name": "Iron Man",
+      "href": "https://www.drom.ru/catalog/swm/iron_man/"
+    },
+    {
+      "slug": "tiger",
+      "name": "Tiger",
+      "href": "https://www.drom.ru/catalog/swm/tiger/"
+    },
+    {
+      "slug": "x2",
+      "name": "X2",
+      "href": "https://www.drom.ru/catalog/swm/x2/"
+    },
+    {
+      "slug": "x3",
+      "name": "X3",
+      "href": "https://www.drom.ru/catalog/swm/x3/"
+    },
+    {
+      "slug": "x7",
+      "name": "X7",
+      "href": "https://www.drom.ru/catalog/swm/x7/"
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "brand": {
+    "slug": "pontiac",
+    "name": "Pontiac",
+    "href": "https://www.drom.ru/catalog/pontiac/"
+  },
+  "source": "https://www.drom.ru/catalog/pontiac/",
+  "collected_at": "2026-05-17",
+  "count": 18,
+  "models": [
+    {
+      "slug": "6000",
+      "name": "6000",
+      "href": "https://www.drom.ru/catalog/pontiac/6000/"
+    },
+    {
+      "slug": "aztek",
+      "name": "Aztek",
+      "href": "https://www.drom.ru/catalog/pontiac/aztek/"
+    },
+    {
+      "slug": "bonneville",
+      "name": "Bonneville",
+      "href": "https://www.drom.ru/catalog/pontiac/bonneville/"
+    },
+    {
+      "slug": "fiero",
+      "name": "Fiero",
+      "href": "https://www.drom.ru/catalog/pontiac/fiero/"
+    },
+    {
+      "slug": "firebird",
+      "name": "Firebird",
+      "href": "https://www.drom.ru/catalog/pontiac/firebird/"
+    },
+    {
+      "slug": "g6",
+      "name": "G6",
+      "href": "https://www.drom.ru/catalog/pontiac/g6/"
+    },
+    {
+      "slug": "grand_am",
+      "name": "Grand Am",
+      "href": "https://www.drom.ru/catalog/pontiac/grand_am/"
+    },
+    {
+      "slug": "grand_prix",
+      "name": "Grand Prix",
+      "href": "https://www.drom.ru/catalog/pontiac/grand_prix/"
+    },
+    {
+      "slug": "gto",
+      "name": "GTO",
+      "href": "https://www.drom.ru/catalog/pontiac/gto/"
+    },
+    {
+      "slug": "lemans",
+      "name": "Lemans",
+      "href": "https://www.drom.ru/catalog/pontiac/lemans/"
+    },
+    {
+      "slug": "montana",
+      "name": "Montana",
+      "href": "https://www.drom.ru/catalog/pontiac/montana/"
+    },
+    {
+      "slug": "solstice",
+      "name": "Solstice",
+      "href": "https://www.drom.ru/catalog/pontiac/solstice/"
+    },
+    {
+      "slug": "sunbird",
+      "name": "Sunbird",
+      "href": "https://www.drom.ru/catalog/pontiac/sunbird/"
+    },
+    {
+      "slug": "sunfire",
+      "name": "Sunfire",
+      "href": "https://www.drom.ru/catalog/pontiac/sunfire/"
+    },
+    {
+      "slug": "torrent",
+      "name": "Torrent",
+      "href": "https://www.drom.ru/catalog/pontiac/torrent/"
+    },
+    {
+      "slug": "trans_sport",
+      "name": "Trans Sport",
+      "href": "https://www.drom.ru/catalog/pontiac/trans_sport/"
+    },
+    {
+      "slug": "vibe",
+      "name": "Vibe",
+      "href": "https://www.drom.ru/catalog/pontiac/vibe/"
+    },
+    {
+      "slug": "wave",
+      "name": "Wave",
+      "href": "https://www.drom.ru/catalog/pontiac/wave/"
+    }
+  ]
+}

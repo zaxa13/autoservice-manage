@@ -1,0 +1,17 @@
+{
+  "brand": {
+    "slug": "bajaj",
+    "name": "Bajaj",
+    "href": "https://www.drom.ru/catalog/bajaj/"
+  },
+  "source": "https://www.drom.ru/catalog/bajaj/",
+  "collected_at": "2026-05-17",
+  "count": 1,
+  "models": [
+    {
+      "slug": "qute",
+      "name": "Qute",
+      "href": "https://www.drom.ru/catalog/bajaj/qute/"
+    }
+  ]
+}

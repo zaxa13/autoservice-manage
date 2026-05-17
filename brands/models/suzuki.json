@@ -1,0 +1,317 @@
+{
+  "brand": {
+    "slug": "suzuki",
+    "name": "Suzuki",
+    "href": "https://www.drom.ru/catalog/suzuki/"
+  },
+  "source": "https://www.drom.ru/catalog/suzuki/",
+  "collected_at": "2026-05-17",
+  "count": 61,
+  "models": [
+    {
+      "slug": "across",
+      "name": "Across",
+      "href": "https://www.drom.ru/catalog/suzuki/across/"
+    },
+    {
+      "slug": "aerio",
+      "name": "Aerio",
+      "href": "https://www.drom.ru/catalog/suzuki/aerio/"
+    },
+    {
+      "slug": "alto",
+      "name": "Alto",
+      "href": "https://www.drom.ru/catalog/suzuki/alto/"
+    },
+    {
+      "slug": "alto_lapin",
+      "name": "Alto Lapin",
+      "href": "https://www.drom.ru/catalog/suzuki/alto_lapin/"
+    },
+    {
+      "slug": "baleno",
+      "name": "Baleno",
+      "href": "https://www.drom.ru/catalog/suzuki/baleno/"
+    },
+    {
+      "slug": "cappuccino",
+      "name": "Cappuccino",
+      "href": "https://www.drom.ru/catalog/suzuki/cappuccino/"
+    },
+    {
+      "slug": "cara",
+      "name": "Cara",
+      "href": "https://www.drom.ru/catalog/suzuki/cara/"
+    },
+    {
+      "slug": "carry_van",
+      "name": "Carry Van",
+      "href": "https://www.drom.ru/catalog/suzuki/carry_van/"
+    },
+    {
+      "slug": "cervo",
+      "name": "Cervo",
+      "href": "https://www.drom.ru/catalog/suzuki/cervo/"
+    },
+    {
+      "slug": "ciaz",
+      "name": "Ciaz",
+      "href": "https://www.drom.ru/catalog/suzuki/ciaz/"
+    },
+    {
+      "slug": "cultus",
+      "name": "Cultus",
+      "href": "https://www.drom.ru/catalog/suzuki/cultus/"
+    },
+    {
+      "slug": "e_every",
+      "name": "e Every",
+      "href": "https://www.drom.ru/catalog/suzuki/e_every/"
+    },
+    {
+      "slug": "e_vitara",
+      "name": "e Vitara",
+      "href": "https://www.drom.ru/catalog/suzuki/e_vitara/"
+    },
+    {
+      "slug": "eeco",
+      "name": "Eeco",
+      "href": "https://www.drom.ru/catalog/suzuki/eeco/"
+    },
+    {
+      "slug": "equator",
+      "name": "Equator",
+      "href": "https://www.drom.ru/catalog/suzuki/equator/"
+    },
+    {
+      "slug": "ertiga",
+      "name": "Ertiga",
+      "href": "https://www.drom.ru/catalog/suzuki/ertiga/"
+    },
+    {
+      "slug": "escudo",
+      "name": "Escudo",
+      "href": "https://www.drom.ru/catalog/suzuki/escudo/"
+    },
+    {
+      "slug": "esteem",
+      "name": "Esteem",
+      "href": "https://www.drom.ru/catalog/suzuki/esteem/"
+    },
+    {
+      "slug": "every",
+      "name": "Every",
+      "href": "https://www.drom.ru/catalog/suzuki/every/"
+    },
+    {
+      "slug": "forenza",
+      "name": "Forenza",
+      "href": "https://www.drom.ru/catalog/suzuki/forenza/"
+    },
+    {
+      "slug": "fronte",
+      "name": "Fronte",
+      "href": "https://www.drom.ru/catalog/suzuki/fronte/"
+    },
+    {
+      "slug": "fronx",
+      "name": "Fronx",
+      "href": "https://www.drom.ru/catalog/suzuki/fronx/"
+    },
+    {
+      "slug": "grand_escudo",
+      "name": "Grand Escudo",
+      "href": "https://www.drom.ru/catalog/suzuki/grand_escudo/"
+    },
+    {
+      "slug": "grand_vitara",
+      "name": "Grand Vitara",
+      "href": "https://www.drom.ru/catalog/suzuki/grand_vitara/"
+    },
+    {
+      "slug": "grand_vitara_xl-7",
+      "name": "Grand Vitara XL-7",
+      "href": "https://www.drom.ru/catalog/suzuki/grand_vitara_xl-7/"
+    },
+    {
+      "slug": "hustler",
+      "name": "Hustler",
+      "href": "https://www.drom.ru/catalog/suzuki/hustler/"
+    },
+    {
+      "slug": "ignis",
+      "name": "Ignis",
+      "href": "https://www.drom.ru/catalog/suzuki/ignis/"
+    },
+    {
+      "slug": "jimny",
+      "name": "Jimny",
+      "href": "https://www.drom.ru/catalog/suzuki/jimny/"
+    },
+    {
+      "slug": "jimny_sierra",
+      "name": "Jimny Sierra",
+      "href": "https://www.drom.ru/catalog/suzuki/jimny_sierra/"
+    },
+    {
+      "slug": "jimny_wide",
+      "name": "Jimny Wide",
+      "href": "https://www.drom.ru/catalog/suzuki/jimny_wide/"
+    },
+    {
+      "slug": "kei",
+      "name": "Kei",
+      "href": "https://www.drom.ru/catalog/suzuki/kei/"
+    },
+    {
+      "slug": "kizashi",
+      "name": "Kizashi",
+      "href": "https://www.drom.ru/catalog/suzuki/kizashi/"
+    },
+    {
+      "slug": "landy",
+      "name": "Landy",
+      "href": "https://www.drom.ru/catalog/suzuki/landy/"
+    },
+    {
+      "slug": "liana",
+      "name": "Liana",
+      "href": "https://www.drom.ru/catalog/suzuki/liana/"
+    },
+    {
+      "slug": "mighty_boy",
+      "name": "Mighty Boy",
+      "href": "https://www.drom.ru/catalog/suzuki/mighty_boy/"
+    },
+    {
+      "slug": "mr_wagon",
+      "name": "MR Wagon",
+      "href": "https://www.drom.ru/catalog/suzuki/mr_wagon/"
+    },
+    {
+      "slug": "palette",
+      "name": "Palette",
+      "href": "https://www.drom.ru/catalog/suzuki/palette/"
+    },
+    {
+      "slug": "reno",
+      "name": "Reno",
+      "href": "https://www.drom.ru/catalog/suzuki/reno/"
+    },
+    {
+      "slug": "s-cross",
+      "name": "S-Cross",
+      "href": "https://www.drom.ru/catalog/suzuki/s-cross/"
+    },
+    {
+      "slug": "s-presso",
+      "name": "S-Presso",
+      "href": "https://www.drom.ru/catalog/suzuki/s-presso/"
+    },
+    {
+      "slug": "samurai",
+      "name": "Samurai",
+      "href": "https://www.drom.ru/catalog/suzuki/samurai/"
+    },
+    {
+      "slug": "sidekick",
+      "name": "Sidekick",
+      "href": "https://www.drom.ru/catalog/suzuki/sidekick/"
+    },
+    {
+      "slug": "solio",
+      "name": "Solio",
+      "href": "https://www.drom.ru/catalog/suzuki/solio/"
+    },
+    {
+      "slug": "spacia",
+      "name": "Spacia",
+      "href": "https://www.drom.ru/catalog/suzuki/spacia/"
+    },
+    {
+      "slug": "splash",
+      "name": "Splash",
+      "href": "https://www.drom.ru/catalog/suzuki/splash/"
+    },
+    {
+      "slug": "swace",
+      "name": "Swace",
+      "href": "https://www.drom.ru/catalog/suzuki/swace/"
+    },
+    {
+      "slug": "swift",
+      "name": "Swift",
+      "href": "https://www.drom.ru/catalog/suzuki/swift/"
+    },
+    {
+      "slug": "swift_plus",
+      "name": "Swift+",
+      "href": "https://www.drom.ru/catalog/suzuki/swift_plus/"
+    },
+    {
+      "slug": "sx4",
+      "name": "SX4",
+      "href": "https://www.drom.ru/catalog/suzuki/sx4/"
+    },
+    {
+      "slug": "twin",
+      "name": "Twin",
+      "href": "https://www.drom.ru/catalog/suzuki/twin/"
+    },
+    {
+      "slug": "verona",
+      "name": "Verona",
+      "href": "https://www.drom.ru/catalog/suzuki/verona/"
+    },
+    {
+      "slug": "vitara",
+      "name": "Vitara",
+      "href": "https://www.drom.ru/catalog/suzuki/vitara/"
+    },
+    {
+      "slug": "wagon_r",
+      "name": "Wagon R",
+      "href": "https://www.drom.ru/catalog/suzuki/wagon_r/"
+    },
+    {
+      "slug": "wagon_r_plus",
+      "name": "Wagon R Plus",
+      "href": "https://www.drom.ru/catalog/suzuki/wagon_r_plus/"
+    },
+    {
+      "slug": "wagon_r_smile",
+      "name": "Wagon R Smile",
+      "href": "https://www.drom.ru/catalog/suzuki/wagon_r_smile/"
+    },
+    {
+      "slug": "wagon_r_solio",
+      "name": "Wagon R Solio",
+      "href": "https://www.drom.ru/catalog/suzuki/wagon_r_solio/"
+    },
+    {
+      "slug": "wagon_r_wide",
+      "name": "Wagon R Wide",
+      "href": "https://www.drom.ru/catalog/suzuki/wagon_r_wide/"
+    },
+    {
+      "slug": "works",
+      "name": "Works",
+      "href": "https://www.drom.ru/catalog/suzuki/works/"
+    },
+    {
+      "slug": "x-90",
+      "name": "X-90",
+      "href": "https://www.drom.ru/catalog/suzuki/x-90/"
+    },
+    {
+      "slug": "xbee",
+      "name": "Xbee",
+      "href": "https://www.drom.ru/catalog/suzuki/xbee/"
+    },
+    {
+      "slug": "xl7",
+      "name": "XL7",
+      "href": "https://www.drom.ru/catalog/suzuki/xl7/"
+    }
+  ]
+}

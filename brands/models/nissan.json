@@ -1,0 +1,742 @@
+{
+  "brand": {
+    "slug": "nissan",
+    "name": "Nissan",
+    "href": "https://www.drom.ru/catalog/nissan/"
+  },
+  "source": "https://www.drom.ru/catalog/nissan/",
+  "collected_at": "2026-05-17",
+  "count": 146,
+  "models": [
+    {
+      "slug": "100nx",
+      "name": "100NX",
+      "href": "https://www.drom.ru/catalog/nissan/100nx/"
+    },
+    {
+      "slug": "180sx",
+      "name": "180SX",
+      "href": "https://www.drom.ru/catalog/nissan/180sx/"
+    },
+    {
+      "slug": "200sx",
+      "name": "200SX",
+      "href": "https://www.drom.ru/catalog/nissan/200sx/"
+    },
+    {
+      "slug": "240sx",
+      "name": "240SX",
+      "href": "https://www.drom.ru/catalog/nissan/240sx/"
+    },
+    {
+      "slug": "300zx",
+      "name": "300ZX",
+      "href": "https://www.drom.ru/catalog/nissan/300zx/"
+    },
+    {
+      "slug": "350z",
+      "name": "350Z",
+      "href": "https://www.drom.ru/catalog/nissan/350z/"
+    },
+    {
+      "slug": "370z",
+      "name": "370Z",
+      "href": "https://www.drom.ru/catalog/nissan/370z/"
+    },
+    {
+      "slug": "adwagon",
+      "name": "AD",
+      "href": "https://www.drom.ru/catalog/nissan/adwagon/"
+    },
+    {
+      "slug": "almera",
+      "name": "Almera",
+      "href": "https://www.drom.ru/catalog/nissan/almera/"
+    },
+    {
+      "slug": "almera_classic",
+      "name": "Almera Classic",
+      "href": "https://www.drom.ru/catalog/nissan/almera_classic/"
+    },
+    {
+      "slug": "altima",
+      "name": "Altima",
+      "href": "https://www.drom.ru/catalog/nissan/altima/"
+    },
+    {
+      "slug": "ariya",
+      "name": "Ariya",
+      "href": "https://www.drom.ru/catalog/nissan/ariya/"
+    },
+    {
+      "slug": "armada",
+      "name": "Armada",
+      "href": "https://www.drom.ru/catalog/nissan/armada/"
+    },
+    {
+      "slug": "aura",
+      "name": "Aura",
+      "href": "https://www.drom.ru/catalog/nissan/aura/"
+    },
+    {
+      "slug": "auster",
+      "name": "Auster",
+      "href": "https://www.drom.ru/catalog/nissan/auster/"
+    },
+    {
+      "slug": "avenir",
+      "name": "Avenir",
+      "href": "https://www.drom.ru/catalog/nissan/avenir/"
+    },
+    {
+      "slug": "avenir_salut",
+      "name": "Avenir Salut",
+      "href": "https://www.drom.ru/catalog/nissan/avenir_salut/"
+    },
+    {
+      "slug": "bassara",
+      "name": "Bassara",
+      "href": "https://www.drom.ru/catalog/nissan/bassara/"
+    },
+    {
+      "slug": "be-1",
+      "name": "BE-1",
+      "href": "https://www.drom.ru/catalog/nissan/be-1/"
+    },
+    {
+      "slug": "bluebird",
+      "name": "Bluebird",
+      "href": "https://www.drom.ru/catalog/nissan/bluebird/"
+    },
+    {
+      "slug": "bluebird_maxima",
+      "name": "Bluebird Maxima",
+      "href": "https://www.drom.ru/catalog/nissan/bluebird_maxima/"
+    },
+    {
+      "slug": "bluebird_sylphy",
+      "name": "Bluebird Sylphy",
+      "href": "https://www.drom.ru/catalog/nissan/bluebird_sylphy/"
+    },
+    {
+      "slug": "caravan",
+      "name": "Caravan",
+      "href": "https://www.drom.ru/catalog/nissan/caravan/"
+    },
+    {
+      "slug": "caravan_elgrand",
+      "name": "Caravan Elgrand",
+      "href": "https://www.drom.ru/catalog/nissan/caravan_elgrand/"
+    },
+    {
+      "slug": "cedric",
+      "name": "Cedric",
+      "href": "https://www.drom.ru/catalog/nissan/cedric/"
+    },
+    {
+      "slug": "cedric_cima",
+      "name": "Cedric Cima",
+      "href": "https://www.drom.ru/catalog/nissan/cedric_cima/"
+    },
+    {
+      "slug": "cefiro",
+      "name": "Cefiro",
+      "href": "https://www.drom.ru/catalog/nissan/cefiro/"
+    },
+    {
+      "slug": "cherry",
+      "name": "Cherry",
+      "href": "https://www.drom.ru/catalog/nissan/cherry/"
+    },
+    {
+      "slug": "cima",
+      "name": "Cima",
+      "href": "https://www.drom.ru/catalog/nissan/cima/"
+    },
+    {
+      "slug": "clipper",
+      "name": "Clipper",
+      "href": "https://www.drom.ru/catalog/nissan/clipper/"
+    },
+    {
+      "slug": "crew",
+      "name": "Crew",
+      "href": "https://www.drom.ru/catalog/nissan/crew/"
+    },
+    {
+      "slug": "cube",
+      "name": "Cube",
+      "href": "https://www.drom.ru/catalog/nissan/cube/"
+    },
+    {
+      "slug": "cube_cubic",
+      "name": "Cube Cubic",
+      "href": "https://www.drom.ru/catalog/nissan/cube_cubic/"
+    },
+    {
+      "slug": "datsun",
+      "name": "Datsun",
+      "href": "https://www.drom.ru/catalog/nissan/datsun/"
+    },
+    {
+      "slug": "dayz",
+      "name": "DAYZ",
+      "href": "https://www.drom.ru/catalog/nissan/dayz/"
+    },
+    {
+      "slug": "dayz_roox",
+      "name": "DAYZ Roox",
+      "href": "https://www.drom.ru/catalog/nissan/dayz_roox/"
+    },
+    {
+      "slug": "dualis",
+      "name": "Dualis",
+      "href": "https://www.drom.ru/catalog/nissan/dualis/"
+    },
+    {
+      "slug": "e-nv200",
+      "name": "e-NV200",
+      "href": "https://www.drom.ru/catalog/nissan/e-nv200/"
+    },
+    {
+      "slug": "elgrand",
+      "name": "Elgrand",
+      "href": "https://www.drom.ru/catalog/nissan/elgrand/"
+    },
+    {
+      "slug": "exa",
+      "name": "Exa",
+      "href": "https://www.drom.ru/catalog/nissan/exa/"
+    },
+    {
+      "slug": "expert",
+      "name": "Expert",
+      "href": "https://www.drom.ru/catalog/nissan/expert/"
+    },
+    {
+      "slug": "fairlady_z",
+      "name": "Fairlady Z",
+      "href": "https://www.drom.ru/catalog/nissan/fairlady_z/"
+    },
+    {
+      "slug": "figaro",
+      "name": "Figaro",
+      "href": "https://www.drom.ru/catalog/nissan/figaro/"
+    },
+    {
+      "slug": "frontier",
+      "name": "Frontier",
+      "href": "https://www.drom.ru/catalog/nissan/frontier/"
+    },
+    {
+      "slug": "frontier_pro",
+      "name": "Frontier Pro",
+      "href": "https://www.drom.ru/catalog/nissan/frontier_pro/"
+    },
+    {
+      "slug": "fuga",
+      "name": "Fuga",
+      "href": "https://www.drom.ru/catalog/nissan/fuga/"
+    },
+    {
+      "slug": "gloria",
+      "name": "Gloria",
+      "href": "https://www.drom.ru/catalog/nissan/gloria/"
+    },
+    {
+      "slug": "gloria_cima",
+      "name": "Gloria Cima",
+      "href": "https://www.drom.ru/catalog/nissan/gloria_cima/"
+    },
+    {
+      "slug": "gt-r",
+      "name": "GT-R",
+      "href": "https://www.drom.ru/catalog/nissan/gt-r/"
+    },
+    {
+      "slug": "homy",
+      "name": "Homy",
+      "href": "https://www.drom.ru/catalog/nissan/homy/"
+    },
+    {
+      "slug": "homy_elgrand",
+      "name": "Homy Elgrand",
+      "href": "https://www.drom.ru/catalog/nissan/homy_elgrand/"
+    },
+    {
+      "slug": "hypermini",
+      "name": "Hypermini",
+      "href": "https://www.drom.ru/catalog/nissan/hypermini/"
+    },
+    {
+      "slug": "juke",
+      "name": "Juke",
+      "href": "https://www.drom.ru/catalog/nissan/juke/"
+    },
+    {
+      "slug": "kait",
+      "name": "Kait",
+      "href": "https://www.drom.ru/catalog/nissan/kait/"
+    },
+    {
+      "slug": "kicks",
+      "name": "Kicks",
+      "href": "https://www.drom.ru/catalog/nissan/kicks/"
+    },
+    {
+      "slug": "kix",
+      "name": "Kix",
+      "href": "https://www.drom.ru/catalog/nissan/kix/"
+    },
+    {
+      "slug": "lafesta",
+      "name": "Lafesta",
+      "href": "https://www.drom.ru/catalog/nissan/lafesta/"
+    },
+    {
+      "slug": "langley",
+      "name": "Langley",
+      "href": "https://www.drom.ru/catalog/nissan/langley/"
+    },
+    {
+      "slug": "lannia",
+      "name": "Lannia",
+      "href": "https://www.drom.ru/catalog/nissan/lannia/"
+    },
+    {
+      "slug": "largo",
+      "name": "Largo",
+      "href": "https://www.drom.ru/catalog/nissan/largo/"
+    },
+    {
+      "slug": "latio",
+      "name": "Latio",
+      "href": "https://www.drom.ru/catalog/nissan/latio/"
+    },
+    {
+      "slug": "laurel",
+      "name": "Laurel",
+      "href": "https://www.drom.ru/catalog/nissan/laurel/"
+    },
+    {
+      "slug": "laurel_spirit",
+      "name": "Laurel Spirit",
+      "href": "https://www.drom.ru/catalog/nissan/laurel_spirit/"
+    },
+    {
+      "slug": "leaf",
+      "name": "Leaf",
+      "href": "https://www.drom.ru/catalog/nissan/leaf/"
+    },
+    {
+      "slug": "leopard",
+      "name": "Leopard",
+      "href": "https://www.drom.ru/catalog/nissan/leopard/"
+    },
+    {
+      "slug": "liberta_villa",
+      "name": "Liberta Villa",
+      "href": "https://www.drom.ru/catalog/nissan/liberta_villa/"
+    },
+    {
+      "slug": "liberty",
+      "name": "Liberty",
+      "href": "https://www.drom.ru/catalog/nissan/liberty/"
+    },
+    {
+      "slug": "lucino",
+      "name": "Lucino",
+      "href": "https://www.drom.ru/catalog/nissan/lucino/"
+    },
+    {
+      "slug": "magnite",
+      "name": "Magnite",
+      "href": "https://www.drom.ru/catalog/nissan/magnite/"
+    },
+    {
+      "slug": "march",
+      "name": "March",
+      "href": "https://www.drom.ru/catalog/nissan/march/"
+    },
+    {
+      "slug": "march_box",
+      "name": "March Box",
+      "href": "https://www.drom.ru/catalog/nissan/march_box/"
+    },
+    {
+      "slug": "maxima",
+      "name": "Maxima",
+      "href": "https://www.drom.ru/catalog/nissan/maxima/"
+    },
+    {
+      "slug": "micra",
+      "name": "Micra",
+      "href": "https://www.drom.ru/catalog/nissan/micra/"
+    },
+    {
+      "slug": "micra_c_c",
+      "name": "Micra C+C",
+      "href": "https://www.drom.ru/catalog/nissan/micra_c_c/"
+    },
+    {
+      "slug": "mistral",
+      "name": "Mistral",
+      "href": "https://www.drom.ru/catalog/nissan/mistral/"
+    },
+    {
+      "slug": "moco",
+      "name": "Moco",
+      "href": "https://www.drom.ru/catalog/nissan/moco/"
+    },
+    {
+      "slug": "murano",
+      "name": "Murano",
+      "href": "https://www.drom.ru/catalog/nissan/murano/"
+    },
+    {
+      "slug": "n6",
+      "name": "N6",
+      "href": "https://www.drom.ru/catalog/nissan/n6/"
+    },
+    {
+      "slug": "n7",
+      "name": "N7",
+      "href": "https://www.drom.ru/catalog/nissan/n7/"
+    },
+    {
+      "slug": "navara",
+      "name": "Navara",
+      "href": "https://www.drom.ru/catalog/nissan/navara/"
+    },
+    {
+      "slug": "note",
+      "name": "Note",
+      "href": "https://www.drom.ru/catalog/nissan/note/"
+    },
+    {
+      "slug": "np300",
+      "name": "NP300",
+      "href": "https://www.drom.ru/catalog/nissan/np300/"
+    },
+    {
+      "slug": "nv100_clipper",
+      "name": "NV100 Clipper",
+      "href": "https://www.drom.ru/catalog/nissan/nv100_clipper/"
+    },
+    {
+      "slug": "nv200",
+      "name": "NV200",
+      "href": "https://www.drom.ru/catalog/nissan/nv200/"
+    },
+    {
+      "slug": "nv300",
+      "name": "NV300",
+      "href": "https://www.drom.ru/catalog/nissan/nv300/"
+    },
+    {
+      "slug": "nv350_caravan",
+      "name": "NV350 Caravan",
+      "href": "https://www.drom.ru/catalog/nissan/nv350_caravan/"
+    },
+    {
+      "slug": "nx-coupe",
+      "name": "NX-Coupe",
+      "href": "https://www.drom.ru/catalog/nissan/nx-coupe/"
+    },
+    {
+      "slug": "nx8",
+      "name": "NX8",
+      "href": "https://www.drom.ru/catalog/nissan/nx8/"
+    },
+    {
+      "slug": "otti",
+      "name": "Otti",
+      "href": "https://www.drom.ru/catalog/nissan/otti/"
+    },
+    {
+      "slug": "pao",
+      "name": "Pao",
+      "href": "https://www.drom.ru/catalog/nissan/pao/"
+    },
+    {
+      "slug": "pathfinder",
+      "name": "Pathfinder",
+      "href": "https://www.drom.ru/catalog/nissan/pathfinder/"
+    },
+    {
+      "slug": "patrol",
+      "name": "Patrol",
+      "href": "https://www.drom.ru/catalog/nissan/patrol/"
+    },
+    {
+      "slug": "pick-up",
+      "name": "Pickup",
+      "href": "https://www.drom.ru/catalog/nissan/pick-up/"
+    },
+    {
+      "slug": "pino",
+      "name": "Pino",
+      "href": "https://www.drom.ru/catalog/nissan/pino/"
+    },
+    {
+      "slug": "pixo",
+      "name": "Pixo",
+      "href": "https://www.drom.ru/catalog/nissan/pixo/"
+    },
+    {
+      "slug": "prairie",
+      "name": "Prairie",
+      "href": "https://www.drom.ru/catalog/nissan/prairie/"
+    },
+    {
+      "slug": "prairie_joy",
+      "name": "Prairie Joy",
+      "href": "https://www.drom.ru/catalog/nissan/prairie_joy/"
+    },
+    {
+      "slug": "presage",
+      "name": "Presage",
+      "href": "https://www.drom.ru/catalog/nissan/presage/"
+    },
+    {
+      "slug": "presea",
+      "name": "Presea",
+      "href": "https://www.drom.ru/catalog/nissan/presea/"
+    },
+    {
+      "slug": "president",
+      "name": "President",
+      "href": "https://www.drom.ru/catalog/nissan/president/"
+    },
+    {
+      "slug": "primastar",
+      "name": "Primastar",
+      "href": "https://www.drom.ru/catalog/nissan/primastar/"
+    },
+    {
+      "slug": "primera",
+      "name": "Primera",
+      "href": "https://www.drom.ru/catalog/nissan/primera/"
+    },
+    {
+      "slug": "primera_camino",
+      "name": "Primera Camino",
+      "href": "https://www.drom.ru/catalog/nissan/primera_camino/"
+    },
+    {
+      "slug": "pulsar",
+      "name": "Pulsar",
+      "href": "https://www.drom.ru/catalog/nissan/pulsar/"
+    },
+    {
+      "slug": "qashqai",
+      "name": "Qashqai",
+      "href": "https://www.drom.ru/catalog/nissan/qashqai/"
+    },
+    {
+      "slug": "qashqai_2",
+      "name": "Qashqai+2",
+      "href": "https://www.drom.ru/catalog/nissan/qashqai_2/"
+    },
+    {
+      "slug": "quest",
+      "name": "Quest",
+      "href": "https://www.drom.ru/catalog/nissan/quest/"
+    },
+    {
+      "slug": "rasheen",
+      "name": "Rasheen",
+      "href": "https://www.drom.ru/catalog/nissan/rasheen/"
+    },
+    {
+      "slug": "rogue",
+      "name": "Rogue",
+      "href": "https://www.drom.ru/catalog/nissan/rogue/"
+    },
+    {
+      "slug": "rogue_sport",
+      "name": "Rogue Sport",
+      "href": "https://www.drom.ru/catalog/nissan/rogue_sport/"
+    },
+    {
+      "slug": "roox",
+      "name": "Roox",
+      "href": "https://www.drom.ru/catalog/nissan/roox/"
+    },
+    {
+      "slug": "s-cargo",
+      "name": "S-Cargo",
+      "href": "https://www.drom.ru/catalog/nissan/s-cargo/"
+    },
+    {
+      "slug": "safari",
+      "name": "Safari",
+      "href": "https://www.drom.ru/catalog/nissan/safari/"
+    },
+    {
+      "slug": "sakura",
+      "name": "Sakura",
+      "href": "https://www.drom.ru/catalog/nissan/sakura/"
+    },
+    {
+      "slug": "sentra",
+      "name": "Sentra",
+      "href": "https://www.drom.ru/catalog/nissan/sentra/"
+    },
+    {
+      "slug": "serena",
+      "name": "Serena",
+      "href": "https://www.drom.ru/catalog/nissan/serena/"
+    },
+    {
+      "slug": "silvia",
+      "name": "Silvia",
+      "href": "https://www.drom.ru/catalog/nissan/silvia/"
+    },
+    {
+      "slug": "skyline",
+      "name": "Skyline",
+      "href": "https://www.drom.ru/catalog/nissan/skyline/"
+    },
+    {
+      "slug": "skyline_crossover",
+      "name": "Skyline Crossover",
+      "href": "https://www.drom.ru/catalog/nissan/skyline_crossover/"
+    },
+    {
+      "slug": "skyline_gt-r",
+      "name": "Skyline GT-R",
+      "href": "https://www.drom.ru/catalog/nissan/skyline_gt-r/"
+    },
+    {
+      "slug": "stagea",
+      "name": "Stagea",
+      "href": "https://www.drom.ru/catalog/nissan/stagea/"
+    },
+    {
+      "slug": "stanza",
+      "name": "Stanza",
+      "href": "https://www.drom.ru/catalog/nissan/stanza/"
+    },
+    {
+      "slug": "sunny",
+      "name": "Sunny",
+      "href": "https://www.drom.ru/catalog/nissan/sunny/"
+    },
+    {
+      "slug": "sunny_california",
+      "name": "Sunny California",
+      "href": "https://www.drom.ru/catalog/nissan/sunny_california/"
+    },
+    {
+      "slug": "sunny_rz-1",
+      "name": "Sunny RZ-1",
+      "href": "https://www.drom.ru/catalog/nissan/sunny_rz-1/"
+    },
+    {
+      "slug": "sylphy",
+      "name": "Sylphy",
+      "href": "https://www.drom.ru/catalog/nissan/sylphy/"
+    },
+    {
+      "slug": "teana",
+      "name": "Teana",
+      "href": "https://www.drom.ru/catalog/nissan/teana/"
+    },
+    {
+      "slug": "terra",
+      "name": "Terra",
+      "href": "https://www.drom.ru/catalog/nissan/terra/"
+    },
+    {
+      "slug": "terrano",
+      "name": "Terrano",
+      "href": "https://www.drom.ru/catalog/nissan/terrano/"
+    },
+    {
+      "slug": "terrano_ii",
+      "name": "Terrano II",
+      "href": "https://www.drom.ru/catalog/nissan/terrano_ii/"
+    },
+    {
+      "slug": "terrano_regulus",
+      "name": "Terrano Regulus",
+      "href": "https://www.drom.ru/catalog/nissan/terrano_regulus/"
+    },
+    {
+      "slug": "tiida",
+      "name": "Tiida",
+      "href": "https://www.drom.ru/catalog/nissan/tiida/"
+    },
+    {
+      "slug": "tiida_latio",
+      "name": "Tiida Latio",
+      "href": "https://www.drom.ru/catalog/nissan/tiida_latio/"
+    },
+    {
+      "slug": "tino",
+      "name": "Tino",
+      "href": "https://www.drom.ru/catalog/nissan/tino/"
+    },
+    {
+      "slug": "titan",
+      "name": "Titan",
+      "href": "https://www.drom.ru/catalog/nissan/titan/"
+    },
+    {
+      "slug": "urvan",
+      "name": "Urvan",
+      "href": "https://www.drom.ru/catalog/nissan/urvan/"
+    },
+    {
+      "slug": "vanette",
+      "name": "Vanette",
+      "href": "https://www.drom.ru/catalog/nissan/vanette/"
+    },
+    {
+      "slug": "vanette_serena",
+      "name": "Vanette Serena",
+      "href": "https://www.drom.ru/catalog/nissan/vanette_serena/"
+    },
+    {
+      "slug": "versa",
+      "name": "Versa",
+      "href": "https://www.drom.ru/catalog/nissan/versa/"
+    },
+    {
+      "slug": "versa_note",
+      "name": "Versa Note",
+      "href": "https://www.drom.ru/catalog/nissan/versa_note/"
+    },
+    {
+      "slug": "violet",
+      "name": "Violet",
+      "href": "https://www.drom.ru/catalog/nissan/violet/"
+    },
+    {
+      "slug": "volkswagen_santana",
+      "name": "Volkswagen Santana",
+      "href": "https://www.drom.ru/catalog/nissan/volkswagen_santana/"
+    },
+    {
+      "slug": "wingroad",
+      "name": "Wingroad",
+      "href": "https://www.drom.ru/catalog/nissan/wingroad/"
+    },
+    {
+      "slug": "x-trail",
+      "name": "X-Trail",
+      "href": "https://www.drom.ru/catalog/nissan/x-trail/"
+    },
+    {
+      "slug": "xterra",
+      "name": "Xterra",
+      "href": "https://www.drom.ru/catalog/nissan/xterra/"
+    },
+    {
+      "slug": "z",
+      "name": "Z",
+      "href": "https://www.drom.ru/catalog/nissan/z/"
+    }
+  ]
+}

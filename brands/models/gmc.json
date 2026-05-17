@@ -1,0 +1,77 @@
+{
+  "brand": {
+    "slug": "gmc",
+    "name": "GMC",
+    "href": "https://www.drom.ru/catalog/gmc/"
+  },
+  "source": "https://www.drom.ru/catalog/gmc/",
+  "collected_at": "2026-05-17",
+  "count": 13,
+  "models": [
+    {
+      "slug": "acadia",
+      "name": "Acadia",
+      "href": "https://www.drom.ru/catalog/gmc/acadia/"
+    },
+    {
+      "slug": "canyon",
+      "name": "Canyon",
+      "href": "https://www.drom.ru/catalog/gmc/canyon/"
+    },
+    {
+      "slug": "envoy",
+      "name": "Envoy",
+      "href": "https://www.drom.ru/catalog/gmc/envoy/"
+    },
+    {
+      "slug": "hummer_ev",
+      "name": "Hummer EV",
+      "href": "https://www.drom.ru/catalog/gmc/hummer_ev/"
+    },
+    {
+      "slug": "jimmy",
+      "name": "Jimmy",
+      "href": "https://www.drom.ru/catalog/gmc/jimmy/"
+    },
+    {
+      "slug": "savana",
+      "name": "GMC Savana",
+      "href": "https://www.drom.ru/catalog/gmc/savana/"
+    },
+    {
+      "slug": "sierra",
+      "name": "Sierra",
+      "href": "https://www.drom.ru/catalog/gmc/sierra/"
+    },
+    {
+      "slug": "sierra_ev",
+      "name": "Sierra EV",
+      "href": "https://www.drom.ru/catalog/gmc/sierra_ev/"
+    },
+    {
+      "slug": "suburban",
+      "name": "Suburban",
+      "href": "https://www.drom.ru/catalog/gmc/suburban/"
+    },
+    {
+      "slug": "terrain",
+      "name": "Terrain",
+      "href": "https://www.drom.ru/catalog/gmc/terrain/"
+    },
+    {
+      "slug": "typhoon",
+      "name": "Typhoon",
+      "href": "https://www.drom.ru/catalog/gmc/typhoon/"
+    },
+    {
+      "slug": "vandura",
+      "name": "GMC Vandura",
+      "href": "https://www.drom.ru/catalog/gmc/vandura/"
+    },
+    {
+      "slug": "yukon",
+      "name": "Yukon",
+      "href": "https://www.drom.ru/catalog/gmc/yukon/"
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "brand": {
+    "slug": "foton",
+    "name": "Foton",
+    "href": "https://www.drom.ru/catalog/foton/"
+  },
+  "source": "https://www.drom.ru/catalog/foton/",
+  "collected_at": "2026-05-17",
+  "count": 15,
+  "models": [
+    {
+      "slug": "conqueror_3",
+      "name": "Conqueror 3",
+      "href": "https://www.drom.ru/catalog/foton/conqueror_3/"
+    },
+    {
+      "slug": "conqueror_5",
+      "name": "Conqueror 5",
+      "href": "https://www.drom.ru/catalog/foton/conqueror_5/"
+    },
+    {
+      "slug": "conqueror_7",
+      "name": "Conqueror 7",
+      "href": "https://www.drom.ru/catalog/foton/conqueror_7/"
+    },
+    {
+      "slug": "conqueror_plus",
+      "name": "Conqueror Plus",
+      "href": "https://www.drom.ru/catalog/foton/conqueror_plus/"
+    },
+    {
+      "slug": "mars_7",
+      "name": "Mars 7",
+      "href": "https://www.drom.ru/catalog/foton/mars_7/"
+    },
+    {
+      "slug": "mars_9",
+      "name": "Mars 9",
+      "href": "https://www.drom.ru/catalog/foton/mars_9/"
+    },
+    {
+      "slug": "midi",
+      "name": "Midi",
+      "href": "https://www.drom.ru/catalog/foton/midi/"
+    },
+    {
+      "slug": "sauvana",
+      "name": "Sauvana",
+      "href": "https://www.drom.ru/catalog/foton/sauvana/"
+    },
+    {
+      "slug": "tunland",
+      "name": "Tunland",
+      "href": "https://www.drom.ru/catalog/foton/tunland/"
+    },
+    {
+      "slug": "tunland_f9",
+      "name": "Tunland F9",
+      "href": "https://www.drom.ru/catalog/foton/tunland_f9/"
+    },
+    {
+      "slug": "tunland_g7",
+      "name": "Tunland G7",
+      "href": "https://www.drom.ru/catalog/foton/tunland_g7/"
+    },
+    {
+      "slug": "tunland_g9",
+      "name": "Tunland G9",
+      "href": "https://www.drom.ru/catalog/foton/tunland_g9/"
+    },
+    {
+      "slug": "v7",
+      "name": "Tunland V7",
+      "href": "https://www.drom.ru/catalog/foton/v7/"
+    },
+    {
+      "slug": "v9",
+      "name": "Tunland V9",
+      "href": "https://www.drom.ru/catalog/foton/v9/"
+    },
+    {
+      "slug": "view",
+      "name": "View",
+      "href": "https://www.drom.ru/catalog/foton/view/"
+    }
+  ]
+}

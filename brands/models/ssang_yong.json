@@ -1,0 +1,112 @@
+{
+  "brand": {
+    "slug": "ssang_yong",
+    "name": "SsangYong",
+    "href": "https://www.drom.ru/catalog/ssang_yong/"
+  },
+  "source": "https://www.drom.ru/catalog/ssang_yong/",
+  "collected_at": "2026-05-17",
+  "count": 20,
+  "models": [
+    {
+      "slug": "actyon",
+      "name": "Actyon",
+      "href": "https://www.drom.ru/catalog/ssang_yong/actyon/"
+    },
+    {
+      "slug": "actyon_sports",
+      "name": "Actyon Sports",
+      "href": "https://www.drom.ru/catalog/ssang_yong/actyon_sports/"
+    },
+    {
+      "slug": "chairman",
+      "name": "Chairman",
+      "href": "https://www.drom.ru/catalog/ssang_yong/chairman/"
+    },
+    {
+      "slug": "istana",
+      "name": "SsangYong Istana",
+      "href": "https://www.drom.ru/catalog/ssang_yong/istana/"
+    },
+    {
+      "slug": "kallista",
+      "name": "Kallista",
+      "href": "https://www.drom.ru/catalog/ssang_yong/kallista/"
+    },
+    {
+      "slug": "korando",
+      "name": "Korando",
+      "href": "https://www.drom.ru/catalog/ssang_yong/korando/"
+    },
+    {
+      "slug": "korando_family",
+      "name": "Korando Family",
+      "href": "https://www.drom.ru/catalog/ssang_yong/korando_family/"
+    },
+    {
+      "slug": "korando_sports",
+      "name": "Korando Sports",
+      "href": "https://www.drom.ru/catalog/ssang_yong/korando_sports/"
+    },
+    {
+      "slug": "korando_turismo",
+      "name": "Korando Turismo",
+      "href": "https://www.drom.ru/catalog/ssang_yong/korando_turismo/"
+    },
+    {
+      "slug": "kyron",
+      "name": "Kyron",
+      "href": "https://www.drom.ru/catalog/ssang_yong/kyron/"
+    },
+    {
+      "slug": "musso",
+      "name": "Musso",
+      "href": "https://www.drom.ru/catalog/ssang_yong/musso/"
+    },
+    {
+      "slug": "musso_sports",
+      "name": "Musso Sports",
+      "href": "https://www.drom.ru/catalog/ssang_yong/musso_sports/"
+    },
+    {
+      "slug": "nomad",
+      "name": "Nomad",
+      "href": "https://www.drom.ru/catalog/ssang_yong/nomad/"
+    },
+    {
+      "slug": "rexton",
+      "name": "Rexton",
+      "href": "https://www.drom.ru/catalog/ssang_yong/rexton/"
+    },
+    {
+      "slug": "rexton_sports",
+      "name": "Rexton Sports",
+      "href": "https://www.drom.ru/catalog/ssang_yong/rexton_sports/"
+    },
+    {
+      "slug": "rexton_sports_khan",
+      "name": "Rexton Sports Khan",
+      "href": "https://www.drom.ru/catalog/ssang_yong/rexton_sports_khan/"
+    },
+    {
+      "slug": "rodius",
+      "name": "Rodius",
+      "href": "https://www.drom.ru/catalog/ssang_yong/rodius/"
+    },
+    {
+      "slug": "stavic",
+      "name": "Stavic",
+      "href": "https://www.drom.ru/catalog/ssang_yong/stavic/"
+    },
+    {
+      "slug": "tivoli",
+      "name": "Tivoli",
+      "href": "https://www.drom.ru/catalog/ssang_yong/tivoli/"
+    },
+    {
+      "slug": "torres",
+      "name": "Torres",
+      "href": "https://www.drom.ru/catalog/ssang_yong/torres/"
+    }
+  ]
+}

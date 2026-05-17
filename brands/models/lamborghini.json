@@ -1,0 +1,67 @@
+{
+  "brand": {
+    "slug": "lamborghini",
+    "name": "Lamborghini",
+    "href": "https://www.drom.ru/catalog/lamborghini/"
+  },
+  "source": "https://www.drom.ru/catalog/lamborghini/",
+  "collected_at": "2026-05-17",
+  "count": 11,
+  "models": [
+    {
+      "slug": "aventador",
+      "name": "Aventador",
+      "href": "https://www.drom.ru/catalog/lamborghini/aventador/"
+    },
+    {
+      "slug": "countach",
+      "name": "Countach",
+      "href": "https://www.drom.ru/catalog/lamborghini/countach/"
+    },
+    {
+      "slug": "diablo",
+      "name": "Diablo",
+      "href": "https://www.drom.ru/catalog/lamborghini/diablo/"
+    },
+    {
+      "slug": "gallardo",
+      "name": "Gallardo",
+      "href": "https://www.drom.ru/catalog/lamborghini/gallardo/"
+    },
+    {
+      "slug": "huracan",
+      "name": "Huracan",
+      "href": "https://www.drom.ru/catalog/lamborghini/huracan/"
+    },
+    {
+      "slug": "lm_002",
+      "name": "LM 002",
+      "href": "https://www.drom.ru/catalog/lamborghini/lm_002/"
+    },
+    {
+      "slug": "murcielago",
+      "name": "Murcielago",
+      "href": "https://www.drom.ru/catalog/lamborghini/murcielago/"
+    },
+    {
+      "slug": "revuelto",
+      "name": "Revuelto",
+      "href": "https://www.drom.ru/catalog/lamborghini/revuelto/"
+    },
+    {
+      "slug": "sian",
+      "name": "Sian",
+      "href": "https://www.drom.ru/catalog/lamborghini/sian/"
+    },
+    {
+      "slug": "temerario",
+      "name": "Temerario",
+      "href": "https://www.drom.ru/catalog/lamborghini/temerario/"
+    },
+    {
+      "slug": "urus",
+      "name": "Urus",
+      "href": "https://www.drom.ru/catalog/lamborghini/urus/"
+    }
+  ]
+}

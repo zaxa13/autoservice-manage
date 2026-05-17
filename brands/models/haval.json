@@ -1,0 +1,162 @@
+{
+  "brand": {
+    "slug": "haval",
+    "name": "Haval",
+    "href": "https://www.drom.ru/catalog/haval/"
+  },
+  "source": "https://www.drom.ru/catalog/haval/",
+  "collected_at": "2026-05-17",
+  "count": 30,
+  "models": [
+    {
+      "slug": "big_dog",
+      "name": "Big Dog DaGou",
+      "href": "https://www.drom.ru/catalog/haval/big_dog/"
+    },
+    {
+      "slug": "chitu",
+      "name": "Chitu",
+      "href": "https://www.drom.ru/catalog/haval/chitu/"
+    },
+    {
+      "slug": "cool_dog",
+      "name": "Cool Dog KuGou",
+      "href": "https://www.drom.ru/catalog/haval/cool_dog/"
+    },
+    {
+      "slug": "dargo",
+      "name": "Dargo",
+      "href": "https://www.drom.ru/catalog/haval/dargo/"
+    },
+    {
+      "slug": "f5",
+      "name": "F5",
+      "href": "https://www.drom.ru/catalog/haval/f5/"
+    },
+    {
+      "slug": "f7",
+      "name": "F7",
+      "href": "https://www.drom.ru/catalog/haval/f7/"
+    },
+    {
+      "slug": "f7x",
+      "name": "F7x",
+      "href": "https://www.drom.ru/catalog/haval/f7x/"
+    },
+    {
+      "slug": "h1",
+      "name": "H1",
+      "href": "https://www.drom.ru/catalog/haval/h1/"
+    },
+    {
+      "slug": "h10",
+      "name": "Great Wall H10",
+      "href": "https://www.drom.ru/catalog/haval/h10/"
+    },
+    {
+      "slug": "h2",
+      "name": "H2",
+      "href": "https://www.drom.ru/catalog/haval/h2/"
+    },
+    {
+      "slug": "h2s",
+      "name": "H2s",
+      "href": "https://www.drom.ru/catalog/haval/h2s/"
+    },
+    {
+      "slug": "h3",
+      "name": "H3",
+      "href": "https://www.drom.ru/catalog/haval/h3/"
+    },
+    {
+      "slug": "h4",
+      "name": "H4",
+      "href": "https://www.drom.ru/catalog/haval/h4/"
+    },
+    {
+      "slug": "h4_pro",
+      "name": "H4 Pro",
+      "href": "https://www.drom.ru/catalog/haval/h4_pro/"
+    },
+    {
+      "slug": "h5",
+      "name": "H5",
+      "href": "https://www.drom.ru/catalog/haval/h5/"
+    },
+    {
+      "slug": "h6",
+      "name": "H6",
+      "href": "https://www.drom.ru/catalog/haval/h6/"
+    },
+    {
+      "slug": "h6_coupe",
+      "name": "H6 Coupe",
+      "href": "https://www.drom.ru/catalog/haval/h6_coupe/"
+    },
+    {
+      "slug": "h6l",
+      "name": "H6L",
+      "href": "https://www.drom.ru/catalog/haval/h6l/"
+    },
+    {
+      "slug": "h6s",
+      "name": "H6S",
+      "href": "https://www.drom.ru/catalog/haval/h6s/"
+    },
+    {
+      "slug": "h7",
+      "name": "H7",
+      "href": "https://www.drom.ru/catalog/haval/h7/"
+    },
+    {
+      "slug": "h8",
+      "name": "H8",
+      "href": "https://www.drom.ru/catalog/haval/h8/"
+    },
+    {
+      "slug": "h9",
+      "name": "H9",
+      "href": "https://www.drom.ru/catalog/haval/h9/"
+    },
+    {
+      "slug": "h_dog",
+      "name": "H-Dog",
+      "href": "https://www.drom.ru/catalog/haval/h_dog/"
+    },
+    {
+      "slug": "jolion",
+      "name": "Jolion",
+      "href": "https://www.drom.ru/catalog/haval/jolion/"
+    },
+    {
+      "slug": "m6",
+      "name": "M6",
+      "href": "https://www.drom.ru/catalog/haval/m6/"
+    },
+    {
+      "slug": "m6_plus",
+      "name": "M6 Plus",
+      "href": "https://www.drom.ru/catalog/haval/m6_plus/"
+    },
+    {
+      "slug": "raptor",
+      "name": "Raptor",
+      "href": "https://www.drom.ru/catalog/haval/raptor/"
+    },
+    {
+      "slug": "shenshou",
+      "name": "Shenshou",
+      "href": "https://www.drom.ru/catalog/haval/shenshou/"
+    },
+    {
+      "slug": "xiaolong",
+      "name": "Xiaolong",
+      "href": "https://www.drom.ru/catalog/haval/xiaolong/"
+    },
+    {
+      "slug": "xiaolong_max",
+      "name": "Xiaolong Max",
+      "href": "https://www.drom.ru/catalog/haval/xiaolong_max/"
+    }
+  ]
+}

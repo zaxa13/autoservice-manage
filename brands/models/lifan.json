@@ -1,0 +1,77 @@
+{
+  "brand": {
+    "slug": "lifan",
+    "name": "Lifan",
+    "href": "https://www.drom.ru/catalog/lifan/"
+  },
+  "source": "https://www.drom.ru/catalog/lifan/",
+  "collected_at": "2026-05-17",
+  "count": 13,
+  "models": [
+    {
+      "slug": "650_ev",
+      "name": "650 EV",
+      "href": "https://www.drom.ru/catalog/lifan/650_ev/"
+    },
+    {
+      "slug": "breez",
+      "name": "Breez",
+      "href": "https://www.drom.ru/catalog/lifan/breez/"
+    },
+    {
+      "slug": "cebrium",
+      "name": "Cebrium",
+      "href": "https://www.drom.ru/catalog/lifan/cebrium/"
+    },
+    {
+      "slug": "celliya",
+      "name": "Celliya",
+      "href": "https://www.drom.ru/catalog/lifan/celliya/"
+    },
+    {
+      "slug": "foison",
+      "name": "Foison",
+      "href": "https://www.drom.ru/catalog/lifan/foison/"
+    },
+    {
+      "slug": "murman",
+      "name": "Murman",
+      "href": "https://www.drom.ru/catalog/lifan/murman/"
+    },
+    {
+      "slug": "myway",
+      "name": "Myway",
+      "href": "https://www.drom.ru/catalog/lifan/myway/"
+    },
+    {
+      "slug": "smily",
+      "name": "Smily",
+      "href": "https://www.drom.ru/catalog/lifan/smily/"
+    },
+    {
+      "slug": "solano",
+      "name": "Solano",
+      "href": "https://www.drom.ru/catalog/lifan/solano/"
+    },
+    {
+      "slug": "x50",
+      "name": "X50",
+      "href": "https://www.drom.ru/catalog/lifan/x50/"
+    },
+    {
+      "slug": "x60",
+      "name": "X60",
+      "href": "https://www.drom.ru/catalog/lifan/x60/"
+    },
+    {
+      "slug": "x70",
+      "name": "X70",
+      "href": "https://www.drom.ru/catalog/lifan/x70/"
+    },
+    {
+      "slug": "x80",
+      "name": "X80",
+      "href": "https://www.drom.ru/catalog/lifan/x80/"
+    }
+  ]
+}

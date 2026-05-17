@@ -1,0 +1,57 @@
+{
+  "brand": {
+    "slug": "land_rover",
+    "name": "Land Rover",
+    "href": "https://www.drom.ru/catalog/land_rover/"
+  },
+  "source": "https://www.drom.ru/catalog/land_rover/",
+  "collected_at": "2026-05-17",
+  "count": 9,
+  "models": [
+    {
+      "slug": "defender",
+      "name": "Defender",
+      "href": "https://www.drom.ru/catalog/land_rover/defender/"
+    },
+    {
+      "slug": "discovery",
+      "name": "Discovery",
+      "href": "https://www.drom.ru/catalog/land_rover/discovery/"
+    },
+    {
+      "slug": "discovery_sport",
+      "name": "Discovery Sport",
+      "href": "https://www.drom.ru/catalog/land_rover/discovery_sport/"
+    },
+    {
+      "slug": "freelander",
+      "name": "Freelander",
+      "href": "https://www.drom.ru/catalog/land_rover/freelander/"
+    },
+    {
+      "slug": "range_rover",
+      "name": "Range Rover",
+      "href": "https://www.drom.ru/catalog/land_rover/range_rover/"
+    },
+    {
+      "slug": "range_rover_evoque",
+      "name": "Range Rover Evoque",
+      "href": "https://www.drom.ru/catalog/land_rover/range_rover_evoque/"
+    },
+    {
+      "slug": "range_rover_sport",
+      "name": "Range Rover Sport",
+      "href": "https://www.drom.ru/catalog/land_rover/range_rover_sport/"
+    },
+    {
+      "slug": "range_rover_velar",
+      "name": "Range Rover Velar",
+      "href": "https://www.drom.ru/catalog/land_rover/range_rover_velar/"
+    },
+    {
+      "slug": "series_3",
+      "name": "Series III",
+      "href": "https://www.drom.ru/catalog/land_rover/series_3/"
+    }
+  ]
+}

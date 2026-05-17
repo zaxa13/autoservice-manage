@@ -1,0 +1,17 @@
+{
+  "brand": {
+    "slug": "ac",
+    "name": "AC",
+    "href": "https://www.drom.ru/catalog/ac/"
+  },
+  "source": "https://www.drom.ru/catalog/ac/",
+  "collected_at": "2026-05-17",
+  "count": 1,
+  "models": [
+    {
+      "slug": "cobra",
+      "name": "Cobra",
+      "href": "https://www.drom.ru/catalog/ac/cobra/"
+    }
+  ]
+}

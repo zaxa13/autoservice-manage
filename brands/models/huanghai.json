@@ -1,0 +1,42 @@
+{
+  "brand": {
+    "slug": "huanghai",
+    "name": "Huanghai",
+    "href": "https://www.drom.ru/catalog/huanghai/"
+  },
+  "source": "https://www.drom.ru/catalog/huanghai/",
+  "collected_at": "2026-05-17",
+  "count": 6,
+  "models": [
+    {
+      "slug": "antelope",
+      "name": "Antelope",
+      "href": "https://www.drom.ru/catalog/huanghai/antelope/"
+    },
+    {
+      "slug": "landscape_f1",
+      "name": "Landscape F1",
+      "href": "https://www.drom.ru/catalog/huanghai/landscape_f1/"
+    },
+    {
+      "slug": "n2",
+      "name": "N2",
+      "href": "https://www.drom.ru/catalog/huanghai/n2/"
+    },
+    {
+      "slug": "n3",
+      "name": "N3",
+      "href": "https://www.drom.ru/catalog/huanghai/n3/"
+    },
+    {
+      "slug": "n7",
+      "name": "N7",
+      "href": "https://www.drom.ru/catalog/huanghai/n7/"
+    },
+    {
+      "slug": "plutus",
+      "name": "Plutus",
+      "href": "https://www.drom.ru/catalog/huanghai/plutus/"
+    }
+  ]
+}

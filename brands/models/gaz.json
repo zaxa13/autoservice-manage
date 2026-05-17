@@ -1,0 +1,127 @@
+{
+  "brand": {
+    "slug": "gaz",
+    "name": "ГАЗ",
+    "href": "https://www.drom.ru/catalog/gaz/"
+  },
+  "source": "https://www.drom.ru/catalog/gaz/",
+  "collected_at": "2026-05-17",
+  "count": 23,
+  "models": [
+    {
+      "slug": "12_zim",
+      "name": "12 ЗИМ",
+      "href": "https://www.drom.ru/catalog/gaz/12_zim/"
+    },
+    {
+      "slug": "18",
+      "name": "18",
+      "href": "https://www.drom.ru/catalog/gaz/18/"
+    },
+    {
+      "slug": "21_volga",
+      "name": "21 Волга",
+      "href": "https://www.drom.ru/catalog/gaz/21_volga/"
+    },
+    {
+      "slug": "22_volga",
+      "name": "22 Волга",
+      "href": "https://www.drom.ru/catalog/gaz/22_volga/"
+    },
+    {
+      "slug": "24_volga",
+      "name": "24 Волга",
+      "href": "https://www.drom.ru/catalog/gaz/24_volga/"
+    },
+    {
+      "slug": "31029_volga",
+      "name": "31029 Волга",
+      "href": "https://www.drom.ru/catalog/gaz/31029_volga/"
+    },
+    {
+      "slug": "3102_volga",
+      "name": "3102 Волга",
+      "href": "https://www.drom.ru/catalog/gaz/3102_volga/"
+    },
+    {
+      "slug": "3105_volga",
+      "name": "3105 Волга",
+      "href": "https://www.drom.ru/catalog/gaz/3105_volga/"
+    },
+    {
+      "slug": "31105_volga",
+      "name": "31105 Волга",
+      "href": "https://www.drom.ru/catalog/gaz/31105_volga/"
+    },
+    {
+      "slug": "3110_volga",
+      "name": "3110 Волга",
+      "href": "https://www.drom.ru/catalog/gaz/3110_volga/"
+    },
+    {
+      "slug": "3111_volga",
+      "name": "3111 Волга",
+      "href": "https://www.drom.ru/catalog/gaz/3111_volga/"
+    },
+    {
+      "slug": "67",
+      "name": "67",
+      "href": "https://www.drom.ru/catalog/gaz/67/"
+    },
+    {
+      "slug": "69",
+      "name": "69",
+      "href": "https://www.drom.ru/catalog/gaz/69/"
+    },
+    {
+      "slug": "avrora",
+      "name": "Аврора",
+      "href": "https://www.drom.ru/catalog/gaz/avrora/"
+    },
+    {
+      "slug": "gaz-13_chaika",
+      "name": "13 Чайка",
+      "href": "https://www.drom.ru/catalog/gaz/gaz-13_chaika/"
+    },
+    {
+      "slug": "gaz-14_chaika",
+      "name": "14 Чайка",
+      "href": "https://www.drom.ru/catalog/gaz/gaz-14_chaika/"
+    },
+    {
+      "slug": "gaz-2330_tigr",
+      "name": "2330 Тигр",
+      "href": "https://www.drom.ru/catalog/gaz/gaz-2330_tigr/"
+    },
+    {
+      "slug": "m-72",
+      "name": "М-72",
+      "href": "https://www.drom.ru/catalog/gaz/m-72/"
+    },
+    {
+      "slug": "m1",
+      "name": "М1",
+      "href": "https://www.drom.ru/catalog/gaz/m1/"
+    },
+    {
+      "slug": "pobeda",
+      "name": "Победа",
+      "href": "https://www.drom.ru/catalog/gaz/pobeda/"
+    },
+    {
+      "slug": "sobol_nn",
+      "name": "Соболь НН",
+      "href": "https://www.drom.ru/catalog/gaz/sobol_nn/"
+    },
+    {
+      "slug": "trofim",
+      "name": "Трофим",
+      "href": "https://www.drom.ru/catalog/gaz/trofim/"
+    },
+    {
+      "slug": "volga_siber",
+      "name": "Волга Сайбер",
+      "href": "https://www.drom.ru/catalog/gaz/volga_siber/"
+    }
+  ]
+}

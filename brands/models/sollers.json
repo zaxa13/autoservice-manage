@@ -1,0 +1,42 @@
+{
+  "brand": {
+    "slug": "sollers",
+    "name": "Sollers",
+    "href": "https://www.drom.ru/catalog/sollers/"
+  },
+  "source": "https://www.drom.ru/catalog/sollers/",
+  "collected_at": "2026-05-17",
+  "count": 6,
+  "models": [
+    {
+      "slug": "sa6",
+      "name": "Sollers SA6",
+      "href": "https://www.drom.ru/catalog/sollers/sa6/"
+    },
+    {
+      "slug": "sf1",
+      "name": "SF1",
+      "href": "https://www.drom.ru/catalog/sollers/sf1/"
+    },
+    {
+      "slug": "sp7",
+      "name": "SP7",
+      "href": "https://www.drom.ru/catalog/sollers/sp7/"
+    },
+    {
+      "slug": "st6",
+      "name": "ST6",
+      "href": "https://www.drom.ru/catalog/sollers/st6/"
+    },
+    {
+      "slug": "st8",
+      "name": "ST8",
+      "href": "https://www.drom.ru/catalog/sollers/st8/"
+    },
+    {
+      "slug": "st9",
+      "name": "ST9",
+      "href": "https://www.drom.ru/catalog/sollers/st9/"
+    }
+  ]
+}

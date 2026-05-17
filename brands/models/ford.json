@@ -1,0 +1,402 @@
+{
+  "brand": {
+    "slug": "ford",
+    "name": "Ford",
+    "href": "https://www.drom.ru/catalog/ford/"
+  },
+  "source": "https://www.drom.ru/catalog/ford/",
+  "collected_at": "2026-05-17",
+  "count": 78,
+  "models": [
+    {
+      "slug": "aerostar",
+      "name": "Aerostar",
+      "href": "https://www.drom.ru/catalog/ford/aerostar/"
+    },
+    {
+      "slug": "aspire",
+      "name": "Aspire",
+      "href": "https://www.drom.ru/catalog/ford/aspire/"
+    },
+    {
+      "slug": "b-max",
+      "name": "B-MAX",
+      "href": "https://www.drom.ru/catalog/ford/b-max/"
+    },
+    {
+      "slug": "bronco",
+      "name": "Bronco",
+      "href": "https://www.drom.ru/catalog/ford/bronco/"
+    },
+    {
+      "slug": "bronco_2",
+      "name": "Bronco II",
+      "href": "https://www.drom.ru/catalog/ford/bronco_2/"
+    },
+    {
+      "slug": "bronco_sport",
+      "name": "Bronco Sport",
+      "href": "https://www.drom.ru/catalog/ford/bronco_sport/"
+    },
+    {
+      "slug": "c-max",
+      "name": "C-MAX",
+      "href": "https://www.drom.ru/catalog/ford/c-max/"
+    },
+    {
+      "slug": "capri",
+      "name": "Capri",
+      "href": "https://www.drom.ru/catalog/ford/capri/"
+    },
+    {
+      "slug": "contour",
+      "name": "Contour",
+      "href": "https://www.drom.ru/catalog/ford/contour/"
+    },
+    {
+      "slug": "cougar",
+      "name": "Cougar",
+      "href": "https://www.drom.ru/catalog/ford/cougar/"
+    },
+    {
+      "slug": "crown_victoria",
+      "name": "Crown Victoria",
+      "href": "https://www.drom.ru/catalog/ford/crown_victoria/"
+    },
+    {
+      "slug": "econovan",
+      "name": "Econovan",
+      "href": "https://www.drom.ru/catalog/ford/econovan/"
+    },
+    {
+      "slug": "ecosport",
+      "name": "EcoSport",
+      "href": "https://www.drom.ru/catalog/ford/ecosport/"
+    },
+    {
+      "slug": "edge",
+      "name": "Edge",
+      "href": "https://www.drom.ru/catalog/ford/edge/"
+    },
+    {
+      "slug": "eifel",
+      "name": "Eifel",
+      "href": "https://www.drom.ru/catalog/ford/eifel/"
+    },
+    {
+      "slug": "equator",
+      "name": "Equator",
+      "href": "https://www.drom.ru/catalog/ford/equator/"
+    },
+    {
+      "slug": "equator_sport",
+      "name": "Equator Sport",
+      "href": "https://www.drom.ru/catalog/ford/equator_sport/"
+    },
+    {
+      "slug": "escape",
+      "name": "Escape",
+      "href": "https://www.drom.ru/catalog/ford/escape/"
+    },
+    {
+      "slug": "escort",
+      "name": "Escort",
+      "href": "https://www.drom.ru/catalog/ford/escort/"
+    },
+    {
+      "slug": "everest",
+      "name": "Everest",
+      "href": "https://www.drom.ru/catalog/ford/everest/"
+    },
+    {
+      "slug": "evos",
+      "name": "Evos",
+      "href": "https://www.drom.ru/catalog/ford/evos/"
+    },
+    {
+      "slug": "excursion",
+      "name": "Excursion",
+      "href": "https://www.drom.ru/catalog/ford/excursion/"
+    },
+    {
+      "slug": "expedition",
+      "name": "Expedition",
+      "href": "https://www.drom.ru/catalog/ford/expedition/"
+    },
+    {
+      "slug": "explorer",
+      "name": "Explorer",
+      "href": "https://www.drom.ru/catalog/ford/explorer/"
+    },
+    {
+      "slug": "explorer_ev",
+      "name": "Explorer EV",
+      "href": "https://www.drom.ru/catalog/ford/explorer_ev/"
+    },
+    {
+      "slug": "explorer_sport_trac",
+      "name": "Explorer Sport Trac",
+      "href": "https://www.drom.ru/catalog/ford/explorer_sport_trac/"
+    },
+    {
+      "slug": "f150",
+      "name": "F150",
+      "href": "https://www.drom.ru/catalog/ford/f150/"
+    },
+    {
+      "slug": "f250",
+      "name": "F250",
+      "href": "https://www.drom.ru/catalog/ford/f250/"
+    },
+    {
+      "slug": "f350",
+      "name": "F350",
+      "href": "https://www.drom.ru/catalog/ford/f350/"
+    },
+    {
+      "slug": "fairlane",
+      "name": "Fairlane",
+      "href": "https://www.drom.ru/catalog/ford/fairlane/"
+    },
+    {
+      "slug": "festiva",
+      "name": "Festiva",
+      "href": "https://www.drom.ru/catalog/ford/festiva/"
+    },
+    {
+      "slug": "fiesta",
+      "name": "Fiesta",
+      "href": "https://www.drom.ru/catalog/ford/fiesta/"
+    },
+    {
+      "slug": "flex",
+      "name": "Flex",
+      "href": "https://www.drom.ru/catalog/ford/flex/"
+    },
+    {
+      "slug": "focus",
+      "name": "Focus",
+      "href": "https://www.drom.ru/catalog/ford/focus/"
+    },
+    {
+      "slug": "focus_rs",
+      "name": "Focus RS",
+      "href": "https://www.drom.ru/catalog/ford/focus_rs/"
+    },
+    {
+      "slug": "focus_st",
+      "name": "Focus ST",
+      "href": "https://www.drom.ru/catalog/ford/focus_st/"
+    },
+    {
+      "slug": "freda",
+      "name": "Freda",
+      "href": "https://www.drom.ru/catalog/ford/freda/"
+    },
+    {
+      "slug": "freestyle",
+      "name": "Freestyle",
+      "href": "https://www.drom.ru/catalog/ford/freestyle/"
+    },
+    {
+      "slug": "fusion",
+      "name": "Fusion",
+      "href": "https://www.drom.ru/catalog/ford/fusion/"
+    },
+    {
+      "slug": "galaxie",
+      "name": "Galaxie",
+      "href": "https://www.drom.ru/catalog/ford/galaxie/"
+    },
+    {
+      "slug": "galaxy",
+      "name": "Galaxy",
+      "href": "https://www.drom.ru/catalog/ford/galaxy/"
+    },
+    {
+      "slug": "granada",
+      "name": "Granada",
+      "href": "https://www.drom.ru/catalog/ford/granada/"
+    },
+    {
+      "slug": "grand_c_max",
+      "name": "Grand C-MAX",
+      "href": "https://www.drom.ru/catalog/ford/grand_c_max/"
+    },
+    {
+      "slug": "gt",
+      "name": "GT",
+      "href": "https://www.drom.ru/catalog/ford/gt/"
+    },
+    {
+      "slug": "ixion",
+      "name": "Ixion",
+      "href": "https://www.drom.ru/catalog/ford/ixion/"
+    },
+    {
+      "slug": "ka",
+      "name": "Ka",
+      "href": "https://www.drom.ru/catalog/ford/ka/"
+    },
+    {
+      "slug": "kuga",
+      "name": "Kuga",
+      "href": "https://www.drom.ru/catalog/ford/kuga/"
+    },
+    {
+      "slug": "laser",
+      "name": "Laser",
+      "href": "https://www.drom.ru/catalog/ford/laser/"
+    },
+    {
+      "slug": "ltd_crown_victoria",
+      "name": "LTD Crown Victoria",
+      "href": "https://www.drom.ru/catalog/ford/ltd_crown_victoria/"
+    },
+    {
+      "slug": "maverick",
+      "name": "Maverick",
+      "href": "https://www.drom.ru/catalog/ford/maverick/"
+    },
+    {
+      "slug": "model_t",
+      "name": "Model T",
+      "href": "https://www.drom.ru/catalog/ford/model_t/"
+    },
+    {
+      "slug": "mondeo",
+      "name": "Mondeo",
+      "href": "https://www.drom.ru/catalog/ford/mondeo/"
+    },
+    {
+      "slug": "mondeo_sport",
+      "name": "Mondeo Sport",
+      "href": "https://www.drom.ru/catalog/ford/mondeo_sport/"
+    },
+    {
+      "slug": "mustang",
+      "name": "Mustang",
+      "href": "https://www.drom.ru/catalog/ford/mustang/"
+    },
+    {
+      "slug": "mustang_mach_e",
+      "name": "Mustang Mach-E",
+      "href": "https://www.drom.ru/catalog/ford/mustang_mach_e/"
+    },
+    {
+      "slug": "orion",
+      "name": "Orion",
+      "href": "https://www.drom.ru/catalog/ford/orion/"
+    },
+    {
+      "slug": "probe",
+      "name": "Probe",
+      "href": "https://www.drom.ru/catalog/ford/probe/"
+    },
+    {
+      "slug": "puma",
+      "name": "Puma",
+      "href": "https://www.drom.ru/catalog/ford/puma/"
+    },
+    {
+      "slug": "ranger",
+      "name": "Ranger",
+      "href": "https://www.drom.ru/catalog/ford/ranger/"
+    },
+    {
+      "slug": "s-max",
+      "name": "S-MAX",
+      "href": "https://www.drom.ru/catalog/ford/s-max/"
+    },
+    {
+      "slug": "scorpio",
+      "name": "Scorpio",
+      "href": "https://www.drom.ru/catalog/ford/scorpio/"
+    },
+    {
+      "slug": "sierra",
+      "name": "Sierra",
+      "href": "https://www.drom.ru/catalog/ford/sierra/"
+    },
+    {
+      "slug": "spectron",
+      "name": "Spectron",
+      "href": "https://www.drom.ru/catalog/ford/spectron/"
+    },
+    {
+      "slug": "sportka",
+      "name": "SportKa",
+      "href": "https://www.drom.ru/catalog/ford/sportka/"
+    },
+    {
+      "slug": "streetka",
+      "name": "StreetKa",
+      "href": "https://www.drom.ru/catalog/ford/streetka/"
+    },
+    {
+      "slug": "taurus",
+      "name": "Taurus",
+      "href": "https://www.drom.ru/catalog/ford/taurus/"
+    },
+    {
+      "slug": "telstar",
+      "name": "Telstar",
+      "href": "https://www.drom.ru/catalog/ford/telstar/"
+    },
+    {
+      "slug": "tempo",
+      "name": "Tempo",
+      "href": "https://www.drom.ru/catalog/ford/tempo/"
+    },
+    {
+      "slug": "territory",
+      "name": "Territory",
+      "href": "https://www.drom.ru/catalog/ford/territory/"
+    },
+    {
+      "slug": "think",
+      "name": "Th!nk",
+      "href": "https://www.drom.ru/catalog/ford/think/"
+    },
+    {
+      "slug": "thunderbird",
+      "name": "Thunderbird",
+      "href": "https://www.drom.ru/catalog/ford/thunderbird/"
+    },
+    {
+      "slug": "torino",
+      "name": "Torino",
+      "href": "https://www.drom.ru/catalog/ford/torino/"
+    },
+    {
+      "slug": "tourneo",
+      "name": "Tourneo",
+      "href": "https://www.drom.ru/catalog/ford/tourneo/"
+    },
+    {
+      "slug": "tourneo_connect",
+      "name": "Tourneo Connect",
+      "href": "https://www.drom.ru/catalog/ford/tourneo_connect/"
+    },
+    {
+      "slug": "tourneo_courier",
+      "name": "Tourneo Courier",
+      "href": "https://www.drom.ru/catalog/ford/tourneo_courier/"
+    },
+    {
+      "slug": "tourneo_custom",
+      "name": "Tourneo Custom",
+      "href": "https://www.drom.ru/catalog/ford/tourneo_custom/"
+    },
+    {
+      "slug": "v8",
+      "name": "V8",
+      "href": "https://www.drom.ru/catalog/ford/v8/"
+    },
+    {
+      "slug": "windstar",
+      "name": "Windstar",
+      "href": "https://www.drom.ru/catalog/ford/windstar/"
+    }
+  ]
+}

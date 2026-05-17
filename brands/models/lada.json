@@ -1,0 +1,272 @@
+{
+  "brand": {
+    "slug": "lada",
+    "name": "Лада",
+    "href": "https://www.drom.ru/catalog/lada/"
+  },
+  "source": "https://www.drom.ru/catalog/lada/",
+  "collected_at": "2026-05-17",
+  "count": 52,
+  "models": [
+    {
+      "slug": "2101",
+      "name": "2101",
+      "href": "https://www.drom.ru/catalog/lada/2101/"
+    },
+    {
+      "slug": "2102",
+      "name": "2102",
+      "href": "https://www.drom.ru/catalog/lada/2102/"
+    },
+    {
+      "slug": "2103",
+      "name": "2103",
+      "href": "https://www.drom.ru/catalog/lada/2103/"
+    },
+    {
+      "slug": "2104",
+      "name": "2104",
+      "href": "https://www.drom.ru/catalog/lada/2104/"
+    },
+    {
+      "slug": "2105",
+      "name": "2105",
+      "href": "https://www.drom.ru/catalog/lada/2105/"
+    },
+    {
+      "slug": "2106",
+      "name": "2106",
+      "href": "https://www.drom.ru/catalog/lada/2106/"
+    },
+    {
+      "slug": "2107",
+      "name": "2107",
+      "href": "https://www.drom.ru/catalog/lada/2107/"
+    },
+    {
+      "slug": "2108",
+      "name": "2108",
+      "href": "https://www.drom.ru/catalog/lada/2108/"
+    },
+    {
+      "slug": "2109",
+      "name": "2109",
+      "href": "https://www.drom.ru/catalog/lada/2109/"
+    },
+    {
+      "slug": "21099",
+      "name": "21099",
+      "href": "https://www.drom.ru/catalog/lada/21099/"
+    },
+    {
+      "slug": "2110",
+      "name": "2110",
+      "href": "https://www.drom.ru/catalog/lada/2110/"
+    },
+    {
+      "slug": "2111",
+      "name": "2111",
+      "href": "https://www.drom.ru/catalog/lada/2111/"
+    },
+    {
+      "slug": "2112",
+      "name": "2112",
+      "href": "https://www.drom.ru/catalog/lada/2112/"
+    },
+    {
+      "slug": "2113",
+      "name": "2113 Самара",
+      "href": "https://www.drom.ru/catalog/lada/2113/"
+    },
+    {
+      "slug": "2114",
+      "name": "2114 Самара",
+      "href": "https://www.drom.ru/catalog/lada/2114/"
+    },
+    {
+      "slug": "2115",
+      "name": "2115 Самара",
+      "href": "https://www.drom.ru/catalog/lada/2115/"
+    },
+    {
+      "slug": "2120_nadezhda",
+      "name": "2120 Надежда",
+      "href": "https://www.drom.ru/catalog/lada/2120_nadezhda/"
+    },
+    {
+      "slug": "2121_4x4_niva",
+      "name": "4x4 2121 Нива",
+      "href": "https://www.drom.ru/catalog/lada/2121_4x4_niva/"
+    },
+    {
+      "slug": "2129",
+      "name": "2129",
+      "href": "https://www.drom.ru/catalog/lada/2129/"
+    },
+    {
+      "slug": "2131_4x4_niva",
+      "name": "4x4 2131 Нива",
+      "href": "https://www.drom.ru/catalog/lada/2131_4x4_niva/"
+    },
+    {
+      "slug": "2329_4x4_pickup",
+      "name": "Нива Пикап",
+      "href": "https://www.drom.ru/catalog/lada/2329_4x4_pickup/"
+    },
+    {
+      "slug": "4x4_bronto",
+      "name": "4x4 Бронто",
+      "href": "https://www.drom.ru/catalog/lada/4x4_bronto/"
+    },
+    {
+      "slug": "4x4_urban",
+      "name": "4x4 Урбан",
+      "href": "https://www.drom.ru/catalog/lada/4x4_urban/"
+    },
+    {
+      "slug": "aura",
+      "name": "Аура",
+      "href": "https://www.drom.ru/catalog/lada/aura/"
+    },
+    {
+      "slug": "azimut",
+      "name": "Азимут",
+      "href": "https://www.drom.ru/catalog/lada/azimut/"
+    },
+    {
+      "slug": "el_lada",
+      "name": "EL LADA",
+      "href": "https://www.drom.ru/catalog/lada/el_lada/"
+    },
+    {
+      "slug": "granta",
+      "name": "Гранта",
+      "href": "https://www.drom.ru/catalog/lada/granta/"
+    },
+    {
+      "slug": "granta_cross",
+      "name": "Гранта Кросс",
+      "href": "https://www.drom.ru/catalog/lada/granta_cross/"
+    },
+    {
+      "slug": "granta_sport",
+      "name": "Гранта Спорт",
+      "href": "https://www.drom.ru/catalog/lada/granta_sport/"
+    },
+    {
+      "slug": "iskra",
+      "name": "Искра",
+      "href": "https://www.drom.ru/catalog/lada/iskra/"
+    },
+    {
+      "slug": "iskra_cross",
+      "name": "Искра Кросс",
+      "href": "https://www.drom.ru/catalog/lada/iskra_cross/"
+    },
+    {
+      "slug": "kalina",
+      "name": "Калина",
+      "href": "https://www.drom.ru/catalog/lada/kalina/"
+    },
+    {
+      "slug": "kalina_cross",
+      "name": "Калина Кросс",
+      "href": "https://www.drom.ru/catalog/lada/kalina_cross/"
+    },
+    {
+      "slug": "kalina_sport",
+      "name": "Калина Спорт",
+      "href": "https://www.drom.ru/catalog/lada/kalina_sport/"
+    },
+    {
+      "slug": "largus",
+      "name": "Ларгус",
+      "href": "https://www.drom.ru/catalog/lada/largus/"
+    },
+    {
+      "slug": "largus_cross",
+      "name": "Ларгус Кросс",
+      "href": "https://www.drom.ru/catalog/lada/largus_cross/"
+    },
+    {
+      "slug": "niva",
+      "name": "Нива (2020-21 гг.)",
+      "href": "https://www.drom.ru/catalog/lada/niva/"
+    },
+    {
+      "slug": "niva_bronto",
+      "name": "Нива Бронто",
+      "href": "https://www.drom.ru/catalog/lada/niva_bronto/"
+    },
+    {
+      "slug": "niva_legend",
+      "name": "Нива Легенд",
+      "href": "https://www.drom.ru/catalog/lada/niva_legend/"
+    },
+    {
+      "slug": "niva_sport",
+      "name": "Нива Спорт",
+      "href": "https://www.drom.ru/catalog/lada/niva_sport/"
+    },
+    {
+      "slug": "niva_travel",
+      "name": "Нива Тревел",
+      "href": "https://www.drom.ru/catalog/lada/niva_travel/"
+    },
+    {
+      "slug": "oka",
+      "name": "1111 Ока",
+      "href": "https://www.drom.ru/catalog/lada/oka/"
+    },
+    {
+      "slug": "priora",
+      "name": "Приора",
+      "href": "https://www.drom.ru/catalog/lada/priora/"
+    },
+    {
+      "slug": "riva",
+      "name": "Рива",
+      "href": "https://www.drom.ru/catalog/lada/riva/"
+    },
+    {
+      "slug": "samara_hatchback",
+      "name": "Samara",
+      "href": "https://www.drom.ru/catalog/lada/samara_hatchback/"
+    },
+    {
+      "slug": "tarzan",
+      "name": "Тарзан",
+      "href": "https://www.drom.ru/catalog/lada/tarzan/"
+    },
+    {
+      "slug": "vesta",
+      "name": "Веста",
+      "href": "https://www.drom.ru/catalog/lada/vesta/"
+    },
+    {
+      "slug": "vesta_cross",
+      "name": "Веста Кросс",
+      "href": "https://www.drom.ru/catalog/lada/vesta_cross/"
+    },
+    {
+      "slug": "vesta_sport",
+      "name": "Веста Спорт",
+      "href": "https://www.drom.ru/catalog/lada/vesta_sport/"
+    },
+    {
+      "slug": "x-cross_5",
+      "name": "Х-Кросс 5",
+      "href": "https://www.drom.ru/catalog/lada/x-cross_5/"
+    },
+    {
+      "slug": "xray",
+      "name": "Х-рей",
+      "href": "https://www.drom.ru/catalog/lada/xray/"
+    },
+    {
+      "slug": "xray_cross",
+      "name": "Х-рей Кросс",
+      "href": "https://www.drom.ru/catalog/lada/xray_cross/"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "brand": {
+    "slug": "tagaz",
+    "name": "ТагАЗ",
+    "href": "https://www.drom.ru/catalog/tagaz/"
+  },
+  "source": "https://www.drom.ru/catalog/tagaz/",
+  "collected_at": "2026-05-17",
+  "count": 6,
+  "models": [
+    {
+      "slug": "aquila",
+      "name": "Aquila",
+      "href": "https://www.drom.ru/catalog/tagaz/aquila/"
+    },
+    {
+      "slug": "c10",
+      "name": "С10",
+      "href": "https://www.drom.ru/catalog/tagaz/c10/"
+    },
+    {
+      "slug": "c190",
+      "name": "С190",
+      "href": "https://www.drom.ru/catalog/tagaz/c190/"
+    },
+    {
+      "slug": "road_partner",
+      "name": "Роад Партнер",
+      "href": "https://www.drom.ru/catalog/tagaz/road_partner/"
+    },
+    {
+      "slug": "tager",
+      "name": "Тагер",
+      "href": "https://www.drom.ru/catalog/tagaz/tager/"
+    },
+    {
+      "slug": "vega",
+      "name": "Вега",
+      "href": "https://www.drom.ru/catalog/tagaz/vega/"
+    }
+  ]
+}

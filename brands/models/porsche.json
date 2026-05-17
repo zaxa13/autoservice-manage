@@ -1,0 +1,92 @@
+{
+  "brand": {
+    "slug": "porsche",
+    "name": "Porsche",
+    "href": "https://www.drom.ru/catalog/porsche/"
+  },
+  "source": "https://www.drom.ru/catalog/porsche/",
+  "collected_at": "2026-05-17",
+  "count": 16,
+  "models": [
+    {
+      "slug": "356",
+      "name": "356",
+      "href": "https://www.drom.ru/catalog/porsche/356/"
+    },
+    {
+      "slug": "911",
+      "name": "911",
+      "href": "https://www.drom.ru/catalog/porsche/911/"
+    },
+    {
+      "slug": "914",
+      "name": "914",
+      "href": "https://www.drom.ru/catalog/porsche/914/"
+    },
+    {
+      "slug": "918",
+      "name": "918",
+      "href": "https://www.drom.ru/catalog/porsche/918/"
+    },
+    {
+      "slug": "924",
+      "name": "924",
+      "href": "https://www.drom.ru/catalog/porsche/924/"
+    },
+    {
+      "slug": "928",
+      "name": "928",
+      "href": "https://www.drom.ru/catalog/porsche/928/"
+    },
+    {
+      "slug": "944",
+      "name": "944",
+      "href": "https://www.drom.ru/catalog/porsche/944/"
+    },
+    {
+      "slug": "968",
+      "name": "968",
+      "href": "https://www.drom.ru/catalog/porsche/968/"
+    },
+    {
+      "slug": "boxster",
+      "name": "Boxster",
+      "href": "https://www.drom.ru/catalog/porsche/boxster/"
+    },
+    {
+      "slug": "carrera",
+      "name": "Carrera GT",
+      "href": "https://www.drom.ru/catalog/porsche/carrera/"
+    },
+    {
+      "slug": "cayenne",
+      "name": "Cayenne",
+      "href": "https://www.drom.ru/catalog/porsche/cayenne/"
+    },
+    {
+      "slug": "cayenne_coupe",
+      "name": "Cayenne Coupe",
+      "href": "https://www.drom.ru/catalog/porsche/cayenne_coupe/"
+    },
+    {
+      "slug": "cayman",
+      "name": "Cayman",
+      "href": "https://www.drom.ru/catalog/porsche/cayman/"
+    },
+    {
+      "slug": "macan",
+      "name": "Macan",
+      "href": "https://www.drom.ru/catalog/porsche/macan/"
+    },
+    {
+      "slug": "panamera",
+      "name": "Panamera",
+      "href": "https://www.drom.ru/catalog/porsche/panamera/"
+    },
+    {
+      "slug": "taycan",
+      "name": "Taycan",
+      "href": "https://www.drom.ru/catalog/porsche/taycan/"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "brand": {
+    "slug": "ravon",
+    "name": "Ravon",
+    "href": "https://www.drom.ru/catalog/ravon/"
+  },
+  "source": "https://www.drom.ru/catalog/ravon/",
+  "collected_at": "2026-05-17",
+  "count": 5,
+  "models": [
+    {
+      "slug": "gentra",
+      "name": "Gentra",
+      "href": "https://www.drom.ru/catalog/ravon/gentra/"
+    },
+    {
+      "slug": "matiz",
+      "name": "Matiz",
+      "href": "https://www.drom.ru/catalog/ravon/matiz/"
+    },
+    {
+      "slug": "nexia_r3",
+      "name": "Nexia R3",
+      "href": "https://www.drom.ru/catalog/ravon/nexia_r3/"
+    },
+    {
+      "slug": "r2",
+      "name": "R2",
+      "href": "https://www.drom.ru/catalog/ravon/r2/"
+    },
+    {
+      "slug": "r4",
+      "name": "R4",
+      "href": "https://www.drom.ru/catalog/ravon/r4/"
+    }
+  ]
+}

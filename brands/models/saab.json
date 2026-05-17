@@ -1,0 +1,82 @@
+{
+  "brand": {
+    "slug": "saab",
+    "name": "Saab",
+    "href": "https://www.drom.ru/catalog/saab/"
+  },
+  "source": "https://www.drom.ru/catalog/saab/",
+  "collected_at": "2026-05-17",
+  "count": 14,
+  "models": [
+    {
+      "slug": "9-2x",
+      "name": "9-2X",
+      "href": "https://www.drom.ru/catalog/saab/9-2x/"
+    },
+    {
+      "slug": "9-3",
+      "name": "9-3",
+      "href": "https://www.drom.ru/catalog/saab/9-3/"
+    },
+    {
+      "slug": "9-4x",
+      "name": "9-4X",
+      "href": "https://www.drom.ru/catalog/saab/9-4x/"
+    },
+    {
+      "slug": "9-5",
+      "name": "9-5",
+      "href": "https://www.drom.ru/catalog/saab/9-5/"
+    },
+    {
+      "slug": "9-7x",
+      "name": "9-7X",
+      "href": "https://www.drom.ru/catalog/saab/9-7x/"
+    },
+    {
+      "slug": "90",
+      "name": "90",
+      "href": "https://www.drom.ru/catalog/saab/90/"
+    },
+    {
+      "slug": "900",
+      "name": "900",
+      "href": "https://www.drom.ru/catalog/saab/900/"
+    },
+    {
+      "slug": "9000",
+      "name": "9000",
+      "href": "https://www.drom.ru/catalog/saab/9000/"
+    },
+    {
+      "slug": "92",
+      "name": "92",
+      "href": "https://www.drom.ru/catalog/saab/92/"
+    },
+    {
+      "slug": "93",
+      "name": "93",
+      "href": "https://www.drom.ru/catalog/saab/93/"
+    },
+    {
+      "slug": "95",
+      "name": "95",
+      "href": "https://www.drom.ru/catalog/saab/95/"
+    },
+    {
+      "slug": "96",
+      "name": "96",
+      "href": "https://www.drom.ru/catalog/saab/96/"
+    },
+    {
+      "slug": "99",
+      "name": "99",
+      "href": "https://www.drom.ru/catalog/saab/99/"
+    },
+    {
+      "slug": "sonett",
+      "name": "Sonett",
+      "href": "https://www.drom.ru/catalog/saab/sonett/"
+    }
+  ]
+}

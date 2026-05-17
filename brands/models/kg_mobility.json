@@ -1,0 +1,82 @@
+{
+  "brand": {
+    "slug": "kg_mobility",
+    "name": "KGM",
+    "href": "https://www.drom.ru/catalog/kg_mobility/"
+  },
+  "source": "https://www.drom.ru/catalog/kg_mobility/",
+  "collected_at": "2026-05-17",
+  "count": 14,
+  "models": [
+    {
+      "slug": "actyon",
+      "name": "Actyon",
+      "href": "https://www.drom.ru/catalog/kg_mobility/actyon/"
+    },
+    {
+      "slug": "korando",
+      "name": "Korando",
+      "href": "https://www.drom.ru/catalog/kg_mobility/korando/"
+    },
+    {
+      "slug": "musso",
+      "name": "Musso",
+      "href": "https://www.drom.ru/catalog/kg_mobility/musso/"
+    },
+    {
+      "slug": "musso_ev",
+      "name": "Musso EV",
+      "href": "https://www.drom.ru/catalog/kg_mobility/musso_ev/"
+    },
+    {
+      "slug": "musso_grand",
+      "name": "Musso Grand",
+      "href": "https://www.drom.ru/catalog/kg_mobility/musso_grand/"
+    },
+    {
+      "slug": "musso_khan",
+      "name": "Musso Khan",
+      "href": "https://www.drom.ru/catalog/kg_mobility/musso_khan/"
+    },
+    {
+      "slug": "musso_sports",
+      "name": "Musso Sports",
+      "href": "https://www.drom.ru/catalog/kg_mobility/musso_sports/"
+    },
+    {
+      "slug": "rexton",
+      "name": "Rexton",
+      "href": "https://www.drom.ru/catalog/kg_mobility/rexton/"
+    },
+    {
+      "slug": "rexton_sports",
+      "name": "Rexton Sports",
+      "href": "https://www.drom.ru/catalog/kg_mobility/rexton_sports/"
+    },
+    {
+      "slug": "rexton_sports_khan",
+      "name": "Rexton Sports Khan",
+      "href": "https://www.drom.ru/catalog/kg_mobility/rexton_sports_khan/"
+    },
+    {
+      "slug": "tivoli",
+      "name": "Tivoli",
+      "href": "https://www.drom.ru/catalog/kg_mobility/tivoli/"
+    },
+    {
+      "slug": "torres",
+      "name": "Torres",
+      "href": "https://www.drom.ru/catalog/kg_mobility/torres/"
+    },
+    {
+      "slug": "torres_evx",
+      "name": "Torres EVX",
+      "href": "https://www.drom.ru/catalog/kg_mobility/torres_evx/"
+    },
+    {
+      "slug": "xlv",
+      "name": "XLV",
+      "href": "https://www.drom.ru/catalog/kg_mobility/xlv/"
+    }
+  ]
+}

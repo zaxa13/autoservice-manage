@@ -1,0 +1,302 @@
+{
+  "brand": {
+    "slug": "renault",
+    "name": "Renault",
+    "href": "https://www.drom.ru/catalog/renault/"
+  },
+  "source": "https://www.drom.ru/catalog/renault/",
+  "collected_at": "2026-05-17",
+  "count": 58,
+  "models": [
+    {
+      "slug": "11",
+      "name": "11",
+      "href": "https://www.drom.ru/catalog/renault/11/"
+    },
+    {
+      "slug": "14",
+      "name": "14",
+      "href": "https://www.drom.ru/catalog/renault/14/"
+    },
+    {
+      "slug": "18",
+      "name": "18",
+      "href": "https://www.drom.ru/catalog/renault/18/"
+    },
+    {
+      "slug": "19",
+      "name": "19",
+      "href": "https://www.drom.ru/catalog/renault/19/"
+    },
+    {
+      "slug": "21",
+      "name": "21",
+      "href": "https://www.drom.ru/catalog/renault/21/"
+    },
+    {
+      "slug": "25",
+      "name": "25",
+      "href": "https://www.drom.ru/catalog/renault/25/"
+    },
+    {
+      "slug": "4",
+      "name": "4",
+      "href": "https://www.drom.ru/catalog/renault/4/"
+    },
+    {
+      "slug": "5_e_tech",
+      "name": "5 E-Tech",
+      "href": "https://www.drom.ru/catalog/renault/5_e_tech/"
+    },
+    {
+      "slug": "alaskan",
+      "name": "Alaskan",
+      "href": "https://www.drom.ru/catalog/renault/alaskan/"
+    },
+    {
+      "slug": "arkana",
+      "name": "Arkana",
+      "href": "https://www.drom.ru/catalog/renault/arkana/"
+    },
+    {
+      "slug": "austral",
+      "name": "Austral",
+      "href": "https://www.drom.ru/catalog/renault/austral/"
+    },
+    {
+      "slug": "avantime",
+      "name": "Avantime",
+      "href": "https://www.drom.ru/catalog/renault/avantime/"
+    },
+    {
+      "slug": "captur",
+      "name": "Captur",
+      "href": "https://www.drom.ru/catalog/renault/captur/"
+    },
+    {
+      "slug": "city_k-ze",
+      "name": "City K-ZE",
+      "href": "https://www.drom.ru/catalog/renault/city_k-ze/"
+    },
+    {
+      "slug": "clio",
+      "name": "Clio",
+      "href": "https://www.drom.ru/catalog/renault/clio/"
+    },
+    {
+      "slug": "dokker",
+      "name": "Dokker",
+      "href": "https://www.drom.ru/catalog/renault/dokker/"
+    },
+    {
+      "slug": "dokker_stepway",
+      "name": "Dokker Stepway",
+      "href": "https://www.drom.ru/catalog/renault/dokker_stepway/"
+    },
+    {
+      "slug": "duster",
+      "name": "Duster",
+      "href": "https://www.drom.ru/catalog/renault/duster/"
+    },
+    {
+      "slug": "espace",
+      "name": "Espace",
+      "href": "https://www.drom.ru/catalog/renault/espace/"
+    },
+    {
+      "slug": "estafette",
+      "name": "Estafette",
+      "href": "https://www.drom.ru/catalog/renault/estafette/"
+    },
+    {
+      "slug": "express",
+      "name": "Express",
+      "href": "https://www.drom.ru/catalog/renault/express/"
+    },
+    {
+      "slug": "filante",
+      "name": "Filante",
+      "href": "https://www.drom.ru/catalog/renault/filante/"
+    },
+    {
+      "slug": "fluence",
+      "name": "Fluence",
+      "href": "https://www.drom.ru/catalog/renault/fluence/"
+    },
+    {
+      "slug": "fluence_ze",
+      "name": "Fluence Z.E.",
+      "href": "https://www.drom.ru/catalog/renault/fluence_ze/"
+    },
+    {
+      "slug": "grand_koleos",
+      "name": "Grand Koleos",
+      "href": "https://www.drom.ru/catalog/renault/grand_koleos/"
+    },
+    {
+      "slug": "grand_scenic",
+      "name": "Grand Scenic",
+      "href": "https://www.drom.ru/catalog/renault/grand_scenic/"
+    },
+    {
+      "slug": "kadjar",
+      "name": "Kadjar",
+      "href": "https://www.drom.ru/catalog/renault/kadjar/"
+    },
+    {
+      "slug": "kangoo",
+      "name": "Kangoo",
+      "href": "https://www.drom.ru/catalog/renault/kangoo/"
+    },
+    {
+      "slug": "kangoo_ze",
+      "name": "Kangoo Z.E.",
+      "href": "https://www.drom.ru/catalog/renault/kangoo_ze/"
+    },
+    {
+      "slug": "kaptur",
+      "name": "Kaptur",
+      "href": "https://www.drom.ru/catalog/renault/kaptur/"
+    },
+    {
+      "slug": "koleos",
+      "name": "Koleos",
+      "href": "https://www.drom.ru/catalog/renault/koleos/"
+    },
+    {
+      "slug": "kwid",
+      "name": "KWID",
+      "href": "https://www.drom.ru/catalog/renault/kwid/"
+    },
+    {
+      "slug": "laguna",
+      "name": "Laguna",
+      "href": "https://www.drom.ru/catalog/renault/laguna/"
+    },
+    {
+      "slug": "latitude",
+      "name": "Latitude",
+      "href": "https://www.drom.ru/catalog/renault/latitude/"
+    },
+    {
+      "slug": "lodgy",
+      "name": "Lodgy",
+      "href": "https://www.drom.ru/catalog/renault/lodgy/"
+    },
+    {
+      "slug": "logan",
+      "name": "Logan",
+      "href": "https://www.drom.ru/catalog/renault/logan/"
+    },
+    {
+      "slug": "logan_stepway",
+      "name": "Logan Stepway",
+      "href": "https://www.drom.ru/catalog/renault/logan_stepway/"
+    },
+    {
+      "slug": "lutecia",
+      "name": "Lutecia",
+      "href": "https://www.drom.ru/catalog/renault/lutecia/"
+    },
+    {
+      "slug": "megane",
+      "name": "Megane",
+      "href": "https://www.drom.ru/catalog/renault/megane/"
+    },
+    {
+      "slug": "modus",
+      "name": "Modus",
+      "href": "https://www.drom.ru/catalog/renault/modus/"
+    },
+    {
+      "slug": "qm6",
+      "name": "QM6",
+      "href": "https://www.drom.ru/catalog/renault/qm6/"
+    },
+    {
+      "slug": "r5",
+      "name": "R5",
+      "href": "https://www.drom.ru/catalog/renault/r5/"
+    },
+    {
+      "slug": "r9",
+      "name": "R9",
+      "href": "https://www.drom.ru/catalog/renault/r9/"
+    },
+    {
+      "slug": "rafale",
+      "name": "Rafale",
+      "href": "https://www.drom.ru/catalog/renault/rafale/"
+    },
+    {
+      "slug": "safrane",
+      "name": "Safrane",
+      "href": "https://www.drom.ru/catalog/renault/safrane/"
+    },
+    {
+      "slug": "sandero",
+      "name": "Sandero",
+      "href": "https://www.drom.ru/catalog/renault/sandero/"
+    },
+    {
+      "slug": "sandero_stepway",
+      "name": "Sandero Stepway",
+      "href": "https://www.drom.ru/catalog/renault/sandero_stepway/"
+    },
+    {
+      "slug": "scenic",
+      "name": "Scenic",
+      "href": "https://www.drom.ru/catalog/renault/scenic/"
+    },
+    {
+      "slug": "scenic_rx4",
+      "name": "Scenic RX4",
+      "href": "https://www.drom.ru/catalog/renault/scenic_rx4/"
+    },
+    {
+      "slug": "sport_spider",
+      "name": "Sport Spider",
+      "href": "https://www.drom.ru/catalog/renault/sport_spider/"
+    },
+    {
+      "slug": "symbol",
+      "name": "Symbol",
+      "href": "https://www.drom.ru/catalog/renault/symbol/"
+    },
+    {
+      "slug": "talisman",
+      "name": "Talisman",
+      "href": "https://www.drom.ru/catalog/renault/talisman/"
+    },
+    {
+      "slug": "trafic",
+      "name": "Trafic",
+      "href": "https://www.drom.ru/catalog/renault/trafic/"
+    },
+    {
+      "slug": "twingo",
+      "name": "Twingo",
+      "href": "https://www.drom.ru/catalog/renault/twingo/"
+    },
+    {
+      "slug": "twizy",
+      "name": "Twizy",
+      "href": "https://www.drom.ru/catalog/renault/twizy/"
+    },
+    {
+      "slug": "vel_satis",
+      "name": "Vel Satis",
+      "href": "https://www.drom.ru/catalog/renault/vel_satis/"
+    },
+    {
+      "slug": "wind",
+      "name": "Wind",
+      "href": "https://www.drom.ru/catalog/renault/wind/"
+    },
+    {
+      "slug": "zoe",
+      "name": "ZOE",
+      "href": "https://www.drom.ru/catalog/renault/zoe/"
+    }
+  ]
+}

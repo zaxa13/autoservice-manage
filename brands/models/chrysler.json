@@ -1,0 +1,162 @@
+{
+  "brand": {
+    "slug": "chrysler",
+    "name": "Chrysler",
+    "href": "https://www.drom.ru/catalog/chrysler/"
+  },
+  "source": "https://www.drom.ru/catalog/chrysler/",
+  "collected_at": "2026-05-17",
+  "count": 30,
+  "models": [
+    {
+      "slug": "180",
+      "name": "180",
+      "href": "https://www.drom.ru/catalog/chrysler/180/"
+    },
+    {
+      "slug": "200",
+      "name": "200",
+      "href": "https://www.drom.ru/catalog/chrysler/200/"
+    },
+    {
+      "slug": "300",
+      "name": "300",
+      "href": "https://www.drom.ru/catalog/chrysler/300/"
+    },
+    {
+      "slug": "300_letter_series",
+      "name": "300 Letter Series",
+      "href": "https://www.drom.ru/catalog/chrysler/300_letter_series/"
+    },
+    {
+      "slug": "300c",
+      "name": "300C",
+      "href": "https://www.drom.ru/catalog/chrysler/300c/"
+    },
+    {
+      "slug": "300m",
+      "name": "300M",
+      "href": "https://www.drom.ru/catalog/chrysler/300m/"
+    },
+    {
+      "slug": "aspen",
+      "name": "Aspen",
+      "href": "https://www.drom.ru/catalog/chrysler/aspen/"
+    },
+    {
+      "slug": "cirrus",
+      "name": "Cirrus",
+      "href": "https://www.drom.ru/catalog/chrysler/cirrus/"
+    },
+    {
+      "slug": "concorde",
+      "name": "Concorde",
+      "href": "https://www.drom.ru/catalog/chrysler/concorde/"
+    },
+    {
+      "slug": "cordoba",
+      "name": "Cordoba",
+      "href": "https://www.drom.ru/catalog/chrysler/cordoba/"
+    },
+    {
+      "slug": "crossfire",
+      "name": "Crossfire",
+      "href": "https://www.drom.ru/catalog/chrysler/crossfire/"
+    },
+    {
+      "slug": "fifth_avenue",
+      "name": "Fifth Avenue",
+      "href": "https://www.drom.ru/catalog/chrysler/fifth_avenue/"
+    },
+    {
+      "slug": "grand_voyager",
+      "name": "Grand Voyager",
+      "href": "https://www.drom.ru/catalog/chrysler/grand_voyager/"
+    },
+    {
+      "slug": "imperial",
+      "name": "Imperial",
+      "href": "https://www.drom.ru/catalog/chrysler/imperial/"
+    },
+    {
+      "slug": "intrepid",
+      "name": "Intrepid",
+      "href": "https://www.drom.ru/catalog/chrysler/intrepid/"
+    },
+    {
+      "slug": "le_baron",
+      "name": "Le Baron",
+      "href": "https://www.drom.ru/catalog/chrysler/le_baron/"
+    },
+    {
+      "slug": "lhs",
+      "name": "LHS",
+      "href": "https://www.drom.ru/catalog/chrysler/lhs/"
+    },
+    {
+      "slug": "neon",
+      "name": "Neon",
+      "href": "https://www.drom.ru/catalog/chrysler/neon/"
+    },
+    {
+      "slug": "new_yorker",
+      "name": "New Yorker",
+      "href": "https://www.drom.ru/catalog/chrysler/new_yorker/"
+    },
+    {
+      "slug": "newport",
+      "name": "Newport",
+      "href": "https://www.drom.ru/catalog/chrysler/newport/"
+    },
+    {
+      "slug": "pacifica",
+      "name": "Pacifica",
+      "href": "https://www.drom.ru/catalog/chrysler/pacifica/"
+    },
+    {
+      "slug": "prowler",
+      "name": "Prowler",
+      "href": "https://www.drom.ru/catalog/chrysler/prowler/"
+    },
+    {
+      "slug": "pt_cruiser",
+      "name": "PT Cruiser",
+      "href": "https://www.drom.ru/catalog/chrysler/pt_cruiser/"
+    },
+    {
+      "slug": "saratoga",
+      "name": "Saratoga",
+      "href": "https://www.drom.ru/catalog/chrysler/saratoga/"
+    },
+    {
+      "slug": "sebring",
+      "name": "Sebring",
+      "href": "https://www.drom.ru/catalog/chrysler/sebring/"
+    },
+    {
+      "slug": "stratus",
+      "name": "Stratus",
+      "href": "https://www.drom.ru/catalog/chrysler/stratus/"
+    },
+    {
+      "slug": "town_country",
+      "name": "Town and Country",
+      "href": "https://www.drom.ru/catalog/chrysler/town_country/"
+    },
+    {
+      "slug": "vision",
+      "name": "Vision",
+      "href": "https://www.drom.ru/catalog/chrysler/vision/"
+    },
+    {
+      "slug": "voyager",
+      "name": "Voyager",
+      "href": "https://www.drom.ru/catalog/chrysler/voyager/"
+    },
+    {
+      "slug": "ypsilon",
+      "name": "Ypsilon",
+      "href": "https://www.drom.ru/catalog/chrysler/ypsilon/"
+    }
+  ]
+}

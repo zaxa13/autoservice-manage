@@ -1,0 +1,117 @@
+{
+  "brand": {
+    "slug": "hongqi",
+    "name": "Hongqi",
+    "href": "https://www.drom.ru/catalog/hongqi/"
+  },
+  "source": "https://www.drom.ru/catalog/hongqi/",
+  "collected_at": "2026-05-17",
+  "count": 21,
+  "models": [
+    {
+      "slug": "e-hs3",
+      "name": "E-HS3",
+      "href": "https://www.drom.ru/catalog/hongqi/e-hs3/"
+    },
+    {
+      "slug": "e-hs9",
+      "name": "E-HS9",
+      "href": "https://www.drom.ru/catalog/hongqi/e-hs9/"
+    },
+    {
+      "slug": "e-qm5",
+      "name": "E-QM5",
+      "href": "https://www.drom.ru/catalog/hongqi/e-qm5/"
+    },
+    {
+      "slug": "eh7",
+      "name": "EH7",
+      "href": "https://www.drom.ru/catalog/hongqi/eh7/"
+    },
+    {
+      "slug": "guoya",
+      "name": "Guoya",
+      "href": "https://www.drom.ru/catalog/hongqi/guoya/"
+    },
+    {
+      "slug": "h5",
+      "name": "H5",
+      "href": "https://www.drom.ru/catalog/hongqi/h5/"
+    },
+    {
+      "slug": "h6",
+      "name": "H6",
+      "href": "https://www.drom.ru/catalog/hongqi/h6/"
+    },
+    {
+      "slug": "h7",
+      "name": "H7",
+      "href": "https://www.drom.ru/catalog/hongqi/h7/"
+    },
+    {
+      "slug": "h9",
+      "name": "H9",
+      "href": "https://www.drom.ru/catalog/hongqi/h9/"
+    },
+    {
+      "slug": "hq9",
+      "name": "HQ9",
+      "href": "https://www.drom.ru/catalog/hongqi/hq9/"
+    },
+    {
+      "slug": "hs3",
+      "name": "HS3",
+      "href": "https://www.drom.ru/catalog/hongqi/hs3/"
+    },
+    {
+      "slug": "hs5",
+      "name": "HS5",
+      "href": "https://www.drom.ru/catalog/hongqi/hs5/"
+    },
+    {
+      "slug": "hs6",
+      "name": "HS6",
+      "href": "https://www.drom.ru/catalog/hongqi/hs6/"
+    },
+    {
+      "slug": "hs7",
+      "name": "HS7",
+      "href": "https://www.drom.ru/catalog/hongqi/hs7/"
+    },
+    {
+      "slug": "hs9",
+      "name": "HS9",
+      "href": "https://www.drom.ru/catalog/hongqi/hs9/"
+    },
+    {
+      "slug": "l1",
+      "name": "L1",
+      "href": "https://www.drom.ru/catalog/hongqi/l1/"
+    },
+    {
+      "slug": "l5",
+      "name": "L5 Guoli",
+      "href": "https://www.drom.ru/catalog/hongqi/l5/"
+    },
+    {
+      "slug": "ls7",
+      "name": "LS7",
+      "href": "https://www.drom.ru/catalog/hongqi/ls7/"
+    },
+    {
+      "slug": "tiangong_05",
+      "name": "Tiangong 05",
+      "href": "https://www.drom.ru/catalog/hongqi/tiangong_05/"
+    },
+    {
+      "slug": "tiangong_06",
+      "name": "Tiangong 06",
+      "href": "https://www.drom.ru/catalog/hongqi/tiangong_06/"
+    },
+    {
+      "slug": "tiangong_08",
+      "name": "Tiangong 08",
+      "href": "https://www.drom.ru/catalog/hongqi/tiangong_08/"
+    }
+  ]
+}

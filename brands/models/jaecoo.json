@@ -1,0 +1,32 @@
+{
+  "brand": {
+    "slug": "jaecoo",
+    "name": "Jaecoo",
+    "href": "https://www.drom.ru/catalog/jaecoo/"
+  },
+  "source": "https://www.drom.ru/catalog/jaecoo/",
+  "collected_at": "2026-05-17",
+  "count": 4,
+  "models": [
+    {
+      "slug": "j5",
+      "name": "J5",
+      "href": "https://www.drom.ru/catalog/jaecoo/j5/"
+    },
+    {
+      "slug": "j6",
+      "name": "J6",
+      "href": "https://www.drom.ru/catalog/jaecoo/j6/"
+    },
+    {
+      "slug": "j7",
+      "name": "J7",
+      "href": "https://www.drom.ru/catalog/jaecoo/j7/"
+    },
+    {
+      "slug": "j8",
+      "name": "J8",
+      "href": "https://www.drom.ru/catalog/jaecoo/j8/"
+    }
+  ]
+}

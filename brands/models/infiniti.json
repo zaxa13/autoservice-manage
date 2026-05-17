@@ -1,0 +1,217 @@
+{
+  "brand": {
+    "slug": "infiniti",
+    "name": "Infiniti",
+    "href": "https://www.drom.ru/catalog/infiniti/"
+  },
+  "source": "https://www.drom.ru/catalog/infiniti/",
+  "collected_at": "2026-05-17",
+  "count": 41,
+  "models": [
+    {
+      "slug": "esq",
+      "name": "ESQ",
+      "href": "https://www.drom.ru/catalog/infiniti/esq/"
+    },
+    {
+      "slug": "ex25",
+      "name": "EX25",
+      "href": "https://www.drom.ru/catalog/infiniti/ex25/"
+    },
+    {
+      "slug": "ex30d",
+      "name": "EX30d",
+      "href": "https://www.drom.ru/catalog/infiniti/ex30d/"
+    },
+    {
+      "slug": "ex35",
+      "name": "EX35",
+      "href": "https://www.drom.ru/catalog/infiniti/ex35/"
+    },
+    {
+      "slug": "ex37",
+      "name": "EX37",
+      "href": "https://www.drom.ru/catalog/infiniti/ex37/"
+    },
+    {
+      "slug": "fx30d",
+      "name": "FX30d",
+      "href": "https://www.drom.ru/catalog/infiniti/fx30d/"
+    },
+    {
+      "slug": "fx35",
+      "name": "FX35",
+      "href": "https://www.drom.ru/catalog/infiniti/fx35/"
+    },
+    {
+      "slug": "fx37",
+      "name": "FX37",
+      "href": "https://www.drom.ru/catalog/infiniti/fx37/"
+    },
+    {
+      "slug": "fx45",
+      "name": "FX45",
+      "href": "https://www.drom.ru/catalog/infiniti/fx45/"
+    },
+    {
+      "slug": "fx50",
+      "name": "FX50",
+      "href": "https://www.drom.ru/catalog/infiniti/fx50/"
+    },
+    {
+      "slug": "g20",
+      "name": "G20",
+      "href": "https://www.drom.ru/catalog/infiniti/g20/"
+    },
+    {
+      "slug": "g25",
+      "name": "G25",
+      "href": "https://www.drom.ru/catalog/infiniti/g25/"
+    },
+    {
+      "slug": "g35",
+      "name": "G35",
+      "href": "https://www.drom.ru/catalog/infiniti/g35/"
+    },
+    {
+      "slug": "g37",
+      "name": "G37",
+      "href": "https://www.drom.ru/catalog/infiniti/g37/"
+    },
+    {
+      "slug": "i30",
+      "name": "I30",
+      "href": "https://www.drom.ru/catalog/infiniti/i30/"
+    },
+    {
+      "slug": "i35",
+      "name": "I35",
+      "href": "https://www.drom.ru/catalog/infiniti/i35/"
+    },
+    {
+      "slug": "j30",
+      "name": "J30",
+      "href": "https://www.drom.ru/catalog/infiniti/j30/"
+    },
+    {
+      "slug": "jx35",
+      "name": "JX35",
+      "href": "https://www.drom.ru/catalog/infiniti/jx35/"
+    },
+    {
+      "slug": "m25",
+      "name": "M25",
+      "href": "https://www.drom.ru/catalog/infiniti/m25/"
+    },
+    {
+      "slug": "m30",
+      "name": "M30",
+      "href": "https://www.drom.ru/catalog/infiniti/m30/"
+    },
+    {
+      "slug": "m30d",
+      "name": "M30d",
+      "href": "https://www.drom.ru/catalog/infiniti/m30d/"
+    },
+    {
+      "slug": "m35",
+      "name": "M35",
+      "href": "https://www.drom.ru/catalog/infiniti/m35/"
+    },
+    {
+      "slug": "m35_hybrid",
+      "name": "M35h",
+      "href": "https://www.drom.ru/catalog/infiniti/m35_hybrid/"
+    },
+    {
+      "slug": "m37",
+      "name": "M37",
+      "href": "https://www.drom.ru/catalog/infiniti/m37/"
+    },
+    {
+      "slug": "m45",
+      "name": "M45",
+      "href": "https://www.drom.ru/catalog/infiniti/m45/"
+    },
+    {
+      "slug": "m56",
+      "name": "M56",
+      "href": "https://www.drom.ru/catalog/infiniti/m56/"
+    },
+    {
+      "slug": "q30",
+      "name": "Q30",
+      "href": "https://www.drom.ru/catalog/infiniti/q30/"
+    },
+    {
+      "slug": "q40",
+      "name": "Q40",
+      "href": "https://www.drom.ru/catalog/infiniti/q40/"
+    },
+    {
+      "slug": "q45",
+      "name": "Q45",
+      "href": "https://www.drom.ru/catalog/infiniti/q45/"
+    },
+    {
+      "slug": "q50",
+      "name": "Q50",
+      "href": "https://www.drom.ru/catalog/infiniti/q50/"
+    },
+    {
+      "slug": "q60",
+      "name": "Q60",
+      "href": "https://www.drom.ru/catalog/infiniti/q60/"
+    },
+    {
+      "slug": "q70",
+      "name": "Q70",
+      "href": "https://www.drom.ru/catalog/infiniti/q70/"
+    },
+    {
+      "slug": "qx30",
+      "name": "QX30",
+      "href": "https://www.drom.ru/catalog/infiniti/qx30/"
+    },
+    {
+      "slug": "qx4",
+      "name": "QX4",
+      "href": "https://www.drom.ru/catalog/infiniti/qx4/"
+    },
+    {
+      "slug": "qx50",
+      "name": "QX50",
+      "href": "https://www.drom.ru/catalog/infiniti/qx50/"
+    },
+    {
+      "slug": "qx55",
+      "name": "QX55",
+      "href": "https://www.drom.ru/catalog/infiniti/qx55/"
+    },
+    {
+      "slug": "qx56",
+      "name": "QX56",
+      "href": "https://www.drom.ru/catalog/infiniti/qx56/"
+    },
+    {
+      "slug": "qx60",
+      "name": "QX60",
+      "href": "https://www.drom.ru/catalog/infiniti/qx60/"
+    },
+    {
+      "slug": "qx65",
+      "name": "QX65",
+      "href": "https://www.drom.ru/catalog/infiniti/qx65/"
+    },
+    {
+      "slug": "qx70",
+      "name": "QX70",
+      "href": "https://www.drom.ru/catalog/infiniti/qx70/"
+    },
+    {
+      "slug": "qx80",
+      "name": "QX80",
+      "href": "https://www.drom.ru/catalog/infiniti/qx80/"
+    }
+  ]
+}

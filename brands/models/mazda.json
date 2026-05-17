@@ -1,0 +1,527 @@
+{
+  "brand": {
+    "slug": "mazda",
+    "name": "Mazda",
+    "href": "https://www.drom.ru/catalog/mazda/"
+  },
+  "source": "https://www.drom.ru/catalog/mazda/",
+  "collected_at": "2026-05-17",
+  "count": 103,
+  "models": [
+    {
+      "slug": "121",
+      "name": "121",
+      "href": "https://www.drom.ru/catalog/mazda/121/"
+    },
+    {
+      "slug": "1500",
+      "name": "1500",
+      "href": "https://www.drom.ru/catalog/mazda/1500/"
+    },
+    {
+      "slug": "323",
+      "name": "323",
+      "href": "https://www.drom.ru/catalog/mazda/323/"
+    },
+    {
+      "slug": "323c",
+      "name": "323C",
+      "href": "https://www.drom.ru/catalog/mazda/323c/"
+    },
+    {
+      "slug": "323f",
+      "name": "323F",
+      "href": "https://www.drom.ru/catalog/mazda/323f/"
+    },
+    {
+      "slug": "616",
+      "name": "616",
+      "href": "https://www.drom.ru/catalog/mazda/616/"
+    },
+    {
+      "slug": "626",
+      "name": "626",
+      "href": "https://www.drom.ru/catalog/mazda/626/"
+    },
+    {
+      "slug": "818",
+      "name": "818",
+      "href": "https://www.drom.ru/catalog/mazda/818/"
+    },
+    {
+      "slug": "929",
+      "name": "929",
+      "href": "https://www.drom.ru/catalog/mazda/929/"
+    },
+    {
+      "slug": "atenza",
+      "name": "Atenza",
+      "href": "https://www.drom.ru/catalog/mazda/atenza/"
+    },
+    {
+      "slug": "autozam_az-1",
+      "name": "Autozam AZ-1",
+      "href": "https://www.drom.ru/catalog/mazda/autozam_az-1/"
+    },
+    {
+      "slug": "autozam_az-3",
+      "name": "Autozam AZ-3",
+      "href": "https://www.drom.ru/catalog/mazda/autozam_az-3/"
+    },
+    {
+      "slug": "autozam_clef",
+      "name": "Autozam Clef",
+      "href": "https://www.drom.ru/catalog/mazda/autozam_clef/"
+    },
+    {
+      "slug": "axela",
+      "name": "Axela",
+      "href": "https://www.drom.ru/catalog/mazda/axela/"
+    },
+    {
+      "slug": "az-offroad",
+      "name": "AZ-Offroad",
+      "href": "https://www.drom.ru/catalog/mazda/az-offroad/"
+    },
+    {
+      "slug": "az-wagon",
+      "name": "AZ-Wagon",
+      "href": "https://www.drom.ru/catalog/mazda/az-wagon/"
+    },
+    {
+      "slug": "b-series",
+      "name": "B-Series",
+      "href": "https://www.drom.ru/catalog/mazda/b-series/"
+    },
+    {
+      "slug": "biante",
+      "name": "Biante",
+      "href": "https://www.drom.ru/catalog/mazda/biante/"
+    },
+    {
+      "slug": "bongo",
+      "name": "Bongo",
+      "href": "https://www.drom.ru/catalog/mazda/bongo/"
+    },
+    {
+      "slug": "bongo_brawny",
+      "name": "Bongo Brawny",
+      "href": "https://www.drom.ru/catalog/mazda/bongo_brawny/"
+    },
+    {
+      "slug": "bongo_friendee",
+      "name": "Bongo Friendee",
+      "href": "https://www.drom.ru/catalog/mazda/bongo_friendee/"
+    },
+    {
+      "slug": "bt-50",
+      "name": "BT-50",
+      "href": "https://www.drom.ru/catalog/mazda/bt-50/"
+    },
+    {
+      "slug": "capella",
+      "name": "Capella",
+      "href": "https://www.drom.ru/catalog/mazda/capella/"
+    },
+    {
+      "slug": "carol",
+      "name": "Carol",
+      "href": "https://www.drom.ru/catalog/mazda/carol/"
+    },
+    {
+      "slug": "chantez",
+      "name": "Chantez",
+      "href": "https://www.drom.ru/catalog/mazda/chantez/"
+    },
+    {
+      "slug": "cosmo",
+      "name": "Cosmo",
+      "href": "https://www.drom.ru/catalog/mazda/cosmo/"
+    },
+    {
+      "slug": "cronos",
+      "name": "Cronos",
+      "href": "https://www.drom.ru/catalog/mazda/cronos/"
+    },
+    {
+      "slug": "cx-3",
+      "name": "CX-3",
+      "href": "https://www.drom.ru/catalog/mazda/cx-3/"
+    },
+    {
+      "slug": "cx-30",
+      "name": "CX-30",
+      "href": "https://www.drom.ru/catalog/mazda/cx-30/"
+    },
+    {
+      "slug": "cx-4",
+      "name": "CX-4",
+      "href": "https://www.drom.ru/catalog/mazda/cx-4/"
+    },
+    {
+      "slug": "cx-5",
+      "name": "CX-5",
+      "href": "https://www.drom.ru/catalog/mazda/cx-5/"
+    },
+    {
+      "slug": "cx-50",
+      "name": "CX-50",
+      "href": "https://www.drom.ru/catalog/mazda/cx-50/"
+    },
+    {
+      "slug": "cx-60",
+      "name": "CX-60",
+      "href": "https://www.drom.ru/catalog/mazda/cx-60/"
+    },
+    {
+      "slug": "cx-6e",
+      "name": "CX-6e",
+      "href": "https://www.drom.ru/catalog/mazda/cx-6e/"
+    },
+    {
+      "slug": "cx-7",
+      "name": "CX-7",
+      "href": "https://www.drom.ru/catalog/mazda/cx-7/"
+    },
+    {
+      "slug": "cx-70",
+      "name": "CX-70",
+      "href": "https://www.drom.ru/catalog/mazda/cx-70/"
+    },
+    {
+      "slug": "cx-8",
+      "name": "CX-8",
+      "href": "https://www.drom.ru/catalog/mazda/cx-8/"
+    },
+    {
+      "slug": "cx-80",
+      "name": "CX-80",
+      "href": "https://www.drom.ru/catalog/mazda/cx-80/"
+    },
+    {
+      "slug": "cx-9",
+      "name": "CX-9",
+      "href": "https://www.drom.ru/catalog/mazda/cx-9/"
+    },
+    {
+      "slug": "cx-90",
+      "name": "CX-90",
+      "href": "https://www.drom.ru/catalog/mazda/cx-90/"
+    },
+    {
+      "slug": "demio",
+      "name": "Demio",
+      "href": "https://www.drom.ru/catalog/mazda/demio/"
+    },
+    {
+      "slug": "efini_mpv",
+      "name": "Efini MPV",
+      "href": "https://www.drom.ru/catalog/mazda/efini_mpv/"
+    },
+    {
+      "slug": "efini_ms-6",
+      "name": "Efini MS-6",
+      "href": "https://www.drom.ru/catalog/mazda/efini_ms-6/"
+    },
+    {
+      "slug": "efini_ms-8",
+      "name": "Efini MS-8",
+      "href": "https://www.drom.ru/catalog/mazda/efini_ms-8/"
+    },
+    {
+      "slug": "efini_ms-9",
+      "name": "Efini MS-9",
+      "href": "https://www.drom.ru/catalog/mazda/efini_ms-9/"
+    },
+    {
+      "slug": "efini_rx-7",
+      "name": "Efini RX-7",
+      "href": "https://www.drom.ru/catalog/mazda/efini_rx-7/"
+    },
+    {
+      "slug": "etude",
+      "name": "Etude",
+      "href": "https://www.drom.ru/catalog/mazda/etude/"
+    },
+    {
+      "slug": "eunos_100",
+      "name": "Eunos 100",
+      "href": "https://www.drom.ru/catalog/mazda/eunos_100/"
+    },
+    {
+      "slug": "eunos_300",
+      "name": "Eunos 300",
+      "href": "https://www.drom.ru/catalog/mazda/eunos_300/"
+    },
+    {
+      "slug": "eunos_500",
+      "name": "Eunos 500",
+      "href": "https://www.drom.ru/catalog/mazda/eunos_500/"
+    },
+    {
+      "slug": "eunos_800",
+      "name": "Eunos 800",
+      "href": "https://www.drom.ru/catalog/mazda/eunos_800/"
+    },
+    {
+      "slug": "eunos_cargo",
+      "name": "Eunos Cargo",
+      "href": "https://www.drom.ru/catalog/mazda/eunos_cargo/"
+    },
+    {
+      "slug": "eunos_cosmo",
+      "name": "Eunos Cosmo",
+      "href": "https://www.drom.ru/catalog/mazda/eunos_cosmo/"
+    },
+    {
+      "slug": "eunos_presso",
+      "name": "Eunos Presso",
+      "href": "https://www.drom.ru/catalog/mazda/eunos_presso/"
+    },
+    {
+      "slug": "eunos_roadster",
+      "name": "Eunos Roadster",
+      "href": "https://www.drom.ru/catalog/mazda/eunos_roadster/"
+    },
+    {
+      "slug": "ez-6",
+      "name": "EZ-6",
+      "href": "https://www.drom.ru/catalog/mazda/ez-6/"
+    },
+    {
+      "slug": "ez-60",
+      "name": "EZ-60",
+      "href": "https://www.drom.ru/catalog/mazda/ez-60/"
+    },
+    {
+      "slug": "familia",
+      "name": "Familia",
+      "href": "https://www.drom.ru/catalog/mazda/familia/"
+    },
+    {
+      "slug": "familia_s-wagon",
+      "name": "Familia S-Wagon",
+      "href": "https://www.drom.ru/catalog/mazda/familia_s-wagon/"
+    },
+    {
+      "slug": "flair",
+      "name": "Flair",
+      "href": "https://www.drom.ru/catalog/mazda/flair/"
+    },
+    {
+      "slug": "flair_crossover",
+      "name": "Flair Crossover",
+      "href": "https://www.drom.ru/catalog/mazda/flair_crossover/"
+    },
+    {
+      "slug": "flairwagon",
+      "name": "Flair Wagon",
+      "href": "https://www.drom.ru/catalog/mazda/flairwagon/"
+    },
+    {
+      "slug": "grandfamilia",
+      "name": "Grand Familia",
+      "href": "https://www.drom.ru/catalog/mazda/grandfamilia/"
+    },
+    {
+      "slug": "lantis",
+      "name": "Lantis",
+      "href": "https://www.drom.ru/catalog/mazda/lantis/"
+    },
+    {
+      "slug": "laputa",
+      "name": "Laputa",
+      "href": "https://www.drom.ru/catalog/mazda/laputa/"
+    },
+    {
+      "slug": "luce",
+      "name": "Luce",
+      "href": "https://www.drom.ru/catalog/mazda/luce/"
+    },
+    {
+      "slug": "mazda2",
+      "name": "Mazda2",
+      "href": "https://www.drom.ru/catalog/mazda/mazda2/"
+    },
+    {
+      "slug": "mazda3",
+      "name": "Mazda3",
+      "href": "https://www.drom.ru/catalog/mazda/mazda3/"
+    },
+    {
+      "slug": "mazda3_mps",
+      "name": "Mazda3 MPS",
+      "href": "https://www.drom.ru/catalog/mazda/mazda3_mps/"
+    },
+    {
+      "slug": "mazda5",
+      "name": "Mazda5",
+      "href": "https://www.drom.ru/catalog/mazda/mazda5/"
+    },
+    {
+      "slug": "mazda6",
+      "name": "Mazda6",
+      "href": "https://www.drom.ru/catalog/mazda/mazda6/"
+    },
+    {
+      "slug": "mazda6_mps",
+      "name": "Mazda6 MPS",
+      "href": "https://www.drom.ru/catalog/mazda/mazda6_mps/"
+    },
+    {
+      "slug": "mazda6e",
+      "name": "Mazda6e",
+      "href": "https://www.drom.ru/catalog/mazda/mazda6e/"
+    },
+    {
+      "slug": "mazda8",
+      "name": "Mazda8",
+      "href": "https://www.drom.ru/catalog/mazda/mazda8/"
+    },
+    {
+      "slug": "miata",
+      "name": "Miata",
+      "href": "https://www.drom.ru/catalog/mazda/miata/"
+    },
+    {
+      "slug": "millenia",
+      "name": "Millenia",
+      "href": "https://www.drom.ru/catalog/mazda/millenia/"
+    },
+    {
+      "slug": "mpv",
+      "name": "MPV",
+      "href": "https://www.drom.ru/catalog/mazda/mpv/"
+    },
+    {
+      "slug": "mx-3",
+      "name": "MX-3",
+      "href": "https://www.drom.ru/catalog/mazda/mx-3/"
+    },
+    {
+      "slug": "mx-30",
+      "name": "MX-30",
+      "href": "https://www.drom.ru/catalog/mazda/mx-30/"
+    },
+    {
+      "slug": "mx-5",
+      "name": "MX-5",
+      "href": "https://www.drom.ru/catalog/mazda/mx-5/"
+    },
+    {
+      "slug": "mx-6",
+      "name": "MX-6",
+      "href": "https://www.drom.ru/catalog/mazda/mx-6/"
+    },
+    {
+      "slug": "navajo",
+      "name": "Navajo",
+      "href": "https://www.drom.ru/catalog/mazda/navajo/"
+    },
+    {
+      "slug": "persona",
+      "name": "Persona",
+      "href": "https://www.drom.ru/catalog/mazda/persona/"
+    },
+    {
+      "slug": "premacy",
+      "name": "Premacy",
+      "href": "https://www.drom.ru/catalog/mazda/premacy/"
+    },
+    {
+      "slug": "proceed",
+      "name": "Proceed",
+      "href": "https://www.drom.ru/catalog/mazda/proceed/"
+    },
+    {
+      "slug": "proceed_levante",
+      "name": "Proceed Levante",
+      "href": "https://www.drom.ru/catalog/mazda/proceed_levante/"
+    },
+    {
+      "slug": "proceed_marvie",
+      "name": "Proceed Marvie",
+      "href": "https://www.drom.ru/catalog/mazda/proceed_marvie/"
+    },
+    {
+      "slug": "protege",
+      "name": "Protege",
+      "href": "https://www.drom.ru/catalog/mazda/protege/"
+    },
+    {
+      "slug": "revue",
+      "name": "Revue",
+      "href": "https://www.drom.ru/catalog/mazda/revue/"
+    },
+    {
+      "slug": "roadpacer",
+      "name": "Roadpacer",
+      "href": "https://www.drom.ru/catalog/mazda/roadpacer/"
+    },
+    {
+      "slug": "roadster",
+      "name": "Roadster",
+      "href": "https://www.drom.ru/catalog/mazda/roadster/"
+    },
+    {
+      "slug": "rx-5",
+      "name": "RX-5",
+      "href": "https://www.drom.ru/catalog/mazda/rx-5/"
+    },
+    {
+      "slug": "rx-7",
+      "name": "RX-7",
+      "href": "https://www.drom.ru/catalog/mazda/rx-7/"
+    },
+    {
+      "slug": "rx-8",
+      "name": "RX-8",
+      "href": "https://www.drom.ru/catalog/mazda/rx-8/"
+    },
+    {
+      "slug": "savanna",
+      "name": "Savanna",
+      "href": "https://www.drom.ru/catalog/mazda/savanna/"
+    },
+    {
+      "slug": "savanna_rx-7",
+      "name": "Savanna RX-7",
+      "href": "https://www.drom.ru/catalog/mazda/savanna_rx-7/"
+    },
+    {
+      "slug": "scrum",
+      "name": "Scrum",
+      "href": "https://www.drom.ru/catalog/mazda/scrum/"
+    },
+    {
+      "slug": "sentia",
+      "name": "Sentia",
+      "href": "https://www.drom.ru/catalog/mazda/sentia/"
+    },
+    {
+      "slug": "spiano",
+      "name": "Spiano",
+      "href": "https://www.drom.ru/catalog/mazda/spiano/"
+    },
+    {
+      "slug": "tribute",
+      "name": "Tribute",
+      "href": "https://www.drom.ru/catalog/mazda/tribute/"
+    },
+    {
+      "slug": "verisa",
+      "name": "Verisa",
+      "href": "https://www.drom.ru/catalog/mazda/verisa/"
+    },
+    {
+      "slug": "xedos_6",
+      "name": "Xedos 6",
+      "href": "https://www.drom.ru/catalog/mazda/xedos_6/"
+    },
+    {
+      "slug": "xedos_9",
+      "name": "Xedos 9",
+      "href": "https://www.drom.ru/catalog/mazda/xedos_9/"
+    }
+  ]
+}

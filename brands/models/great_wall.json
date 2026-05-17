@@ -1,0 +1,112 @@
+{
+  "brand": {
+    "slug": "great_wall",
+    "name": "Great Wall",
+    "href": "https://www.drom.ru/catalog/great_wall/"
+  },
+  "source": "https://www.drom.ru/catalog/great_wall/",
+  "collected_at": "2026-05-17",
+  "count": 20,
+  "models": [
+    {
+      "slug": "coolbear",
+      "name": "Coolbear",
+      "href": "https://www.drom.ru/catalog/great_wall/coolbear/"
+    },
+    {
+      "slug": "cowry",
+      "name": "Cowry",
+      "href": "https://www.drom.ru/catalog/great_wall/cowry/"
+    },
+    {
+      "slug": "florid",
+      "name": "Florid",
+      "href": "https://www.drom.ru/catalog/great_wall/florid/"
+    },
+    {
+      "slug": "hover",
+      "name": "Hover",
+      "href": "https://www.drom.ru/catalog/great_wall/hover/"
+    },
+    {
+      "slug": "hover_h3",
+      "name": "Hover H3",
+      "href": "https://www.drom.ru/catalog/great_wall/hover_h3/"
+    },
+    {
+      "slug": "hover_h5",
+      "name": "Hover H5",
+      "href": "https://www.drom.ru/catalog/great_wall/hover_h5/"
+    },
+    {
+      "slug": "hover_h6",
+      "name": "Hover H6",
+      "href": "https://www.drom.ru/catalog/great_wall/hover_h6/"
+    },
+    {
+      "slug": "hover_m2",
+      "name": "Hover M2",
+      "href": "https://www.drom.ru/catalog/great_wall/hover_m2/"
+    },
+    {
+      "slug": "hover_m4",
+      "name": "Hover M4",
+      "href": "https://www.drom.ru/catalog/great_wall/hover_m4/"
+    },
+    {
+      "slug": "pao",
+      "name": "Pao",
+      "href": "https://www.drom.ru/catalog/great_wall/pao/"
+    },
+    {
+      "slug": "peri",
+      "name": "Peri",
+      "href": "https://www.drom.ru/catalog/great_wall/peri/"
+    },
+    {
+      "slug": "poer",
+      "name": "Poer",
+      "href": "https://www.drom.ru/catalog/great_wall/poer/"
+    },
+    {
+      "slug": "poer_kingkong",
+      "name": "Poer KingKong",
+      "href": "https://www.drom.ru/catalog/great_wall/poer_kingkong/"
+    },
+    {
+      "slug": "safe",
+      "name": "Safe",
+      "href": "https://www.drom.ru/catalog/great_wall/safe/"
+    },
+    {
+      "slug": "sailor",
+      "name": "Sailor",
+      "href": "https://www.drom.ru/catalog/great_wall/sailor/"
+    },
+    {
+      "slug": "shanhai_poer",
+      "name": "Shanhai Poer",
+      "href": "https://www.drom.ru/catalog/great_wall/shanhai_poer/"
+    },
+    {
+      "slug": "sing",
+      "name": "Sing",
+      "href": "https://www.drom.ru/catalog/great_wall/sing/"
+    },
+    {
+      "slug": "voleex_c30",
+      "name": "Voleex c30",
+      "href": "https://www.drom.ru/catalog/great_wall/voleex_c30/"
+    },
+    {
+      "slug": "wingle",
+      "name": "Wingle",
+      "href": "https://www.drom.ru/catalog/great_wall/wingle/"
+    },
+    {
+      "slug": "wingle_7",
+      "name": "Wingle 7",
+      "href": "https://www.drom.ru/catalog/great_wall/wingle_7/"
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "brand": {
+    "slug": "mini",
+    "name": "MINI",
+    "href": "https://www.drom.ru/catalog/mini/"
+  },
+  "source": "https://www.drom.ru/catalog/mini/",
+  "collected_at": "2026-05-17",
+  "count": 10,
+  "models": [
+    {
+      "slug": "aceman",
+      "name": "Aceman",
+      "href": "https://www.drom.ru/catalog/mini/aceman/"
+    },
+    {
+      "slug": "cabrio",
+      "name": "Cabrio",
+      "href": "https://www.drom.ru/catalog/mini/cabrio/"
+    },
+    {
+      "slug": "classic",
+      "name": "Classic",
+      "href": "https://www.drom.ru/catalog/mini/classic/"
+    },
+    {
+      "slug": "clubman",
+      "name": "Clubman",
+      "href": "https://www.drom.ru/catalog/mini/clubman/"
+    },
+    {
+      "slug": "countryman",
+      "name": "Countryman",
+      "href": "https://www.drom.ru/catalog/mini/countryman/"
+    },
+    {
+      "slug": "coupe-model",
+      "name": "Coupe",
+      "href": "https://www.drom.ru/catalog/mini/coupe-model/"
+    },
+    {
+      "slug": "crossover",
+      "name": "Crossover",
+      "href": "https://www.drom.ru/catalog/mini/crossover/"
+    },
+    {
+      "slug": "hatch",
+      "name": "Hatch",
+      "href": "https://www.drom.ru/catalog/mini/hatch/"
+    },
+    {
+      "slug": "paceman",
+      "name": "Paceman",
+      "href": "https://www.drom.ru/catalog/mini/paceman/"
+    },
+    {
+      "slug": "roadster",
+      "name": "Roadster",
+      "href": "https://www.drom.ru/catalog/mini/roadster/"
+    }
+  ]
+}

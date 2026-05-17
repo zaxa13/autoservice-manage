@@ -1,0 +1,37 @@
+{
+  "brand": {
+    "slug": "livan",
+    "name": "Livan",
+    "href": "https://www.drom.ru/catalog/livan/"
+  },
+  "source": "https://www.drom.ru/catalog/livan/",
+  "collected_at": "2026-05-17",
+  "count": 5,
+  "models": [
+    {
+      "slug": "7",
+      "name": "7",
+      "href": "https://www.drom.ru/catalog/livan/7/"
+    },
+    {
+      "slug": "9",
+      "name": "9",
+      "href": "https://www.drom.ru/catalog/livan/9/"
+    },
+    {
+      "slug": "s6_pro",
+      "name": "S6 Pro",
+      "href": "https://www.drom.ru/catalog/livan/s6_pro/"
+    },
+    {
+      "slug": "x3_pro",
+      "name": "X3 Pro",
+      "href": "https://www.drom.ru/catalog/livan/x3_pro/"
+    },
+    {
+      "slug": "x6_pro",
+      "name": "X6 Pro",
+      "href": "https://www.drom.ru/catalog/livan/x6_pro/"
+    }
+  ]
+}

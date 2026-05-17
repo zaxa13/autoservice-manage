@@ -1,0 +1,17 @@
+{
+  "brand": {
+    "slug": "vauxhall",
+    "name": "Vauxhall",
+    "href": "https://www.drom.ru/catalog/vauxhall/"
+  },
+  "source": "https://www.drom.ru/catalog/vauxhall/",
+  "collected_at": "2026-05-17",
+  "count": 1,
+  "models": [
+    {
+      "slug": "viva",
+      "name": "Viva",
+      "href": "https://www.drom.ru/catalog/vauxhall/viva/"
+    }
+  ]
+}

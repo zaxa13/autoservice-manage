@@ -1,0 +1,272 @@
+{
+  "brand": {
+    "slug": "bmw",
+    "name": "BMW",
+    "href": "https://www.drom.ru/catalog/bmw/"
+  },
+  "source": "https://www.drom.ru/catalog/bmw/",
+  "collected_at": "2026-05-17",
+  "count": 52,
+  "models": [
+    {
+      "slug": "02_e10",
+      "name": "02 (E10)",
+      "href": "https://www.drom.ru/catalog/bmw/02_e10/"
+    },
+    {
+      "slug": "1-series",
+      "name": "1-Series",
+      "href": "https://www.drom.ru/catalog/bmw/1-series/"
+    },
+    {
+      "slug": "1m",
+      "name": "1M",
+      "href": "https://www.drom.ru/catalog/bmw/1m/"
+    },
+    {
+      "slug": "2-series",
+      "name": "2-Series",
+      "href": "https://www.drom.ru/catalog/bmw/2-series/"
+    },
+    {
+      "slug": "2-series_active_tourer",
+      "name": "2-Series Active Tourer",
+      "href": "https://www.drom.ru/catalog/bmw/2-series_active_tourer/"
+    },
+    {
+      "slug": "2-series_gran_tourer",
+      "name": "2-Series Gran Tourer",
+      "href": "https://www.drom.ru/catalog/bmw/2-series_gran_tourer/"
+    },
+    {
+      "slug": "3-series",
+      "name": "3-Series",
+      "href": "https://www.drom.ru/catalog/bmw/3-series/"
+    },
+    {
+      "slug": "3-series_gran_turismo",
+      "name": "3-Series Gran Turismo",
+      "href": "https://www.drom.ru/catalog/bmw/3-series_gran_turismo/"
+    },
+    {
+      "slug": "321",
+      "name": "321",
+      "href": "https://www.drom.ru/catalog/bmw/321/"
+    },
+    {
+      "slug": "326",
+      "name": "326",
+      "href": "https://www.drom.ru/catalog/bmw/326/"
+    },
+    {
+      "slug": "340",
+      "name": "340",
+      "href": "https://www.drom.ru/catalog/bmw/340/"
+    },
+    {
+      "slug": "4-series",
+      "name": "4-Series",
+      "href": "https://www.drom.ru/catalog/bmw/4-series/"
+    },
+    {
+      "slug": "5-series",
+      "name": "5-Series",
+      "href": "https://www.drom.ru/catalog/bmw/5-series/"
+    },
+    {
+      "slug": "5-series_gran_turismo",
+      "name": "5-Series Gran Turismo",
+      "href": "https://www.drom.ru/catalog/bmw/5-series_gran_turismo/"
+    },
+    {
+      "slug": "503",
+      "name": "503",
+      "href": "https://www.drom.ru/catalog/bmw/503/"
+    },
+    {
+      "slug": "6-series",
+      "name": "6-Series",
+      "href": "https://www.drom.ru/catalog/bmw/6-series/"
+    },
+    {
+      "slug": "6-series_gran_turismo",
+      "name": "6-Series Gran Turismo",
+      "href": "https://www.drom.ru/catalog/bmw/6-series_gran_turismo/"
+    },
+    {
+      "slug": "600",
+      "name": "600",
+      "href": "https://www.drom.ru/catalog/bmw/600/"
+    },
+    {
+      "slug": "7-series",
+      "name": "7-Series",
+      "href": "https://www.drom.ru/catalog/bmw/7-series/"
+    },
+    {
+      "slug": "8-series",
+      "name": "8-Series",
+      "href": "https://www.drom.ru/catalog/bmw/8-series/"
+    },
+    {
+      "slug": "e3",
+      "name": "E3",
+      "href": "https://www.drom.ru/catalog/bmw/e3/"
+    },
+    {
+      "slug": "e9",
+      "name": "E9",
+      "href": "https://www.drom.ru/catalog/bmw/e9/"
+    },
+    {
+      "slug": "i3",
+      "name": "i3",
+      "href": "https://www.drom.ru/catalog/bmw/i3/"
+    },
+    {
+      "slug": "i4",
+      "name": "i4",
+      "href": "https://www.drom.ru/catalog/bmw/i4/"
+    },
+    {
+      "slug": "i5",
+      "name": "i5",
+      "href": "https://www.drom.ru/catalog/bmw/i5/"
+    },
+    {
+      "slug": "i7",
+      "name": "i7",
+      "href": "https://www.drom.ru/catalog/bmw/i7/"
+    },
+    {
+      "slug": "i8",
+      "name": "i8",
+      "href": "https://www.drom.ru/catalog/bmw/i8/"
+    },
+    {
+      "slug": "isetta",
+      "name": "Isetta",
+      "href": "https://www.drom.ru/catalog/bmw/isetta/"
+    },
+    {
+      "slug": "ix",
+      "name": "iX",
+      "href": "https://www.drom.ru/catalog/bmw/ix/"
+    },
+    {
+      "slug": "ix1",
+      "name": "iX1",
+      "href": "https://www.drom.ru/catalog/bmw/ix1/"
+    },
+    {
+      "slug": "ix2",
+      "name": "iX2",
+      "href": "https://www.drom.ru/catalog/bmw/ix2/"
+    },
+    {
+      "slug": "ix3",
+      "name": "iX3",
+      "href": "https://www.drom.ru/catalog/bmw/ix3/"
+    },
+    {
+      "slug": "m1",
+      "name": "M1",
+      "href": "https://www.drom.ru/catalog/bmw/m1/"
+    },
+    {
+      "slug": "m2",
+      "name": "M2",
+      "href": "https://www.drom.ru/catalog/bmw/m2/"
+    },
+    {
+      "slug": "m3",
+      "name": "M3",
+      "href": "https://www.drom.ru/catalog/bmw/m3/"
+    },
+    {
+      "slug": "m4",
+      "name": "M4",
+      "href": "https://www.drom.ru/catalog/bmw/m4/"
+    },
+    {
+      "slug": "m5",
+      "name": "M5",
+      "href": "https://www.drom.ru/catalog/bmw/m5/"
+    },
+    {
+      "slug": "m6",
+      "name": "M6",
+      "href": "https://www.drom.ru/catalog/bmw/m6/"
+    },
+    {
+      "slug": "m8",
+      "name": "M8",
+      "href": "https://www.drom.ru/catalog/bmw/m8/"
+    },
+    {
+      "slug": "neue_klasse",
+      "name": "Neue Klasse",
+      "href": "https://www.drom.ru/catalog/bmw/neue_klasse/"
+    },
+    {
+      "slug": "x1",
+      "name": "X1",
+      "href": "https://www.drom.ru/catalog/bmw/x1/"
+    },
+    {
+      "slug": "x2",
+      "name": "X2",
+      "href": "https://www.drom.ru/catalog/bmw/x2/"
+    },
+    {
+      "slug": "x3",
+      "name": "X3",
+      "href": "https://www.drom.ru/catalog/bmw/x3/"
+    },
+    {
+      "slug": "x4",
+      "name": "X4",
+      "href": "https://www.drom.ru/catalog/bmw/x4/"
+    },
+    {
+      "slug": "x5",
+      "name": "X5",
+      "href": "https://www.drom.ru/catalog/bmw/x5/"
+    },
+    {
+      "slug": "x6",
+      "name": "X6",
+      "href": "https://www.drom.ru/catalog/bmw/x6/"
+    },
+    {
+      "slug": "x7",
+      "name": "X7",
+      "href": "https://www.drom.ru/catalog/bmw/x7/"
+    },
+    {
+      "slug": "xm",
+      "name": "XM",
+      "href": "https://www.drom.ru/catalog/bmw/xm/"
+    },
+    {
+      "slug": "z1",
+      "name": "Z1",
+      "href": "https://www.drom.ru/catalog/bmw/z1/"
+    },
+    {
+      "slug": "z3",
+      "name": "Z3",
+      "href": "https://www.drom.ru/catalog/bmw/z3/"
+    },
+    {
+      "slug": "z4",
+      "name": "Z4",
+      "href": "https://www.drom.ru/catalog/bmw/z4/"
+    },
+    {
+      "slug": "z8",
+      "name": "Z8",
+      "href": "https://www.drom.ru/catalog/bmw/z8/"
+    }
+  ]
+}

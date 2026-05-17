@@ -1,0 +1,32 @@
+{
+  "brand": {
+    "slug": "solaris-agr",
+    "name": "Solaris",
+    "href": "https://www.drom.ru/catalog/solaris-agr/"
+  },
+  "source": "https://www.drom.ru/catalog/solaris-agr/",
+  "collected_at": "2026-05-17",
+  "count": 4,
+  "models": [
+    {
+      "slug": "hc",
+      "name": "HC",
+      "href": "https://www.drom.ru/catalog/solaris-agr/hc/"
+    },
+    {
+      "slug": "hs",
+      "name": "HS",
+      "href": "https://www.drom.ru/catalog/solaris-agr/hs/"
+    },
+    {
+      "slug": "krs",
+      "name": "KRS",
+      "href": "https://www.drom.ru/catalog/solaris-agr/krs/"
+    },
+    {
+      "slug": "krx",
+      "name": "KRX",
+      "href": "https://www.drom.ru/catalog/solaris-agr/krx/"
+    }
+  ]
+}

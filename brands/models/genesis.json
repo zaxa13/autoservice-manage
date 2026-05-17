@@ -1,0 +1,52 @@
+{
+  "brand": {
+    "slug": "genesis",
+    "name": "Genesis",
+    "href": "https://www.drom.ru/catalog/genesis/"
+  },
+  "source": "https://www.drom.ru/catalog/genesis/",
+  "collected_at": "2026-05-17",
+  "count": 8,
+  "models": [
+    {
+      "slug": "eq900",
+      "name": "EQ900",
+      "href": "https://www.drom.ru/catalog/genesis/eq900/"
+    },
+    {
+      "slug": "g70",
+      "name": "G70",
+      "href": "https://www.drom.ru/catalog/genesis/g70/"
+    },
+    {
+      "slug": "g80",
+      "name": "G80",
+      "href": "https://www.drom.ru/catalog/genesis/g80/"
+    },
+    {
+      "slug": "g90",
+      "name": "G90",
+      "href": "https://www.drom.ru/catalog/genesis/g90/"
+    },
+    {
+      "slug": "gv60",
+      "name": "GV60",
+      "href": "https://www.drom.ru/catalog/genesis/gv60/"
+    },
+    {
+      "slug": "gv70",
+      "name": "GV70",
+      "href": "https://www.drom.ru/catalog/genesis/gv70/"
+    },
+    {
+      "slug": "gv80",
+      "name": "GV80",
+      "href": "https://www.drom.ru/catalog/genesis/gv80/"
+    },
+    {
+      "slug": "gv80_coupe",
+      "name": "GV80 Coupe",
+      "href": "https://www.drom.ru/catalog/genesis/gv80_coupe/"
+    }
+  ]
+}

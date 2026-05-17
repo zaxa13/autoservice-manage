@@ -1,0 +1,47 @@
+{
+  "brand": {
+    "slug": "plymouth",
+    "name": "Plymouth",
+    "href": "https://www.drom.ru/catalog/plymouth/"
+  },
+  "source": "https://www.drom.ru/catalog/plymouth/",
+  "collected_at": "2026-05-17",
+  "count": 7,
+  "models": [
+    {
+      "slug": "barracuda",
+      "name": "Barracuda",
+      "href": "https://www.drom.ru/catalog/plymouth/barracuda/"
+    },
+    {
+      "slug": "breeze",
+      "name": "Breeze",
+      "href": "https://www.drom.ru/catalog/plymouth/breeze/"
+    },
+    {
+      "slug": "fury",
+      "name": "Fury",
+      "href": "https://www.drom.ru/catalog/plymouth/fury/"
+    },
+    {
+      "slug": "laser",
+      "name": "Laser",
+      "href": "https://www.drom.ru/catalog/plymouth/laser/"
+    },
+    {
+      "slug": "neon",
+      "name": "Neon",
+      "href": "https://www.drom.ru/catalog/plymouth/neon/"
+    },
+    {
+      "slug": "prowler",
+      "name": "Prowler",
+      "href": "https://www.drom.ru/catalog/plymouth/prowler/"
+    },
+    {
+      "slug": "voyager",
+      "name": "Voyager",
+      "href": "https://www.drom.ru/catalog/plymouth/voyager/"
+    }
+  ]
+}

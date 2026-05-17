@@ -1,0 +1,52 @@
+{
+  "brand": {
+    "slug": "zeekr",
+    "name": "Zeekr",
+    "href": "https://www.drom.ru/catalog/zeekr/"
+  },
+  "source": "https://www.drom.ru/catalog/zeekr/",
+  "collected_at": "2026-05-17",
+  "count": 8,
+  "models": [
+    {
+      "slug": "001",
+      "name": "001",
+      "href": "https://www.drom.ru/catalog/zeekr/001/"
+    },
+    {
+      "slug": "007",
+      "name": "007",
+      "href": "https://www.drom.ru/catalog/zeekr/007/"
+    },
+    {
+      "slug": "009",
+      "name": "009",
+      "href": "https://www.drom.ru/catalog/zeekr/009/"
+    },
+    {
+      "slug": "7x",
+      "name": "7X",
+      "href": "https://www.drom.ru/catalog/zeekr/7x/"
+    },
+    {
+      "slug": "8x",
+      "name": "8X",
+      "href": "https://www.drom.ru/catalog/zeekr/8x/"
+    },
+    {
+      "slug": "9x",
+      "name": "9X",
+      "href": "https://www.drom.ru/catalog/zeekr/9x/"
+    },
+    {
+      "slug": "mix",
+      "name": "Mix",
+      "href": "https://www.drom.ru/catalog/zeekr/mix/"
+    },
+    {
+      "slug": "x",
+      "name": "X",
+      "href": "https://www.drom.ru/catalog/zeekr/x/"
+    }
+  ]
+}

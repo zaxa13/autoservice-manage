@@ -1,0 +1,22 @@
+{
+  "brand": {
+    "slug": "alpine",
+    "name": "Alpine",
+    "href": "https://www.drom.ru/catalog/alpine/"
+  },
+  "source": "https://www.drom.ru/catalog/alpine/",
+  "collected_at": "2026-05-17",
+  "count": 2,
+  "models": [
+    {
+      "slug": "a110",
+      "name": "A110",
+      "href": "https://www.drom.ru/catalog/alpine/a110/"
+    },
+    {
+      "slug": "a290",
+      "name": "A290",
+      "href": "https://www.drom.ru/catalog/alpine/a290/"
+    }
+  ]
+}

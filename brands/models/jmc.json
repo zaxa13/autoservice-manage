@@ -1,0 +1,42 @@
+{
+  "brand": {
+    "slug": "jmc",
+    "name": "JMC",
+    "href": "https://www.drom.ru/catalog/jmc/"
+  },
+  "source": "https://www.drom.ru/catalog/jmc/",
+  "collected_at": "2026-05-17",
+  "count": 6,
+  "models": [
+    {
+      "slug": "baodian",
+      "name": "Baodian",
+      "href": "https://www.drom.ru/catalog/jmc/baodian/"
+    },
+    {
+      "slug": "dadao",
+      "name": "Dadao",
+      "href": "https://www.drom.ru/catalog/jmc/dadao/"
+    },
+    {
+      "slug": "vigus",
+      "name": "Vigus",
+      "href": "https://www.drom.ru/catalog/jmc/vigus/"
+    },
+    {
+      "slug": "yuhu_5",
+      "name": "Yuhu 5",
+      "href": "https://www.drom.ru/catalog/jmc/yuhu_5/"
+    },
+    {
+      "slug": "yuhu_7",
+      "name": "Yuhu 7",
+      "href": "https://www.drom.ru/catalog/jmc/yuhu_7/"
+    },
+    {
+      "slug": "yuhu_9",
+      "name": "Yuhu 9",
+      "href": "https://www.drom.ru/catalog/jmc/yuhu_9/"
+    }
+  ]
+}

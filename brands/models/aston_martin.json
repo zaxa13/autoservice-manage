@@ -1,0 +1,97 @@
+{
+  "brand": {
+    "slug": "aston_martin",
+    "name": "Aston Martin",
+    "href": "https://www.drom.ru/catalog/aston_martin/"
+  },
+  "source": "https://www.drom.ru/catalog/aston_martin/",
+  "collected_at": "2026-05-17",
+  "count": 17,
+  "models": [
+    {
+      "slug": "ar1",
+      "name": "AR1",
+      "href": "https://www.drom.ru/catalog/aston_martin/ar1/"
+    },
+    {
+      "slug": "cygnet",
+      "name": "Cygnet",
+      "href": "https://www.drom.ru/catalog/aston_martin/cygnet/"
+    },
+    {
+      "slug": "db11",
+      "name": "DB11",
+      "href": "https://www.drom.ru/catalog/aston_martin/db11/"
+    },
+    {
+      "slug": "db12",
+      "name": "DB12",
+      "href": "https://www.drom.ru/catalog/aston_martin/db12/"
+    },
+    {
+      "slug": "db5",
+      "name": "DB5",
+      "href": "https://www.drom.ru/catalog/aston_martin/db5/"
+    },
+    {
+      "slug": "db7",
+      "name": "DB7",
+      "href": "https://www.drom.ru/catalog/aston_martin/db7/"
+    },
+    {
+      "slug": "db9",
+      "name": "DB9",
+      "href": "https://www.drom.ru/catalog/aston_martin/db9/"
+    },
+    {
+      "slug": "dbs",
+      "name": "DBS",
+      "href": "https://www.drom.ru/catalog/aston_martin/dbs/"
+    },
+    {
+      "slug": "dbx",
+      "name": "DBX",
+      "href": "https://www.drom.ru/catalog/aston_martin/dbx/"
+    },
+    {
+      "slug": "lagonda",
+      "name": "Lagonda",
+      "href": "https://www.drom.ru/catalog/aston_martin/lagonda/"
+    },
+    {
+      "slug": "one-77",
+      "name": "One-77",
+      "href": "https://www.drom.ru/catalog/aston_martin/one-77/"
+    },
+    {
+      "slug": "rapide",
+      "name": "Rapide",
+      "href": "https://www.drom.ru/catalog/aston_martin/rapide/"
+    },
+    {
+      "slug": "tickford_capri",
+      "name": "Tickford Capri",
+      "href": "https://www.drom.ru/catalog/aston_martin/tickford_capri/"
+    },
+    {
+      "slug": "vanquish",
+      "name": "Vanquish",
+      "href": "https://www.drom.ru/catalog/aston_martin/vanquish/"
+    },
+    {
+      "slug": "vantage",
+      "name": "Vantage",
+      "href": "https://www.drom.ru/catalog/aston_martin/vantage/"
+    },
+    {
+      "slug": "virage",
+      "name": "Virage",
+      "href": "https://www.drom.ru/catalog/aston_martin/virage/"
+    },
+    {
+      "slug": "zagato",
+      "name": "Zagato",
+      "href": "https://www.drom.ru/catalog/aston_martin/zagato/"
+    }
+  ]
+}

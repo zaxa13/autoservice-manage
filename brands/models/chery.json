@@ -1,0 +1,402 @@
+{
+  "brand": {
+    "slug": "chery",
+    "name": "Chery",
+    "href": "https://www.drom.ru/catalog/chery/"
+  },
+  "source": "https://www.drom.ru/catalog/chery/",
+  "collected_at": "2026-05-17",
+  "count": 78,
+  "models": [
+    {
+      "slug": "a19",
+      "name": "Bonus 3 - A19",
+      "href": "https://www.drom.ru/catalog/chery/a19/"
+    },
+    {
+      "slug": "amulet",
+      "name": "Amulet A15",
+      "href": "https://www.drom.ru/catalog/chery/amulet/"
+    },
+    {
+      "slug": "arrizo_3",
+      "name": "Arrizo 3",
+      "href": "https://www.drom.ru/catalog/chery/arrizo_3/"
+    },
+    {
+      "slug": "arrizo_5",
+      "name": "Arrizo 5",
+      "href": "https://www.drom.ru/catalog/chery/arrizo_5/"
+    },
+    {
+      "slug": "arrizo_5_gt",
+      "name": "Arrizo 5 GT",
+      "href": "https://www.drom.ru/catalog/chery/arrizo_5_gt/"
+    },
+    {
+      "slug": "arrizo_5_plus",
+      "name": "Arrizo 5 Plus",
+      "href": "https://www.drom.ru/catalog/chery/arrizo_5_plus/"
+    },
+    {
+      "slug": "arrizo_5_pro",
+      "name": "Arrizo 5 Pro",
+      "href": "https://www.drom.ru/catalog/chery/arrizo_5_pro/"
+    },
+    {
+      "slug": "arrizo_5e",
+      "name": "Arrizo 5e",
+      "href": "https://www.drom.ru/catalog/chery/arrizo_5e/"
+    },
+    {
+      "slug": "arrizo_6_pro",
+      "name": "Arrizo 6 Pro",
+      "href": "https://www.drom.ru/catalog/chery/arrizo_6_pro/"
+    },
+    {
+      "slug": "arrizo_7",
+      "name": "Arrizo 7",
+      "href": "https://www.drom.ru/catalog/chery/arrizo_7/"
+    },
+    {
+      "slug": "arrizo_8",
+      "name": "Arrizo 8",
+      "href": "https://www.drom.ru/catalog/chery/arrizo_8/"
+    },
+    {
+      "slug": "arrizo_8_pro",
+      "name": "Arrizo 8 Pro",
+      "href": "https://www.drom.ru/catalog/chery/arrizo_8_pro/"
+    },
+    {
+      "slug": "arrizo_ex",
+      "name": "Arrizo EX",
+      "href": "https://www.drom.ru/catalog/chery/arrizo_ex/"
+    },
+    {
+      "slug": "arrizo_gx",
+      "name": "Arrizo GX",
+      "href": "https://www.drom.ru/catalog/chery/arrizo_gx/"
+    },
+    {
+      "slug": "arrizo_m7",
+      "name": "Arrizo M7",
+      "href": "https://www.drom.ru/catalog/chery/arrizo_m7/"
+    },
+    {
+      "slug": "b11",
+      "name": "Oriental Son",
+      "href": "https://www.drom.ru/catalog/chery/b11/"
+    },
+    {
+      "slug": "beat",
+      "name": "Beat",
+      "href": "https://www.drom.ru/catalog/chery/beat/"
+    },
+    {
+      "slug": "bonus",
+      "name": "Bonus A13",
+      "href": "https://www.drom.ru/catalog/chery/bonus/"
+    },
+    {
+      "slug": "crosseastar",
+      "name": "CrossEastar",
+      "href": "https://www.drom.ru/catalog/chery/crosseastar/"
+    },
+    {
+      "slug": "e5",
+      "name": "E5",
+      "href": "https://www.drom.ru/catalog/chery/e5/"
+    },
+    {
+      "slug": "eastar_b11",
+      "name": "Eastar",
+      "href": "https://www.drom.ru/catalog/chery/eastar_b11/"
+    },
+    {
+      "slug": "eq1",
+      "name": "eQ1",
+      "href": "https://www.drom.ru/catalog/chery/eq1/"
+    },
+    {
+      "slug": "eq5",
+      "name": "Big Ant eQ5",
+      "href": "https://www.drom.ru/catalog/chery/eq5/"
+    },
+    {
+      "slug": "eq7",
+      "name": "eQ7",
+      "href": "https://www.drom.ru/catalog/chery/eq7/"
+    },
+    {
+      "slug": "explore_06",
+      "name": "Explore 06",
+      "href": "https://www.drom.ru/catalog/chery/explore_06/"
+    },
+    {
+      "slug": "fora",
+      "name": "Fora A21",
+      "href": "https://www.drom.ru/catalog/chery/fora/"
+    },
+    {
+      "slug": "fulwin_a8",
+      "name": "Fulwin A8",
+      "href": "https://www.drom.ru/catalog/chery/fulwin_a8/"
+    },
+    {
+      "slug": "fulwin_a8l",
+      "name": "Fulwin A8L",
+      "href": "https://www.drom.ru/catalog/chery/fulwin_a8l/"
+    },
+    {
+      "slug": "fulwin_a9",
+      "name": "Fulwin A9",
+      "href": "https://www.drom.ru/catalog/chery/fulwin_a9/"
+    },
+    {
+      "slug": "fulwin_a9l",
+      "name": "Fulwin A9L",
+      "href": "https://www.drom.ru/catalog/chery/fulwin_a9l/"
+    },
+    {
+      "slug": "fulwin_t10",
+      "name": "Fulwin T10",
+      "href": "https://www.drom.ru/catalog/chery/fulwin_t10/"
+    },
+    {
+      "slug": "fulwin_t11",
+      "name": "Fulwin T11",
+      "href": "https://www.drom.ru/catalog/chery/fulwin_t11/"
+    },
+    {
+      "slug": "fulwin_t6",
+      "name": "Fulwin T6",
+      "href": "https://www.drom.ru/catalog/chery/fulwin_t6/"
+    },
+    {
+      "slug": "fulwin_t8",
+      "name": "Fulwin T8",
+      "href": "https://www.drom.ru/catalog/chery/fulwin_t8/"
+    },
+    {
+      "slug": "fulwin_t8l",
+      "name": "Fulwin T8L",
+      "href": "https://www.drom.ru/catalog/chery/fulwin_t8l/"
+    },
+    {
+      "slug": "fulwin_t9",
+      "name": "Fulwin T9",
+      "href": "https://www.drom.ru/catalog/chery/fulwin_t9/"
+    },
+    {
+      "slug": "fulwin_t9l",
+      "name": "Fulwin T9L",
+      "href": "https://www.drom.ru/catalog/chery/fulwin_t9l/"
+    },
+    {
+      "slug": "fulwin_x3",
+      "name": "Fulwin X3",
+      "href": "https://www.drom.ru/catalog/chery/fulwin_x3/"
+    },
+    {
+      "slug": "fulwin_x3_plus",
+      "name": "Fulwin X3 Plus",
+      "href": "https://www.drom.ru/catalog/chery/fulwin_x3_plus/"
+    },
+    {
+      "slug": "fulwin_x3l",
+      "name": "Fulwin X3L",
+      "href": "https://www.drom.ru/catalog/chery/fulwin_x3l/"
+    },
+    {
+      "slug": "indis",
+      "name": "indiS S18D",
+      "href": "https://www.drom.ru/catalog/chery/indis/"
+    },
+    {
+      "slug": "kimo",
+      "name": "Kimo A1",
+      "href": "https://www.drom.ru/catalog/chery/kimo/"
+    },
+    {
+      "slug": "little_ant",
+      "name": "Little Ant",
+      "href": "https://www.drom.ru/catalog/chery/little_ant/"
+    },
+    {
+      "slug": "m11",
+      "name": "M11",
+      "href": "https://www.drom.ru/catalog/chery/m11/"
+    },
+    {
+      "slug": "omoda_5",
+      "name": "Omoda 5",
+      "href": "https://www.drom.ru/catalog/chery/omoda_5/"
+    },
+    {
+      "slug": "qq",
+      "name": "QQ Sweet",
+      "href": "https://www.drom.ru/catalog/chery/qq/"
+    },
+    {
+      "slug": "qq3",
+      "name": "QQ3",
+      "href": "https://www.drom.ru/catalog/chery/qq3/"
+    },
+    {
+      "slug": "qq6_s21",
+      "name": "QQ6 S21",
+      "href": "https://www.drom.ru/catalog/chery/qq6_s21/"
+    },
+    {
+      "slug": "qq_domi",
+      "name": "QQ Domi",
+      "href": "https://www.drom.ru/catalog/chery/qq_domi/"
+    },
+    {
+      "slug": "qq_ice_cream",
+      "name": "QQ Ice Cream",
+      "href": "https://www.drom.ru/catalog/chery/qq_ice_cream/"
+    },
+    {
+      "slug": "tiggo",
+      "name": "Tiggo T11",
+      "href": "https://www.drom.ru/catalog/chery/tiggo/"
+    },
+    {
+      "slug": "tiggo_2",
+      "name": "Tiggo 2",
+      "href": "https://www.drom.ru/catalog/chery/tiggo_2/"
+    },
+    {
+      "slug": "tiggo_2_pro",
+      "name": "Tiggo 2 Pro",
+      "href": "https://www.drom.ru/catalog/chery/tiggo_2_pro/"
+    },
+    {
+      "slug": "tiggo_3",
+      "name": "Tiggo 3",
+      "href": "https://www.drom.ru/catalog/chery/tiggo_3/"
+    },
+    {
+      "slug": "tiggo_3x",
+      "name": "Tiggo 3x",
+      "href": "https://www.drom.ru/catalog/chery/tiggo_3x/"
+    },
+    {
+      "slug": "tiggo_3xe",
+      "name": "Tiggo 3xe",
+      "href": "https://www.drom.ru/catalog/chery/tiggo_3xe/"
+    },
+    {
+      "slug": "tiggo_4",
+      "name": "Tiggo 4",
+      "href": "https://www.drom.ru/catalog/chery/tiggo_4/"
+    },
+    {
+      "slug": "tiggo_4_pro",
+      "name": "Tiggo 4 Pro",
+      "href": "https://www.drom.ru/catalog/chery/tiggo_4_pro/"
+    },
+    {
+      "slug": "tiggo_5",
+      "name": "Tiggo 5",
+      "href": "https://www.drom.ru/catalog/chery/tiggo_5/"
+    },
+    {
+      "slug": "tiggo_5x",
+      "name": "Tiggo 5x",
+      "href": "https://www.drom.ru/catalog/chery/tiggo_5x/"
+    },
+    {
+      "slug": "tiggo_7",
+      "name": "Tiggo 7",
+      "href": "https://www.drom.ru/catalog/chery/tiggo_7/"
+    },
+    {
+      "slug": "tiggo_7_plus",
+      "name": "Tiggo 7 Plus",
+      "href": "https://www.drom.ru/catalog/chery/tiggo_7_plus/"
+    },
+    {
+      "slug": "tiggo_7_pro",
+      "name": "Tiggo 7 Pro",
+      "href": "https://www.drom.ru/catalog/chery/tiggo_7_pro/"
+    },
+    {
+      "slug": "tiggo_7_pro_max",
+      "name": "Tiggo 7 Pro Max",
+      "href": "https://www.drom.ru/catalog/chery/tiggo_7_pro_max/"
+    },
+    {
+      "slug": "tiggo_7_pro_plug-in-hybrid",
+      "name": "Tiggo 7 Pro Plug-In-Hybrid",
+      "href": "https://www.drom.ru/catalog/chery/tiggo_7_pro_plug-in-hybrid/"
+    },
+    {
+      "slug": "tiggo_7l",
+      "name": "Tiggo 7L",
+      "href": "https://www.drom.ru/catalog/chery/tiggo_7l/"
+    },
+    {
+      "slug": "tiggo_8",
+      "name": "Tiggo 8",
+      "href": "https://www.drom.ru/catalog/chery/tiggo_8/"
+    },
+    {
+      "slug": "tiggo_8_plus",
+      "name": "Tiggo 8 Plus",
+      "href": "https://www.drom.ru/catalog/chery/tiggo_8_plus/"
+    },
+    {
+      "slug": "tiggo_8_pro",
+      "name": "Tiggo 8 Pro",
+      "href": "https://www.drom.ru/catalog/chery/tiggo_8_pro/"
+    },
+    {
+      "slug": "tiggo_8_pro_e_plus_hybrid",
+      "name": "Tiggo 8 Pro e+ Hybrid",
+      "href": "https://www.drom.ru/catalog/chery/tiggo_8_pro_e_plus_hybrid/"
+    },
+    {
+      "slug": "tiggo_8_pro_max",
+      "name": "Tiggo 8 Pro Max",
+      "href": "https://www.drom.ru/catalog/chery/tiggo_8_pro_max/"
+    },
+    {
+      "slug": "tiggo_8_pro_plug-in-hybrid",
+      "name": "Tiggo 8 Pro Plug-In-Hybrid",
+      "href": "https://www.drom.ru/catalog/chery/tiggo_8_pro_plug-in-hybrid/"
+    },
+    {
+      "slug": "tiggo_8l",
+      "name": "Tiggo 8L",
+      "href": "https://www.drom.ru/catalog/chery/tiggo_8l/"
+    },
+    {
+      "slug": "tiggo_9",
+      "name": "Tiggo 9",
+      "href": "https://www.drom.ru/catalog/chery/tiggo_9/"
+    },
+    {
+      "slug": "tiggo_9x",
+      "name": "Tiggo 9X",
+      "href": "https://www.drom.ru/catalog/chery/tiggo_9x/"
+    },
+    {
+      "slug": "tiggo_e",
+      "name": "Tiggo e",
+      "href": "https://www.drom.ru/catalog/chery/tiggo_e/"
+    },
+    {
+      "slug": "very",
+      "name": "Very A13",
+      "href": "https://www.drom.ru/catalog/chery/very/"
+    },
+    {
+      "slug": "x1",
+      "name": "X1",
+      "href": "https://www.drom.ru/catalog/chery/x1/"
+    }
+  ]
+}
