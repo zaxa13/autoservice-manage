@@ -22,7 +22,7 @@ from decimal import Decimal
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
-from sqlalchemy import bindparam, delete, select, text
+from sqlalchemy import bindparam, delete, func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import BadRequestException, NotFoundException
@@ -452,8 +452,22 @@ async def update_order_endpoint(
         await db.flush()
         data.pop("order_parts")
 
-    if "status" in data and data["status"] is not None and hasattr(data["status"], "value"):
-        data["status"] = data["status"].value
+    if "status" in data and data["status"] is not None:
+        new_status = data["status"].value if hasattr(data["status"], "value") else data["status"]
+        if new_status == OrderStatus.COMPLETED.value:
+            raise BadRequestException(
+                "Завершение заказа доступно только через POST /orders/{id}/complete"
+            )
+        if new_status == OrderStatus.PAID.value:
+            raise BadRequestException(
+                "Статус «Оплачен» выставляется автоматически после регистрации платежа"
+            )
+        if new_status == OrderStatus.CANCELLED.value:
+            raise BadRequestException(
+                "Отмена доступна только через POST /orders/{id}/cancel"
+            )
+        data["status"] = new_status
+
     for k, v in data.items():
         setattr(order, k, v)
 
@@ -491,7 +505,11 @@ async def cancel_order(
     return await _serialize_order(db, order, claims, detail=False)
 
 
-@router.post("/{order_id}/complete", response_model=OrderSchema, responses={**_write, **_404})
+@router.post(
+    "/{order_id}/complete",
+    response_model=OrderSchema,
+    responses={**_write, 400: {"model": ErrorResponse}, **_404},
+)
 async def complete_order(
     order_id: int,
     db: AsyncSession = Depends(get_tenant_db),
@@ -501,6 +519,27 @@ async def complete_order(
     order = await db.get(Order, (claims.tenant_id, order_id))
     if order is None:
         raise NotFoundException("Заказ-наряд не найден")
+
+    if order.status == OrderStatus.COMPLETED.value:
+        raise BadRequestException("Заказ-наряд уже завершён")
+    if order.status == OrderStatus.CANCELLED.value:
+        raise BadRequestException("Нельзя завершить отменённый заказ-наряд")
+    if order.status != OrderStatus.PAID.value:
+        raise BadRequestException(
+            "Завершить заказ можно только после полной оплаты"
+        )
+
+    has_works = (await db.execute(
+        select(func.count()).select_from(OrderWork).where(OrderWork.order_id == order.id)
+    )).scalar_one()
+    has_parts = (await db.execute(
+        select(func.count()).select_from(OrderPart).where(OrderPart.order_id == order.id)
+    )).scalar_one()
+    if not has_works and not has_parts:
+        raise BadRequestException(
+            "Нельзя завершить пустой заказ-наряд: добавьте работы или запчасти"
+        )
+
     order.status = OrderStatus.COMPLETED.value
     order.completed_at = datetime.now(timezone.utc)
     await db.flush()

@@ -478,6 +478,11 @@ async def seed(tenant_id: UUID, variant: str) -> None:
 
             mileage_at = rng.randint(15000, 200000)
 
+            # «Закрытие = оплата». Завершённый (`completed`) и оплаченный
+             # (`paid`) заказ обязан иметь Payment(succeeded) на полный total —
+             # иначе отчёты «Выручка» и «Механики» разойдутся.
+            paid_amount = total if status in ("paid", "completed") else Decimal("0")
+
             r = await db.execute(text(
                 "INSERT INTO app.orders "
                 "(tenant_id, number, vehicle_id, employee_id, mechanic_id, status, "
@@ -491,7 +496,7 @@ async def seed(tenant_id: UUID, variant: str) -> None:
                 "mid": mechanic_id if status != "new" else None,
                 "st": status,
                 "total": total,
-                "paid": total if status == "paid" else Decimal("0"),
+                "paid": paid_amount,
                 "km": mileage_at,
                 "com": scenario["comment"],
                 "cat": created_at,
@@ -515,7 +520,7 @@ async def seed(tenant_id: UUID, variant: str) -> None:
                 ), {"oid": order_id, "n": p_name, "a": article,
                     "q": qty, "p": price, "t": line})
 
-            if status == "paid":
+            if status in ("paid", "completed"):
                 method = rng.choices(["cash", "card"], weights=[45, 55])[0]
                 pay_ts = (completed_at or created_at) + timedelta(minutes=rng.randint(5, 90))
                 await db.execute(text(

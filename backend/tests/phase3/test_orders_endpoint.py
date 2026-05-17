@@ -200,15 +200,87 @@ async def test_cancel_order(client):
     assert r.json()["status"] == "cancelled"
 
 
-async def test_complete_order(client):
+async def test_complete_order_requires_paid_and_non_empty(client):
     headers, refs = await _token_with_employee(client)
+
+    # Пустой заказ в статусе NEW — закрыть нельзя.
     body = {"vehicle_id": refs["vehicle_id"], "order_works": [], "order_parts": []}
     r = await client.post("/api/v1/orders/", json=body, headers=headers)
     order_id = r.json()["id"]
     r = await client.post(f"/api/v1/orders/{order_id}/complete", headers=headers)
+    assert r.status_code == 400
+    assert "оплат" in r.json()["detail"].lower()
+
+    # Добавляем работы, но статус всё ещё NEW — закрыть нельзя.
+    update = {
+        "order_works": [
+            {"work_name": "Замена масла", "quantity": 1, "price": "1000", "discount": 0},
+        ]
+    }
+    r = await client.put(f"/api/v1/orders/{order_id}", json=update, headers=headers)
+    assert r.status_code == 200
+    r = await client.post(f"/api/v1/orders/{order_id}/complete", headers=headers)
+    assert r.status_code == 400
+
+    # Регистрируем оплату — статус автоматически становится PAID.
+    pay_body = {"order_id": order_id, "amount": "1000", "payment_method": "cash"}
+    r = await client.post(
+        f"/api/v1/orders/{order_id}/payments", json=pay_body, headers=headers
+    )
+    assert r.status_code == 201
+    r = await client.get(f"/api/v1/orders/{order_id}", headers=headers)
+    assert r.json()["status"] == "paid"
+
+    # Теперь /complete должен пройти.
+    r = await client.post(f"/api/v1/orders/{order_id}/complete", headers=headers)
     assert r.status_code == 200
     assert r.json()["status"] == "completed"
     assert r.json()["completed_at"] is not None
+
+    # Повторный вызов — 400 («уже завершён»).
+    r = await client.post(f"/api/v1/orders/{order_id}/complete", headers=headers)
+    assert r.status_code == 400
+
+
+async def test_complete_empty_paid_order_rejected(client):
+    """Заказ без работ и запчастей нельзя завершить, даже если он PAID."""
+    headers, refs = await _token_with_employee(client)
+    body = {"vehicle_id": refs["vehicle_id"], "order_works": [], "order_parts": []}
+    r = await client.post("/api/v1/orders/", json=body, headers=headers)
+    order_id = r.json()["id"]
+    # total=0; оплата на 1 руб. делает paid_amount>=total → статус PAID.
+    pay_body = {"order_id": order_id, "amount": "1", "payment_method": "cash"}
+    r = await client.post(
+        f"/api/v1/orders/{order_id}/payments", json=pay_body, headers=headers
+    )
+    assert r.status_code == 201
+    r = await client.post(f"/api/v1/orders/{order_id}/complete", headers=headers)
+    assert r.status_code == 400
+    assert "пуст" in r.json()["detail"].lower()
+
+
+async def test_put_status_completed_rejected(client):
+    """Статус completed нельзя выставить через PUT — только через /complete."""
+    headers, refs = await _token_with_employee(client)
+    body = {"vehicle_id": refs["vehicle_id"], "order_works": [], "order_parts": []}
+    r = await client.post("/api/v1/orders/", json=body, headers=headers)
+    order_id = r.json()["id"]
+    r = await client.put(
+        f"/api/v1/orders/{order_id}", json={"status": "completed"}, headers=headers
+    )
+    assert r.status_code == 400
+
+
+async def test_put_status_paid_rejected(client):
+    """Статус paid нельзя выставить через PUT — только через /payments."""
+    headers, refs = await _token_with_employee(client)
+    body = {"vehicle_id": refs["vehicle_id"], "order_works": [], "order_parts": []}
+    r = await client.post("/api/v1/orders/", json=body, headers=headers)
+    order_id = r.json()["id"]
+    r = await client.put(
+        f"/api/v1/orders/{order_id}", json={"status": "paid"}, headers=headers
+    )
+    assert r.status_code == 400
 
 
 async def test_delete_requires_admin(client):
