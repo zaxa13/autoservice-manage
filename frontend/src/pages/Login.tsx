@@ -52,10 +52,13 @@ export default function Login() {
     try {
       await loginUser(email, password)
     } catch (err: unknown) {
-      const msg = err instanceof Error
-        ? err.message
-        : (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail ?? 'Ошибка входа'
-      setError(msg)
+      // Сначала достаём detail из ответа бэка ("Неверный email или пароль"),
+      // и только если его нет — фолбэк на err.message. AxiosError —
+      // тоже Error, поэтому проверка instanceof не годится.
+      const detail = (err as { response?: { data?: { detail?: string } } })
+        ?.response?.data?.detail
+      const fallback = err instanceof Error ? err.message : 'Ошибка входа'
+      setError(detail ?? fallback)
     } finally {
       setLoading(false)
     }

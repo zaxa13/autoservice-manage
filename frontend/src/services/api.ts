@@ -42,11 +42,17 @@ api.interceptors.request.use(
   }
 )
 
-// При 401 (токен истёк или невалиден) выходим и редирект на логин
+// При 401 (токен истёк или невалиден) выходим и редирект на логин.
+// НО: 401 на самих auth-эндпоинтах (/auth/login, /auth/register) — это
+// «неверный email/пароль», а не протухшая сессия. Тут редиректить нельзя
+// — пользователь должен увидеть Alert на форме, иначе страница моргает
+// и текст ошибки теряется при reload.
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const url: string = error.config?.url ?? ''
+    const isAuthEndpoint = PUBLIC_ENDPOINTS.some(e => url.includes(e))
+    if (error.response?.status === 401 && !isAuthEndpoint) {
       useAuthStore.getState().logout()
       window.location.href = '/login'
     }
