@@ -1051,12 +1051,13 @@ export default function Orders() {
               </Grid>
               <Grid item xs={6} lg={2}>
                 <FormControl fullWidth size="small">
-                  <InputLabel>Механик</InputLabel>
+                  <InputLabel shrink>Механик</InputLabel>
                   <Select
                     value={(work as any).mechanic_id || ''}
                     label="Механик"
                     onChange={e => updateRow('work', idx, 'mechanic_id', e.target.value || null)}
                     displayEmpty
+                    notched
                   >
                     <MenuItem value=""><em>Не задан</em></MenuItem>
                     {employees.map(e => <MenuItem key={e.id} value={e.id}>{e.full_name}</MenuItem>)}
