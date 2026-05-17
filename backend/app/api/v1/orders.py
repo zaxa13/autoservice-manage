@@ -22,7 +22,7 @@ from decimal import Decimal
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
-from sqlalchemy import delete, select, text
+from sqlalchemy import bindparam, delete, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import BadRequestException, NotFoundException
@@ -87,6 +87,43 @@ async def _next_order_number(db: AsyncSession) -> str:
     )
     n = result.scalar_one()
     return f"ЗН-{n:03d}"
+
+
+async def _validate_part_refs(db: AsyncSession, items) -> None:
+    """Гарантирует, что все part_id из payload реально есть в каталоге тенанта.
+
+    RLS делает фильтрацию по tenant_id автоматически.
+    """
+    ids = {p.part_id for p in items if p.part_id is not None}
+    if not ids:
+        return
+    stmt = text("SELECT id FROM app.parts WHERE id IN :ids").bindparams(
+        bindparam("ids", expanding=True)
+    )
+    found = set((await db.execute(stmt, {"ids": list(ids)})).scalars().all())
+    missing = sorted(ids - found)
+    if missing:
+        raise BadRequestException(
+            f"Запчасть из каталога не найдена (id={missing}). "
+            "Удалите позицию или выберите другую."
+        )
+
+
+async def _validate_work_refs(db: AsyncSession, items) -> None:
+    """Гарантирует, что все work_id из payload реально есть в каталоге тенанта."""
+    ids = {w.work_id for w in items if w.work_id is not None}
+    if not ids:
+        return
+    stmt = text("SELECT id FROM app.works WHERE id IN :ids").bindparams(
+        bindparam("ids", expanding=True)
+    )
+    found = set((await db.execute(stmt, {"ids": list(ids)})).scalars().all())
+    missing = sorted(ids - found)
+    if missing:
+        raise BadRequestException(
+            f"Работа из каталога не найдена (id={missing}). "
+            "Удалите позицию или выберите другую."
+        )
 
 
 def _vehicle_dict(v: Vehicle, customer, brand, model) -> dict:
@@ -323,6 +360,9 @@ async def create_order(
     if await db.get(Vehicle, (claims.tenant_id, body.vehicle_id)) is None:
         raise NotFoundException("Транспортное средство не найдено")
 
+    await _validate_work_refs(db, body.order_works)
+    await _validate_part_refs(db, body.order_parts)
+
     number = await _next_order_number(db)
     total_works = sum(
         (_line_total(w.price, w.quantity, w.discount) for w in body.order_works), Decimal(0)
@@ -388,6 +428,7 @@ async def update_order_endpoint(
     data = body.model_dump(exclude_unset=True)
 
     if "order_works" in data and data["order_works"] is not None:
+        await _validate_work_refs(db, body.order_works)
         await db.execute(delete(OrderWork).where(OrderWork.order_id == order.id))
         for w in body.order_works:
             db.add(OrderWork(
@@ -399,6 +440,7 @@ async def update_order_endpoint(
         await db.flush()
         data.pop("order_works")
     if "order_parts" in data and data["order_parts"] is not None:
+        await _validate_part_refs(db, body.order_parts)
         await db.execute(delete(OrderPart).where(OrderPart.order_id == order.id))
         for p in body.order_parts:
             db.add(OrderPart(

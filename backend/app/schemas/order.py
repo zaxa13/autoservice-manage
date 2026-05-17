@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 from typing import Optional, List
 from datetime import datetime
 from decimal import Decimal
@@ -17,6 +17,11 @@ def _normalize_article(v: Optional[str]) -> Optional[str]:
     return s if s else None
 
 
+def _normalize_ref_id(v: Optional[int]) -> Optional[int]:
+    """0/отрицательный id из фронта → None (запись считается ручной)."""
+    return v if (v is not None and v > 0) else None
+
+
 class OrderWorkBase(BaseModel):
     work_id: Optional[int] = Field(None, description="ID работы из справочника (null для ручного ввода)")
     work_name: Optional[str] = Field(None, description="Название работы при ручном вводе")
@@ -24,6 +29,27 @@ class OrderWorkBase(BaseModel):
     quantity: int = Field(1, ge=1, description="Количество")
     price: Decimal = Field(..., ge=0, description="Цена за единицу")
     discount: Optional[Decimal] = Field(0, ge=0, le=100, description="Скидка в процентах")
+
+    @field_validator("work_id", "mechanic_id", mode="before")
+    @classmethod
+    def _coerce_zero_to_none(cls, v):
+        return _normalize_ref_id(v) if isinstance(v, int) else v
+
+    @field_validator("work_name", mode="before")
+    @classmethod
+    def _strip_work_name(cls, v):
+        if isinstance(v, str):
+            s = v.strip()
+            return s if s else None
+        return v
+
+    @model_validator(mode="after")
+    def _require_reference_or_name(self):
+        if self.work_id is None and not self.work_name:
+            raise ValueError(
+                "Заполните название работы или выберите её из справочника"
+            )
+        return self
 
 
 class OrderWorkCreate(OrderWorkBase):
@@ -49,10 +75,32 @@ class OrderPartBase(BaseModel):
     price: Decimal = Field(..., ge=0, description="Цена за единицу")
     discount: Optional[Decimal] = Field(0, ge=0, le=100, description="Скидка в процентах")
 
+    @field_validator("part_id", mode="before")
+    @classmethod
+    def _coerce_zero_to_none(cls, v):
+        return _normalize_ref_id(v) if isinstance(v, int) else v
+
     @field_validator("article")
     @classmethod
     def normalize_article(cls, v: Optional[str]) -> Optional[str]:
         return _normalize_article(v)
+
+    @field_validator("part_name", mode="before")
+    @classmethod
+    def _strip_part_name(cls, v):
+        if isinstance(v, str):
+            s = v.strip()
+            return s if s else None
+        return v
+
+    @model_validator(mode="after")
+    def _require_reference_or_article(self):
+        # Если запчасть не из справочника — нужен артикул (и желательно название).
+        if self.part_id is None and not self.article:
+            raise ValueError(
+                "Заполните артикул запчасти или выберите её из справочника"
+            )
+        return self
 
 
 class OrderPartCreate(OrderPartBase):
