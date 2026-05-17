@@ -60,6 +60,13 @@ interface EmployeeCreate {
   user_role?: string
 }
 
+// В состоянии формы зарплата может быть пустой ('') — иначе при стирании
+// 0 React не пересортирует value и поле «залипает». В Number() конвертируем
+// только в момент submit.
+type EmployeeFormState = Omit<EmployeeCreate, 'salary_base'> & {
+  salary_base: number | ''
+}
+
 interface EmployeeUpdate {
   full_name?: string
   position?: string
@@ -83,13 +90,13 @@ export default function Employees() {
   
   const isAdmin = currentUser?.role === 'admin'
   
-  const [formData, setFormData] = useState<EmployeeCreate>({
+  const [formData, setFormData] = useState<EmployeeFormState>({
     full_name: '',
     position: '',
     phone: '',
     email: '',
     hire_date: new Date().toISOString().split('T')[0],
-    salary_base: 0,
+    salary_base: '',
     username: '',
     password: '',
     user_role: '',
@@ -164,7 +171,7 @@ export default function Employees() {
         phone: '',
         email: '',
         hire_date: new Date().toISOString().split('T')[0],
-        salary_base: 0,
+        salary_base: '',
         username: '',
         password: '',
         user_role: '',
@@ -185,6 +192,11 @@ export default function Employees() {
       setError('Заполните все обязательные поля')
       return
     }
+    if (formData.salary_base === '') {
+      setError('Укажите базовую зарплату')
+      return
+    }
+    const salaryBaseNum = Number(formData.salary_base)
 
     // Если создается пользователь, проверяем обязательные поля
     if (creatingUser && (!formData.username || !formData.password || !formData.user_role)) {
@@ -202,12 +214,15 @@ export default function Employees() {
           position: formData.position,
           phone: formData.phone || undefined,
           email: formData.email || undefined,
-          salary_base: formData.salary_base,
+          salary_base: salaryBaseNum,
         }
         await api.put(`/employees/${editingEmployee.id}`, updateData)
       } else {
         const createData: EmployeeCreate = {
-          ...formData,
+          full_name: formData.full_name,
+          position: formData.position,
+          hire_date: formData.hire_date,
+          salary_base: salaryBaseNum,
           phone: formData.phone || undefined,
           email: formData.email || undefined,
           username: creatingUser ? formData.username : undefined,
@@ -393,7 +408,13 @@ export default function Employees() {
                     label="Базовая зарплата *"
                     type="number"
                     value={formData.salary_base}
-                    onChange={(e) => setFormData({ ...formData, salary_base: Number(e.target.value) || 0 })}
+                    onChange={(e) => {
+                      const raw = e.target.value
+                      setFormData({
+                        ...formData,
+                        salary_base: raw === '' ? '' : Number(raw),
+                      })
+                    }}
                     required
                     inputProps={{ min: 0, step: 0.01 }}
                   />
