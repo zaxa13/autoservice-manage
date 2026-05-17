@@ -43,36 +43,36 @@ SEED_MARKER = "[seed_tenant.py]"
 
 # Бренды/модели по name (id берём из vehicle_brands/vehicle_models).
 BRAND_MODELS = [
-    ("Toyota",   "Camry"),
-    ("Toyota",   "Corolla"),
-    ("Toyota",   "RAV4"),
-    ("Volkswagen", "Polo"),
-    ("Volkswagen", "Tiguan"),
-    ("Volkswagen", "Passat"),
-    ("KIA",      "Rio"),
-    ("KIA",      "Sportage"),
-    ("Hyundai",  "Creta"),
-    ("Hyundai",  "Solaris"),
-    ("Hyundai",  "Tucson"),
-    ("BMW",      "3 серия"),
-    ("BMW",      "5 серия"),
-    ("BMW",      "X5"),
-    ("Audi",     "A4"),
-    ("Audi",     "Q5"),
-    ("Mercedes-Benz", "C-класс"),
-    ("Mercedes-Benz", "E-класс"),
-    ("Honda",    "Civic"),
-    ("Honda",    "CR-V"),
-    ("Skoda",    "Octavia"),
-    ("Skoda",    "Kodiaq"),
-    ("Renault",  "Logan"),
-    ("Renault",  "Duster"),
-    ("LADA (ВАЗ)", "Vesta"),
-    ("LADA (ВАЗ)", "Granta"),
-    ("Mazda",    "CX-5"),
-    ("Mazda",    "6"),
-    ("Nissan",   "Qashqai"),
-    ("Nissan",   "X-Trail"),
+    ("Toyota",        "Camry"),
+    ("Toyota",        "Corolla"),
+    ("Toyota",        "RAV4"),
+    ("Volkswagen",    "Polo"),
+    ("Volkswagen",    "Tiguan"),
+    ("Volkswagen",    "Passat"),
+    ("Kia",           "Rio"),
+    ("Kia",           "Sportage"),
+    ("Hyundai",       "Creta"),
+    ("Hyundai",       "Solaris"),
+    ("Hyundai",       "Tucson"),
+    ("BMW",           "3-Series"),
+    ("BMW",           "5-Series"),
+    ("BMW",           "X5"),
+    ("Audi",          "A4"),
+    ("Audi",          "Q5"),
+    ("Mercedes-Benz", "C-Class"),
+    ("Mercedes-Benz", "E-Class"),
+    ("Honda",         "Civic"),
+    ("Honda",         "CR-V"),
+    ("Skoda",         "Octavia"),
+    ("Skoda",         "Kodiaq"),
+    ("Renault",       "Logan"),
+    ("Renault",       "Duster"),
+    ("Лада",          "Веста"),
+    ("Лада",          "Гранта"),
+    ("Mazda",         "CX-5"),
+    ("Mazda",         "Mazda6"),
+    ("Nissan",        "Qashqai"),
+    ("Nissan",        "X-Trail"),
 ]
 
 # 3 "shared" клиента: фиксированные phone/email — одинаковые для variant=a и b.
@@ -325,9 +325,10 @@ async def _ensure_employees(db) -> tuple[int, list[int]]:
         r = await db.execute(text(
             "INSERT INTO app.employees "
             "(tenant_id, full_name, position, phone, hire_date, salary_base, is_active) "
-            "VALUES (app.current_tenant(), :n, 'manager', :p, '2024-01-15', 80000, true) "
+            "VALUES (app.current_tenant(), :n, 'manager', :p, :h, 80000, true) "
             "RETURNING id"
-        ), {"n": "Борисов Антон Сергеевич (приёмщик)", "p": "+79261110000"})
+        ), {"n": "Борисов Антон Сергеевич (приёмщик)", "p": "+79261110000",
+            "h": date(2024, 1, 15)})
         manager_id = r.scalar_one()
         print(f"  + создан менеджер id={manager_id}")
 
@@ -338,8 +339,8 @@ async def _ensure_employees(db) -> tuple[int, list[int]]:
     mech_ids = [row[0] for row in r.all()]
     if len(mech_ids) < 2:
         defaults = [
-            ("Петров Иван Сергеевич",   "+79261110001", "2023-05-10", 65000),
-            ("Климов Андрей Викторович","+79261110002", "2023-09-20", 60000),
+            ("Петров Иван Сергеевич",   "+79261110001", date(2023, 5, 10), 65000),
+            ("Климов Андрей Викторович","+79261110002", date(2023, 9, 20), 60000),
         ]
         for full_name, phone, hire, sal in defaults[len(mech_ids):]:
             r = await db.execute(text(
