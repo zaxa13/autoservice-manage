@@ -11,6 +11,8 @@ from xhtml2pdf import pisa
 from sqlalchemy.orm import Session, joinedload
 
 from app.models.order import Order, OrderWork, OrderPart
+from app.models.part import Part
+from app.models.supplier import Supplier
 from app.models.vehicle import Vehicle
 from app.models.warehouse import ReceiptDocument, ReceiptLine
 from app.core.exceptions import NotFoundException
@@ -294,20 +296,32 @@ def generate_receipt_pdf(db: Session, receipt_id: int) -> bytes:
     """Генерация PDF приходной накладной."""
     receipt = (
         db.query(ReceiptDocument)
-        .options(
-            joinedload(ReceiptDocument.supplier),
-            joinedload(ReceiptDocument.lines).joinedload(ReceiptLine.part),
-        )
         .filter(ReceiptDocument.id == receipt_id)
         .first()
     )
     if not receipt:
         raise NotFoundException("Накладная не найдена")
 
-    supplier = receipt.supplier
+    # ReceiptDocument не имеет ORM-relationships (FK по composite ключу
+    # настроены без relationship()), поэтому грузим связанное вручную.
+    supplier = (
+        db.query(Supplier).filter(Supplier.id == receipt.supplier_id).first()
+        if receipt.supplier_id is not None else None
+    )
+    receipt_lines = (
+        db.query(ReceiptLine).filter(ReceiptLine.receipt_id == receipt.id).all()
+    )
+    part_ids = [l.part_id for l in receipt_lines if l.part_id is not None]
+    parts_by_id: dict[int, Part] = {}
+    if part_ids:
+        parts_by_id = {
+            p.id: p
+            for p in db.query(Part).filter(Part.id.in_(part_ids)).all()
+        }
+
     lines = []
-    for line in receipt.lines:
-        part = line.part
+    for line in receipt_lines:
+        part = parts_by_id.get(line.part_id)
         line_total = float(line.quantity) * float(line.purchase_price)
         lines.append({
             "name": part.name if part else "—",
@@ -318,7 +332,7 @@ def generate_receipt_pdf(db: Session, receipt_id: int) -> bytes:
             "line_total": _fmt(line_total),
         })
 
-    total_amount = sum(float(l.quantity) * float(l.purchase_price) for l in receipt.lines)
+    total_amount = sum(float(l.quantity) * float(l.purchase_price) for l in receipt_lines)
 
     status_value = receipt.status.value if hasattr(receipt.status, "value") else str(receipt.status)
 
