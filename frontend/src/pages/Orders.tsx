@@ -487,8 +487,8 @@ export default function Orders() {
         setOpenDialog(false);
         loadInitialData();
       } else if (id) {
-        await fetchOrderDetails(id);
         setSaveSuccess(true);
+        await fetchOrderDetails(id);
       }
       const list = await api.get('/orders/'); setOrders(list.data || []);
     } catch (err: any) { setError(err.response?.data?.detail || 'Ошибка сохранения'); }
@@ -1503,11 +1503,26 @@ export default function Orders() {
       {/* Snackbar при сохранении */}
       <Snackbar
         open={saveSuccess}
-        autoHideDuration={2000}
+        autoHideDuration={3500}
         onClose={() => setSaveSuccess(false)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        sx={{ zIndex: (t) => t.zIndex.modal + 10, mt: 1 }}
       >
-        <Alert onClose={() => setSaveSuccess(false)} severity="success" variant="filled" sx={{ borderRadius: 2 }}>
+        <Alert
+          onClose={() => setSaveSuccess(false)}
+          severity="success"
+          variant="filled"
+          icon={<CheckCircleRounded fontSize="inherit" />}
+          sx={{
+            borderRadius: 3,
+            px: 3,
+            py: 1.5,
+            fontSize: 16,
+            fontWeight: 600,
+            boxShadow: 6,
+            minWidth: 320,
+          }}
+        >
           Заказ-наряд сохранён
         </Alert>
       </Snackbar>
