@@ -1126,7 +1126,7 @@ export default function Warehouse() {
                         fullWidth
                         type="number"
                         label="Кол-во"
-                        value={line.quantity}
+                        value={line.quantity || ''}
                         onChange={(e) =>
                           updateReceiptLine(idx, 'quantity', parseFloat(e.target.value) || 0)
                         }
@@ -1245,7 +1245,7 @@ export default function Warehouse() {
                         fullWidth
                         type="number"
                         label="Кол-во"
-                        value={line.quantity}
+                        value={line.quantity || ''}
                         onChange={(e) =>
                           updateReceiptLine(idx, 'quantity', parseFloat(e.target.value) || 0)
                         }
