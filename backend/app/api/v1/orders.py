@@ -17,7 +17,7 @@ INSERT...ON CONFLICT DO NOTHING + UPDATE...RETURNING. Формат `ЗН-001`.
 """
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from decimal import Decimal
 from typing import Optional
 
@@ -311,12 +311,18 @@ async def list_orders(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=500),
     status_filter: Optional[OrderStatus] = Query(None, alias="status"),
+    date_from: Optional[date] = Query(None, description="Заказы с created_at ≥ этой даты"),
+    date_to: Optional[date] = Query(None, description="Заказы с created_at ≤ этой даты"),
     db: AsyncSession = Depends(get_tenant_db),
     claims: TenantClaims = Depends(get_current_claims),
 ):
     stmt = select(Order).order_by(Order.created_at.desc())
     if status_filter:
         stmt = stmt.where(Order.status == status_filter.value)
+    if date_from is not None:
+        stmt = stmt.where(func.date(Order.created_at) >= date_from)
+    if date_to is not None:
+        stmt = stmt.where(func.date(Order.created_at) <= date_to)
     if "mechanic" in claims.roles and not (set(claims.roles) & {"admin", "manager"}):
         if claims.employee_id is not None:
             stmt = stmt.where(Order.mechanic_id == claims.employee_id)

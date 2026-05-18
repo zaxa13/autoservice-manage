@@ -77,6 +77,8 @@ export default function Orders() {
   const [error, setError] = useState('');
   const [selectedStatusFilter, setSelectedStatusFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [dateFrom, setDateFrom] = useState<string>('');
+  const [dateTo, setDateTo] = useState<string>('');
   const [deleteOrderConfirm, setDeleteOrderConfirm] = useState<Order | null>(null);
   const [deletingOrder, setDeletingOrder] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -171,18 +173,36 @@ export default function Orders() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [orderIdFromUrl, setOrderIdFromUrl] = useState<number | null>(null);
 
+  const loadOrders = async (from?: string, to?: string) => {
+    const params: Record<string, string> = {};
+    if (from) params.date_from = from;
+    if (to) params.date_to = to;
+    const ord = await api.get('/orders/', { params });
+    setOrders(ord.data || []);
+  };
+
   const loadInitialData = async () => {
     try {
       setLoading(true);
-      const [ord, emp, st, me] = await Promise.all([
-        api.get('/orders/'), api.get('/employees/'), api.get('/orders/statuses'), api.get('/auth/me')
+      const [, emp, st, me] = await Promise.all([
+        loadOrders(dateFrom, dateTo),
+        api.get('/employees/'),
+        api.get('/orders/statuses'),
+        api.get('/auth/me'),
       ]);
-      setOrders(ord.data || []); setEmployees(emp.data || []); setOrderStatuses(st.data || []); setCurrentUser(me.data);
+      setEmployees(emp.data || []); setOrderStatuses(st.data || []); setCurrentUser(me.data);
     } catch (e) { setError('Ошибка загрузки данных'); }
     finally { setLoading(false); }
   };
 
   useEffect(() => { loadInitialData(); }, []);
+
+  // Перезагрузка при смене даты-фильтра (после инициализации).
+  useEffect(() => {
+    if (loading) return;
+    loadOrders(dateFrom, dateTo).catch(() => setError('Ошибка загрузки заказов'));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dateFrom, dateTo]);
 
   // Открытие заказа по ссылке из другой вкладки (?open=orderId)
   useEffect(() => {
@@ -516,7 +536,7 @@ export default function Orders() {
         setSaveSuccess(true);
         await fetchOrderDetails(id);
       }
-      const list = await api.get('/orders/'); setOrders(list.data || []);
+      await loadOrders(dateFrom, dateTo);
     } catch (err: any) { setError(err.response?.data?.detail || 'Ошибка сохранения'); }
     finally { setSaveLoading(false); }
   };
@@ -798,6 +818,72 @@ export default function Orders() {
         }}
         sx={{ mb: 2, '& .MuiOutlinedInput-root': { borderRadius: 3, bgcolor: '#fff' } }}
       />
+
+      {/* Фильтр по дате создания */}
+      <Paper
+        elevation={0}
+        sx={{
+          mb: 2, px: 2, py: 1.5, borderRadius: 3, bgcolor: '#fff',
+          display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 1.5,
+        }}
+      >
+        <Typography variant="body2" sx={{ fontWeight: 700, color: 'text.secondary', mr: 0.5 }}>
+          Период:
+        </Typography>
+        <TextField
+          type="date"
+          label="С"
+          size="small"
+          value={dateFrom}
+          onChange={(e) => setDateFrom(e.target.value)}
+          InputLabelProps={{ shrink: true }}
+          sx={{ width: 160 }}
+        />
+        <TextField
+          type="date"
+          label="По"
+          size="small"
+          value={dateTo}
+          onChange={(e) => setDateTo(e.target.value)}
+          InputLabelProps={{ shrink: true }}
+          sx={{ width: 160 }}
+        />
+        <Box sx={{ display: 'flex', gap: 0.75, ml: 1, flexWrap: 'wrap' }}>
+          {[
+            { label: 'Сегодня', days: 0 },
+            { label: '7 дней', days: 7 },
+            { label: '30 дней', days: 30 },
+            { label: '90 дней', days: 90 },
+          ].map(p => (
+            <Chip
+              key={p.label}
+              label={p.label}
+              size="small"
+              onClick={() => {
+                const today = new Date();
+                const from = new Date();
+                from.setDate(today.getDate() - p.days);
+                const fmt = (d: Date) => d.toISOString().slice(0, 10);
+                setDateFrom(fmt(from));
+                setDateTo(fmt(today));
+              }}
+              sx={{ fontWeight: 600, borderRadius: 2, cursor: 'pointer' }}
+              variant="outlined"
+            />
+          ))}
+          {(dateFrom || dateTo) && (
+            <Chip
+              label="Сбросить"
+              size="small"
+              color="error"
+              variant="outlined"
+              onDelete={() => { setDateFrom(''); setDateTo(''); }}
+              onClick={() => { setDateFrom(''); setDateTo(''); }}
+              sx={{ fontWeight: 600, borderRadius: 2, cursor: 'pointer' }}
+            />
+          )}
+        </Box>
+      </Paper>
 
       <Box sx={{ mb: 3, borderBottom: '1px solid #E2E8F0' }}>
         <Tabs value={selectedStatusFilter} onChange={(_, v) => setSelectedStatusFilter(v)} variant="scrollable" scrollButtons="auto">
