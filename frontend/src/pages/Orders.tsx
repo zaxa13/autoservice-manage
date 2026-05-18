@@ -80,7 +80,7 @@ export default function Orders() {
   const [deleteOrderConfirm, setDeleteOrderConfirm] = useState<Order | null>(null);
   const [deletingOrder, setDeletingOrder] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
-  const [completeResult, setCompleteResult] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [actionResult, setActionResult] = useState<{ type: 'success' | 'error'; title: string; message: string; redirectOnOk: boolean } | null>(null);
   const [openPaymentLog, setOpenPaymentLog] = useState(false);
   const [paymentLog, setPaymentLog] = useState<PaymentLogEntry[]>([]);
   const [paymentLogLoading, setPaymentLogLoading] = useState(false);
@@ -495,13 +495,21 @@ export default function Orders() {
       if (id) await api.put(`/orders/${id}`, payload);
       else { const res = await api.post('/orders/', payload); id = res.data.id; setEditingOrderId(id); }
       if (complete && id) {
+        const num = orders.find(o => o.id === id)?.number ?? `#${id}`;
         try {
           await api.post(`/orders/${id}/complete`);
-          setCompleteResult({ type: 'success', message: 'Заказ-наряд успешно закрыт' });
+          setActionResult({
+            type: 'success',
+            title: 'Заказ-наряд закрыт',
+            message: `Заказ-наряд ${num} успешно закрыт`,
+            redirectOnOk: true,
+          });
         } catch (err: any) {
-          setCompleteResult({
+          setActionResult({
             type: 'error',
-            message: err.response?.data?.detail || 'Не удалось закрыть заказ-наряд',
+            title: 'Не удалось закрыть заказ',
+            message: err.response?.data?.detail || `Не удалось закрыть заказ-наряд ${num}`,
+            redirectOnOk: false,
           });
         }
       } else if (id) {
@@ -516,14 +524,24 @@ export default function Orders() {
   const handleConfirmCancelOrder = async () => {
     if (!editingOrderId) return;
     setCancellingOrder(true);
+    const num = orders.find(o => o.id === editingOrderId)?.number ?? `#${editingOrderId}`;
     try {
       await api.post(`/orders/${editingOrderId}/cancel`);
       setCancelOrderConfirm(false);
-      setOpenDialog(false);
-      loadInitialData();
+      setActionResult({
+        type: 'success',
+        title: 'Заказ-наряд отменён',
+        message: `Заказ-наряд ${num} успешно отменён`,
+        redirectOnOk: true,
+      });
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Не удалось отменить заказ');
       setCancelOrderConfirm(false);
+      setActionResult({
+        type: 'error',
+        title: 'Не удалось отменить заказ',
+        message: err.response?.data?.detail || `Не удалось отменить заказ-наряд ${num}`,
+        redirectOnOk: false,
+      });
     } finally {
       setCancellingOrder(false);
     }
@@ -544,10 +562,10 @@ export default function Orders() {
     }
   };
 
-  const handleCompleteResultClose = () => {
-    const wasSuccess = completeResult?.type === 'success';
-    setCompleteResult(null);
-    if (wasSuccess) {
+  const handleActionResultClose = () => {
+    const shouldRedirect = actionResult?.redirectOnOk === true && actionResult?.type === 'success';
+    setActionResult(null);
+    if (shouldRedirect) {
       setOpenDialog(false);
       loadInitialData();
     }
@@ -1714,10 +1732,10 @@ export default function Orders() {
         </DialogActions>
       </Dialog>
 
-      {/* Диалог результата закрытия заказа */}
+      {/* Диалог результата действия над заказом (закрытие / отмена) */}
       <Dialog
-        open={completeResult !== null}
-        onClose={handleCompleteResultClose}
+        open={actionResult !== null}
+        onClose={handleActionResultClose}
         maxWidth="xs"
         fullWidth
         PaperProps={{ sx: { borderRadius: 4, p: 1 } }}
@@ -1726,7 +1744,7 @@ export default function Orders() {
         <DialogContent sx={{ textAlign: 'center', py: 4 }}>
           <Box
             sx={(t) => {
-              const color = completeResult?.type === 'success'
+              const color = actionResult?.type === 'success'
                 ? t.palette.success.main
                 : t.palette.error.main;
               return {
@@ -1743,22 +1761,22 @@ export default function Orders() {
               };
             }}
           >
-            {completeResult?.type === 'success'
+            {actionResult?.type === 'success'
               ? <CheckCircleRounded sx={{ fontSize: 48 }} />
               : <WarningAmberRounded sx={{ fontSize: 48 }} />}
           </Box>
           <Typography variant="h6" sx={{ fontWeight: 800, mb: 0.5 }}>
-            {completeResult?.type === 'success' ? 'Заказ-наряд закрыт' : 'Не удалось закрыть заказ'}
+            {actionResult?.title}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {completeResult?.message}
+            {actionResult?.message}
           </Typography>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 3, pt: 0, justifyContent: 'center' }}>
           <Button
-            onClick={handleCompleteResultClose}
+            onClick={handleActionResultClose}
             variant="contained"
-            color={completeResult?.type === 'success' ? 'success' : 'error'}
+            color={actionResult?.type === 'success' ? 'success' : 'error'}
             size="large"
             sx={{ borderRadius: 3, px: 5, fontWeight: 700, textTransform: 'none' }}
           >
