@@ -10,13 +10,16 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-# Системные пакеты для сборки reportlab (зависимость xhtml2pdf):
-# Python 3.12 + reportlab 3.x — нет prebuilt wheels, нужно gcc + freetype/jpeg/zlib headers.
+# Системные пакеты:
+# - gcc + freetype/jpeg/zlib headers — для сборки reportlab 3.x (зависимость xhtml2pdf).
+# - fonts-dejavu-core — TTF с кириллицей (pdf_service ищет DejaVuSans.ttf), иначе
+#   reportlab падает на Helvetica и кириллица рендерится квадратами.
 RUN apt-get update && apt-get install -y --no-install-recommends \
         gcc \
         libfreetype6-dev \
         libjpeg-dev \
         zlib1g-dev \
+        fonts-dejavu-core \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
