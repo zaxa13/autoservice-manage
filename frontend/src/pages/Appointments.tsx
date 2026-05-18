@@ -451,14 +451,14 @@ function SlotCell({
     <Box
       ref={setNodeRef}
       sx={{
-        mb: 1.5,
-        minHeight: 52,
+        mb: 0.5,
+        minHeight: 0,
         borderRadius: 1,
         border: '2px dashed',
         borderColor: isOver ? postColor : 'transparent',
         bgcolor: isOver ? alpha(postColor, 0.08) : 'transparent',
         transition: 'border-color 0.2s, background-color 0.2s',
-        p: 0.5,
+        p: 0,
       }}
     >
       {children}
@@ -561,9 +561,6 @@ function PostColumn({
               )
               return (
                 <SlotCell key={slotTime} postId={post.id} slotTime={slotTime} postColor={postColor}>
-                  <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5, fontWeight: 600 }}>
-                    {slotTime}
-                  </Typography>
                   {appointmentAtSlot ? (
                     <DraggableCard
                       item={appointmentAtSlot}
@@ -578,10 +575,10 @@ function PostColumn({
                       size="small"
                       startIcon={<AddCircleOutlineRounded />}
                       onClick={() => onAddRecordForSlot(slotTime)}
-                      sx={{ borderStyle: 'dashed', justifyContent: 'flex-start' }}
+                      sx={{ borderStyle: 'dashed', justifyContent: 'flex-start', fontWeight: 600 }}
                       variant="outlined"
                     >
-                      Добавить запись
+                      {slotTime} · Добавить
                     </Button>
                   ) : null}
                 </SlotCell>
