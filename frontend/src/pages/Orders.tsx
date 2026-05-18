@@ -80,6 +80,7 @@ export default function Orders() {
   const [deleteOrderConfirm, setDeleteOrderConfirm] = useState<Order | null>(null);
   const [deletingOrder, setDeletingOrder] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [completeResult, setCompleteResult] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   // --- ПОИСК РАБОТ ИЗ КАТАЛОГА ---
   const [worksSearchQuery, setWorksSearchQuery] = useState('');
@@ -483,9 +484,15 @@ export default function Orders() {
       if (id) await api.put(`/orders/${id}`, payload);
       else { const res = await api.post('/orders/', payload); id = res.data.id; setEditingOrderId(id); }
       if (complete && id) {
-        await api.post(`/orders/${id}/complete`);
-        setOpenDialog(false);
-        loadInitialData();
+        try {
+          await api.post(`/orders/${id}/complete`);
+          setCompleteResult({ type: 'success', message: 'Заказ-наряд успешно закрыт' });
+        } catch (err: any) {
+          setCompleteResult({
+            type: 'error',
+            message: err.response?.data?.detail || 'Не удалось закрыть заказ-наряд',
+          });
+        }
       } else if (id) {
         setSaveSuccess(true);
         await fetchOrderDetails(id);
@@ -493,6 +500,15 @@ export default function Orders() {
       const list = await api.get('/orders/'); setOrders(list.data || []);
     } catch (err: any) { setError(err.response?.data?.detail || 'Ошибка сохранения'); }
     finally { setSaveLoading(false); }
+  };
+
+  const handleCompleteResultClose = () => {
+    const wasSuccess = completeResult?.type === 'success';
+    setCompleteResult(null);
+    if (wasSuccess) {
+      setOpenDialog(false);
+      loadInitialData();
+    }
   };
 
   const handleCreatePayment = async () => {
@@ -1538,6 +1554,59 @@ export default function Orders() {
             onClick={() => setSaveSuccess(false)}
             variant="contained"
             color="success"
+            size="large"
+            sx={{ borderRadius: 3, px: 5, fontWeight: 700, textTransform: 'none' }}
+          >
+            Ок
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Диалог результата закрытия заказа */}
+      <Dialog
+        open={completeResult !== null}
+        onClose={handleCompleteResultClose}
+        maxWidth="xs"
+        fullWidth
+        PaperProps={{ sx: { borderRadius: 4, p: 1 } }}
+        sx={{ zIndex: (t) => t.zIndex.modal + 10 }}
+      >
+        <DialogContent sx={{ textAlign: 'center', py: 4 }}>
+          <Box
+            sx={(t) => {
+              const color = completeResult?.type === 'success'
+                ? t.palette.success.main
+                : t.palette.error.main;
+              return {
+                width: 72,
+                height: 72,
+                borderRadius: '50%',
+                bgcolor: alpha(color, 0.12),
+                color: color,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                mb: 2,
+                boxShadow: `0 0 0 8px ${alpha(color, 0.06)}`,
+              };
+            }}
+          >
+            {completeResult?.type === 'success'
+              ? <CheckCircleRounded sx={{ fontSize: 48 }} />
+              : <WarningAmberRounded sx={{ fontSize: 48 }} />}
+          </Box>
+          <Typography variant="h6" sx={{ fontWeight: 800, mb: 0.5 }}>
+            {completeResult?.type === 'success' ? 'Заказ-наряд закрыт' : 'Не удалось закрыть заказ'}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {completeResult?.message}
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 3, pt: 0, justifyContent: 'center' }}>
+          <Button
+            onClick={handleCompleteResultClose}
+            variant="contained"
+            color={completeResult?.type === 'success' ? 'success' : 'error'}
             size="large"
             sx={{ borderRadius: 3, px: 5, fontWeight: 700, textTransform: 'none' }}
           >
