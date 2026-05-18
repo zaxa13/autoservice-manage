@@ -23,7 +23,7 @@ from sqlalchemy import func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import BadRequestException, NotFoundException
-from app.core.permissions import require_manager_or_admin
+from app.core.permissions import require_admin, require_manager_or_admin
 from app.core.security import TenantClaims
 from app.dependencies import get_current_claims, get_tenant_db
 from app.models.part import Part
@@ -560,6 +560,65 @@ async def post_receipt(
         ))
 
     r.status = ReceiptStatus.POSTED.value
+    await db.flush()
+    await db.refresh(r)
+    return await _serialize_receipt(db, r, claims)
+
+
+@router.post(
+    "/receipts/{receipt_id}/unpost",
+    response_model=ReceiptDocumentSchema,
+    responses={**_write, **_400, **_404_receipt},
+)
+async def unpost_receipt(
+    receipt_id: int,
+    db: AsyncSession = Depends(get_tenant_db),
+    claims: TenantClaims = Depends(require_admin),
+):
+    """Откат проведения накладной. Только для администратора.
+
+    Что делает:
+    - Вычитает количество строк накладной из остатков (WarehouseItem.quantity);
+      если остаток уходит в минус — клампим в 0 (защита от случайных списаний
+      между проведением и откатом).
+    - Удаляет связанные WarehouseTransaction (incoming).
+    - Меняет статус накладной на draft, чтобы её можно было отредактировать
+      и провести заново через обычные эндпоинты.
+
+    Что НЕ откатывает (нет истории):
+    - Part.purchase_price_last и Part.price — на момент проведения они были
+      перезаписаны и предыдущие значения не сохранены. После повторного
+      проведения они снова обновятся под текущие цены в накладной.
+    """
+    from sqlalchemy import delete as sa_delete
+
+    r = await db.get(ReceiptDocument, (claims.tenant_id, receipt_id))
+    if r is None:
+        raise NotFoundException("Накладная не найдена")
+    if r.status != ReceiptStatus.POSTED.value:
+        raise BadRequestException("Снять с проведения можно только проведённую накладную")
+
+    lines = (await db.execute(
+        select(ReceiptLine).where(ReceiptLine.receipt_id == r.id)
+    )).scalars().all()
+
+    for line in lines:
+        item_row = (
+            await db.execute(
+                select(WarehouseItem).where(WarehouseItem.part_id == line.part_id)
+            )
+        ).scalar_one_or_none()
+        if item_row is not None:
+            new_qty = Decimal(str(item_row.quantity)) - Decimal(str(line.quantity))
+            if new_qty < 0:
+                new_qty = Decimal(0)
+            item_row.quantity = new_qty
+
+    await db.execute(
+        sa_delete(WarehouseTransaction).where(WarehouseTransaction.receipt_id == r.id)
+    )
+
+    r.status = ReceiptStatus.DRAFT.value
     await db.flush()
     await db.refresh(r)
     return await _serialize_receipt(db, r, claims)

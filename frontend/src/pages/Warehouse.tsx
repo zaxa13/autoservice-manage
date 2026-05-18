@@ -44,6 +44,7 @@ import {
   Print as PrintIcon,
 } from '@mui/icons-material'
 import api from '../services/api'
+import { getRoleFromToken } from '../store/authStore'
 import {
   WarehouseItem,
   WarehouseTransactionList,
@@ -62,9 +63,12 @@ const TRANSACTION_TYPE_LABELS: Record<string, string> = {
 }
 
 export default function Warehouse() {
+  const isAdmin = getRoleFromToken() === 'admin'
   const [tab, setTab] = useState(0)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [unpostConfirm, setUnpostConfirm] = useState<ReceiptDocument | null>(null)
+  const [unpostLoading, setUnpostLoading] = useState(false)
 
   // Остатки (общий пулл запчастей)
   const [items, setItems] = useState<WarehouseItem[]>([])
@@ -411,6 +415,25 @@ export default function Warehouse() {
       })
       .catch((e) => setError(e.response?.data?.detail || 'Ошибка проведения'))
       .finally(() => setPostingReceiptId(null))
+  }
+
+  const handleUnpostAndEdit = async () => {
+    if (!unpostConfirm) return
+    setUnpostLoading(true)
+    setError('')
+    try {
+      const res = await api.post<ReceiptDocument>(`/warehouse/receipts/${unpostConfirm.id}/unpost`)
+      setUnpostConfirm(null)
+      setReceiptDetailOpen(false)
+      setSelectedReceiptId(null)
+      await openEditReceipt(res.data)
+      loadReceipts()
+      if (tab === 0) loadItems()
+    } catch (e: any) {
+      setError(e.response?.data?.detail || 'Не удалось снять с проведения')
+    } finally {
+      setUnpostLoading(false)
+    }
   }
 
   const addReceiptLine = () => {
@@ -948,6 +971,65 @@ export default function Warehouse() {
               </Button>
             </>
           )}
+          {receiptDetail?.status === 'posted' && isAdmin && (
+            <Button
+              variant="outlined"
+              color="warning"
+              startIcon={<EditIcon />}
+              onClick={() => receiptDetail && setUnpostConfirm(receiptDetail)}
+            >
+              Редактировать
+            </Button>
+          )}
+        </DialogActions>
+      </Dialog>
+
+      {/* Подтверждение снятия с проведения для редактирования */}
+      <Dialog
+        open={unpostConfirm !== null}
+        onClose={() => !unpostLoading && setUnpostConfirm(null)}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{ sx: { borderRadius: 3 } }}
+      >
+        <DialogTitle sx={{ fontWeight: 800, display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <LowStockIcon color="warning" /> Редактировать проведённую накладную?
+        </DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" sx={{ mb: 1.5 }}>
+            Накладная <strong>{unpostConfirm?.number}</strong> будет снята с проведения и
+            переведена в статус «Черновик». Это позволит её редактировать.
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+            • Остатки на складе откатятся на сумму строк этой накладной.
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+            • Связанные движения по складу (приход) будут удалены.
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            • Закупочные/продажные цены запчастей в карточках товара
+              <strong> не откатятся автоматически</strong> — они обновятся снова при повторном
+              проведении.
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2, gap: 1 }}>
+          <Button
+            onClick={() => setUnpostConfirm(null)}
+            disabled={unpostLoading}
+            variant="outlined"
+            sx={{ borderRadius: 2, fontWeight: 700, textTransform: 'none' }}
+          >
+            Отмена
+          </Button>
+          <Button
+            onClick={handleUnpostAndEdit}
+            disabled={unpostLoading}
+            variant="contained"
+            color="warning"
+            sx={{ borderRadius: 2, fontWeight: 700, textTransform: 'none', ml: 'auto' }}
+          >
+            {unpostLoading ? <CircularProgress size={20} color="inherit" /> : 'Снять и редактировать'}
+          </Button>
         </DialogActions>
       </Dialog>
 
