@@ -1500,32 +1500,51 @@ export default function Orders() {
         </DialogActions>
       </Dialog>
 
-      {/* Snackbar при сохранении */}
-      <Snackbar
+      {/* Диалог успешного сохранения */}
+      <Dialog
         open={saveSuccess}
-        autoHideDuration={3500}
         onClose={() => setSaveSuccess(false)}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        sx={{ zIndex: (t) => t.zIndex.modal + 10, mt: 1 }}
+        maxWidth="xs"
+        fullWidth
+        PaperProps={{ sx: { borderRadius: 4, p: 1 } }}
+        sx={{ zIndex: (t) => t.zIndex.modal + 10 }}
       >
-        <Alert
-          onClose={() => setSaveSuccess(false)}
-          severity="success"
-          variant="filled"
-          icon={<CheckCircleRounded fontSize="inherit" />}
-          sx={{
-            borderRadius: 3,
-            px: 3,
-            py: 1.5,
-            fontSize: 16,
-            fontWeight: 600,
-            boxShadow: 6,
-            minWidth: 320,
-          }}
-        >
-          Заказ-наряд сохранён
-        </Alert>
-      </Snackbar>
+        <DialogContent sx={{ textAlign: 'center', py: 4 }}>
+          <Box
+            sx={(t) => ({
+              width: 72,
+              height: 72,
+              borderRadius: '50%',
+              bgcolor: alpha(t.palette.success.main, 0.12),
+              color: 'success.main',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              mb: 2,
+              boxShadow: `0 0 0 8px ${alpha(t.palette.success.main, 0.06)}`,
+            })}
+          >
+            <CheckCircleRounded sx={{ fontSize: 48 }} />
+          </Box>
+          <Typography variant="h6" sx={{ fontWeight: 800, mb: 0.5 }}>
+            Заказ-наряд сохранён
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Все изменения успешно записаны
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 3, pt: 0, justifyContent: 'center' }}>
+          <Button
+            onClick={() => setSaveSuccess(false)}
+            variant="contained"
+            color="success"
+            size="large"
+            sx={{ borderRadius: 3, px: 5, fontWeight: 700, textTransform: 'none' }}
+          >
+            Ок
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Подтверждение удаления заказа */}
       <Dialog
