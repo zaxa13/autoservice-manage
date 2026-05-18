@@ -658,3 +658,93 @@ async def create_order_payment(
     await db.flush()
     await db.refresh(payment)
     return payment
+
+
+async def _cancel_payment_row(
+    db: AsyncSession,
+    tenant_id,
+    order: Order,
+    payment: Payment,
+) -> None:
+    """Отметить платёж как cancelled, вычесть из paid_amount, снести cashflow.
+
+    Статус заказа не меняем — этим занимается вызывающий эндпоинт после того,
+    как обработаны все целевые платежи (важно для cancel-all).
+    """
+    payment.status = PaymentStatus.CANCELLED.value
+    await db.execute(
+        delete(CashTransaction).where(CashTransaction.payment_id == payment.id)
+    )
+    new_paid = Decimal(str(order.paid_amount or 0)) - Decimal(str(payment.amount))
+    if new_paid < 0:
+        new_paid = Decimal(0)
+    order.paid_amount = new_paid
+
+
+def _revert_status_if_unpaid(order: Order) -> None:
+    """Если paid_amount стал меньше total и заказ был в PAID/COMPLETED —
+    откатываем в READY_FOR_PAYMENT (работы сделаны, но не оплачены)."""
+    if Decimal(str(order.paid_amount or 0)) < Decimal(str(order.total_amount or 0)) and (
+        order.status in (OrderStatus.PAID.value, OrderStatus.COMPLETED.value)
+    ):
+        order.status = OrderStatus.READY_FOR_PAYMENT.value
+        order.completed_at = None
+
+
+@router.post(
+    "/{order_id}/payments/{payment_id}/cancel",
+    response_model=PaymentSchema,
+    responses={**_admin, 400: {"model": ErrorResponse}, **_404},
+)
+async def cancel_order_payment(
+    order_id: int,
+    payment_id: int,
+    db: AsyncSession = Depends(get_tenant_db),
+    claims: TenantClaims = Depends(require_admin),
+):
+    order = await db.get(Order, (claims.tenant_id, order_id))
+    if order is None:
+        raise NotFoundException("Заказ-наряд не найден")
+    payment = await db.get(Payment, (claims.tenant_id, payment_id))
+    if payment is None or payment.order_id != order_id:
+        raise NotFoundException("Платёж не найден")
+    if payment.status != PaymentStatus.SUCCEEDED.value:
+        raise BadRequestException("Платёж уже отменён или не был успешным")
+
+    await _cancel_payment_row(db, claims.tenant_id, order, payment)
+    _revert_status_if_unpaid(order)
+
+    await db.flush()
+    await db.refresh(payment)
+    return payment
+
+
+@router.post(
+    "/{order_id}/payments/cancel-all",
+    response_model=list[PaymentSchema],
+    responses={**_admin, **_404},
+)
+async def cancel_all_order_payments(
+    order_id: int,
+    db: AsyncSession = Depends(get_tenant_db),
+    claims: TenantClaims = Depends(require_admin),
+):
+    order = await db.get(Order, (claims.tenant_id, order_id))
+    if order is None:
+        raise NotFoundException("Заказ-наряд не найден")
+
+    payments = (await db.execute(
+        select(Payment).where(
+            Payment.order_id == order_id,
+            Payment.status == PaymentStatus.SUCCEEDED.value,
+        ).order_by(Payment.id)
+    )).scalars().all()
+
+    for p in payments:
+        await _cancel_payment_row(db, claims.tenant_id, order, p)
+    _revert_status_if_unpaid(order)
+
+    await db.flush()
+    for p in payments:
+        await db.refresh(p)
+    return list(payments)
