@@ -11,12 +11,13 @@
 при исключении), GUC сбрасывается. Соединение возвращается в pool —
 следующий запрос уже без `tenant_id`, RLS будет fail-closed (`NULL`).
 """
-from contextlib import asynccontextmanager
-from typing import AsyncIterator
+from contextlib import asynccontextmanager, contextmanager
+from typing import AsyncIterator, Iterator
 from uuid import UUID
 
-from sqlalchemy import text
+from sqlalchemy import create_engine, text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import NullPool
 
 from app.config import settings
@@ -88,3 +89,32 @@ async def tenant_session(tenant_id: UUID) -> AsyncIterator[AsyncSession]:
 async def dispose_engine() -> None:
     """Корректное закрытие пула соединений (вызывать в FastAPI lifespan)."""
     await _runtime_engine.dispose()
+
+
+# ---------------------------------------------------------------------------
+# Sync tenant session — для sync-only сервисов (xhtml2pdf и т.п.), которые
+# нельзя дёргать из async-кода без потери совместимости. Не пуллим, NullPool —
+# каждый запрос отдельное соединение через pgbouncer.
+# ---------------------------------------------------------------------------
+_sync_runtime_url = settings.DATABASE_URL.replace("+asyncpg", "+psycopg2")
+_sync_engine = create_engine(_sync_runtime_url, poolclass=NullPool, future=True)
+_sync_session_factory = sessionmaker(_sync_engine, expire_on_commit=False)
+
+
+@contextmanager
+def sync_tenant_session(tenant_id: UUID) -> Iterator[Session]:
+    """Sync-сессия под `tenant_app` с выставленным `app.tenant_id` GUC.
+
+    Используется только из sync-кода (PDF-генерация). Из async-эндпоинтов
+    вызывать через `fastapi.concurrency.run_in_threadpool` или asyncio.to_thread.
+    """
+    session = _sync_session_factory()
+    try:
+        with session.begin():
+            session.execute(
+                text("SELECT set_config('app.tenant_id', :tid, true)"),
+                {"tid": str(tenant_id)},
+            )
+            yield session
+    finally:
+        session.close()

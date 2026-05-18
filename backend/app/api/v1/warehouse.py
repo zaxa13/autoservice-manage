@@ -19,13 +19,16 @@ from decimal import Decimal
 from typing import Optional
 
 from fastapi import APIRouter, Depends, Query, Response, status
+from fastapi.concurrency import run_in_threadpool
 from sqlalchemy import func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import BadRequestException, NotFoundException
 from app.core.permissions import require_admin, require_manager_or_admin
 from app.core.security import TenantClaims
+from app.database import sync_tenant_session
 from app.dependencies import get_current_claims, get_tenant_db
+from app.services.pdf_service import generate_receipt_pdf
 from app.models.part import Part
 from app.models.supplier import Supplier
 from app.models.warehouse import (
@@ -622,6 +625,35 @@ async def unpost_receipt(
     await db.flush()
     await db.refresh(r)
     return await _serialize_receipt(db, r, claims)
+
+
+@router.get(
+    "/receipts/{receipt_id}/print",
+    responses={**_auth, **_404_receipt},
+)
+async def print_receipt(
+    receipt_id: int,
+    db: AsyncSession = Depends(get_tenant_db),
+    claims: TenantClaims = Depends(get_current_claims),
+):
+    """PDF приходной накладной. pdf_service использует sync Session,
+    поэтому запускаем в threadpool с отдельной sync-сессией под тем же тенантом."""
+    # Лёгкая проверка существования в async-сессии — чтобы 404 пришёл сразу.
+    if await db.get(ReceiptDocument, (claims.tenant_id, receipt_id)) is None:
+        raise NotFoundException("Накладная не найдена")
+
+    def _render() -> bytes:
+        with sync_tenant_session(claims.tenant_id) as sync_db:
+            return generate_receipt_pdf(sync_db, receipt_id)
+
+    pdf_bytes = await run_in_threadpool(_render)
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f'inline; filename="receipt-{receipt_id}.pdf"',
+        },
+    )
 
 
 # ---------------------------------------------------------------------------
