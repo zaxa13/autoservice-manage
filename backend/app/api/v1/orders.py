@@ -38,7 +38,7 @@ from app.models.cashflow import (
 from app.models.customer import Customer
 from app.models.employee import Employee
 from app.models.order import Order, OrderPart, OrderStatus, OrderWork
-from app.models.payment import Payment, PaymentMethod, PaymentStatus
+from app.models.payment import Payment, PaymentLog, PaymentMethod, PaymentStatus
 from app.models.vehicle import Vehicle
 from app.models.vehicle_brand import VehicleBrand, VehicleModel
 from app.schemas.payment import Payment as PaymentSchema, PaymentCreate
@@ -655,9 +655,29 @@ async def create_order_payment(
             payment_id=payment.id,
         ))
 
+    _log_payment_snapshot(db, claims.tenant_id, payment, claims.employee_id)
     await db.flush()
     await db.refresh(payment)
     return payment
+
+
+def _log_payment_snapshot(
+    db: AsyncSession,
+    tenant_id,
+    payment: Payment,
+    employee_id: int | None,
+) -> None:
+    """Append-only снимок состояния платежа после операции."""
+    db.add(PaymentLog(
+        tenant_id=tenant_id,
+        payment_id=payment.id,
+        order_id=payment.order_id,
+        amount=payment.amount,
+        payment_method=payment.payment_method,
+        yookassa_payment_id=payment.yookassa_payment_id,
+        status=payment.status,
+        employee_id=employee_id,
+    ))
 
 
 async def _cancel_payment_row(
@@ -713,6 +733,7 @@ async def cancel_order_payment(
 
     await _cancel_payment_row(db, claims.tenant_id, order, payment)
     _revert_status_if_unpaid(order)
+    _log_payment_snapshot(db, claims.tenant_id, payment, claims.employee_id)
 
     await db.flush()
     await db.refresh(payment)
@@ -742,6 +763,7 @@ async def cancel_all_order_payments(
 
     for p in payments:
         await _cancel_payment_row(db, claims.tenant_id, order, p)
+        _log_payment_snapshot(db, claims.tenant_id, p, claims.employee_id)
     _revert_status_if_unpaid(order)
 
     await db.flush()

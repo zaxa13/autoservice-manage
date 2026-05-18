@@ -15,7 +15,7 @@ from app.models.integration import IntegrationLog, IntegrationType
 from app.models.order import Order, OrderPart, OrderStatus, OrderWork
 from app.models.part import Part, PartCategory
 from app.models.password_reset import PasswordResetToken
-from app.models.payment import Payment, PaymentMethod, PaymentStatus
+from app.models.payment import Payment, PaymentLog, PaymentMethod, PaymentStatus
 from app.models.salary import Salary, SalaryScheme, SalaryStatus
 from app.models.setting import Setting
 from app.models.supplier import Supplier
@@ -56,6 +56,7 @@ __all__ = [
     "PartCategory",
     "PasswordResetToken",
     "Payment",
+    "PaymentLog",
     "PaymentMethod",
     "PaymentStatus",
     "ReceiptDocument",
