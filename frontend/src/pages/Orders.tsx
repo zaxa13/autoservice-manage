@@ -1616,19 +1616,23 @@ export default function Orders() {
               </TableHead>
               <TableBody>
                 {(() => {
-                  // Группируем по payment_id чтобы понять «создан/отменён/изменён»
+                  // Действие определяется по status снимка. Если был предыдущий
+                  // снимок этого же payment_id со статусом cancelled и текущий —
+                  // succeeded, это «Восстановлен».
                   const seen: Record<number, string> = {};
                   return paymentLog.map((row) => {
                     const prev = seen[row.payment_id];
-                    let action: { label: string; color: 'success' | 'error' | 'warning' | 'default' } = { label: 'Принят', color: 'success' };
-                    if (!prev) {
-                      action = { label: 'Принят', color: 'success' };
-                    } else if (row.status === 'cancelled') {
+                    let action: { label: string; color: 'success' | 'error' | 'warning' | 'default' };
+                    if (row.status === 'cancelled') {
                       action = { label: 'Отменён', color: 'error' };
-                    } else if (row.status === 'succeeded' && prev !== 'succeeded') {
-                      action = { label: 'Восстановлен', color: 'warning' };
+                    } else if (row.status === 'succeeded') {
+                      action = prev === 'cancelled'
+                        ? { label: 'Восстановлен', color: 'warning' }
+                        : { label: 'Принят', color: 'success' };
+                    } else if (row.status === 'pending') {
+                      action = { label: 'Ожидает', color: 'warning' };
                     } else {
-                      action = { label: 'Изменён', color: 'warning' };
+                      action = { label: row.status, color: 'default' };
                     }
                     seen[row.payment_id] = row.status;
                     const dt = new Date(row.created_at);
