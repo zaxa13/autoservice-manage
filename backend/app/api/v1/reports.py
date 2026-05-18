@@ -379,7 +379,7 @@ async def orders_report(
         .group_by(Order.status)
     )).all()
     by_status = [
-        {"status": r[0], "label": _STATUS_LABELS.get(r[0], r[0]), "count": int(r[1])}
+        {"status": r[0], "status_label": _STATUS_LABELS.get(r[0], r[0]), "count": int(r[1])}
         for r in rows
     ]
 
