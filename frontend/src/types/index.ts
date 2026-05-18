@@ -151,6 +151,19 @@ export interface OrderPayment {
   external_id?: string | null
 }
 
+export interface PaymentLogEntry {
+  id: number
+  payment_id: number
+  order_id: number
+  amount: number
+  payment_method: PaymentMethod
+  status: 'succeeded' | 'cancelled' | 'pending' | 'failed'
+  employee_id: number | null
+  employee_name: string | null
+  employee_position: string | null
+  created_at: string
+}
+
 export interface SalaryScheme {
   id?: number
   employee_id: number

@@ -20,7 +20,7 @@ import {
 import { formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import api from '../services/api';
-import type { Order, OrderCreate, Vehicle, Employee, OrderStatusInfo, OrderDetail, VehicleHistoryOrder, User, Customer, CustomerCreate, Part, Work, BrandRef, ModelRef, OrderPayment } from '../types';
+import type { Order, OrderCreate, Vehicle, Employee, OrderStatusInfo, OrderDetail, VehicleHistoryOrder, User, Customer, CustomerCreate, Part, Work, BrandRef, ModelRef, OrderPayment, PaymentLogEntry } from '../types';
 
 // Категории работ
 const WORK_CATEGORIES: { value: string; label: string; color: string }[] = [
@@ -81,6 +81,9 @@ export default function Orders() {
   const [deletingOrder, setDeletingOrder] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [completeResult, setCompleteResult] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [openPaymentLog, setOpenPaymentLog] = useState(false);
+  const [paymentLog, setPaymentLog] = useState<PaymentLogEntry[]>([]);
+  const [paymentLogLoading, setPaymentLogLoading] = useState(false);
 
   // --- ПОИСК РАБОТ ИЗ КАТАЛОГА ---
   const [worksSearchQuery, setWorksSearchQuery] = useState('');
@@ -502,6 +505,21 @@ export default function Orders() {
     finally { setSaveLoading(false); }
   };
 
+  const handleOpenPaymentLog = async () => {
+    if (!editingOrderId) return;
+    setOpenPaymentLog(true);
+    setPaymentLogLoading(true);
+    try {
+      const res = await api.get(`/orders/${editingOrderId}/payments/log`);
+      setPaymentLog(res.data || []);
+    } catch (e) {
+      setError('Ошибка загрузки истории платежей');
+      setPaymentLog([]);
+    } finally {
+      setPaymentLogLoading(false);
+    }
+  };
+
   const handleCompleteResultClose = () => {
     const wasSuccess = completeResult?.type === 'success';
     setCompleteResult(null);
@@ -919,6 +937,7 @@ export default function Orders() {
                 <Typography variant="subtitle2" sx={{ fontWeight: 800, display: 'flex', alignItems: 'center', gap: 1 }}><HistoryRounded fontSize="small" color="primary" /> Оплаты: {formatCurrency(paidAmountFromServer)} / {formatCurrency(totals.grand)}</Typography>
                 <Stack direction="row" spacing={1}>
                   {paidAmountFromServer < totals.grand - 0.01 && <Button variant="contained" color="success" size="small" startIcon={<PaymentRounded />} onClick={() => { setEditingPaymentId(null); setPaymentAmount((totals.grand - paidAmountFromServer).toFixed(0)); setPaymentMethod('cash'); setOpenPaymentDialog(true); }}>Оплатить</Button>}
+                  <Button size="small" color="primary" startIcon={<HistoryRounded />} onClick={handleOpenPaymentLog}>История</Button>
                   {isAdmin && <Button size="small" color="error" startIcon={<RestartAltRounded />} onClick={() => setOpenResetConfirm(true)}>Сбросить всё</Button>}
                 </Stack>
               </Stack>
@@ -1559,6 +1578,111 @@ export default function Orders() {
           >
             Ок
           </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* История платежей по заказу */}
+      <Dialog
+        open={openPaymentLog}
+        onClose={() => setOpenPaymentLog(false)}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{ sx: { borderRadius: 4, maxHeight: '85vh' } }}
+        sx={{ zIndex: (t) => t.zIndex.modal + 5 }}
+      >
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1.5, fontWeight: 800, pb: 1 }}>
+          <HistoryRounded color="primary" /> История платежей
+          <Typography variant="caption" color="text.secondary" sx={{ ml: 'auto', fontWeight: 500 }}>
+            {paymentLog.length} {paymentLog.length === 1 ? 'запись' : 'записей'}
+          </Typography>
+        </DialogTitle>
+        <DialogContent dividers sx={{ bgcolor: '#F8FAFC', p: 0 }}>
+          {paymentLogLoading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', p: 6 }}><CircularProgress /></Box>
+          ) : paymentLog.length === 0 ? (
+            <Box sx={{ textAlign: 'center', p: 6 }}>
+              <Typography color="text.secondary">По этому заказу ещё не было операций с платежами</Typography>
+            </Box>
+          ) : (
+            <Table size="small">
+              <TableHead>
+                <TableRow sx={{ bgcolor: '#fff' }}>
+                  <TableCell sx={{ fontWeight: 700, color: 'text.secondary', fontSize: 12 }}>Время</TableCell>
+                  <TableCell sx={{ fontWeight: 700, color: 'text.secondary', fontSize: 12 }}>Сотрудник</TableCell>
+                  <TableCell sx={{ fontWeight: 700, color: 'text.secondary', fontSize: 12 }}>Платёж</TableCell>
+                  <TableCell sx={{ fontWeight: 700, color: 'text.secondary', fontSize: 12 }}>Действие</TableCell>
+                  <TableCell sx={{ fontWeight: 700, color: 'text.secondary', fontSize: 12 }} align="right">Сумма</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {(() => {
+                  // Группируем по payment_id чтобы понять «создан/отменён/изменён»
+                  const seen: Record<number, string> = {};
+                  return paymentLog.map((row) => {
+                    const prev = seen[row.payment_id];
+                    let action: { label: string; color: 'success' | 'error' | 'warning' | 'default' } = { label: 'Принят', color: 'success' };
+                    if (!prev) {
+                      action = { label: 'Принят', color: 'success' };
+                    } else if (row.status === 'cancelled') {
+                      action = { label: 'Отменён', color: 'error' };
+                    } else if (row.status === 'succeeded' && prev !== 'succeeded') {
+                      action = { label: 'Восстановлен', color: 'warning' };
+                    } else {
+                      action = { label: 'Изменён', color: 'warning' };
+                    }
+                    seen[row.payment_id] = row.status;
+                    const dt = new Date(row.created_at);
+                    return (
+                      <TableRow key={row.id} sx={{ bgcolor: '#fff' }}>
+                        <TableCell sx={{ fontSize: 13 }}>
+                          <Typography sx={{ fontSize: 13, fontWeight: 600 }}>{dt.toLocaleDateString('ru-RU')}</Typography>
+                          <Typography sx={{ fontSize: 12, color: 'text.secondary' }}>{dt.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</Typography>
+                        </TableCell>
+                        <TableCell sx={{ fontSize: 13 }}>
+                          {row.employee_name ? (
+                            <>
+                              <Typography sx={{ fontSize: 13, fontWeight: 600 }}>{row.employee_name}</Typography>
+                              {row.employee_position && (
+                                <Typography sx={{ fontSize: 11, color: 'text.secondary', textTransform: 'capitalize' }}>{row.employee_position}</Typography>
+                              )}
+                            </>
+                          ) : (
+                            <Typography sx={{ fontSize: 12, color: 'text.disabled', fontStyle: 'italic' }}>—</Typography>
+                          )}
+                        </TableCell>
+                        <TableCell sx={{ fontSize: 13 }}>
+                          <Chip
+                            size="small"
+                            label={`#${row.payment_id}`}
+                            variant="outlined"
+                            sx={{ fontFamily: 'monospace', fontWeight: 600, fontSize: 11 }}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Chip
+                            size="small"
+                            label={action.label}
+                            color={action.color}
+                            variant="filled"
+                            sx={{ fontWeight: 600, fontSize: 11 }}
+                          />
+                        </TableCell>
+                        <TableCell align="right" sx={{ fontWeight: 700, fontSize: 13 }}>
+                          {formatCurrency(row.amount)}
+                          <Typography sx={{ fontSize: 11, color: 'text.secondary', fontWeight: 500 }}>
+                            {METHOD_LABELS[row.payment_method as keyof typeof METHOD_LABELS] || row.payment_method}
+                          </Typography>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  });
+                })()}
+              </TableBody>
+            </Table>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ px: 3, py: 2 }}>
+          <Button onClick={() => setOpenPaymentLog(false)} variant="outlined" sx={{ borderRadius: 3, fontWeight: 700, textTransform: 'none' }}>Закрыть</Button>
         </DialogActions>
       </Dialog>
 
