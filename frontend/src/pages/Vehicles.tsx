@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import {
   Box, Typography, TextField, InputAdornment, IconButton, CircularProgress,
   Card, CardContent, Stack, Chip, Divider, Alert, Button, Paper,
@@ -20,6 +20,8 @@ import {
   SpeedRounded,
   AddRounded,
   ContactPhoneRounded,
+  NavigateNextRounded,
+  NavigateBeforeRounded,
 } from '@mui/icons-material'
 import api from '../services/api'
 import { Vehicle, OrderDetail, BrandRef, ModelRef, Customer } from '../types'
@@ -700,6 +702,8 @@ function VehicleCreateDialog({ open, onClose, onCreated }: {
 
 // ── Main page ──────────────────────────────────────────────────────────────────
 
+const BATCH_SIZE = 30
+
 export default function VehiclesPage() {
   const [inputValue, setInputValue] = useState('')
   const [loading, setLoading] = useState(false)
@@ -710,6 +714,39 @@ export default function VehiclesPage() {
   const [editVehicle, setEditVehicle] = useState<Vehicle | null>(null)
   const [createOpen, setCreateOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  // Browse-режим: страничная пагинация по BATCH_SIZE.
+  const [browseVehicles, setBrowseVehicles] = useState<Vehicle[]>([])
+  const [browsePage, setBrowsePage] = useState(0)
+  const [browseHasMore, setBrowseHasMore] = useState(false)
+  const [browseLoading, setBrowseLoading] = useState(false)
+
+  const loadBrowsePage = async (page: number) => {
+    setBrowseLoading(true)
+    setError('')
+    try {
+      // Запрашиваем BATCH_SIZE+1, чтобы понять есть ли следующая страница без
+      // отдельного count-запроса. Лишний элемент в дисплей не пускаем.
+      const res = await api.get('/vehicles/', {
+        params: { skip: page * BATCH_SIZE, limit: BATCH_SIZE + 1 },
+      })
+      const data: Vehicle[] = res.data || []
+      setBrowseHasMore(data.length > BATCH_SIZE)
+      setBrowseVehicles(data.slice(0, BATCH_SIZE))
+      setBrowsePage(page)
+    } catch (e: any) {
+      setError(e.response?.data?.detail || 'Ошибка загрузки списка')
+      setBrowseVehicles([])
+      setBrowseHasMore(false)
+    } finally {
+      setBrowseLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    loadBrowsePage(0)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleSearch = async (q?: string) => {
     const searchQuery = (q ?? inputValue).trim()
@@ -726,6 +763,13 @@ export default function VehiclesPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleClearSearch = () => {
+    setInputValue('')
+    setSearched(false)
+    setResults([])
+    setError('')
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -824,13 +868,22 @@ export default function VehiclesPage() {
         >
           {loading ? <CircularProgress size={20} color="inherit" /> : 'Найти'}
         </Button>
+        {searched && (
+          <Button
+            variant="text"
+            onClick={handleClearSearch}
+            sx={{ borderRadius: '10px', fontWeight: 700, whiteSpace: 'nowrap' }}
+          >
+            Назад к списку
+          </Button>
+        )}
       </Box>
 
       {error && (
         <Alert severity="error" sx={{ mb: 3, maxWidth: 680 }}>{error}</Alert>
       )}
 
-      {/* ── Empty state ── */}
+      {/* ── Empty state — поиск без результатов ── */}
       {searched && !loading && results.length === 0 && !error && (
         <Box sx={{ textAlign: 'center', py: 10 }}>
           <Box sx={{
@@ -850,15 +903,42 @@ export default function VehiclesPage() {
         </Box>
       )}
 
-      {/* ── Results ── */}
-      {results.length > 0 && (
+      {/* ── Browse: пустой список ── */}
+      {!searched && !browseLoading && browseVehicles.length === 0 && !error && (
+        <Box sx={{ textAlign: 'center', py: 10 }}>
+          <Box sx={{
+            width: 64, height: 64, borderRadius: '16px',
+            bgcolor: '#F1F5F9',
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            mb: 2,
+          }}>
+            <DirectionsCarRounded sx={{ fontSize: 32, color: '#CBD5E1' }} />
+          </Box>
+          <Typography variant="subtitle1" fontWeight={700} color="text.secondary">
+            В базе пока нет автомобилей
+          </Typography>
+          <Typography variant="body2" color="text.disabled" sx={{ mt: 0.5 }}>
+            Добавьте первый автомобиль через кнопку справа сверху
+          </Typography>
+        </Box>
+      )}
+
+      {/* ── Browse loader ── */}
+      {!searched && browseLoading && browseVehicles.length === 0 && (
+        <Box sx={{ textAlign: 'center', py: 6 }}>
+          <CircularProgress />
+        </Box>
+      )}
+
+      {/* ── Results (search или browse) ── */}
+      {((searched && results.length > 0) || (!searched && browseVehicles.length > 0)) && (
         <Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2.5 }}>
             <Typography variant="overline" sx={{ color: '#64748B' }}>
-              Найдено
+              {searched ? 'Найдено' : 'Все автомобили'}
             </Typography>
             <Chip
-              label={results.length}
+              label={searched ? results.length : `${browsePage * BATCH_SIZE + 1}–${browsePage * BATCH_SIZE + browseVehicles.length}`}
               size="small"
               sx={{
                 bgcolor: '#0D9488',
@@ -871,7 +951,7 @@ export default function VehiclesPage() {
           </Box>
 
           <Stack spacing={1.5} sx={{ maxWidth: 760 }}>
-            {results.map((vehicle) => (
+            {(searched ? results : browseVehicles).map((vehicle) => (
               <Card
                 key={vehicle.id}
                 variant="outlined"
@@ -985,6 +1065,36 @@ export default function VehiclesPage() {
               </Card>
             ))}
           </Stack>
+
+          {/* Пагинация — только в browse-режиме */}
+          {!searched && (browsePage > 0 || browseHasMore) && (
+            <Box sx={{
+              maxWidth: 760, mt: 3, display: 'flex',
+              alignItems: 'center', justifyContent: 'space-between', gap: 2,
+            }}>
+              <Button
+                variant="outlined"
+                startIcon={<NavigateBeforeRounded />}
+                onClick={() => loadBrowsePage(browsePage - 1)}
+                disabled={browsePage === 0 || browseLoading}
+                sx={{ fontWeight: 700, borderRadius: '10px' }}
+              >
+                Назад
+              </Button>
+              <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                Страница {browsePage + 1}
+              </Typography>
+              <Button
+                variant="contained"
+                endIcon={<NavigateNextRounded />}
+                onClick={() => loadBrowsePage(browsePage + 1)}
+                disabled={!browseHasMore || browseLoading}
+                sx={{ fontWeight: 700, borderRadius: '10px' }}
+              >
+                {browseLoading ? <CircularProgress size={20} color="inherit" /> : 'Далее'}
+              </Button>
+            </Box>
+          )}
         </Box>
       )}
 
@@ -999,15 +1109,18 @@ export default function VehiclesPage() {
         onClose={() => setEditVehicle(null)}
         onSaved={(updated) => {
           setResults((prev) => prev.map((v) => v.id === updated.id ? { ...v, ...updated } : v))
+          setBrowseVehicles((prev) => prev.map((v) => v.id === updated.id ? { ...v, ...updated } : v))
           setEditVehicle(null)
         }}
       />
       <VehicleCreateDialog
         open={createOpen}
         onClose={() => setCreateOpen(false)}
-        onCreated={(created) => {
-          setResults((prev) => [created, ...prev])
-          setSearched(true)
+        onCreated={() => {
+          // Возвращаемся в browse-режим и подгружаем первую страницу, чтобы
+          // увидеть новую машину в общем списке.
+          handleClearSearch()
+          loadBrowsePage(0)
         }}
       />
     </Box>
