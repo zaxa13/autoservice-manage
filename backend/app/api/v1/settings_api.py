@@ -1,8 +1,11 @@
-"""Настройки тенанта — KV-store. Сейчас выставлен только revenue_plan."""
+"""Настройки тенанта — KV-store."""
 from __future__ import annotations
+
+from typing import Optional
 
 from fastapi import APIRouter, Depends, Query, status
 from pydantic import BaseModel, Field
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.permissions import require_admin
@@ -12,6 +15,68 @@ from app.models.setting import Setting
 from app.schemas.responses import ErrorResponse, RevenuePlanResponse
 
 router = APIRouter()
+
+
+# ---------------------------------------------------------------------------
+# Реквизиты организации (выводятся в шапке PDF-документов).
+# ---------------------------------------------------------------------------
+_COMPANY_KEYS = ("company_name", "company_address", "company_phone", "company_inn")
+
+
+class CompanySettings(BaseModel):
+    company_name: Optional[str] = Field(None, max_length=500)
+    company_address: Optional[str] = Field(None, max_length=500)
+    company_phone: Optional[str] = Field(None, max_length=100)
+    company_inn: Optional[str] = Field(None, max_length=20)
+
+
+@router.get(
+    "/company",
+    response_model=CompanySettings,
+    responses={401: {"model": ErrorResponse}},
+)
+async def get_company_settings(
+    db: AsyncSession = Depends(get_tenant_db),
+    claims: TenantClaims = Depends(get_current_claims),
+):
+    rows = (await db.execute(
+        select(Setting).where(Setting.key.in_(_COMPANY_KEYS))
+    )).scalars().all()
+    by_key = {r.key: r.value for r in rows}
+    return CompanySettings(**{k: by_key.get(k) for k in _COMPANY_KEYS})
+
+
+@router.put(
+    "/company",
+    response_model=CompanySettings,
+    responses={
+        401: {"model": ErrorResponse},
+        403: {"model": ErrorResponse},
+    },
+)
+async def set_company_settings(
+    body: CompanySettings,
+    db: AsyncSession = Depends(get_tenant_db),
+    claims: TenantClaims = Depends(require_admin),
+):
+    payload = body.model_dump()
+    for key in _COMPANY_KEYS:
+        value = (payload.get(key) or "").strip() or None
+        existing = await db.get(Setting, (claims.tenant_id, key))
+        if value is None:
+            if existing is not None:
+                await db.delete(existing)
+        else:
+            if existing is None:
+                db.add(Setting(tenant_id=claims.tenant_id, key=key, value=value))
+            else:
+                existing.value = value
+    await db.flush()
+    rows = (await db.execute(
+        select(Setting).where(Setting.key.in_(_COMPANY_KEYS))
+    )).scalars().all()
+    by_key = {r.key: r.value for r in rows}
+    return CompanySettings(**{k: by_key.get(k) for k in _COMPANY_KEYS})
 
 
 class RevenuePlanIn(BaseModel):

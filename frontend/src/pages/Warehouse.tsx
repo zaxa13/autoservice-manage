@@ -982,6 +982,13 @@ export default function Warehouse() {
             </Button>
           )}
         </DialogActions>
+        {receiptDetail && (
+          <Box sx={{ px: 3, pb: 2.5, pt: 0 }}>
+            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', textAlign: 'right', fontStyle: 'italic' }}>
+              Для корректного оформления документа печати — заполните реквизиты организации в профиле.
+            </Typography>
+          </Box>
+        )}
       </Dialog>
 
       {/* Подтверждение снятия с проведения для редактирования */}

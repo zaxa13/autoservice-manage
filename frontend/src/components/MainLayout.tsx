@@ -13,7 +13,7 @@ import {
   AdminPanelSettingsRounded, BadgeRounded, LockRounded,
   Visibility, VisibilityOff, VpnKeyRounded, BalanceRounded,
   LocalShippingRounded, DirectionsCarRounded, AssessmentRounded,
-  GarageRounded,
+  GarageRounded, BusinessRounded, SaveRounded,
 } from '@mui/icons-material'
 import { useLocation, Link } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
@@ -58,19 +58,68 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   const [passSuccess, setPassSuccess] = useState(false)
   const [passLoading, setPassLoading] = useState(false)
 
+  const [isEditingCompany, setIsEditingCompany] = useState(false)
+  const [companyForm, setCompanyForm] = useState({
+    company_name: '', company_address: '', company_phone: '', company_inn: '',
+  })
+  const [companyLoaded, setCompanyLoaded] = useState(false)
+  const [companySaving, setCompanySaving] = useState(false)
+  const [companySaved, setCompanySaved] = useState(false)
+  const [companyError, setCompanyError] = useState('')
+
   const handleOpenProfile = async () => {
     setOpenProfile(true)
     setLoadingProfile(true)
     setPassError('')
     setPassSuccess(false)
     setIsChangingPassword(false)
+    setIsEditingCompany(false)
+    setCompanySaved(false)
+    setCompanyError('')
+    setCompanyLoaded(false)
     try {
       const res = await api.get('/auth/me')
-      setProfileData(res.data as User)
+      const user = res.data as User
+      setProfileData(user)
+      if (user.role === 'admin') {
+        try {
+          const cr = await api.get('/settings/company')
+          setCompanyForm({
+            company_name: cr.data?.company_name ?? '',
+            company_address: cr.data?.company_address ?? '',
+            company_phone: cr.data?.company_phone ?? '',
+            company_inn: cr.data?.company_inn ?? '',
+          })
+          setCompanyLoaded(true)
+        } catch {
+          setCompanyLoaded(true)
+        }
+      }
     } catch {
       // ignore
     } finally {
       setLoadingProfile(false)
+    }
+  }
+
+  const handleSaveCompany = async () => {
+    setCompanyError('')
+    setCompanySaving(true)
+    try {
+      const res = await api.put('/settings/company', companyForm)
+      setCompanyForm({
+        company_name: res.data?.company_name ?? '',
+        company_address: res.data?.company_address ?? '',
+        company_phone: res.data?.company_phone ?? '',
+        company_inn: res.data?.company_inn ?? '',
+      })
+      setCompanySaved(true)
+      setIsEditingCompany(false)
+    } catch (err: unknown) {
+      const detail = (err as { response?: { data?: { detail?: unknown } } })?.response?.data?.detail
+      setCompanyError(typeof detail === 'string' ? detail : 'Не удалось сохранить реквизиты')
+    } finally {
+      setCompanySaving(false)
     }
   }
 
@@ -355,7 +404,64 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                   </Fade>
                 )}
 
-                {!isChangingPassword && (
+                {!isChangingPassword && profileData.role === 'admin' && companyLoaded && (
+                  <Box sx={{ mt: 3, textAlign: 'left' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 800, display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <BusinessRounded color="primary" fontSize="small" /> Реквизиты организации
+                      </Typography>
+                      {!isEditingCompany && (
+                        <Button size="small" onClick={() => { setIsEditingCompany(true); setCompanySaved(false) }} sx={{ fontWeight: 700, textTransform: 'none' }}>
+                          Изменить
+                        </Button>
+                      )}
+                    </Box>
+                    {companySaved && (
+                      <Alert severity="success" sx={{ mb: 1.5 }}>Реквизиты сохранены</Alert>
+                    )}
+                    {companyError && (
+                      <Alert severity="error" sx={{ mb: 1.5 }}>{companyError}</Alert>
+                    )}
+                    {!isEditingCompany ? (
+                      <Stack spacing={1}>
+                        {[
+                          { label: 'Название',    value: companyForm.company_name },
+                          { label: 'Адрес',       value: companyForm.company_address },
+                          { label: 'Телефон',     value: companyForm.company_phone },
+                          { label: 'ИНН',         value: companyForm.company_inn },
+                        ].map((row) => (
+                          <Paper key={row.label} variant="outlined" sx={{ p: 1.25, bgcolor: SURFACE.muted }}>
+                            <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700, display: 'block', lineHeight: 1.2 }}>
+                              {row.label}
+                            </Typography>
+                            <Typography variant="body2" sx={{ fontWeight: 600, color: row.value ? 'text.primary' : 'text.disabled', fontStyle: row.value ? 'normal' : 'italic' }}>
+                              {row.value || 'не задано'}
+                            </Typography>
+                          </Paper>
+                        ))}
+                      </Stack>
+                    ) : (
+                      <Stack spacing={2}>
+                        <TextField fullWidth size="small" label="Название организации" value={companyForm.company_name}
+                          onChange={(e) => setCompanyForm(p => ({ ...p, company_name: e.target.value }))} />
+                        <TextField fullWidth size="small" label="Юридический адрес" value={companyForm.company_address}
+                          onChange={(e) => setCompanyForm(p => ({ ...p, company_address: e.target.value }))} />
+                        <TextField fullWidth size="small" label="Телефон" value={companyForm.company_phone}
+                          onChange={(e) => setCompanyForm(p => ({ ...p, company_phone: e.target.value }))} />
+                        <TextField fullWidth size="small" label="ИНН" value={companyForm.company_inn}
+                          onChange={(e) => setCompanyForm(p => ({ ...p, company_inn: e.target.value }))} />
+                        <Stack direction="row" spacing={2}>
+                          <Button fullWidth variant="outlined" onClick={() => setIsEditingCompany(false)} disabled={companySaving}>Отмена</Button>
+                          <Button fullWidth variant="contained" startIcon={<SaveRounded />} onClick={handleSaveCompany} disabled={companySaving}>
+                            {companySaving ? <CircularProgress size={20} color="inherit" /> : 'Сохранить'}
+                          </Button>
+                        </Stack>
+                      </Stack>
+                    )}
+                  </Box>
+                )}
+
+                {!isChangingPassword && !isEditingCompany && (
                   <Button fullWidth variant="outlined" onClick={() => setOpenProfile(false)} sx={{ mt: 3, fontWeight: 700 }}>
                     Закрыть
                   </Button>

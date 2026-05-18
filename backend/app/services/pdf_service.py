@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session, joinedload
 
 from app.models.order import Order, OrderWork, OrderPart
 from app.models.part import Part
+from app.models.setting import Setting
 from app.models.supplier import Supplier
 from app.models.vehicle import Vehicle
 from app.models.warehouse import ReceiptDocument, ReceiptLine
@@ -37,10 +38,7 @@ def _find_font() -> str | None:
 
 _FONT_PATH = _find_font()
 
-COMPANY_NAME = 'ООО "Рога и Копыта"'
-COMPANY_ADDRESS = "г. Москва, ул. Автосервисная, д. 42, оф. 7"
-COMPANY_PHONE = "+7 (495) 000-11-22"
-COMPANY_INN = "7701234567"
+_COMPANY_KEYS = ("company_name", "company_address", "company_phone", "company_inn")
 
 _ONES_M  = ['','один','два','три','четыре','пять','шесть','семь','восемь','девять',
             'десять','одиннадцать','двенадцать','тринадцать','четырнадцать','пятнадцать',
@@ -148,12 +146,18 @@ def _fmt(val: Decimal | float | None) -> str:
     return f"{float(val):,.2f}".replace(",", " ")
 
 
-def _common_ctx() -> dict:
+def _company_ctx(db: Session) -> dict:
+    """Реквизиты текущего тенанта из app.settings. Если не заполнены — прочерк."""
+    rows = (
+        db.query(Setting).filter(Setting.key.in_(_COMPANY_KEYS)).all()
+    )
+    by_key = {r.key: (r.value.strip() if r.value else "") for r in rows}
+    return {key: (by_key.get(key) or "—") for key in _COMPANY_KEYS}
+
+
+def _common_ctx(db: Session) -> dict:
     return {
-        "company_name": COMPANY_NAME,
-        "company_address": COMPANY_ADDRESS,
-        "company_phone": COMPANY_PHONE,
-        "company_inn": COMPANY_INN,
+        **_company_ctx(db),
         "generated_at": datetime.now().strftime("%d.%m.%Y %H:%M"),
         "font_path": _FONT_PATH,
     }
@@ -179,7 +183,7 @@ def _load_order(db: Session, order_id: int) -> Order:
     return order
 
 
-def _order_context(order: Order) -> dict:
+def _order_context(db: Session, order: Order) -> dict:
     """Общий контекст для заказ-наряда и акта."""
     vehicle = order.vehicle
     customer = vehicle.customer if vehicle else None
@@ -218,7 +222,7 @@ def _order_context(order: Order) -> dict:
     status_value = order.status.value if hasattr(order.status, "value") else str(order.status)
 
     ctx = {
-        **_common_ctx(),
+        **_common_ctx(db),
         "order_number": order.number,
         "status_label": STATUS_LABELS.get(status_value, status_value),
         "created_at": order.created_at.strftime("%d.%m.%Y") if order.created_at else "—",
@@ -268,7 +272,7 @@ def _render_pdf(template_name: str, context: dict) -> bytes:
 def generate_order_pdf(db: Session, order_id: int) -> bytes:
     """Генерация PDF заказ-наряда."""
     order = _load_order(db, order_id)
-    ctx = _order_context(order)
+    ctx = _order_context(db, order)
     return _render_pdf("order.html", ctx)
 
 
@@ -287,7 +291,7 @@ def generate_act_pdf(db: Session, order_id: int) -> bytes:
         or Decimal("0")
     )
 
-    ctx = _order_context(order)
+    ctx = _order_context(db, order)
     ctx["paid_amount"] = _fmt(paid_amount)
     return _render_pdf("act.html", ctx)
 
@@ -337,7 +341,7 @@ def generate_receipt_pdf(db: Session, receipt_id: int) -> bytes:
     status_value = receipt.status.value if hasattr(receipt.status, "value") else str(receipt.status)
 
     ctx = {
-        **_common_ctx(),
+        **_common_ctx(db),
         "receipt": receipt,
         "document_date": receipt.document_date.strftime("%d.%m.%Y") if receipt.document_date else "—",
         "status_label": "Проведена" if status_value == "posted" else "Черновик",
