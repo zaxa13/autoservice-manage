@@ -41,7 +41,7 @@ from app.models.order import Order, OrderPart, OrderStatus, OrderWork
 from app.models.payment import Payment, PaymentLog, PaymentMethod, PaymentStatus
 from app.models.vehicle import Vehicle
 from app.models.vehicle_brand import VehicleBrand, VehicleModel
-from app.schemas.payment import Payment as PaymentSchema, PaymentCreate
+from app.schemas.payment import Payment as PaymentSchema, PaymentCreate, PaymentLogEntry
 from app.schemas.order import (
     Order as OrderSchema,
     OrderCreate,
@@ -770,3 +770,56 @@ async def cancel_all_order_payments(
     for p in payments:
         await db.refresh(p)
     return list(payments)
+
+
+@router.get(
+    "/{order_id}/payments/log",
+    response_model=list[PaymentLogEntry],
+    responses={**_write, **_404},
+)
+async def get_order_payment_log(
+    order_id: int,
+    db: AsyncSession = Depends(get_tenant_db),
+    claims: TenantClaims = Depends(require_manager_or_admin),
+):
+    """История всех операций над платежами заказа (хронологически).
+
+    Каждая строка — снимок состояния платежа после действия (создание / отмена).
+    Действие определяется на фронте по разнице со status предыдущего снимка.
+    """
+    if await db.get(Order, (claims.tenant_id, order_id)) is None:
+        raise NotFoundException("Заказ-наряд не найден")
+
+    rows = (await db.execute(
+        select(
+            PaymentLog.id,
+            PaymentLog.payment_id,
+            PaymentLog.order_id,
+            PaymentLog.amount,
+            PaymentLog.payment_method,
+            PaymentLog.status,
+            PaymentLog.employee_id,
+            Employee.full_name,
+            Employee.position,
+            PaymentLog.created_at,
+        )
+        .outerjoin(Employee, (Employee.id == PaymentLog.employee_id) & (Employee.tenant_id == PaymentLog.tenant_id))
+        .where(PaymentLog.order_id == order_id)
+        .order_by(PaymentLog.created_at, PaymentLog.id)
+    )).all()
+
+    return [
+        PaymentLogEntry(
+            id=r[0],
+            payment_id=r[1],
+            order_id=r[2],
+            amount=r[3],
+            payment_method=r[4],
+            status=r[5],
+            employee_id=r[6],
+            employee_name=r[7],
+            employee_position=r[8].value if hasattr(r[8], "value") else r[8],
+            created_at=r[9],
+        )
+        for r in rows
+    ]

@@ -34,3 +34,20 @@ class Payment(PaymentBase):
 
     class Config:
         from_attributes = True
+
+
+class PaymentLogEntry(BaseModel):
+    """Снимок состояния платежа из app.payment_logs."""
+    id: int = Field(..., description="ID записи лога")
+    payment_id: int = Field(..., description="ID платежа, к которому относится снимок")
+    order_id: int = Field(..., description="ID заказа")
+    amount: Decimal = Field(..., description="Сумма платежа на момент снимка")
+    payment_method: str = Field(..., description="Способ оплаты")
+    status: str = Field(..., description="Статус платежа на момент снимка")
+    employee_id: Optional[int] = Field(None, description="ID сотрудника-актора")
+    employee_name: Optional[str] = Field(None, description="ФИО сотрудника-актора")
+    employee_position: Optional[str] = Field(None, description="Должность сотрудника")
+    created_at: datetime = Field(..., description="Когда сделан снимок")
+
+    class Config:
+        from_attributes = True
