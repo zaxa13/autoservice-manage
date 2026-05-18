@@ -123,33 +123,39 @@ async def revenue_report(
 ):
     _validate_range(date_from, date_to)
 
-    # 1. Total revenue (succeeded payments).
+    # Подзапрос: id заказов, завершённых в периоде (status=completed, completed_at в диапазоне).
+    completed_orders_subq = (
+        select(Order.id).where(
+            Order.status == "completed",
+            Order.completed_at.is_not(None),
+            func.date(Order.completed_at) >= date_from,
+            func.date(Order.completed_at) <= date_to,
+        )
+    ).scalar_subquery()
+
+    # 1. Кол-во завершённых заказов в периоде.
+    total_orders = int((await db.execute(
+        select(func.count(Order.id)).where(
+            Order.status == "completed",
+            Order.completed_at.is_not(None),
+            func.date(Order.completed_at) >= date_from,
+            func.date(Order.completed_at) <= date_to,
+        )
+    )).scalar() or 0)
+
+    # 2. Выручка = сумма успешных платежей по этим заказам.
     total_revenue = float((
         await db.execute(
             select(func.coalesce(func.sum(Payment.amount), 0)).where(
                 Payment.status == PaymentStatus.SUCCEEDED.value,
-                func.date(Payment.created_at) >= date_from,
-                func.date(Payment.created_at) <= date_to,
+                Payment.order_id.in_(completed_orders_subq),
             )
         )
     ).scalar() or 0)
 
-    # 2. Total orders + avg check (paid/completed).
-    cnt_total = (
-        await db.execute(
-            select(func.count(Order.id), func.coalesce(func.sum(Order.total_amount), 0))
-            .where(
-                Order.status.in_(["paid", "completed"]),
-                func.date(Order.created_at) >= date_from,
-                func.date(Order.created_at) <= date_to,
-            )
-        )
-    ).one()
-    total_orders = int(cnt_total[0] or 0)
-    sum_orders = float(cnt_total[1] or 0)
-    avg_check = sum_orders / total_orders if total_orders else 0.0
+    avg_check = total_revenue / total_orders if total_orders else 0.0
 
-    # 3. By day.
+    # 3. По дням — платежи этих заказов, группировка по дате платежа.
     rows = (await db.execute(
         select(
             func.date(Payment.created_at).label("d"),
@@ -157,8 +163,7 @@ async def revenue_report(
             func.count(func.distinct(Payment.order_id)),
         ).where(
             Payment.status == PaymentStatus.SUCCEEDED.value,
-            func.date(Payment.created_at) >= date_from,
-            func.date(Payment.created_at) <= date_to,
+            Payment.order_id.in_(completed_orders_subq),
         ).group_by(func.date(Payment.created_at)).order_by(func.date(Payment.created_at))
     )).all()
     by_day = [
@@ -166,20 +171,15 @@ async def revenue_report(
         for r in rows
     ]
 
-    # 4. By work category.
+    # 4. По категориям работ — только OrderWork завершённых заказов.
     rows = (await db.execute(
         select(
             Work.category,
             func.coalesce(func.sum(OrderWork.total), 0),
             func.count(func.distinct(OrderWork.order_id)),
         )
-        .join(Order, (Order.id == OrderWork.order_id) & (Order.tenant_id == OrderWork.tenant_id))
         .outerjoin(Work, (Work.id == OrderWork.work_id) & (Work.tenant_id == OrderWork.tenant_id))
-        .where(
-            Order.status.in_(["paid", "completed"]),
-            func.date(Order.created_at) >= date_from,
-            func.date(Order.created_at) <= date_to,
-        )
+        .where(OrderWork.order_id.in_(completed_orders_subq))
         .group_by(Work.category)
     )).all()
     by_work_category = [
@@ -192,7 +192,7 @@ async def revenue_report(
         for r in rows
     ]
 
-    # 5. By payment method.
+    # 5. По методам оплаты — те же платежи.
     rows = (await db.execute(
         select(
             Payment.payment_method,
@@ -200,8 +200,7 @@ async def revenue_report(
             func.count(Payment.id),
         ).where(
             Payment.status == PaymentStatus.SUCCEEDED.value,
-            func.date(Payment.created_at) >= date_from,
-            func.date(Payment.created_at) <= date_to,
+            Payment.order_id.in_(completed_orders_subq),
         ).group_by(Payment.payment_method)
     )).all()
     by_payment_method = [
@@ -239,24 +238,23 @@ async def mechanics_report(
 ):
     _validate_range(date_from, date_to)
 
-    # Все заказы в периоде с механиком.
+    # Завершённые заказы в периоде (по completed_at). Только status=completed —
+    # `paid` не учитывается, т.к. заказ ещё не закрыт.
     period_orders = (await db.execute(
         select(Order).where(
             Order.mechanic_id.is_not(None),
-            func.date(Order.created_at) >= date_from,
-            func.date(Order.created_at) <= date_to,
+            Order.status == "completed",
+            Order.completed_at.is_not(None),
+            func.date(Order.completed_at) >= date_from,
+            func.date(Order.completed_at) <= date_to,
         )
     )).scalars().all()
 
     completed_by_mech: dict[int, list] = defaultdict(list)
-    in_progress_by_mech: dict[int, int] = defaultdict(int)
     for o in period_orders:
-        if o.status in ("paid", "completed"):
-            completed_by_mech[o.mechanic_id].append(o)
-        if o.status == "in_progress":
-            in_progress_by_mech[o.mechanic_id] += 1
+        completed_by_mech[o.mechanic_id].append(o)
 
-    # Активные in_progress на текущий момент (без даты).
+    # Снимок in_progress на текущий момент (без даты).
     active_now = (await db.execute(
         select(Order.mechanic_id, func.count(Order.id))
         .where(Order.mechanic_id.is_not(None), Order.status == "in_progress")
@@ -266,22 +264,23 @@ async def mechanics_report(
 
     mechanic_ids = set(completed_by_mech.keys()) | set(active_now_map.keys())
 
-    # Кол-во работ за период.
-    works_counts: dict[int, int] = defaultdict(int)
-    if mechanic_ids:
+    # Выручка и кол-во работ — только по OrderWork (без запчастей) из этих
+    # завершённых заказов. Запчасти (OrderPart) в выручку механика НЕ входят.
+    works_sum_by_order: dict[int, float] = {}
+    works_cnt_by_order: dict[int, int] = {}
+    all_order_ids = [o.id for orders in completed_by_mech.values() for o in orders]
+    if all_order_ids:
         rows = (await db.execute(
-            select(OrderWork.mechanic_id, func.count(OrderWork.id))
-            .join(Order, (Order.id == OrderWork.order_id) & (Order.tenant_id == OrderWork.tenant_id))
-            .where(
-                OrderWork.mechanic_id.in_(mechanic_ids),
-                Order.status.in_(["paid", "completed"]),
-                func.date(Order.created_at) >= date_from,
-                func.date(Order.created_at) <= date_to,
+            select(
+                OrderWork.order_id,
+                func.coalesce(func.sum(OrderWork.total), 0),
+                func.count(OrderWork.id),
             )
-            .group_by(OrderWork.mechanic_id)
+            .where(OrderWork.order_id.in_(all_order_ids))
+            .group_by(OrderWork.order_id)
         )).all()
-        for r in rows:
-            works_counts[r[0]] = int(r[1])
+        works_sum_by_order = {r[0]: float(r[1] or 0) for r in rows}
+        works_cnt_by_order = {r[0]: int(r[2] or 0) for r in rows}
 
     # Salary за период (если есть).
     salary_map: dict[int, float] = {}
@@ -312,7 +311,8 @@ async def mechanics_report(
         if not emp:
             continue
         completed = completed_by_mech.get(mid, [])
-        revenue = sum(float(o.total_amount or 0) for o in completed)
+        revenue = sum(works_sum_by_order.get(o.id, 0.0) for o in completed)
+        works_count = sum(works_cnt_by_order.get(o.id, 0) for o in completed)
         cnt = len(completed)
         team_total_revenue += revenue
         team_total_orders += cnt
@@ -322,7 +322,7 @@ async def mechanics_report(
             orders_completed=cnt,
             orders_in_progress=active_now_map.get(mid, 0),
             revenue=revenue, avg_check=avg_check,
-            works_count=works_counts.get(mid, 0),
+            works_count=works_count,
             salary_total=salary_map.get(mid),
         ))
     mechanics.sort(key=lambda x: x.revenue, reverse=True)
@@ -481,7 +481,7 @@ async def parts_report(
 ):
     _validate_range(date_from, date_to)
 
-    # Использование запчастей через order_parts → orders в периоде с paid/completed.
+    # Использование запчастей через order_parts → orders, завершённые в периоде.
     rows = (await db.execute(
         select(
             OrderPart.part_id,
@@ -492,9 +492,10 @@ async def parts_report(
         .join(Order, (Order.id == OrderPart.order_id) & (Order.tenant_id == OrderPart.tenant_id))
         .where(
             OrderPart.part_id.is_not(None),
-            Order.status.in_(["paid", "completed"]),
-            func.date(Order.created_at) >= date_from,
-            func.date(Order.created_at) <= date_to,
+            Order.status == "completed",
+            Order.completed_at.is_not(None),
+            func.date(Order.completed_at) >= date_from,
+            func.date(Order.completed_at) <= date_to,
         )
         .group_by(OrderPart.part_id)
     )).all()

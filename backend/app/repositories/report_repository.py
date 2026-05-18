@@ -68,43 +68,47 @@ def get_revenue_report_data(
     date_from: date,
     date_to: date,
 ) -> dict:
-    """Aggregate revenue data for the given date range."""
+    """Aggregate revenue data for the given date range.
 
-    # Total revenue from succeeded payments
+    Все цифры считаются по заказам со статусом `completed` и `completed_at`
+    в диапазоне. Платежи учитываются только те, что относятся к этим заказам.
+    """
+
+    # Подзапрос: id заказов, завершённых в периоде
+    completed_orders_q = (
+        db.query(Order.id)
+        .filter(
+            Order.status == "completed",
+            Order.completed_at.isnot(None),
+            func.date(Order.completed_at) >= date_from,
+            func.date(Order.completed_at) <= date_to,
+        )
+    )
+
+    total_orders = completed_orders_q.count()
+
+    # Выручка — сумма успешных платежей по этим заказам
     total_revenue = float(
         db.query(func.sum(Payment.amount))
         .filter(
             Payment.status == PaymentStatus.SUCCEEDED,
-            func.date(Payment.created_at) >= date_from,
-            func.date(Payment.created_at) <= date_to,
-        )
-        .scalar() or 0
-    )
-
-    # Total paid/completed orders in period
-    total_orders = (
-        db.query(func.count(Order.id))
-        .filter(
-            Order.status.in_(["paid", "completed"]),
-            func.date(Order.created_at) >= date_from,
-            func.date(Order.created_at) <= date_to,
+            Payment.order_id.in_(completed_orders_q),
         )
         .scalar() or 0
     )
 
     avg_check = total_revenue / total_orders if total_orders else 0.0
 
-    # Revenue by day
+    # Выручка по дням — группировка платежей этих заказов по дате платежа
     rows_by_day = (
         db.query(
             func.date(Payment.created_at).label("day"),
             func.sum(Payment.amount).label("revenue"),
-            func.count(Payment.id).label("payments_count"),
+            func.count(func.distinct(Payment.order_id)).label("orders_count"),
         )
         .filter(
             Payment.status == PaymentStatus.SUCCEEDED,
-            func.date(Payment.created_at) >= date_from,
-            func.date(Payment.created_at) <= date_to,
+            Payment.order_id.in_(completed_orders_q),
         )
         .group_by(func.date(Payment.created_at))
         .order_by(func.date(Payment.created_at))
@@ -114,12 +118,12 @@ def get_revenue_report_data(
         {
             "date": str(r.day),
             "revenue": float(r.revenue or 0),
-            "orders_count": int(r.payments_count or 0),
+            "orders_count": int(r.orders_count or 0),
         }
         for r in rows_by_day
     ]
 
-    # Revenue by work category (via order_works → works)
+    # Выручка по категориям работ — только завершённые заказы
     rows_work_cat = (
         db.query(
             Work.category.label("category"),
@@ -127,12 +131,7 @@ def get_revenue_report_data(
             func.count(func.distinct(OrderWork.order_id)).label("orders_count"),
         )
         .join(OrderWork, OrderWork.work_id == Work.id)
-        .join(Order, Order.id == OrderWork.order_id)
-        .filter(
-            Order.status.in_(["paid", "completed"]),
-            func.date(Order.created_at) >= date_from,
-            func.date(Order.created_at) <= date_to,
-        )
+        .filter(OrderWork.order_id.in_(completed_orders_q))
         .group_by(Work.category)
         .order_by(func.sum(OrderWork.total).desc())
         .all()
@@ -150,7 +149,7 @@ def get_revenue_report_data(
         for r in rows_work_cat
     ]
 
-    # Revenue by payment method
+    # Платежи по методам — только по завершённым заказам в периоде
     rows_method = (
         db.query(
             Payment.payment_method.label("method"),
@@ -159,8 +158,7 @@ def get_revenue_report_data(
         )
         .filter(
             Payment.status == PaymentStatus.SUCCEEDED,
-            func.date(Payment.created_at) >= date_from,
-            func.date(Payment.created_at) <= date_to,
+            Payment.order_id.in_(completed_orders_q),
         )
         .group_by(Payment.payment_method)
         .order_by(func.sum(Payment.amount).desc())
@@ -204,14 +202,17 @@ def get_mechanics_report_data(
     data (created before the per-line mechanic feature) is still counted.
     """
 
-    # Load all order_works for non-cancelled orders in the period
+    # Заказы, завершённые в периоде (status=completed, completed_at в диапазоне).
+    # Заказы в статусе `paid` сюда НЕ попадают — механик получает учёт работы
+    # только когда заказ полностью закрыт.
     work_rows = (
         db.query(OrderWork)
         .join(Order, Order.id == OrderWork.order_id)
         .filter(
-            Order.status.in_(["in_progress", "ready_for_payment", "paid", "completed"]),
-            func.date(Order.created_at) >= date_from,
-            func.date(Order.created_at) <= date_to,
+            Order.status == "completed",
+            Order.completed_at.isnot(None),
+            func.date(Order.completed_at) >= date_from,
+            func.date(Order.completed_at) <= date_to,
         )
         .options(joinedload(OrderWork.mechanic))
         .all()
@@ -221,23 +222,24 @@ def get_mechanics_report_data(
     orders_in_period = (
         db.query(Order)
         .filter(
-            Order.status.in_(["in_progress", "ready_for_payment", "paid", "completed"]),
-            func.date(Order.created_at) >= date_from,
-            func.date(Order.created_at) <= date_to,
+            Order.status == "completed",
+            Order.completed_at.isnot(None),
+            func.date(Order.completed_at) >= date_from,
+            func.date(Order.completed_at) <= date_to,
         )
         .all()
     )
     order_mechanic_map: dict[int, int | None] = {o.id: o.mechanic_id for o in orders_in_period}
-    order_status_map: dict[int, str] = {
-        o.id: str(o.status.value if hasattr(o.status, "value") else o.status)
-        for o in orders_in_period
-    }
 
     # Group order_works by resolved mechanic
     # mechanic_id on the work line takes priority; fall back to order-level
     by_mechanic: dict[int, dict] = {}
 
     for w in work_rows:
+        # work_rows уже отфильтрованы только по completed-заказам — fallback
+        # на order-level mechanic_id безопасен.
+        if w.order_id not in order_mechanic_map:
+            continue
         mid = w.mechanic_id or order_mechanic_map.get(w.order_id)
         if mid is None:
             continue
@@ -245,14 +247,21 @@ def get_mechanics_report_data(
             by_mechanic[mid] = {
                 "works": [],
                 "order_ids_completed": set(),
-                "order_ids_in_progress": set(),
             }
         by_mechanic[mid]["works"].append(w)
-        status = order_status_map.get(w.order_id, "")
-        if status in ("paid", "completed"):
-            by_mechanic[mid]["order_ids_completed"].add(w.order_id)
-        elif status == "in_progress":
-            by_mechanic[mid]["order_ids_in_progress"].add(w.order_id)
+        by_mechanic[mid]["order_ids_completed"].add(w.order_id)
+
+    # Снимок "в работе сейчас" по order-level mechanic_id — не зависит от периода
+    in_progress_rows = (
+        db.query(Order.mechanic_id, func.count(Order.id))
+        .filter(
+            Order.status == "in_progress",
+            Order.mechanic_id.in_(by_mechanic.keys()) if by_mechanic else False,
+        )
+        .group_by(Order.mechanic_id)
+        .all()
+    ) if by_mechanic else []
+    in_progress_map: dict[int, int] = {mid: int(cnt or 0) for mid, cnt in in_progress_rows}
 
     # Salary data
     salary_rows = (
@@ -280,9 +289,8 @@ def get_mechanics_report_data(
         # Revenue = sum of work line totals (only works, not parts)
         revenue = sum(float(w.total or 0) for w in works)
         orders_completed = len(data["order_ids_completed"])
-        orders_in_progress = len(data["order_ids_in_progress"])
-        total_orders = orders_completed + orders_in_progress
-        avg_check = revenue / total_orders if total_orders else 0
+        orders_in_progress = in_progress_map.get(mid, 0)
+        avg_check = revenue / orders_completed if orders_completed else 0
         mechanics.append({
             "employee_id": mid,
             "full_name": emp.full_name,
@@ -297,7 +305,7 @@ def get_mechanics_report_data(
     mechanics.sort(key=lambda x: x["revenue"], reverse=True)
 
     team_total_revenue = sum(m["revenue"] for m in mechanics)
-    team_total_orders = sum(m["orders_completed"] + m["orders_in_progress"] for m in mechanics)
+    team_total_orders = sum(m["orders_completed"] for m in mechanics)
     team_avg_check = team_total_revenue / team_total_orders if team_total_orders else 0
 
     return {
@@ -421,9 +429,10 @@ def get_parts_report_data(
         .join(OrderPart, OrderPart.part_id == Part.id)
         .join(Order, Order.id == OrderPart.order_id)
         .filter(
-            Order.status.in_(["paid", "completed"]),
-            func.date(Order.created_at) >= date_from,
-            func.date(Order.created_at) <= date_to,
+            Order.status == "completed",
+            Order.completed_at.isnot(None),
+            func.date(Order.completed_at) >= date_from,
+            func.date(Order.completed_at) <= date_to,
         )
         .group_by(Part.id, Part.name, Part.part_number, Part.category, Part.purchase_price_last)
         .order_by(func.sum(OrderPart.total).desc())
