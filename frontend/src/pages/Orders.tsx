@@ -84,6 +84,8 @@ export default function Orders() {
   const [openPaymentLog, setOpenPaymentLog] = useState(false);
   const [paymentLog, setPaymentLog] = useState<PaymentLogEntry[]>([]);
   const [paymentLogLoading, setPaymentLogLoading] = useState(false);
+  const [cancelOrderConfirm, setCancelOrderConfirm] = useState(false);
+  const [cancellingOrder, setCancellingOrder] = useState(false);
 
   // --- ПОИСК РАБОТ ИЗ КАТАЛОГА ---
   const [worksSearchQuery, setWorksSearchQuery] = useState('');
@@ -477,6 +479,12 @@ export default function Orders() {
 
   const handleSave = async (complete: boolean = false) => {
     if (!formData.vehicle_id) { setError('Выберите авто'); return; }
+    // Отмена заказа идёт через отдельный endpoint POST /orders/{id}/cancel.
+    // Если в форме выбран статус «cancelled» — показываем подтверждение и идём через cancel-эндпоинт.
+    if (formData.status === 'cancelled' && editingOrderId && !complete) {
+      setCancelOrderConfirm(true);
+      return;
+    }
     setSaveLoading(true);
     try {
       const payload = { ...formData,
@@ -503,6 +511,22 @@ export default function Orders() {
       const list = await api.get('/orders/'); setOrders(list.data || []);
     } catch (err: any) { setError(err.response?.data?.detail || 'Ошибка сохранения'); }
     finally { setSaveLoading(false); }
+  };
+
+  const handleConfirmCancelOrder = async () => {
+    if (!editingOrderId) return;
+    setCancellingOrder(true);
+    try {
+      await api.post(`/orders/${editingOrderId}/cancel`);
+      setCancelOrderConfirm(false);
+      setOpenDialog(false);
+      loadInitialData();
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Не удалось отменить заказ');
+      setCancelOrderConfirm(false);
+    } finally {
+      setCancellingOrder(false);
+    }
   };
 
   const handleOpenPaymentLog = async () => {
@@ -1739,6 +1763,44 @@ export default function Orders() {
             sx={{ borderRadius: 3, px: 5, fontWeight: 700, textTransform: 'none' }}
           >
             Ок
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Подтверждение отмены заказа */}
+      <Dialog
+        open={cancelOrderConfirm}
+        onClose={() => !cancellingOrder && setCancelOrderConfirm(false)}
+        maxWidth="xs"
+        fullWidth
+        PaperProps={{ sx: { borderRadius: 4, p: 1 } }}
+        sx={{ zIndex: (t) => t.zIndex.modal + 10 }}
+      >
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1.5, fontWeight: 800 }}>
+          <WarningAmberRounded color="error" fontSize="large" /> Отменить заказ-наряд?
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Заказ-наряд перейдёт в статус «Отменён». Несохранённые изменения формы будут потеряны.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 3, pt: 1, gap: 1 }}>
+          <Button
+            onClick={() => setCancelOrderConfirm(false)}
+            disabled={cancellingOrder}
+            variant="outlined"
+            sx={{ borderRadius: 3, fontWeight: 700, textTransform: 'none' }}
+          >
+            Закрыть
+          </Button>
+          <Button
+            onClick={handleConfirmCancelOrder}
+            disabled={cancellingOrder}
+            variant="contained"
+            color="error"
+            sx={{ borderRadius: 3, fontWeight: 700, textTransform: 'none', ml: 'auto' }}
+          >
+            {cancellingOrder ? <CircularProgress size={20} color="inherit" /> : 'Отменить заказ'}
           </Button>
         </DialogActions>
       </Dialog>
