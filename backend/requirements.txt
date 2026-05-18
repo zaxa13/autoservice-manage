@@ -36,10 +36,9 @@ python-dateutil==2.8.2
 
 # Jinja2 — для текстовых шаблонов (email, etc).
 jinja2==3.1.3
-# Phase 7: xhtml2pdf удалён, требует gcc+cairo. PDF-генерация в API
-# временно выключена (Phase 3 не подключал /print эндпоинты).
-# Когда вернётся PDF — либо xhtml2pdf+build deps в Dockerfile, либо
-# pdf-генерация микро-сервисом / wkhtmltopdf бинарём.
+
+# PDF-генерация (накладные, заказ-наряды) — pure-Python через reportlab.
+xhtml2pdf==0.2.16
 
 # Тестирование
 pytest==7.4.3
