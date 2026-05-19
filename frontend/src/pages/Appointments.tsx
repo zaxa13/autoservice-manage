@@ -39,8 +39,10 @@ import {
   SearchRounded,
   CheckCircleRounded,
   ArrowForwardIosRounded,
+  ArrowBackIosNewRounded,
   ExpandMoreRounded,
   OpenInNewRounded,
+  TodayRounded,
 } from '@mui/icons-material'
 import {
   DndContext,
@@ -64,7 +66,7 @@ import {
   Vehicle,
   OrderCreate,
 } from '../types'
-import { format } from 'date-fns'
+import { addDays, format, parseISO } from 'date-fns'
 import { ru } from 'date-fns/locale'
 
 // ─── Статусы ──────────────────────────────────────────────────────────────────
@@ -139,6 +141,149 @@ function vehicleLabel(v?: Vehicle): string {
   const model = v.model?.name ?? ''
   const plate = v.license_plate ? ` · ${v.license_plate}` : ''
   return `${brand} ${model}${plate}`.trim()
+}
+
+// ─── Панель навигации по дате ────────────────────────────────────────────────
+
+function DatePanel({
+  selectedDate,
+  onChange,
+}: {
+  selectedDate: string
+  onChange: (d: string) => void
+}) {
+  const dateInputRef = useRef<HTMLInputElement>(null)
+  const todayStr = format(new Date(), 'yyyy-MM-dd')
+  const isToday = selectedDate === todayStr
+  const dateObj = parseISO(selectedDate + 'T00:00:00')
+  const weekday = format(dateObj, 'EEEE', { locale: ru })
+  const human = format(dateObj, 'd MMMM yyyy', { locale: ru })
+
+  const shift = (days: number) => {
+    onChange(format(addDays(dateObj, days), 'yyyy-MM-dd'))
+  }
+
+  const openCalendar = () => {
+    const input = dateInputRef.current
+    if (!input) return
+    if (typeof (input as any).showPicker === 'function') {
+      (input as any).showPicker()
+    } else {
+      input.focus()
+      input.click()
+    }
+  }
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null
+      const tag = target?.tagName
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || target?.isContentEditable) return
+      if (e.key === 'ArrowLeft') { e.preventDefault(); shift(-1) }
+      else if (e.key === 'ArrowRight') { e.preventDefault(); shift(1) }
+      else if (e.key.toLowerCase() === 't') { e.preventDefault(); onChange(todayStr) }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedDate])
+
+  return (
+    <Paper sx={{ p: 1.5, borderRadius: 3, mb: 2, display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
+      {/* Прев */}
+      <Tooltip title="Предыдущий день (←)">
+        <IconButton
+          onClick={() => shift(-1)}
+          size="large"
+          sx={{
+            bgcolor: 'action.hover',
+            borderRadius: 2,
+            '&:hover': { bgcolor: 'action.selected' },
+          }}
+        >
+          <ArrowBackIosNewRounded fontSize="small" />
+        </IconButton>
+      </Tooltip>
+
+      {/* Большая кнопка-календарь */}
+      <Button
+        variant="outlined"
+        size="large"
+        startIcon={<CalendarMonthRounded />}
+        onClick={openCalendar}
+        sx={{
+          flex: '1 1 auto',
+          minWidth: 280,
+          justifyContent: 'flex-start',
+          textTransform: 'none',
+          borderRadius: 2,
+          py: 1.25,
+          px: 2,
+          fontWeight: 700,
+          fontSize: '1.05rem',
+          color: 'text.primary',
+          borderColor: 'divider',
+          '&:hover': {
+            borderColor: 'primary.main',
+            bgcolor: 'action.hover',
+          },
+        }}
+      >
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', lineHeight: 1.1 }}>
+          <Typography component="span" sx={{ fontWeight: 800, fontSize: '1.05rem' }}>
+            {human}
+          </Typography>
+          <Typography component="span" variant="caption" color="text.secondary" sx={{ textTransform: 'capitalize' }}>
+            {weekday} · нажмите чтобы выбрать дату
+          </Typography>
+        </Box>
+        {/* Скрытый input для нативного календаря */}
+        <Box
+          component="input"
+          type="date"
+          ref={dateInputRef as any}
+          value={selectedDate}
+          onChange={(e: any) => onChange(e.target.value)}
+          sx={{
+            position: 'absolute',
+            opacity: 0,
+            pointerEvents: 'none',
+            width: 1,
+            height: 1,
+          }}
+        />
+      </Button>
+
+      {/* Некст */}
+      <Tooltip title="Следующий день (→)">
+        <IconButton
+          onClick={() => shift(1)}
+          size="large"
+          sx={{
+            bgcolor: 'action.hover',
+            borderRadius: 2,
+            '&:hover': { bgcolor: 'action.selected' },
+          }}
+        >
+          <ArrowForwardIosRounded fontSize="small" />
+        </IconButton>
+      </Tooltip>
+
+      {/* Сегодня — только если не сегодня */}
+      {!isToday && (
+        <Tooltip title="Перейти на сегодня (T)">
+          <Button
+            variant="contained"
+            startIcon={<TodayRounded />}
+            onClick={() => onChange(todayStr)}
+            sx={{ borderRadius: 2, fontWeight: 700, textTransform: 'none' }}
+          >
+            Сегодня
+          </Button>
+        </Tooltip>
+      )}
+    </Paper>
+  )
 }
 
 // ─── Чип статуса ─────────────────────────────────────────────────────────────
@@ -1271,21 +1416,7 @@ export default function Appointments() {
         </Button>
       </Stack>
 
-      {/* Панель даты */}
-      <Paper sx={{ p: 2, borderRadius: 2, display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-        <CalendarMonthRounded sx={{ color: 'primary.main' }} />
-        <TextField
-          type="date"
-          variant="standard"
-          value={selectedDate}
-          onChange={(e) => setSelectedDate(e.target.value)}
-          InputProps={{ disableUnderline: true }}
-          sx={{ '& input': { fontWeight: 700, fontSize: '1rem' } }}
-        />
-        <Typography variant="body2" color="text.secondary">
-          {format(new Date(selectedDate + 'T00:00:00'), 'd MMMM yyyy', { locale: ru })}
-        </Typography>
-      </Paper>
+      <DatePanel selectedDate={selectedDate} onChange={setSelectedDate} />
 
       {/* Статистика по статусам */}
       {appointments.length > 0 && (
