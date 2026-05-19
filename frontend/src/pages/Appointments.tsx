@@ -24,6 +24,8 @@ import {
   Divider,
   InputAdornment,
   Collapse,
+  Popover,
+  ButtonBase,
 } from '@mui/material'
 import {
   AddRounded,
@@ -42,7 +44,8 @@ import {
   ArrowBackIosNewRounded,
   ExpandMoreRounded,
   OpenInNewRounded,
-  TodayRounded,
+  ChevronLeftRounded,
+  ChevronRightRounded,
 } from '@mui/icons-material'
 import {
   DndContext,
@@ -66,7 +69,10 @@ import {
   Vehicle,
   OrderCreate,
 } from '../types'
-import { addDays, format, parseISO } from 'date-fns'
+import {
+  addDays, addMonths, eachDayOfInterval, endOfWeek,
+  format, isSameDay, isSameMonth, parseISO, startOfMonth, startOfWeek, subDays,
+} from 'date-fns'
 import { ru } from 'date-fns/locale'
 
 // ─── Статусы ──────────────────────────────────────────────────────────────────
@@ -143,6 +149,101 @@ function vehicleLabel(v?: Vehicle): string {
   return `${brand} ${model}${plate}`.trim()
 }
 
+// ─── Месячный календарь-popover ──────────────────────────────────────────────
+
+function MonthCalendar({
+  selectedDate,
+  onPick,
+}: {
+  selectedDate: Date
+  onPick: (d: Date) => void
+}) {
+  const [viewMonth, setViewMonth] = useState(() => startOfMonth(selectedDate))
+  const today = new Date()
+
+  // 6 недель = 42 дня — сетка фиксированной высоты, без скачков
+  const gridStart = startOfWeek(startOfMonth(viewMonth), { weekStartsOn: 1 })
+  const gridEnd = endOfWeek(addDays(gridStart, 41), { weekStartsOn: 1 })
+  const days = eachDayOfInterval({ start: gridStart, end: gridEnd }).slice(0, 42)
+
+  const weekdayLabels = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
+
+  return (
+    <Box sx={{ p: 2, width: 320 }}>
+      {/* Заголовок: ‹ Месяц Год › */}
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+        <IconButton size="small" onClick={() => setViewMonth(addMonths(viewMonth, -1))}>
+          <ChevronLeftRounded />
+        </IconButton>
+        <Typography sx={{ fontWeight: 800, fontSize: '0.95rem', textTransform: 'capitalize' }}>
+          {format(viewMonth, 'LLLL yyyy', { locale: ru })}
+        </Typography>
+        <IconButton size="small" onClick={() => setViewMonth(addMonths(viewMonth, 1))}>
+          <ChevronRightRounded />
+        </IconButton>
+      </Box>
+
+      {/* Заголовки дней недели */}
+      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 0.5, mb: 0.5 }}>
+        {weekdayLabels.map((wd, i) => (
+          <Typography
+            key={wd}
+            variant="caption"
+            sx={{
+              textAlign: 'center',
+              fontWeight: 700,
+              color: i >= 5 ? 'error.light' : 'text.secondary',
+              fontSize: '0.72rem',
+            }}
+          >
+            {wd}
+          </Typography>
+        ))}
+      </Box>
+
+      {/* Сетка дней 6×7 */}
+      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 0.5 }}>
+        {days.map((d) => {
+          const inMonth = isSameMonth(d, viewMonth)
+          const isToday = isSameDay(d, today)
+          const isSelected = isSameDay(d, selectedDate)
+          const dayOfWeek = (d.getDay() + 6) % 7 // 0=Пн … 6=Вс
+          const isWeekend = dayOfWeek >= 5
+          return (
+            <ButtonBase
+              key={d.toISOString()}
+              onClick={() => onPick(d)}
+              sx={{
+                aspectRatio: '1 / 1',
+                borderRadius: 1.5,
+                fontWeight: isToday || isSelected ? 800 : 600,
+                fontSize: '0.85rem',
+                color: isSelected
+                  ? 'primary.contrastText'
+                  : !inMonth
+                    ? 'text.disabled'
+                    : isWeekend
+                      ? 'error.main'
+                      : 'text.primary',
+                bgcolor: isSelected ? 'primary.main' : 'transparent',
+                border: isToday && !isSelected ? 2 : 0,
+                borderColor: 'primary.main',
+                transition: 'background-color 0.15s',
+                '&:hover': {
+                  bgcolor: isSelected ? 'primary.dark' : 'action.hover',
+                },
+              }}
+            >
+              {format(d, 'd')}
+            </ButtonBase>
+          )
+        })}
+      </Box>
+    </Box>
+  )
+}
+
+
 // ─── Панель навигации по дате ────────────────────────────────────────────────
 
 function DatePanel({
@@ -152,26 +253,17 @@ function DatePanel({
   selectedDate: string
   onChange: (d: string) => void
 }) {
-  const dateInputRef = useRef<HTMLInputElement>(null)
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const todayStr = format(new Date(), 'yyyy-MM-dd')
-  const isToday = selectedDate === todayStr
+  const yesterdayStr = format(subDays(new Date(), 1), 'yyyy-MM-dd')
+  const tomorrowStr = format(addDays(new Date(), 1), 'yyyy-MM-dd')
   const dateObj = parseISO(selectedDate + 'T00:00:00')
   const weekday = format(dateObj, 'EEEE', { locale: ru })
   const human = format(dateObj, 'd MMMM yyyy', { locale: ru })
+  const monthYear = format(dateObj, 'LLLL yyyy', { locale: ru })
 
   const shift = (days: number) => {
     onChange(format(addDays(dateObj, days), 'yyyy-MM-dd'))
-  }
-
-  const openCalendar = () => {
-    const input = dateInputRef.current
-    if (!input) return
-    if (typeof (input as any).showPicker === 'function') {
-      (input as any).showPicker()
-    } else {
-      input.focus()
-      input.click()
-    }
   }
 
   useEffect(() => {
@@ -179,6 +271,7 @@ function DatePanel({
       const target = e.target as HTMLElement | null
       const tag = target?.tagName
       if (tag === 'INPUT' || tag === 'TEXTAREA' || target?.isContentEditable) return
+      if (anchorEl) return
       if (e.key === 'ArrowLeft') { e.preventDefault(); shift(-1) }
       else if (e.key === 'ArrowRight') { e.preventDefault(); shift(1) }
       else if (e.key.toLowerCase() === 't') { e.preventDefault(); onChange(todayStr) }
@@ -186,18 +279,49 @@ function DatePanel({
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedDate])
+  }, [selectedDate, anchorEl])
+
+  const quickChip = (label: string, value: string, key: string) => {
+    const active = selectedDate === value
+    return (
+      <Chip
+        key={key}
+        label={label}
+        clickable
+        onClick={() => onChange(value)}
+        color={active ? 'primary' : 'default'}
+        variant={active ? 'filled' : 'outlined'}
+        sx={{
+          fontWeight: 700,
+          borderRadius: 2,
+          height: 36,
+          px: 0.5,
+          fontSize: '0.85rem',
+        }}
+      />
+    )
+  }
 
   return (
-    <Paper sx={{ p: 1.5, borderRadius: 3, mb: 2, display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
-      {/* Прев */}
+    <Paper
+      sx={{
+        p: 1.5,
+        borderRadius: 3,
+        mb: 2,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1.5,
+        flexWrap: 'wrap',
+      }}
+    >
+      {/* Стрелка влево */}
       <Tooltip title="Предыдущий день (←)">
         <IconButton
           onClick={() => shift(-1)}
-          size="large"
           sx={{
             bgcolor: 'action.hover',
             borderRadius: 2,
+            width: 44, height: 44,
             '&:hover': { bgcolor: 'action.selected' },
           }}
         >
@@ -205,63 +329,62 @@ function DatePanel({
         </IconButton>
       </Tooltip>
 
-      {/* Большая кнопка-календарь */}
-      <Button
-        variant="outlined"
-        size="large"
-        startIcon={<CalendarMonthRounded />}
-        onClick={openCalendar}
-        sx={{
-          flex: '1 1 auto',
-          minWidth: 280,
-          justifyContent: 'flex-start',
-          textTransform: 'none',
-          borderRadius: 2,
-          py: 1.25,
-          px: 2,
-          fontWeight: 700,
-          fontSize: '1.05rem',
-          color: 'text.primary',
-          borderColor: 'divider',
-          '&:hover': {
-            borderColor: 'primary.main',
-            bgcolor: 'action.hover',
-          },
-        }}
-      >
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', lineHeight: 1.1 }}>
-          <Typography component="span" sx={{ fontWeight: 800, fontSize: '1.05rem' }}>
-            {human}
-          </Typography>
-          <Typography component="span" variant="caption" color="text.secondary" sx={{ textTransform: 'capitalize' }}>
-            {weekday} · нажмите чтобы выбрать дату
-          </Typography>
-        </Box>
-        {/* Скрытый input для нативного календаря */}
-        <Box
-          component="input"
-          type="date"
-          ref={dateInputRef as any}
-          value={selectedDate}
-          onChange={(e: any) => onChange(e.target.value)}
-          sx={{
-            position: 'absolute',
-            opacity: 0,
-            pointerEvents: 'none',
-            width: 1,
-            height: 1,
-          }}
-        />
-      </Button>
+      {/* Чипы быстрого выбора */}
+      <Stack direction="row" spacing={0.75}>
+        {quickChip('Вчера', yesterdayStr, 'y')}
+        {quickChip('Сегодня', todayStr, 't')}
+        {quickChip('Завтра', tomorrowStr, 'tm')}
+      </Stack>
 
-      {/* Некст */}
+      <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
+
+      {/* Текущая дата — крупно, как визуальный якорь */}
+      <Box sx={{ flex: '1 1 auto', minWidth: 180, lineHeight: 1.15 }}>
+        <Typography sx={{ fontWeight: 800, fontSize: '1.15rem', color: 'text.primary' }}>
+          {human}
+        </Typography>
+        <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'capitalize' }}>
+          {weekday}
+        </Typography>
+      </Box>
+
+      {/* Большая явная CTA «Календарь» */}
+      <Tooltip title="Открыть календарь">
+        <Button
+          variant="contained"
+          color="primary"
+          size="large"
+          startIcon={<CalendarMonthRounded />}
+          onClick={(e) => setAnchorEl(e.currentTarget)}
+          sx={{
+            borderRadius: 2,
+            fontWeight: 700,
+            textTransform: 'none',
+            px: 2,
+            py: 1.1,
+            fontSize: '0.95rem',
+            boxShadow: 2,
+          }}
+        >
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', lineHeight: 1.1 }}>
+            <Typography component="span" sx={{ fontWeight: 800, fontSize: '0.95rem', color: 'inherit' }}>
+              Календарь
+            </Typography>
+            <Typography component="span" sx={{ fontSize: '0.7rem', opacity: 0.85, textTransform: 'capitalize' }}>
+              {monthYear}
+            </Typography>
+          </Box>
+        </Button>
+      </Tooltip>
+
+      {/* Стрелка вправо */}
       <Tooltip title="Следующий день (→)">
         <IconButton
           onClick={() => shift(1)}
-          size="large"
           sx={{
             bgcolor: 'action.hover',
             borderRadius: 2,
+            width: 44, height: 44,
             '&:hover': { bgcolor: 'action.selected' },
           }}
         >
@@ -269,19 +392,22 @@ function DatePanel({
         </IconButton>
       </Tooltip>
 
-      {/* Сегодня — только если не сегодня */}
-      {!isToday && (
-        <Tooltip title="Перейти на сегодня (T)">
-          <Button
-            variant="contained"
-            startIcon={<TodayRounded />}
-            onClick={() => onChange(todayStr)}
-            sx={{ borderRadius: 2, fontWeight: 700, textTransform: 'none' }}
-          >
-            Сегодня
-          </Button>
-        </Tooltip>
-      )}
+      <Popover
+        open={Boolean(anchorEl)}
+        anchorEl={anchorEl}
+        onClose={() => setAnchorEl(null)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        slotProps={{ paper: { sx: { borderRadius: 3, mt: 1, boxShadow: 6 } } }}
+      >
+        <MonthCalendar
+          selectedDate={dateObj}
+          onPick={(d) => {
+            onChange(format(d, 'yyyy-MM-dd'))
+            setAnchorEl(null)
+          }}
+        />
+      </Popover>
     </Paper>
   )
 }
