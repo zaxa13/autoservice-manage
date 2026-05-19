@@ -11,6 +11,7 @@ import {
 } from '@mui/icons-material'
 import type { Employee, SalaryScheme, SalaryRecord, SalaryStatus, CashAccount } from '../types'
 import api from '../services/api'
+import { DateField } from '../components/DateField'
 
 const STATUS_LABELS = {
   draft:      'Черновик',
@@ -77,6 +78,10 @@ export default function Salary() {
   const [schemeWorks, setSchemeWorks] = useState('')
   const [schemeRevenue, setSchemeRevenue] = useState('')
   const [savingScheme, setSavingScheme] = useState(false)
+
+  // Фильтр по периоду (start/end зарплаты в этом диапазоне)
+  const [filterFrom, setFilterFrom] = useState<string>('')
+  const [filterTo, setFilterTo] = useState<string>('')
 
   // Pay salary dialog
   const [payDialogSalary, setPayDialogSalary] = useState<SalaryRecord | null>(null)
@@ -212,6 +217,44 @@ export default function Salary() {
 
       {/* ── Tab 0: Salary records ── */}
       {tab === 0 && (
+        <>
+        <Paper
+          elevation={0}
+          sx={{
+            mb: 2, p: 2, borderRadius: 3, border: '1px solid #E2E8F0',
+            display: 'flex', flexWrap: 'wrap', alignItems: 'flex-end', gap: 2,
+          }}
+        >
+          <Typography variant="body2" sx={{ fontWeight: 700, color: 'text.secondary', mr: 0.5, alignSelf: 'center' }}>
+            Период:
+          </Typography>
+          <DateField
+            value={filterFrom}
+            onChange={setFilterFrom}
+            label="С"
+            size="small"
+            minWidth={180}
+            placeholder="дата начала"
+          />
+          <DateField
+            value={filterTo}
+            onChange={setFilterTo}
+            label="По"
+            size="small"
+            minWidth={180}
+            placeholder="дата конца"
+          />
+          {(filterFrom || filterTo) && (
+            <Button
+              variant="text"
+              color="error"
+              onClick={() => { setFilterFrom(''); setFilterTo('') }}
+              sx={{ fontWeight: 700, textTransform: 'none' }}
+            >
+              Сбросить
+            </Button>
+          )}
+        </Paper>
         <TableContainer component={Paper} sx={{ borderRadius: 3, border: '1px solid #E2E8F0' }}>
           <Table size="small">
             <TableHead>
@@ -228,14 +271,24 @@ export default function Salary() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {salaries.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={9} align="center" sx={{ color: 'text.secondary', py: 4 }}>
-                    Расчётов нет. Нажмите «Рассчитать» чтобы создать первый.
-                  </TableCell>
-                </TableRow>
-              )}
-              {salaries.map(s => {
+              {(() => {
+                const filtered = salaries.filter(s => {
+                  if (filterFrom && s.period_end < filterFrom) return false
+                  if (filterTo && s.period_start > filterTo) return false
+                  return true
+                })
+                if (filtered.length === 0) {
+                  return (
+                    <TableRow>
+                      <TableCell colSpan={9} align="center" sx={{ color: 'text.secondary', py: 4 }}>
+                        {salaries.length === 0
+                          ? 'Расчётов нет. Нажмите «Рассчитать» чтобы создать первый.'
+                          : 'Нет расчётов в выбранном периоде.'}
+                      </TableCell>
+                    </TableRow>
+                  )
+                }
+                return filtered.map(s => {
                 const emp = empById(s.employee_id)
                 return (
                   <TableRow key={s.id} hover>
@@ -274,10 +327,12 @@ export default function Salary() {
                     </TableCell>
                   </TableRow>
                 )
-              })}
+                })
+              })()}
             </TableBody>
           </Table>
         </TableContainer>
+        </>
       )}
 
       {/* ── Tab 1: Salary schemes ── */}
@@ -360,24 +415,26 @@ export default function Salary() {
               </Select>
             </FormControl>
             <Stack direction="row" spacing={1.5}>
-              <TextField
-                label="Начало периода"
-                type="date"
-                size="small"
-                fullWidth
-                value={calcPeriod.start}
-                onChange={e => setCalcPeriod(p => ({ ...p, start: e.target.value }))}
-                InputLabelProps={{ shrink: true }}
-              />
-              <TextField
-                label="Конец периода"
-                type="date"
-                size="small"
-                fullWidth
-                value={calcPeriod.end}
-                onChange={e => setCalcPeriod(p => ({ ...p, end: e.target.value }))}
-                InputLabelProps={{ shrink: true }}
-              />
+              <Box sx={{ flex: 1 }}>
+                <DateField
+                  label="Начало периода"
+                  size="small"
+                  clearable={false}
+                  value={calcPeriod.start}
+                  onChange={v => setCalcPeriod(p => ({ ...p, start: v }))}
+                  minWidth={0}
+                />
+              </Box>
+              <Box sx={{ flex: 1 }}>
+                <DateField
+                  label="Конец периода"
+                  size="small"
+                  clearable={false}
+                  value={calcPeriod.end}
+                  onChange={v => setCalcPeriod(p => ({ ...p, end: v }))}
+                  minWidth={0}
+                />
+              </Box>
             </Stack>
             <Typography variant="caption" color="text.secondary">
               Базовый оклад + % от суммы завершённых заказов за период
