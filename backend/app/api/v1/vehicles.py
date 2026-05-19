@@ -22,8 +22,10 @@ from app.dependencies import get_current_claims, get_tenant_db
 from app.models.customer import Customer
 from app.models.employee import Employee
 from app.models.order import Order, OrderPart, OrderWork
+from app.models.part import Part
 from app.models.vehicle import Vehicle
 from app.models.vehicle_brand import VehicleBrand, VehicleModel
+from app.models.work import Work
 from app.schemas.order import OrderDetail
 from app.schemas.responses import ErrorResponse
 from app.schemas.vehicle import (
@@ -252,22 +254,55 @@ async def vehicle_history(
             select(OrderPart).where(OrderPart.order_id.in_(order_ids)).order_by(OrderPart.id)
         )
     ).scalars().all()
+
+    # Загружаем справочники Work/Part оптом — иначе фронт получит null
+    # и отрисует «—» вместо названий.
+    work_ids = {w.work_id for w in works_rows if w.work_id is not None}
+    part_ids = {p.part_id for p in parts_rows if p.part_id is not None}
+    work_map: dict[int, Work] = {}
+    if work_ids:
+        work_map = {
+            w.id: w
+            for w in (await db.execute(select(Work).where(Work.id.in_(work_ids)))).scalars()
+        }
+    part_map: dict[int, Part] = {}
+    if part_ids:
+        part_map = {
+            p.id: p
+            for p in (await db.execute(select(Part).where(Part.id.in_(part_ids)))).scalars()
+        }
+
     works_by_order: dict[int, list] = {}
     for w in works_rows:
+        work_ref = work_map.get(w.work_id) if w.work_id is not None else None
         works_by_order.setdefault(w.order_id, []).append({
             "id": w.id, "order_id": w.order_id, "work_id": w.work_id,
             "work_name": w.work_name, "mechanic_id": w.mechanic_id,
             "quantity": w.quantity, "price": w.price,
             "discount": w.discount, "total": w.total,
-            "work": None, "mechanic": None,
+            "work": {
+                "id": work_ref.id,
+                "name": work_ref.name,
+                "category": work_ref.category,
+                "price": work_ref.price,
+            } if work_ref else None,
+            "mechanic": emp_map.get(w.mechanic_id) if w.mechanic_id else None,
         })
     parts_by_order: dict[int, list] = {}
     for p in parts_rows:
+        part_ref = part_map.get(p.part_id) if p.part_id is not None else None
         parts_by_order.setdefault(p.order_id, []).append({
             "id": p.id, "order_id": p.order_id, "part_id": p.part_id,
             "part_name": p.part_name, "article": p.article,
             "quantity": p.quantity, "price": p.price,
-            "discount": p.discount, "total": p.total, "part": None,
+            "discount": p.discount, "total": p.total,
+            "part": {
+                "id": part_ref.id,
+                "name": part_ref.name,
+                "part_number": part_ref.part_number,
+                "category": part_ref.category,
+                "price": part_ref.price,
+            } if part_ref else None,
         })
 
     return [

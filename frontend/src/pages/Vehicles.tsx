@@ -122,7 +122,7 @@ function OrderCard({ order }: { order: OrderDetail }) {
                 {order.order_works.map((w) => (
                   <Box key={w.id} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Typography variant="body2" color="text.primary">
-                      {w.work?.name || '—'}
+                      {w.work?.name || (w as any).work_name || '—'}
                       {w.quantity > 1 && (
                         <Typography component="span" variant="caption" color="text.secondary"> × {w.quantity}</Typography>
                       )}
@@ -146,7 +146,7 @@ function OrderCard({ order }: { order: OrderDetail }) {
                   <Box key={p.id} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 1 }}>
                     <Box>
                       <Typography variant="body2">
-                        {p.part?.name || '—'}
+                        {p.part?.name || (p as any).part_name || '—'}
                         {p.quantity > 1 && (
                           <Typography component="span" variant="caption" color="text.secondary"> × {p.quantity}</Typography>
                         )}
