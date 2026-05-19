@@ -19,6 +19,7 @@ import {
 } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
 import api from '../services/api'
+import { DateField } from '../components/DateField'
 import { getRoleFromToken } from '../store/authStore'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -836,7 +837,6 @@ function CustomRangePicker({
   onClose: () => void
   onApply: (from: string, to: string) => void
 }) {
-  const today = new Date().toISOString().split('T')[0]
   const [from, setFrom] = useState('')
   const [to, setTo] = useState('')
   const [error, setError] = useState('')
@@ -863,25 +863,21 @@ function CustomRangePicker({
         Произвольный период
       </Typography>
       <Stack spacing={1.5}>
-        <TextField
+        <DateField
           label="Начало"
-          type="date"
           size="small"
-          fullWidth
           value={from}
-          onChange={e => { setFrom(e.target.value); setError('') }}
-          inputProps={{ max: to || today }}
-          InputLabelProps={{ shrink: true }}
+          onChange={(v) => { setFrom(v); setError('') }}
+          minWidth={0}
+          clearable={false}
         />
-        <TextField
+        <DateField
           label="Конец"
-          type="date"
           size="small"
-          fullWidth
           value={to}
-          onChange={e => { setTo(e.target.value); setError('') }}
-          inputProps={{ min: from, max: today }}
-          InputLabelProps={{ shrink: true }}
+          onChange={(v) => { setTo(v); setError('') }}
+          minWidth={0}
+          clearable={false}
         />
         {error && (
           <Typography variant="caption" color="error">{error}</Typography>

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import {
-  Box, Typography, Paper, Tabs, Tab, TextField, Button,
+  Box, Typography, Paper, Tabs, Tab, Button,
   CircularProgress, Alert,
 } from '@mui/material'
 import {
@@ -12,6 +12,7 @@ import {
   AssessmentRounded,
 } from '@mui/icons-material'
 import { useReportsStore, ReportTab } from '../store/reportsStore'
+import { DateField } from '../components/DateField'
 import RevenueReport from '../components/reports/RevenueReport'
 import MechanicsReport from '../components/reports/MechanicsReport'
 import OrdersReport from '../components/reports/OrdersReport'
@@ -105,23 +106,21 @@ export default function Reports() {
         <Typography variant="body2" sx={{ fontWeight: 700, color: 'text.secondary', mr: 1 }}>
           Период:
         </Typography>
-        <TextField
-          type="date"
+        <DateField
           label="С"
           size="small"
           value={dateFrom}
-          onChange={(e) => setDateFrom(e.target.value)}
-          InputLabelProps={{ shrink: true }}
-          sx={{ width: 170 }}
+          onChange={setDateFrom}
+          minWidth={200}
+          clearable={false}
         />
-        <TextField
-          type="date"
+        <DateField
           label="По"
           size="small"
           value={dateTo}
-          onChange={(e) => setDateTo(e.target.value)}
-          InputLabelProps={{ shrink: true }}
-          sx={{ width: 170 }}
+          onChange={setDateTo}
+          minWidth={200}
+          clearable={false}
         />
         <Button
           variant="contained"

@@ -45,6 +45,7 @@ import {
 } from '@mui/icons-material'
 import api from '../services/api'
 import { getRoleFromToken } from '../store/authStore'
+import { DateField } from '../components/DateField'
 import {
   WarehouseItem,
   WarehouseTransactionList,
@@ -684,23 +685,21 @@ export default function Warehouse() {
         <>
           <Grid container spacing={2} sx={{ mb: 2 }}>
             <Grid item>
-              <TextField
-                size="small"
-                type="date"
+              <DateField
                 label="Дата с"
+                size="small"
                 value={txDateFrom}
-                onChange={(e) => setTxDateFrom(e.target.value)}
-                InputLabelProps={{ shrink: true }}
+                onChange={setTxDateFrom}
+                minWidth={190}
               />
             </Grid>
             <Grid item>
-              <TextField
-                size="small"
-                type="date"
+              <DateField
                 label="Дата по"
+                size="small"
                 value={txDateTo}
-                onChange={(e) => setTxDateTo(e.target.value)}
-                InputLabelProps={{ shrink: true }}
+                onChange={setTxDateTo}
+                minWidth={190}
               />
             </Grid>
             <Grid item>
@@ -1122,15 +1121,11 @@ export default function Warehouse() {
         <DialogContent>
           <Grid container spacing={2} sx={{ mt: 0 }}>
             <Grid item xs={6}>
-              <TextField
-                fullWidth
+              <DateField
                 label="Дата документа"
-                type="date"
                 value={receiptForm.document_date}
-                onChange={(e) =>
-                  setReceiptForm((prev) => ({ ...prev, document_date: e.target.value }))
-                }
-                InputLabelProps={{ shrink: true }}
+                onChange={(v) => setReceiptForm((prev) => ({ ...prev, document_date: v }))}
+                clearable={false}
               />
             </Grid>
             <Grid item xs={6}>

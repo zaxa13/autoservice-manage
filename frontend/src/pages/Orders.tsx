@@ -21,6 +21,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import api from '../services/api';
 import type { Order, OrderCreate, Vehicle, Employee, OrderStatusInfo, OrderDetail, VehicleHistoryOrder, User, Customer, CustomerCreate, Part, Work, BrandRef, ModelRef, OrderPayment, PaymentLogEntry } from '../types';
+import { DateField } from '../components/DateField';
 
 // Категории работ
 const WORK_CATEGORIES: { value: string; label: string; color: string }[] = [
@@ -830,23 +831,19 @@ export default function Orders() {
         <Typography variant="body2" sx={{ fontWeight: 700, color: 'text.secondary', mr: 0.5 }}>
           Период:
         </Typography>
-        <TextField
-          type="date"
+        <DateField
           label="С"
           size="small"
           value={dateFrom}
-          onChange={(e) => setDateFrom(e.target.value)}
-          InputLabelProps={{ shrink: true }}
-          sx={{ width: 160 }}
+          onChange={setDateFrom}
+          minWidth={180}
         />
-        <TextField
-          type="date"
+        <DateField
           label="По"
           size="small"
           value={dateTo}
-          onChange={(e) => setDateTo(e.target.value)}
-          InputLabelProps={{ shrink: true }}
-          sx={{ width: 160 }}
+          onChange={setDateTo}
+          minWidth={180}
         />
         <Box sx={{ display: 'flex', gap: 0.75, ml: 1, flexWrap: 'wrap' }}>
           {[

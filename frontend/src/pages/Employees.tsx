@@ -36,6 +36,7 @@ import {
 } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
 import api from '../services/api'
+import { DateField } from '../components/DateField'
 import { Employee, User } from '../types'
 
 interface EmployeePosition {
@@ -389,17 +390,12 @@ export default function Employees() {
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Дата приема *"
-                    type="date"
+                  <DateField
+                    label="Дата приёма *"
                     value={formData.hire_date}
-                    onChange={(e) => setFormData({ ...formData, hire_date: e.target.value })}
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    required
-                    disabled={!!editingEmployee}
+                    onChange={(v) => setFormData({ ...formData, hire_date: v })}
+                    clearable={false}
+                    minWidth={0}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>

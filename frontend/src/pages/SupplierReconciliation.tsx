@@ -10,7 +10,6 @@ import {
   TableHead,
   TableRow,
   Paper,
-  TextField,
   FormControl,
   InputLabel,
   Select,
@@ -27,6 +26,7 @@ import {
   Summarize as ReportIcon,
 } from '@mui/icons-material'
 import api from '../services/api'
+import { DateField } from '../components/DateField'
 import { Supplier, SupplierReceiptsReport } from '../types'
 
 function formatMoney(value: number): string {
@@ -109,23 +109,19 @@ export default function SupplierReconciliation() {
               ))}
             </Select>
           </FormControl>
-          <TextField
-            size="small"
+          <DateField
             label="Дата от"
-            type="date"
-            value={dateFrom}
-            onChange={(e) => setDateFrom(e.target.value)}
-            InputLabelProps={{ shrink: true }}
-            sx={{ width: 160 }}
-          />
-          <TextField
             size="small"
+            value={dateFrom}
+            onChange={setDateFrom}
+            minWidth={190}
+          />
+          <DateField
             label="Дата по"
-            type="date"
+            size="small"
             value={dateTo}
-            onChange={(e) => setDateTo(e.target.value)}
-            InputLabelProps={{ shrink: true }}
-            sx={{ width: 160 }}
+            onChange={setDateTo}
+            minWidth={190}
           />
           <Button
             variant="contained"
