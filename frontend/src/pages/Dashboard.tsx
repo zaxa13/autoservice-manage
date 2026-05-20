@@ -13,9 +13,10 @@ import {
   TrendingUpRounded, TrendingDownRounded, TrendingFlatRounded,
   WarningAmberRounded, AccountBalanceWalletRounded,
   EngineeringRounded, DirectionsCarRounded, PersonOffRounded,
-  AccessTimeRounded, AttachMoneyRounded, ReceiptLongRounded,
+  AccessTimeRounded, CurrencyRubleRounded, ReceiptLongRounded,
   BuildRounded, EditRounded, CalendarTodayRounded, CheckRounded,
   DateRangeRounded, ChevronLeftRounded, ChevronRightRounded,
+  FlagRounded,
 } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
 import api from '../services/api'
@@ -209,7 +210,7 @@ function RevenueCard({
     }}>
       <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 2 }}>
         <Box sx={{ p: 1.1, borderRadius: '10px', bgcolor: alpha(color, 0.1), color, display: 'flex', border: `1px solid ${alpha(color, 0.15)}` }}>
-          <AttachMoneyRounded />
+          <CurrencyRubleRounded />
         </Box>
         <Stack direction="row" alignItems="center" spacing={1}>
           <TrendBadge pct={revenue.change_pct} />
@@ -265,23 +266,60 @@ function RevenueCard({
 
       {!revenue.plan && !loading && (
         <Box sx={{ mt: 1.5 }}>
-          <LinearProgress
-            variant="determinate"
-            value={0}
-            sx={{
-              height: 5, borderRadius: 3,
-              bgcolor: alpha(color, 0.10),
-              '& .MuiLinearProgress-bar': { bgcolor: color, borderRadius: 3 },
-            }}
-          />
-          {isAdmin && (
-            <Typography
-              variant="caption"
+          {isAdmin ? (
+            <Box
+              role="button"
+              tabIndex={0}
               onClick={onEditPlan}
-              sx={{ fontSize: 10, color: 'text.disabled', cursor: 'pointer', mt: 0.3, display: 'block', '&:hover': { color: 'primary.main' } }}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onEditPlan() } }}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1.25,
+                px: 1.5, py: 1.25,
+                borderRadius: 2,
+                border: '1.5px dashed',
+                borderColor: alpha(color, 0.5),
+                bgcolor: alpha(color, 0.06),
+                color,
+                cursor: 'pointer',
+                transition: 'background-color 0.15s, border-color 0.15s, transform 0.1s',
+                '&:hover': {
+                  bgcolor: alpha(color, 0.14),
+                  borderColor: color,
+                  '& .arrow': { transform: 'translateX(2px)' },
+                },
+                '&:active': { transform: 'scale(0.99)' },
+              }}
             >
-              + Задать план на месяц
-            </Typography>
+              <Box sx={{
+                width: 32, height: 32, borderRadius: '8px',
+                bgcolor: alpha(color, 0.18),
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                flexShrink: 0,
+              }}>
+                <FlagRounded fontSize="small" />
+              </Box>
+              <Box sx={{ flex: 1, minWidth: 0, lineHeight: 1.2 }}>
+                <Typography sx={{ fontWeight: 700, fontSize: 13, color: 'text.primary' }}>
+                  Задать план на месяц
+                </Typography>
+                <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 11 }}>
+                  Чтобы видеть прогресс выполнения
+                </Typography>
+              </Box>
+              <ArrowForwardRounded className="arrow" sx={{ fontSize: 18, transition: 'transform 0.15s' }} />
+            </Box>
+          ) : (
+            <LinearProgress
+              variant="determinate"
+              value={0}
+              sx={{
+                height: 5, borderRadius: 3,
+                bgcolor: alpha(color, 0.10),
+                '& .MuiLinearProgress-bar': { bgcolor: color, borderRadius: 3 },
+              }}
+            />
           )}
         </Box>
       )}
