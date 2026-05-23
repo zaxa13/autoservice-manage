@@ -1364,14 +1364,19 @@ export default function Dashboard() {
             onApply={handleCustomApply}
           />
 
-          <Button
-            variant="contained"
-            startIcon={<AddRounded />}
-            onClick={() => navigate('/orders')}
-            sx={{ borderRadius: '10px', px: 3, whiteSpace: 'nowrap' }}
-          >
-            Новый заказ
-          </Button>
+          {isAdmin && (() => {
+            const planSet = !!s?.revenue.plan && s.revenue.plan > 0
+            return (
+              <Button
+                variant="contained"
+                startIcon={planSet ? <EditRounded /> : <AddRounded />}
+                onClick={() => setPlanDialogOpen(true)}
+                sx={{ borderRadius: '10px', px: 3, whiteSpace: 'nowrap' }}
+              >
+                {planSet ? 'Изменить план' : 'Задать план'}
+              </Button>
+            )
+          })()}
         </Stack>
       </Box>
 
