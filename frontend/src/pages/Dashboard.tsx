@@ -13,8 +13,8 @@ import {
   TrendingUpRounded, TrendingDownRounded, TrendingFlatRounded,
   WarningAmberRounded, AccountBalanceWalletRounded,
   EngineeringRounded, DirectionsCarRounded, PersonOffRounded,
-  AccessTimeRounded, ReceiptLongRounded,
-  BuildRounded, EditRounded, CalendarTodayRounded, CheckRounded,
+  AccessTimeRounded,
+  EditRounded, CalendarTodayRounded, CheckRounded,
   DateRangeRounded, ChevronLeftRounded, ChevronRightRounded,
   FlagRounded,
 } from '@mui/icons-material'
@@ -73,6 +73,7 @@ interface DashboardStats {
     plan_pct: number | null
   }
   avg_check: { value: number; prev_value: number; change_pct: number | null }
+  median_check: { value: number; prev_value: number; change_pct: number | null }
   orders_count: { value: number; prev_value: number; change_pct: number | null }
   wip_amount: number
   post_load_today_pct: number | null
@@ -477,6 +478,100 @@ function MoneyAndPlanSection({
       {revenue.plan && !loading && planPct !== null && (
         <PlanProgressBar value={revenue.value} plan={revenue.plan} pct={planPct} />
       )}
+    </Box>
+  )
+}
+
+// ── Чек и заказы ─────────────────────────────────────────────────────────────
+
+const COLOR_AVG = '#3B82F6'      // средний — синий
+const COLOR_MEDIAN = '#F59E0B'   // медиана — янтарный (как в макете)
+const COLOR_ORDERS = '#6366F1'   // закрыто — индиго
+
+function ChecksAndOrdersSection({
+  avgCheck, medianCheck, ordersCount, period, loading,
+}: {
+  avgCheck: DashboardStats['avg_check']
+  medianCheck: DashboardStats['median_check']
+  ordersCount: DashboardStats['orders_count']
+  period: Period
+  loading: boolean
+}) {
+  const prevLabel = PREV_PERIOD_LABEL[period]
+
+  const trendSub = (prev: number, change: number | null, fmt: (n: number) => string) =>
+    prev > 0 ? (
+      <Stack direction="row" spacing={0.75} alignItems="center" sx={{ flexWrap: 'wrap' }}>
+        <Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
+          {prevLabel}: <Box component="span" sx={{ fontWeight: 600, color: 'text.primary' }}>{fmt(prev)}</Box>
+        </Typography>
+        <TrendBadge pct={change} />
+      </Stack>
+    ) : (
+      <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>нет данных за пред. период</Typography>
+    )
+
+  // Подсказка по медиане относительно среднего — текстовый ярлык, не вычисление.
+  let medianHint: React.ReactNode = trendSub(medianCheck.prev_value, medianCheck.change_pct, fmtMoneyFull)
+  if (!loading && avgCheck.value > 0 && medianCheck.value > 0) {
+    const ratio = medianCheck.value / avgCheck.value
+    if (ratio < 0.85) {
+      medianHint = (
+        <Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
+          ниже среднего <Box component="span" sx={{ color: 'text.disabled' }}>→</Box> есть крупные
+        </Typography>
+      )
+    } else if (ratio > 1.15) {
+      medianHint = (
+        <Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
+          выше среднего <Box component="span" sx={{ color: 'text.disabled' }}>→</Box> много мелких
+        </Typography>
+      )
+    } else {
+      medianHint = (
+        <Typography sx={{ fontSize: 12, color: 'text.secondary' }}>близко к среднему</Typography>
+      )
+    }
+  }
+
+  return (
+    <Box sx={{ mb: 3 }}>
+      <Typography sx={{
+        fontSize: 11, fontWeight: 700, color: 'text.secondary',
+        textTransform: 'uppercase', letterSpacing: '0.08em', mb: 1.25,
+      }}>
+        Чек и заказы
+      </Typography>
+
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={6} md={4}>
+          <MetricCard
+            label="Средний чек"
+            value={fmtMoneyFull(avgCheck.value)}
+            accent={COLOR_AVG}
+            sub={trendSub(avgCheck.prev_value, avgCheck.change_pct, fmtMoneyFull)}
+            loading={loading}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <MetricCard
+            label="Медианный чек"
+            value={fmtMoneyFull(medianCheck.value)}
+            accent={COLOR_MEDIAN}
+            sub={medianHint}
+            loading={loading}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <MetricCard
+            label="Закрыто заказов"
+            value={String(ordersCount.value)}
+            accent={COLOR_ORDERS}
+            sub={trendSub(ordersCount.prev_value, ordersCount.change_pct, (n) => String(n))}
+            loading={loading}
+          />
+        </Grid>
+      </Grid>
     </Box>
   )
 }
@@ -1450,32 +1545,17 @@ export default function Dashboard() {
         onEditPlan={() => setPlanDialogOpen(true)}
       />
 
-      {/* ── Остальные KPI (временный layout — будет переверстан в следующих итерациях) */}
+      {/* ── Чек и заказы ────────────────────────────────────── */}
+      <ChecksAndOrdersSection
+        avgCheck={s?.avg_check ?? { value: 0, prev_value: 0, change_pct: null }}
+        medianCheck={s?.median_check ?? { value: 0, prev_value: 0, change_pct: null }}
+        ordersCount={s?.orders_count ?? { value: 0, prev_value: 0, change_pct: null }}
+        period={period}
+        loading={loading}
+      />
+
+      {/* ── WIP временный одиночный блок (переедет в «Загрузка и риски») */}
       <Grid container spacing={2.5} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={4}>
-          <KpiCard
-            title="Средний чек"
-            value={s ? fmtMoney(s.avg_check.value) : '—'}
-            subtitle={s?.avg_check.prev_value ? `пред. период: ${fmtMoney(s.avg_check.prev_value)}` : 'нет данных за пред. период'}
-            trend={s?.avg_check.change_pct ?? null}
-            icon={<ReceiptLongRounded />}
-            color="#4F46E5"
-            loading={loading}
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={4}>
-          <KpiCard
-            title="Закрыто заказов"
-            value={s ? String(s.orders_count.value) : '—'}
-            subtitle={s?.orders_count.prev_value ? `пред. период: ${s.orders_count.prev_value}` : 'нет данных за пред. период'}
-            trend={s?.orders_count.change_pct ?? null}
-            icon={<BuildRounded />}
-            color="#F59E0B"
-            loading={loading}
-          />
-        </Grid>
-
         <Grid item xs={12} sm={6} md={4}>
           <KpiCard
             title="В работе сейчас (WIP)"

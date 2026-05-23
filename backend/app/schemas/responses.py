@@ -99,6 +99,12 @@ class AvgCheckMetric(BaseModel):
     change_pct: Optional[float] = Field(None, description="Изменение в процентах")
 
 
+class MedianCheckMetric(BaseModel):
+    value: float = Field(..., description="Медианный чек за период (PERCENTILE_CONT 0.5)")
+    prev_value: float = Field(..., description="Медианный чек за предыдущий период")
+    change_pct: Optional[float] = Field(None, description="Изменение в процентах")
+
+
 class OrdersCountMetric(BaseModel):
     value: int = Field(..., description="Количество заказов за текущий период")
     prev_value: int = Field(..., description="Количество заказов за предыдущий период")
@@ -156,6 +162,7 @@ class DashboardStatsResponse(BaseModel):
     can_go_next: bool = Field(..., description="Можно ли перейти к следующему периоду")
     revenue: RevenueMetric = Field(..., description="Метрика выручки")
     avg_check: AvgCheckMetric = Field(..., description="Метрика среднего чека")
+    median_check: MedianCheckMetric = Field(..., description="Метрика медианного чека")
     orders_count: OrdersCountMetric = Field(..., description="Метрика количества заказов")
     wip_amount: float = Field(..., description="Сумма заказов в работе")
     post_load_today_pct: Optional[int] = Field(None, description="Загрузка постов сегодня (%)")

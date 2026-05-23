@@ -217,6 +217,26 @@ async def _avg_check_range(db: AsyncSession, s: date, e: date) -> tuple[float, i
     return (total / cnt) if cnt else 0.0, cnt
 
 
+async def _median_check_range(db: AsyncSession, s: date, e: date) -> float:
+    """Медианный чек за период — серединный элемент отсортированных сумм заказов.
+
+    Postgres-only: используем PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY total_amount).
+    Возвращает 0.0 если за период нет paid/completed заказов.
+    """
+    row = (
+        await db.execute(
+            select(
+                func.percentile_cont(0.5).within_group(Order.total_amount.asc())
+            ).where(
+                Order.status.in_(["paid", "completed"]),
+                func.date(Order.created_at) >= s,
+                func.date(Order.created_at) <= e,
+            )
+        )
+    ).scalar()
+    return float(row or 0)
+
+
 async def _calc_post_load(
     db: AsyncSession, posts: list[AppointmentPost], target: date
 ) -> Optional[int]:
@@ -301,9 +321,11 @@ async def get_dashboard_stats(
     elif full_end < today:
         rev_forecast = round(rev_current)
 
-    # 2. Avg check.
+    # 2. Avg + median check.
     avg_check, orders_count = await _avg_check_range(db, start, end)
     avg_check_prev, orders_count_prev = await _avg_check_range(db, prev_start, prev_end)
+    median_check = await _median_check_range(db, start, end)
+    median_check_prev = await _median_check_range(db, prev_start, prev_end)
 
     # 3. WIP.
     wip_amount = float((
@@ -533,6 +555,11 @@ async def get_dashboard_stats(
             "value": round(avg_check),
             "prev_value": round(avg_check_prev),
             "change_pct": _pct(avg_check, avg_check_prev),
+        },
+        "median_check": {
+            "value": round(median_check),
+            "prev_value": round(median_check_prev),
+            "change_pct": _pct(median_check, median_check_prev),
         },
         "orders_count": {
             "value": orders_count,
