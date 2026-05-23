@@ -219,13 +219,14 @@ function planAccent(pct: number | null): string {
 }
 
 function MetricCard({
-  label, value, accent, sub, loading,
+  label, value, accent, sub, loading, action,
 }: {
   label: string
   value: React.ReactNode
   accent: string
   sub?: React.ReactNode
   loading: boolean
+  action?: React.ReactNode
 }) {
   return (
     <Paper sx={{
@@ -238,12 +239,15 @@ function MetricCard({
         transform: 'translateY(-1px)',
       },
     }}>
-      <Typography sx={{
-        fontSize: 12, fontWeight: 600,
-        color: 'text.secondary', mb: 1.25,
-      }}>
-        {label}
-      </Typography>
+      <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 1.25 }}>
+        <Typography sx={{
+          fontSize: 12, fontWeight: 600,
+          color: 'text.secondary',
+        }}>
+          {label}
+        </Typography>
+        {action}
+      </Stack>
       {loading ? (
         <CircularProgress size={20} sx={{ color: accent }} />
       ) : (
@@ -393,20 +397,35 @@ function MoneyAndPlanSection({
     : `${Math.round(planPct)}%`
   const planSub = revenue.plan
     ? (
-      <Stack direction="row" spacing={0.75} alignItems="center">
-        <Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
-          план <Box component="span" sx={{ fontWeight: 600, color: 'text.primary' }}>{fmtMoneyFull(revenue.plan)}</Box>
-        </Typography>
-        {isAdmin && (
-          <Tooltip title="Изменить план">
-            <IconButton size="small" onClick={onEditPlan} sx={{ p: 0.3, color: 'text.disabled', '&:hover': { color: 'primary.main' } }}>
-              <EditRounded sx={{ fontSize: 13 }} />
-            </IconButton>
-          </Tooltip>
-        )}
-      </Stack>
+      <Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
+        план <Box component="span" sx={{ fontWeight: 600, color: 'text.primary' }}>{fmtMoneyFull(revenue.plan)}</Box>
+      </Typography>
     )
     : null
+  const planAction = revenue.plan && isAdmin
+    ? (
+      <Tooltip title="Изменить план">
+        <IconButton
+          size="small"
+          onClick={onEditPlan}
+          sx={{
+            p: 0.5,
+            borderRadius: 1.5,
+            color: planAccentColor,
+            bgcolor: alpha(planAccentColor, 0.1),
+            border: '1px solid',
+            borderColor: alpha(planAccentColor, 0.2),
+            '&:hover': {
+              bgcolor: alpha(planAccentColor, 0.18),
+              borderColor: planAccentColor,
+            },
+          }}
+        >
+          <EditRounded sx={{ fontSize: 14 }} />
+        </IconButton>
+      </Tooltip>
+    )
+    : undefined
 
   return (
     <Box sx={{ mb: 3 }}>
@@ -445,6 +464,7 @@ function MoneyAndPlanSection({
                 accent={planAccentColor}
                 sub={planSub}
                 loading={loading}
+                action={planAction}
               />
             )
             : (
