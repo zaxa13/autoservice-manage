@@ -90,7 +90,8 @@ async def test_stats_empty_tenant_returns_zeros(client):
     assert body["revenue"]["value"] == 0
     assert body["avg_check"]["value"] == 0
     assert body["orders_count"]["value"] == 0
-    assert body["wip_amount"] == 0
+    assert body["wip"]["amount"] == 0
+    assert body["wip"]["count"] == 0
     # Pipeline всегда 7 элементов.
     assert len(body["pipeline_7d"]) == 7
     assert body["pipeline_7d"][0]["is_today"] is True

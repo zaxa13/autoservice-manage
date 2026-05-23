@@ -111,6 +111,11 @@ class OrdersCountMetric(BaseModel):
     change_pct: Optional[float] = Field(None, description="Изменение в процентах")
 
 
+class WipMetric(BaseModel):
+    amount: float = Field(..., description="Сумма заказов в работе (in_progress)")
+    count: int = Field(..., description="Количество заказов в работе")
+
+
 class PipelineDayItem(BaseModel):
     date: str = Field(..., description="Дата в формате ISO")
     day_name: str = Field(..., description="Короткое название дня недели (Пн, Вт, ...)")
@@ -164,7 +169,7 @@ class DashboardStatsResponse(BaseModel):
     avg_check: AvgCheckMetric = Field(..., description="Метрика среднего чека")
     median_check: MedianCheckMetric = Field(..., description="Метрика медианного чека")
     orders_count: OrdersCountMetric = Field(..., description="Метрика количества заказов")
-    wip_amount: float = Field(..., description="Сумма заказов в работе")
+    wip: WipMetric = Field(..., description="Заказы в работе: сумма и количество")
     post_load_today_pct: Optional[int] = Field(None, description="Загрузка постов сегодня (%)")
     post_load_tomorrow_pct: Optional[int] = Field(None, description="Загрузка постов завтра (%)")
     pipeline_7d: List[PipelineDayItem] = Field(..., description="Загрузка по дням на 7 дней вперёд")

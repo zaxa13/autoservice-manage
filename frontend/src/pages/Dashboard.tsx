@@ -75,7 +75,7 @@ interface DashboardStats {
   avg_check: { value: number; prev_value: number; change_pct: number | null }
   median_check: { value: number; prev_value: number; change_pct: number | null }
   orders_count: { value: number; prev_value: number; change_pct: number | null }
-  wip_amount: number
+  wip: { amount: number; count: number }
   post_load_today_pct: number | null
   post_load_tomorrow_pct: number | null
   pipeline_7d: PipelineDay[]
@@ -105,6 +105,15 @@ function fmtMoneyFull(v: number): string {
   return new Intl.NumberFormat('ru-RU', {
     style: 'currency', currency: 'RUB', maximumFractionDigits: 0,
   }).format(v)
+}
+
+function pluralizeOrders(n: number): string {
+  const mod10 = n % 10
+  const mod100 = n % 100
+  if (mod100 >= 11 && mod100 <= 14) return 'заказов'
+  if (mod10 === 1) return 'заказ'
+  if (mod10 >= 2 && mod10 <= 4) return 'заказа'
+  return 'заказов'
 }
 
 // ── TrendBadge ────────────────────────────────────────────────────────────────
@@ -436,13 +445,15 @@ function MoneyAndPlanSection({
 const COLOR_AVG = '#3B82F6'      // средний — синий
 const COLOR_MEDIAN = '#F59E0B'   // медиана — янтарный (как в макете)
 const COLOR_ORDERS = '#6366F1'   // закрыто — индиго
+const COLOR_WIP = '#06B6D4'      // в работе — голубой
 
 function ChecksAndOrdersSection({
-  avgCheck, medianCheck, ordersCount, period, loading,
+  avgCheck, medianCheck, ordersCount, wip, period, loading,
 }: {
   avgCheck: DashboardStats['avg_check']
   medianCheck: DashboardStats['median_check']
   ordersCount: DashboardStats['orders_count']
+  wip: DashboardStats['wip']
   period: Period
   loading: boolean
 }) {
@@ -493,7 +504,7 @@ function ChecksAndOrdersSection({
       </Typography>
 
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid item xs={12} sm={6} md={3}>
           <MetricCard
             label="Средний чек"
             value={fmtMoneyFull(avgCheck.value)}
@@ -502,7 +513,7 @@ function ChecksAndOrdersSection({
             loading={loading}
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid item xs={12} sm={6} md={3}>
           <MetricCard
             label="Медианный чек"
             description="это серединное значение всех заказ-нарядов, без перекоса крупными"
@@ -512,12 +523,25 @@ function ChecksAndOrdersSection({
             loading={loading}
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid item xs={12} sm={6} md={3}>
           <MetricCard
             label="Закрыто заказов"
             value={String(ordersCount.value)}
             accent={COLOR_ORDERS}
             sub={trendSub(ordersCount.prev_value, ordersCount.change_pct, (n) => String(n))}
+            loading={loading}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <MetricCard
+            label="Заказы в работе"
+            value={fmtMoneyFull(wip.amount)}
+            accent={COLOR_WIP}
+            sub={
+              <Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
+                {wip.count} {pluralizeOrders(wip.count)}
+              </Typography>
+            }
             loading={loading}
           />
         </Grid>
@@ -1500,6 +1524,7 @@ export default function Dashboard() {
         avgCheck={s?.avg_check ?? { value: 0, prev_value: 0, change_pct: null }}
         medianCheck={s?.median_check ?? { value: 0, prev_value: 0, change_pct: null }}
         ordersCount={s?.orders_count ?? { value: 0, prev_value: 0, change_pct: null }}
+        wip={s?.wip ?? { amount: 0, count: 0 }}
         period={period}
         loading={loading}
       />

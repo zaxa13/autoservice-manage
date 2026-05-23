@@ -327,13 +327,17 @@ async def get_dashboard_stats(
     median_check = await _median_check_range(db, start, end)
     median_check_prev = await _median_check_range(db, prev_start, prev_end)
 
-    # 3. WIP.
-    wip_amount = float((
+    # 3. WIP — сумма и количество in_progress заказов.
+    wip_row = (
         await db.execute(
-            select(func.coalesce(func.sum(Order.total_amount), 0))
-            .where(Order.status == "in_progress")
+            select(
+                func.coalesce(func.sum(Order.total_amount), 0),
+                func.count(Order.id),
+            ).where(Order.status == "in_progress")
         )
-    ).scalar() or 0)
+    ).one()
+    wip_amount = float(wip_row[0] or 0)
+    wip_count = int(wip_row[1] or 0)
 
     # 4. Post load.
     posts = list(
@@ -566,7 +570,10 @@ async def get_dashboard_stats(
             "prev_value": orders_count_prev,
             "change_pct": _pct(orders_count, orders_count_prev),
         },
-        "wip_amount": round(wip_amount),
+        "wip": {
+            "amount": round(wip_amount),
+            "count": wip_count,
+        },
         "post_load_today_pct": load_today,
         "post_load_tomorrow_pct": load_tomorrow,
         "pipeline_7d": pipeline_7d,
