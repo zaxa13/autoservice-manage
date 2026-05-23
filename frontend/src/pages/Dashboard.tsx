@@ -14,7 +14,7 @@ import {
   WarningAmberRounded, AccountBalanceWalletRounded,
   EngineeringRounded, DirectionsCarRounded, PersonOffRounded,
   AccessTimeRounded,
-  EditRounded, CalendarTodayRounded, CheckRounded,
+  EditRounded, CheckRounded,
   DateRangeRounded, ChevronLeftRounded, ChevronRightRounded,
   FlagRounded,
 } from '@mui/icons-material'
@@ -125,66 +125,6 @@ function TrendBadge({ pct, invertColor }: { pct: number | null; invertColor?: bo
         {up && !flat ? '+' : ''}{pct}%
       </Typography>
     </Stack>
-  )
-}
-
-// ── KpiCard ────────────────────────────────────────────────────────────────────
-
-function KpiCard({
-  title, value, subtitle, trend, icon, color, loading, invertColor, extra,
-}: {
-  title: string
-  value: string
-  subtitle: string
-  trend: number | null
-  icon: React.ReactNode
-  color: string
-  loading: boolean
-  invertColor?: boolean
-  extra?: React.ReactNode
-}) {
-  return (
-    <Paper sx={{
-      p: 2.5,
-      height: '100%',
-      borderTop: `3px solid ${color}`,
-      borderRadius: '12px',
-      transition: 'box-shadow 0.2s, transform 0.15s',
-      '&:hover': {
-        boxShadow: `0 8px 24px ${alpha(color, 0.14)}`,
-        transform: 'translateY(-1px)',
-      },
-    }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 2 }}>
-        <Box sx={{
-          p: 1.1,
-          borderRadius: '10px',
-          bgcolor: alpha(color, 0.1),
-          color,
-          display: 'flex',
-          border: `1px solid ${alpha(color, 0.15)}`,
-        }}>
-          {icon}
-        </Box>
-        <TrendBadge pct={trend} invertColor={invertColor} />
-      </Stack>
-      {loading ? (
-        <CircularProgress size={22} sx={{ mt: 0.5 }} />
-      ) : (
-        <Typography variant="h5" sx={{ fontWeight: 800, lineHeight: 1.1, letterSpacing: '-0.02em', color: '#0F172A' }}>{value}</Typography>
-      )}
-      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.3, fontSize: 11 }}>
-        {subtitle}
-      </Typography>
-      <Typography sx={{
-        display: 'block', mt: 1.5,
-        textTransform: 'uppercase', fontWeight: 700, fontSize: '0.65rem',
-        letterSpacing: '0.07em', color: '#94A3B8',
-      }}>
-        {title}
-      </Typography>
-      {extra}
-    </Paper>
   )
 }
 
@@ -1553,21 +1493,6 @@ export default function Dashboard() {
         period={period}
         loading={loading}
       />
-
-      {/* ── WIP временный одиночный блок (переедет в «Загрузка и риски») */}
-      <Grid container spacing={2.5} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={4}>
-          <KpiCard
-            title="В работе сейчас (WIP)"
-            value={s ? fmtMoney(s.wip_amount) : '—'}
-            subtitle="стоимость активных заказов"
-            trend={null}
-            icon={<CalendarTodayRounded />}
-            color="#06B6D4"
-            loading={loading}
-          />
-        </Grid>
-      </Grid>
 
       {/* ── Alerts ────────────────────────────────────────────── */}
       {s && !loading && <AlertsBlock alerts={s.alerts} onNavigate={navigate} />}
