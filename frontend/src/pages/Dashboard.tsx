@@ -1323,17 +1323,34 @@ export default function Dashboard() {
   ]
 
   return (
-    <Container maxWidth="xl">
+    <Container maxWidth="xl" disableGutters sx={{ px: { xs: 0, sm: 2 } }}>
       {/* ── Header ────────────────────────────────────────────── */}
-      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 2 }}>
+      <Stack
+        direction={{ xs: 'column', md: 'row' }}
+        spacing={2}
+        alignItems={{ xs: 'stretch', md: 'flex-end' }}
+        justifyContent="space-between"
+        sx={{ mb: 3 }}
+      >
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 800 }}>Панель управления</Typography>
-          <Typography variant="body1" color="text.secondary">
+          <Typography sx={{
+            fontWeight: 800,
+            fontSize: { xs: '1.5rem', md: '2.125rem' },
+            lineHeight: 1.15,
+          }}>
+            Панель управления
+          </Typography>
+          <Typography color="text.secondary" sx={{ fontSize: { xs: 13, md: 16 } }}>
             {new Date().toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' })}
             {s && ` · ${s.period_label}`}
           </Typography>
         </Box>
-        <Stack direction="row" spacing={2} alignItems="center">
+        <Stack
+          direction="row"
+          spacing={{ xs: 1, sm: 2 }}
+          alignItems="center"
+          sx={{ flexWrap: 'wrap', rowGap: 1 }}
+        >
           {/* Period selector */}
           <ToggleButtonGroup
             value={period}
@@ -1342,8 +1359,14 @@ export default function Dashboard() {
             size="small"
             sx={{
               bgcolor: 'background.paper',
+              flexWrap: 'wrap',
               '& .MuiToggleButton-root': {
-                px: 1.75, py: 0.6, fontSize: 12, fontWeight: 600, textTransform: 'none', border: '1px solid',
+                px: { xs: 1, sm: 1.75 },
+                py: { xs: 0.5, sm: 0.6 },
+                fontSize: { xs: 11, sm: 12 },
+                fontWeight: 600,
+                textTransform: 'none',
+                border: '1px solid',
                 borderColor: 'divider',
                 '&.Mui-selected': { bgcolor: 'primary.main', color: 'white', borderColor: 'primary.main', '&:hover': { bgcolor: 'primary.dark' } },
               },
@@ -1377,14 +1400,21 @@ export default function Dashboard() {
                 variant="contained"
                 startIcon={planSet ? <EditRounded /> : <AddRounded />}
                 onClick={() => setPlanDialogOpen(true)}
-                sx={{ borderRadius: '10px', px: 3, whiteSpace: 'nowrap' }}
+                sx={{
+                  borderRadius: '10px',
+                  px: { xs: 1.5, sm: 3 },
+                  py: { xs: 0.6, sm: 1 },
+                  fontSize: { xs: 12, sm: 14 },
+                  whiteSpace: 'nowrap',
+                  display: { xs: 'none', sm: 'inline-flex' },
+                }}
               >
                 {planSet ? 'Изменить план' : 'Задать план'}
               </Button>
             )
           })()}
         </Stack>
-      </Box>
+      </Stack>
 
       {error && (
         <Paper sx={{ p: 2, mb: 3, bgcolor: alpha('#EF4444', 0.05), border: '1px solid', borderColor: alpha('#EF4444', 0.2) }}>

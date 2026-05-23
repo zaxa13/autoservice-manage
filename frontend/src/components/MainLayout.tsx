@@ -4,8 +4,9 @@ import {
   ListItemIcon, ListItemText, Typography,
   Avatar, IconButton, DialogContent, Stack, Paper,
   Chip, CircularProgress, Button, alpha, TextField,
-  InputAdornment, Alert, Fade, Dialog,
+  InputAdornment, Alert, Fade, Dialog, useMediaQuery,
 } from '@mui/material'
+import type { Theme } from '@mui/material'
 import {
   DashboardRounded, EventNoteRounded, AssignmentRounded,
   InventoryRounded, PeopleAltRounded, AccountBalanceWalletRounded,
@@ -13,7 +14,7 @@ import {
   AdminPanelSettingsRounded, BadgeRounded, LockRounded,
   Visibility, VisibilityOff, VpnKeyRounded, BalanceRounded,
   LocalShippingRounded, DirectionsCarRounded, AssessmentRounded,
-  GarageRounded, BusinessRounded, SaveRounded,
+  GarageRounded, BusinessRounded, SaveRounded, MenuRounded,
 } from '@mui/icons-material'
 import { useLocation, Link } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
@@ -45,6 +46,9 @@ const menuItems = [
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation()
   const { logout } = useAuthStore()
+  const isMobile = useMediaQuery((t: Theme) => t.breakpoints.down('md'))
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const closeMobile = () => setMobileOpen(false)
 
   const [profileData,    setProfileData]    = useState<User | null>(null)
   const [openProfile,    setOpenProfile]    = useState(false)
@@ -148,9 +152,12 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
       {/* ── Sidebar ──────────────────────────────────────────────────────── */}
       <Drawer
-        variant="permanent"
+        variant={isMobile ? 'temporary' : 'permanent'}
+        open={isMobile ? mobileOpen : true}
+        onClose={closeMobile}
+        ModalProps={{ keepMounted: true }}
         sx={{
-          width: SIDEBAR.width,
+          width: isMobile ? 0 : SIDEBAR.width,
           flexShrink: 0,
           '& .MuiDrawer-paper': {
             width: SIDEBAR.width,
@@ -227,6 +234,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                 <ListItemButton
                   component={Link}
                   to={item.path}
+                  onClick={closeMobile}
                   sx={isActive ? {
                     borderRadius: '8px',
                     bgcolor: SIDEBAR.activeBg,
@@ -289,6 +297,41 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         component="main"
         sx={{ flexGrow: 1, p: { xs: 2, md: 4 }, minWidth: 0, animation: 'fadeIn 0.25s ease both' }}
       >
+        {isMobile && (
+          <Box sx={{
+            display: 'flex', alignItems: 'center', gap: 1.25,
+            mb: 2,
+            mx: -1, px: 1, py: 1,
+            position: 'sticky', top: 0, zIndex: 5,
+            bgcolor: SURFACE.page,
+            borderBottom: '1px solid', borderColor: 'divider',
+          }}>
+            <IconButton
+              edge="start"
+              onClick={() => setMobileOpen(true)}
+              aria-label="Открыть меню"
+              sx={{ color: 'text.primary' }}
+            >
+              <MenuRounded />
+            </IconButton>
+            <Box sx={{
+              width: 30, height: 30,
+              background: BRAND.gradient,
+              borderRadius: '8px',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              boxShadow: SHADOW.teal,
+            }}>
+              <GarageRounded sx={{ color: '#fff', fontSize: 18 }} />
+            </Box>
+            <Typography sx={{
+              fontWeight: 800, letterSpacing: '0.08em',
+              fontSize: '0.82rem', color: 'text.primary',
+              fontFamily: FONT.sans,
+            }}>
+              AUTO.WORKS
+            </Typography>
+          </Box>
+        )}
         {children}
       </Box>
 
