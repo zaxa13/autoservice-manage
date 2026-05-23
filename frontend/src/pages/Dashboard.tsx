@@ -1239,7 +1239,13 @@ export default function Dashboard() {
 
   const navigatePeriod = (dir: -1 | 1) => {
     if (!stats) return
-    const base = new Date((stats.nav_ref || new Date().toISOString().split('T')[0]) + 'T00:00:00')
+    // Локальные YYYY-MM-DD без UTC-сдвига: toISOString() конвертирует в UTC
+    // и в МСК (+3) откидывает дату назад на сутки — кнопка «вперёд» уходила
+    // не в следующий месяц, а в последний день текущего.
+    const fmt = (d: Date) =>
+      `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+    const todayStr = fmt(new Date())
+    const base = new Date((stats.nav_ref || todayStr) + 'T00:00:00')
     const today = new Date()
     today.setHours(0, 0, 0, 0)
 
@@ -1259,7 +1265,7 @@ export default function Dashboard() {
     }
 
     if (newDate > today) newDate = today
-    setRefDate(newDate.toISOString().split('T')[0])
+    setRefDate(fmt(newDate))
   }
 
   const handleCustomApply = (from: string, to: string) => {
