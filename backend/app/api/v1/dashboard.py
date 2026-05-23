@@ -64,10 +64,17 @@ def _get_period_bounds(
     date_from: Optional[date] = None,
     date_to: Optional[date] = None,
 ):
+    """Return (start, end, full_end, prev_start, prev_end, label, chart_mode).
+
+    `end` — фактический конец данных (для текущего периода обрезан до сегодня).
+    `full_end` — астрономический конец периода (последний день месяца/квартала/года),
+    нужен для линейного прогноза и определения «текущности» периода.
+    """
     nav = ref_date or today
 
     if period == "custom" and date_from and date_to:
         start, end = date_from, date_to
+        full_end = end
         span = (end - start).days + 1
         prev_end = start - timedelta(days=1)
         prev_start = prev_end - timedelta(days=span - 1)
@@ -79,7 +86,7 @@ def _get_period_bounds(
         chart_mode = "days" if span <= 90 else "weeks"
 
     elif period == "day":
-        start = end = nav
+        start = end = full_end = nav
         prev_start = prev_end = nav - timedelta(days=1)
         label = f"{nav.day} {_MONTHS_RU_GEN[nav.month]} {nav.year}"
         chart_mode = "days"
@@ -87,7 +94,8 @@ def _get_period_bounds(
     elif period == "week":
         dow = nav.weekday()
         start = nav - timedelta(days=dow)
-        end = min(start + timedelta(days=6), today)
+        full_end = start + timedelta(days=6)
+        end = min(full_end, today)
         prev_start = start - timedelta(days=7)
         prev_end = prev_start + timedelta(days=6)
         label = (
@@ -98,8 +106,9 @@ def _get_period_bounds(
 
     elif period == "month":
         start = nav.replace(day=1)
+        full_end = date(nav.year, nav.month, monthrange(nav.year, nav.month)[1])
         is_current = (nav.year == today.year and nav.month == today.month)
-        end = today if is_current else date(nav.year, nav.month, monthrange(nav.year, nav.month)[1])
+        end = today if is_current else full_end
         prev_month_last = start - timedelta(days=1)
         prev_start = prev_month_last.replace(day=1)
         prev_end = prev_month_last
@@ -109,7 +118,8 @@ def _get_period_bounds(
     elif period == "year":
         ref_year = nav.year
         start = date(ref_year, 1, 1)
-        end = today if ref_year == today.year else date(ref_year, 12, 31)
+        full_end = date(ref_year, 12, 31)
+        end = today if ref_year == today.year else full_end
         prev_start = date(ref_year - 1, 1, 1)
         prev_end = date(ref_year - 1, 12, 31)
         label = str(ref_year)
@@ -118,12 +128,10 @@ def _get_period_bounds(
     else:  # quarter
         q_month = ((nav.month - 1) // 3) * 3 + 1
         start = nav.replace(month=q_month, day=1)
-        if q_month <= 10:
-            q_end_month = q_month + 2
-            q_end_day = monthrange(nav.year, q_end_month)[1]
-            end = min(date(nav.year, q_end_month, q_end_day), today)
-        else:
-            end = min(date(nav.year, 12, 31), today)
+        q_end_month = q_month + 2 if q_month <= 10 else 12
+        q_end_day = monthrange(nav.year, q_end_month)[1]
+        full_end = date(nav.year, q_end_month, q_end_day)
+        end = min(full_end, today)
         days_elapsed = (end - start).days
         if q_month > 3:
             prev_q_start = start.replace(month=q_month - 3)
@@ -135,7 +143,7 @@ def _get_period_bounds(
         label = f"Q{q_num} {nav.year}"
         chart_mode = "weeks"
 
-    return start, end, prev_start, prev_end, label, chart_mode
+    return start, end, full_end, prev_start, prev_end, label, chart_mode
 
 
 def _pct(current: float, previous: float) -> float | None:
@@ -268,7 +276,7 @@ async def get_dashboard_stats(
     if ref_date and ref_date > today:
         ref_date = today
 
-    start, end, prev_start, prev_end, period_label, chart_mode = _get_period_bounds(
+    start, end, full_end, prev_start, prev_end, period_label, chart_mode = _get_period_bounds(
         period, today, ref_date, date_from, date_to
     )
 
@@ -279,6 +287,19 @@ async def get_dashboard_stats(
     setting_row = await db.get(Setting, (claims.tenant_id, plan_key))
     revenue_plan = float(setting_row.value) if setting_row and setting_row.value else None
     plan_pct = round(rev_current / revenue_plan * 100, 1) if revenue_plan else None
+
+    # Линейный прогноз: для текущего (незавершённого) периода — факт * всего_дней / прошло_дней.
+    # Для закрытого периода прогноз == факт; для будущего — null.
+    rev_forecast: Optional[float] = None
+    if start <= today <= full_end:
+        days_elapsed = (end - start).days + 1
+        total_days = (full_end - start).days + 1
+        if days_elapsed > 0 and total_days > days_elapsed:
+            rev_forecast = round(rev_current / days_elapsed * total_days)
+        else:
+            rev_forecast = round(rev_current)
+    elif full_end < today:
+        rev_forecast = round(rev_current)
 
     # 2. Avg check.
     avg_check, orders_count = await _avg_check_range(db, start, end)
@@ -504,6 +525,7 @@ async def get_dashboard_stats(
             "value": round(rev_current),
             "prev_value": round(rev_prev),
             "change_pct": _pct(rev_current, rev_prev),
+            "forecast": rev_forecast,
             "plan": revenue_plan,
             "plan_pct": plan_pct,
         },

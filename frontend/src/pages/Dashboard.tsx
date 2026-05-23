@@ -13,7 +13,7 @@ import {
   TrendingUpRounded, TrendingDownRounded, TrendingFlatRounded,
   WarningAmberRounded, AccountBalanceWalletRounded,
   EngineeringRounded, DirectionsCarRounded, PersonOffRounded,
-  AccessTimeRounded, CurrencyRubleRounded, ReceiptLongRounded,
+  AccessTimeRounded, ReceiptLongRounded,
   BuildRounded, EditRounded, CalendarTodayRounded, CheckRounded,
   DateRangeRounded, ChevronLeftRounded, ChevronRightRounded,
   FlagRounded,
@@ -68,6 +68,7 @@ interface DashboardStats {
     value: number
     prev_value: number
     change_pct: number | null
+    forecast: number | null
     plan: number | null
     plan_pct: number | null
   }
@@ -186,150 +187,277 @@ function KpiCard({
   )
 }
 
-// ── RevenueCard (с планом) ────────────────────────────────────────────────────
+// ── Деньги и план ────────────────────────────────────────────────────────────
 
-function RevenueCard({
-  revenue, periodLabel, loading, isAdmin, onEditPlan,
+const PREV_PERIOD_LABEL: Record<Period, string> = {
+  day: 'вчера',
+  week: 'прошлая неделя',
+  month: 'прошлый месяц',
+  quarter: 'прошлый квартал',
+  year: 'прошлый год',
+  custom: 'пред. период',
+}
+
+const FORECAST_TITLE: Record<Period, string> = {
+  day: 'Прогноз на день',
+  week: 'Прогноз на неделю',
+  month: 'Прогноз на месяц',
+  quarter: 'Прогноз на квартал',
+  year: 'Прогноз на год',
+  custom: 'Прогноз периода',
+}
+
+const COLOR_FACT = '#10B981'
+const COLOR_FORECAST = '#3B82F6'
+
+function planAccent(pct: number | null): string {
+  if (pct === null) return '#94A3B8'
+  if (pct >= 100) return '#10B981'
+  if (pct >= 70) return '#3B82F6'
+  if (pct >= 40) return '#F59E0B'
+  return '#EF4444'
+}
+
+function MetricCard({
+  label, value, accent, sub, loading,
+}: {
+  label: string
+  value: React.ReactNode
+  accent: string
+  sub?: React.ReactNode
+  loading: boolean
+}) {
+  return (
+    <Paper sx={{
+      p: 2.5, height: '100%', borderRadius: '14px',
+      border: '1px solid', borderColor: 'divider',
+      transition: 'box-shadow 0.2s, transform 0.15s, border-color 0.2s',
+      '&:hover': {
+        boxShadow: `0 6px 20px ${alpha(accent, 0.12)}`,
+        borderColor: alpha(accent, 0.3),
+        transform: 'translateY(-1px)',
+      },
+    }}>
+      <Typography sx={{
+        fontSize: 12, fontWeight: 600,
+        color: 'text.secondary', mb: 1.25,
+      }}>
+        {label}
+      </Typography>
+      {loading ? (
+        <CircularProgress size={20} sx={{ color: accent }} />
+      ) : (
+        <Typography sx={{
+          fontSize: 30, fontWeight: 800, lineHeight: 1.05,
+          letterSpacing: '-0.02em', color: accent,
+        }}>
+          {value}
+        </Typography>
+      )}
+      {sub && (
+        <Box sx={{ mt: 1, minHeight: 18 }}>
+          {sub}
+        </Box>
+      )}
+    </Paper>
+  )
+}
+
+function PlanCtaCard({ isAdmin, onEdit }: { isAdmin: boolean; onEdit: () => void }) {
+  return (
+    <Paper sx={{
+      p: 2.5, height: '100%', borderRadius: '14px',
+      border: '1px dashed', borderColor: alpha(COLOR_FACT, 0.45),
+      bgcolor: alpha(COLOR_FACT, 0.04),
+      display: 'flex', flexDirection: 'column', justifyContent: 'center',
+      cursor: isAdmin ? 'pointer' : 'default',
+      transition: 'background-color 0.15s, border-color 0.15s',
+      '&:hover': isAdmin ? {
+        bgcolor: alpha(COLOR_FACT, 0.08),
+        borderColor: COLOR_FACT,
+      } : undefined,
+    }}
+      onClick={isAdmin ? onEdit : undefined}
+      role={isAdmin ? 'button' : undefined}
+      tabIndex={isAdmin ? 0 : undefined}
+      onKeyDown={isAdmin ? (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onEdit() }
+      } : undefined}
+    >
+      <Typography sx={{ fontSize: 12, fontWeight: 600, color: 'text.secondary', mb: 1 }}>
+        Выполнение плана
+      </Typography>
+      {isAdmin ? (
+        <Stack direction="row" alignItems="center" spacing={1.25}>
+          <Box sx={{
+            width: 32, height: 32, borderRadius: '10px',
+            bgcolor: alpha(COLOR_FACT, 0.15),
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: COLOR_FACT, flexShrink: 0,
+          }}>
+            <FlagRounded fontSize="small" />
+          </Box>
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Typography sx={{ fontWeight: 700, fontSize: 14, color: 'text.primary', lineHeight: 1.2 }}>
+              Задать план
+            </Typography>
+            <Typography sx={{ fontSize: 11, color: 'text.secondary' }}>
+              Чтобы видеть прогресс
+            </Typography>
+          </Box>
+          <ArrowForwardRounded sx={{ fontSize: 18, color: COLOR_FACT }} />
+        </Stack>
+      ) : (
+        <Typography sx={{ fontSize: 13, color: 'text.secondary' }}>
+          План на период не задан
+        </Typography>
+      )}
+    </Paper>
+  )
+}
+
+function PlanProgressBar({ value, plan, pct }: { value: number; plan: number; pct: number }) {
+  const accent = planAccent(pct)
+  const clampedPct = Math.min(Math.max(pct, 0), 100)
+  return (
+    <Paper sx={{
+      p: 2.25, mt: 2, borderRadius: '14px',
+      border: '1px solid', borderColor: 'divider',
+    }}>
+      <Stack direction="row" justifyContent="space-between" alignItems="baseline" sx={{ mb: 1 }}>
+        <Typography sx={{ fontSize: 13, fontWeight: 700, color: 'text.primary' }}>
+          Прогресс по плану
+        </Typography>
+        <Typography sx={{
+          fontSize: 13, fontWeight: 700,
+          color: 'text.secondary',
+          fontVariantNumeric: 'tabular-nums',
+        }}>
+          <Box component="span" sx={{ color: accent, fontWeight: 800 }}>
+            {fmtMoneyFull(value)}
+          </Box>
+          {' / '}
+          {fmtMoneyFull(plan)}
+        </Typography>
+      </Stack>
+      <LinearProgress
+        variant="determinate"
+        value={clampedPct}
+        sx={{
+          height: 10, borderRadius: 6,
+          bgcolor: alpha(accent, 0.12),
+          '& .MuiLinearProgress-bar': {
+            bgcolor: accent, borderRadius: 6,
+            transition: 'transform 0.4s ease',
+          },
+        }}
+      />
+    </Paper>
+  )
+}
+
+function MoneyAndPlanSection({
+  revenue, period, loading, isAdmin, onEditPlan,
 }: {
   revenue: DashboardStats['revenue']
-  periodLabel: string
+  period: Period
   loading: boolean
   isAdmin: boolean
   onEditPlan: () => void
 }) {
-  const color = '#10B981'
+  const prevLabel = PREV_PERIOD_LABEL[period]
+  const forecastTitle = FORECAST_TITLE[period]
   const planPct = revenue.plan_pct
+  const planAccentColor = planAccent(planPct)
+
+  // sub-blocks
+  const factSub = revenue.prev_value > 0 ? (
+    <Stack direction="row" spacing={0.75} alignItems="center" sx={{ flexWrap: 'wrap' }}>
+      <Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
+        {prevLabel}: <Box component="span" sx={{ fontWeight: 600, color: 'text.primary' }}>{fmtMoneyFull(revenue.prev_value)}</Box>
+      </Typography>
+      <TrendBadge pct={revenue.change_pct} />
+    </Stack>
+  ) : (
+    <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>нет данных за пред. период</Typography>
+  )
+
+  const forecastSub = revenue.forecast === null
+    ? <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>период ещё не начался</Typography>
+    : revenue.forecast === revenue.value
+      ? <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>период закрыт</Typography>
+      : <Typography sx={{ fontSize: 12, color: 'text.secondary' }}>при текущем темпе</Typography>
+
+  const planValueNode = planPct === null
+    ? '—'
+    : `${Math.round(planPct)}%`
+  const planSub = revenue.plan
+    ? (
+      <Stack direction="row" spacing={0.75} alignItems="center">
+        <Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
+          план <Box component="span" sx={{ fontWeight: 600, color: 'text.primary' }}>{fmtMoneyFull(revenue.plan)}</Box>
+        </Typography>
+        {isAdmin && (
+          <Tooltip title="Изменить план">
+            <IconButton size="small" onClick={onEditPlan} sx={{ p: 0.3, color: 'text.disabled', '&:hover': { color: 'primary.main' } }}>
+              <EditRounded sx={{ fontSize: 13 }} />
+            </IconButton>
+          </Tooltip>
+        )}
+      </Stack>
+    )
+    : null
 
   return (
-    <Paper sx={{
-      p: 2.5, height: '100%',
-      borderTop: `3px solid ${color}`,
-      borderRadius: '12px',
-      transition: 'box-shadow 0.2s, transform 0.15s',
-      '&:hover': { boxShadow: `0 8px 24px ${alpha(color, 0.14)}`, transform: 'translateY(-1px)' },
-    }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 2 }}>
-        <Box sx={{ p: 1.1, borderRadius: '10px', bgcolor: alpha(color, 0.1), color, display: 'flex', border: `1px solid ${alpha(color, 0.15)}` }}>
-          <CurrencyRubleRounded />
-        </Box>
-        <Stack direction="row" alignItems="center" spacing={1}>
-          <TrendBadge pct={revenue.change_pct} />
-          {isAdmin && (
-            <Tooltip title="Установить план месяца">
-              <IconButton size="small" onClick={onEditPlan} sx={{ p: 0.4, color: 'text.disabled', '&:hover': { color: 'primary.main' } }}>
-                <EditRounded sx={{ fontSize: 14 }} />
-              </IconButton>
-            </Tooltip>
-          )}
-        </Stack>
-      </Stack>
-
-      {loading ? (
-        <CircularProgress size={22} sx={{ mt: 0.5 }} />
-      ) : (
-        <Typography variant="h5" sx={{ fontWeight: 800, lineHeight: 1.1 }}>
-          {fmtMoney(revenue.value)}
-        </Typography>
-      )}
-
-      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.3, fontSize: 11 }}>
-        {revenue.prev_value > 0
-          ? `пред. период: ${fmtMoney(revenue.prev_value)}`
-          : 'нет данных за пред. период'}
-      </Typography>
-
-      {/* Plan progress */}
-      {revenue.plan && !loading && (
-        <Box sx={{ mt: 1.5 }}>
-          <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 0.5 }}>
-            <Typography variant="caption" sx={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', color: 'text.secondary' }}>
-              План: {fmtMoney(revenue.plan)}
-            </Typography>
-            <Typography variant="caption" sx={{ fontSize: 11, fontWeight: 800, color: planPct && planPct >= 100 ? 'success.main' : color }}>
-              {planPct}%
-            </Typography>
-          </Stack>
-          <LinearProgress
-            variant="determinate"
-            value={Math.min(planPct ?? 0, 100)}
-            sx={{
-              height: 5, borderRadius: 3,
-              bgcolor: alpha(color, 0.15),
-              '& .MuiLinearProgress-bar': {
-                bgcolor: planPct && planPct >= 100 ? 'success.main' : color,
-                borderRadius: 3,
-              },
-            }}
-          />
-        </Box>
-      )}
-
-      {!revenue.plan && !loading && (
-        <Box sx={{ mt: 1.5 }}>
-          {isAdmin ? (
-            <Box
-              role="button"
-              tabIndex={0}
-              onClick={onEditPlan}
-              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onEditPlan() } }}
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 1.25,
-                px: 1.5, py: 1.25,
-                borderRadius: 2,
-                border: '1.5px dashed',
-                borderColor: alpha(color, 0.5),
-                bgcolor: alpha(color, 0.06),
-                color,
-                cursor: 'pointer',
-                transition: 'background-color 0.15s, border-color 0.15s, transform 0.1s',
-                '&:hover': {
-                  bgcolor: alpha(color, 0.14),
-                  borderColor: color,
-                  '& .arrow': { transform: 'translateX(2px)' },
-                },
-                '&:active': { transform: 'scale(0.99)' },
-              }}
-            >
-              <Box sx={{
-                width: 32, height: 32, borderRadius: '8px',
-                bgcolor: alpha(color, 0.18),
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                flexShrink: 0,
-              }}>
-                <FlagRounded fontSize="small" />
-              </Box>
-              <Box sx={{ flex: 1, minWidth: 0, lineHeight: 1.2 }}>
-                <Typography sx={{ fontWeight: 700, fontSize: 13, color: 'text.primary' }}>
-                  Задать план на месяц
-                </Typography>
-                <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: 11 }}>
-                  Чтобы видеть прогресс выполнения
-                </Typography>
-              </Box>
-              <ArrowForwardRounded className="arrow" sx={{ fontSize: 18, transition: 'transform 0.15s' }} />
-            </Box>
-          ) : (
-            <LinearProgress
-              variant="determinate"
-              value={0}
-              sx={{
-                height: 5, borderRadius: 3,
-                bgcolor: alpha(color, 0.10),
-                '& .MuiLinearProgress-bar': { bgcolor: color, borderRadius: 3 },
-              }}
-            />
-          )}
-        </Box>
-      )}
-
-      <Typography variant="caption" color="text.secondary" sx={{
-        display: 'block', mt: 1, textTransform: 'uppercase', fontWeight: 700, fontSize: 10, letterSpacing: '0.05em',
+    <Box sx={{ mb: 3 }}>
+      <Typography sx={{
+        fontSize: 11, fontWeight: 700, color: 'text.secondary',
+        textTransform: 'uppercase', letterSpacing: '0.08em', mb: 1.25,
       }}>
-        Выручка · {periodLabel}
+        Деньги и план
       </Typography>
-    </Paper>
+
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={6} md={4}>
+          <MetricCard
+            label="Выручка (факт)"
+            value={`${fmtMoneyFull(revenue.value)}`}
+            accent={COLOR_FACT}
+            sub={factSub}
+            loading={loading}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <MetricCard
+            label={forecastTitle}
+            value={revenue.forecast === null ? '—' : fmtMoneyFull(revenue.forecast)}
+            accent={COLOR_FORECAST}
+            sub={forecastSub}
+            loading={loading}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          {revenue.plan
+            ? (
+              <MetricCard
+                label="Выполнение плана"
+                value={planValueNode}
+                accent={planAccentColor}
+                sub={planSub}
+                loading={loading}
+              />
+            )
+            : (
+              <PlanCtaCard isAdmin={isAdmin} onEdit={onEditPlan} />
+            )
+          }
+        </Grid>
+      </Grid>
+
+      {revenue.plan && !loading && planPct !== null && (
+        <PlanProgressBar value={revenue.value} plan={revenue.plan} pct={planPct} />
+      )}
+    </Box>
   )
 }
 
@@ -1252,21 +1380,18 @@ export default function Dashboard() {
         initialYear={refDate ? new Date(refDate + 'T00:00:00').getFullYear() : new Date().getFullYear()}
       />
 
-      {/* ── KPI Row ─────────────────────────────────────────── */}
-      <Grid container spacing={2.5} sx={{ mb: 3 }}>
-        {/* Revenue + plan */}
-        <Grid item xs={12} sm={6} md={3}>
-          <RevenueCard
-            revenue={s?.revenue ?? { value: 0, prev_value: 0, change_pct: null, plan: null, plan_pct: null }}
-            periodLabel={s?.period_label ?? ''}
-            loading={loading}
-            isAdmin={isAdmin}
-            onEditPlan={() => setPlanDialogOpen(true)}
-          />
-        </Grid>
+      {/* ── Деньги и план ───────────────────────────────────── */}
+      <MoneyAndPlanSection
+        revenue={s?.revenue ?? { value: 0, prev_value: 0, change_pct: null, forecast: null, plan: null, plan_pct: null }}
+        period={period}
+        loading={loading}
+        isAdmin={isAdmin}
+        onEditPlan={() => setPlanDialogOpen(true)}
+      />
 
-        {/* Avg check */}
-        <Grid item xs={12} sm={6} md={3}>
+      {/* ── Остальные KPI (временный layout — будет переверстан в следующих итерациях) */}
+      <Grid container spacing={2.5} sx={{ mb: 3 }}>
+        <Grid item xs={12} sm={6} md={4}>
           <KpiCard
             title="Средний чек"
             value={s ? fmtMoney(s.avg_check.value) : '—'}
@@ -1278,8 +1403,7 @@ export default function Dashboard() {
           />
         </Grid>
 
-        {/* Orders count */}
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} md={4}>
           <KpiCard
             title="Закрыто заказов"
             value={s ? String(s.orders_count.value) : '—'}
@@ -1291,8 +1415,7 @@ export default function Dashboard() {
           />
         </Grid>
 
-        {/* WIP */}
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} md={4}>
           <KpiCard
             title="В работе сейчас (WIP)"
             value={s ? fmtMoney(s.wip_amount) : '—'}

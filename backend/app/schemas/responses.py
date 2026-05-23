@@ -82,6 +82,13 @@ class RevenueMetric(BaseModel):
     value: float = Field(..., description="Выручка за текущий период")
     prev_value: float = Field(..., description="Выручка за предыдущий период")
     change_pct: Optional[float] = Field(None, description="Изменение в процентах")
+    forecast: Optional[float] = Field(
+        None,
+        description=(
+            "Линейный прогноз выручки до конца периода (факт / прошло_дней × всего_дней). "
+            "null для будущих периодов; равен факту для уже закрытых."
+        ),
+    )
     plan: Optional[float] = Field(None, description="План выручки на период")
     plan_pct: Optional[float] = Field(None, description="Процент выполнения плана")
 
