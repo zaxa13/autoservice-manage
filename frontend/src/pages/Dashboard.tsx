@@ -495,7 +495,7 @@ function ChecksAndOrdersSection({
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
           <MetricCard
-            label="Медианный чек"
+            label="Медианный чек (типичный, без перекоса крупными)"
             value={fmtMoneyFull(medianCheck.value)}
             accent={COLOR_MEDIAN}
             sub={medianHint}
