@@ -44,3 +44,7 @@ frontend/build/
 .DS_Store
 Thumbs.db
 
+# Скриншоты от Chrome DevTools MCP (не коммитим в репо)
+dash-mobile-*.png
+*.screenshot.png
+
