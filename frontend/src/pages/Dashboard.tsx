@@ -83,6 +83,8 @@ interface DashboardStats {
     works_revenue: number
     parts_revenue: number
     mechanic_fot: number
+    mechanic_base_fot: number
+    mechanic_bonus_fot: number
     parts_cost: number
   }
   post_load_today_pct: number | null
@@ -616,16 +618,21 @@ function MarginsSection({
         <Grid item xs={12} sm={6} md={4}>
           <MetricCard
             label="Маржа по работам"
-            description="доля от выручки по работам после ФОТ механиков"
+            description="доля от выручки по работам после ФОТ механиков (оклад + сдельный %)"
             value={fmtPct(margins.works_margin_pct)}
             accent={worksAccent}
             sub={
               margins.works_revenue > 0 ? (
-                <Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
-                  работы <Box component="span" sx={{ fontWeight: 600, color: 'text.primary' }}>{fmtMoneyFull(margins.works_revenue)}</Box>
-                  {' − ФОТ '}
-                  <Box component="span" sx={{ fontWeight: 600, color: 'text.primary' }}>{fmtMoneyFull(margins.mechanic_fot)}</Box>
-                </Typography>
+                <Stack spacing={0.25}>
+                  <Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
+                    работы <Box component="span" sx={{ fontWeight: 600, color: 'text.primary' }}>{fmtMoneyFull(margins.works_revenue)}</Box>
+                    {' − ФОТ '}
+                    <Box component="span" sx={{ fontWeight: 600, color: 'text.primary' }}>{fmtMoneyFull(margins.mechanic_fot)}</Box>
+                  </Typography>
+                  <Typography sx={{ fontSize: 11, color: 'text.disabled' }}>
+                    оклад {fmtMoneyFull(margins.mechanic_base_fot)} + бонус {fmtMoneyFull(margins.mechanic_bonus_fot)}
+                  </Typography>
+                </Stack>
               ) : (
                 <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>нет продаж работ за период</Typography>
               )
@@ -1658,7 +1665,9 @@ export default function Dashboard() {
       <MarginsSection
         margins={s?.margins ?? {
           works_margin_pct: null, parts_margin_pct: null, works_share_pct: null,
-          works_revenue: 0, parts_revenue: 0, mechanic_fot: 0, parts_cost: 0,
+          works_revenue: 0, parts_revenue: 0,
+          mechanic_fot: 0, mechanic_base_fot: 0, mechanic_bonus_fot: 0,
+          parts_cost: 0,
         }}
         loading={loading}
       />

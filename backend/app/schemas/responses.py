@@ -136,7 +136,18 @@ class MarginsMetric(BaseModel):
     )
     works_revenue: float = Field(..., description="Выручка по работам за период")
     parts_revenue: float = Field(..., description="Выручка по запчастям за период")
-    mechanic_fot: float = Field(..., description="ФОТ механиков по работам за период")
+    mechanic_fot: float = Field(
+        ...,
+        description="Полный ФОТ механиков за период (оклад про-рейт + сдельный бонус)",
+    )
+    mechanic_base_fot: float = Field(
+        ...,
+        description="Оклад активных механиков, про-рейт на дни периода (salary_base × days / 30)",
+    )
+    mechanic_bonus_fot: float = Field(
+        ...,
+        description="Сдельный бонус механиков по работам: SUM(ow.total × works_percentage / 100)",
+    )
     parts_cost: float = Field(..., description="Себестоимость проданных запчастей за период")
 
 
