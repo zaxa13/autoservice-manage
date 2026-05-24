@@ -1,16 +1,20 @@
 """Зарплата — расчёт, ведомости, схема per-employee.
 
-Расчёт:
-  base = employee.salary_base
-  works_bonus = SUM(order_works.total) WHERE mechanic_id=employee
-                AND order.status IN ('paid','completed')
-                AND order.completed_at в периоде
+Расчёт (per механик):
+  base = employee.salary_base                              # полный оклад на период
+  works_bonus = SUM(OrderWork.total) WHERE
+                COALESCE(ow.mechanic_id, o.mechanic_id) = employee
+                AND o.status = COMPLETED
+                AND o.completed_at::date в периоде
                 * scheme.works_percentage / 100
-  revenue_bonus = SUM(order.total_amount) WHERE order.employee_id=employee
-                  (отвественный менеджер) AND status IN ('paid','completed')
-                  AND order.created_at в периоде
+  revenue_bonus = SUM(o.total_amount) WHERE o.employee_id=employee
+                  AND o.status = COMPLETED
+                  AND o.completed_at::date в периоде
                   * scheme.revenue_percentage / 100
-  total = base + works_bonus + revenue_bonus  (penalty по умолчанию 0)
+  total = base + works_bonus + revenue_bonus  (penalty=0)
+
+Idempotent: если расчёт на этот же период уже есть и НЕ выплачен —
+удаляем и считаем заново. PAID-запись трогать нельзя.
 
 Pay-операция помимо смены статуса создаёт расходную cashflow-операцию по
 категории «Зарплата» (системная, заводится онбордингом). Если категории
@@ -23,7 +27,7 @@ from decimal import Decimal
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import BadRequestException, NotFoundException
@@ -75,39 +79,59 @@ async def _calculate(
     if employee is None:
         raise NotFoundException("Сотрудник не найден")
 
+    # Idempotent: если запись на этот период уже есть и НЕ выплачена —
+    # удаляем и пересчитываем актуальной формулой. PAID-запись — деньги
+    # уже выплачены, пересчитать нельзя.
+    existing = (await db.execute(
+        select(Salary).where(
+            Salary.employee_id == body.employee_id,
+            Salary.period_start == body.period_start,
+            Salary.period_end == body.period_end,
+        )
+    )).scalar_one_or_none()
+    if existing is not None:
+        if existing.status == SalaryStatus.PAID.value:
+            raise BadRequestException(
+                "Зарплата за этот период уже выплачена — пересчитать нельзя"
+            )
+        await db.delete(existing)
+        await db.flush()
+
     scheme = await _scheme_for(db, body.employee_id)
     works_pct = Decimal(str(scheme.works_percentage if scheme else 0))
     revenue_pct = Decimal(str(scheme.revenue_percentage if scheme else 0))
 
-    # Сумма работ механика за период.
-    works_total_row = (await db.execute(
-        select(OrderWork.total)
+    # Сумма работ механика за период: per-OrderWork, attribution через
+    # COALESCE(ow.mechanic_id, o.mechanic_id) — если в строке работы не
+    # проставлен механик, берём primary mechanic заказа.
+    # Фильтр по completed_at (заказ относится к месяцу когда был ЗАКРЫТ,
+    # а не когда был открыт; статус ровно COMPLETED — paid-без-completed
+    # это ещё не закрытый, бонус ещё не причитается).
+    effective_mech = func.coalesce(OrderWork.mechanic_id, Order.mechanic_id)
+    works_sum_val = (await db.execute(
+        select(func.coalesce(func.sum(OrderWork.total), 0))
         .join(Order, (Order.id == OrderWork.order_id) & (Order.tenant_id == OrderWork.tenant_id))
         .where(
-            OrderWork.mechanic_id == body.employee_id,
-            Order.status.in_(["paid", "completed"]),
-            Order.created_at >= datetime.combine(body.period_start, datetime.min.time()),
-            Order.created_at <= datetime.combine(body.period_end, datetime.max.time()),
+            effective_mech == body.employee_id,
+            Order.status == "completed",
+            func.date(Order.completed_at) >= body.period_start,
+            func.date(Order.completed_at) <= body.period_end,
         )
-    )).all()
-    works_sum = sum(
-        (Decimal(str(row[0] or 0)) for row in works_total_row), Decimal(0)
-    )
+    )).scalar() or 0
+    works_sum = Decimal(str(works_sum_val))
     works_bonus = (works_sum * works_pct / Decimal(100)).quantize(Decimal("0.01"))
 
-    # Личная выручка ответственного менеджера.
-    revenue_rows = (await db.execute(
-        select(Order.total_amount)
+    # Личная выручка ответственного менеджера — по тем же правилам.
+    revenue_sum_val = (await db.execute(
+        select(func.coalesce(func.sum(Order.total_amount), 0))
         .where(
             Order.employee_id == body.employee_id,
-            Order.status.in_(["paid", "completed"]),
-            Order.created_at >= datetime.combine(body.period_start, datetime.min.time()),
-            Order.created_at <= datetime.combine(body.period_end, datetime.max.time()),
+            Order.status == "completed",
+            func.date(Order.completed_at) >= body.period_start,
+            func.date(Order.completed_at) <= body.period_end,
         )
-    )).all()
-    revenue_sum = sum(
-        (Decimal(str(row[0] or 0)) for row in revenue_rows), Decimal(0)
-    )
+    )).scalar() or 0
+    revenue_sum = Decimal(str(revenue_sum_val))
     revenue_bonus = (revenue_sum * revenue_pct / Decimal(100)).quantize(Decimal("0.01"))
 
     base = Decimal(str(employee.salary_base))
