@@ -35,19 +35,26 @@ def update_salary_scheme(db: Session, employee_id: int, data: SalarySchemeUpdate
 
 
 def calculate_salary(db: Session, salary_calculate: SalaryCalculate) -> Salary:
-    """Расчет зарплаты сотрудника за период"""
+    """Расчёт зарплаты сотрудника за период.
+
+    Idempotent: если запись на этот период уже есть и она НЕ выплачена
+    (status != PAID) — удаляем её и считаем заново с актуальной формулой.
+    Выплаченную запись трогать нельзя — деньги уже ушли.
+    """
     employee = db.query(Employee).filter(Employee.id == salary_calculate.employee_id).first()
     if not employee:
         raise NotFoundException("Сотрудник не найден")
 
-    # Проверка существующего расчета
     existing = db.query(Salary).filter(
         Salary.employee_id == salary_calculate.employee_id,
         Salary.period_start == salary_calculate.period_start,
         Salary.period_end == salary_calculate.period_end
     ).first()
     if existing:
-        raise ValueError("Расчет зарплаты за этот период уже существует")
+        if existing.status == SalaryStatus.PAID.value:
+            raise ValueError("Зарплата за этот период уже выплачена — пересчитать нельзя")
+        db.delete(existing)
+        db.flush()
 
     base_salary = employee.salary_base or Decimal(0)
 
