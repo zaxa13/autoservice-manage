@@ -23,7 +23,7 @@ from app.core.security import TenantClaims
 from app.dependencies import get_current_claims, get_tenant_db
 from app.models.appointment import Appointment
 from app.models.appointment_post import AppointmentPost
-from app.models.employee import Employee, EmployeePosition
+from app.models.employee import Employee
 from app.models.order import Order, OrderPart, OrderWork
 from app.models.part import Part
 from app.models.payment import Payment, PaymentStatus
@@ -308,27 +308,6 @@ async def _parts_cost_range(db: AsyncSession, s: date, e: date) -> float:
     return float(row or 0)
 
 
-async def _mechanic_base_fot_range(db: AsyncSession, days: int) -> float:
-    """Сумма окладов активных механиков, про-рейтнутая на длину периода.
-
-    `Employee.salary_base` — месячный оклад. Считаем 1 месяц = 30 дней.
-    Для незакрытого периода (current month, неделя и т.п.) days — это
-    days_elapsed, то есть мы сравниваем заработанное на сегодня
-    с окладом за прошедшие дни, а не за весь месяц.
-    """
-    row = (
-        await db.execute(
-            select(func.coalesce(func.sum(Employee.salary_base), 0))
-            .where(
-                Employee.position == EmployeePosition.MECHANIC.value,
-                Employee.is_active.is_(True),
-            )
-        )
-    ).scalar()
-    monthly_total = float(row or 0)
-    return monthly_total * days / 30 if days > 0 else 0.0
-
-
 async def _mechanic_bonus_fot_for_works_range(db: AsyncSession, s: date, e: date) -> float:
     """Сдельный бонус механиков по работам = SUM(ow.total × works_percentage / 100).
 
@@ -458,14 +437,15 @@ async def get_dashboard_stats(
     median_check_prev = await _median_check_range(db, prev_start, prev_end)
 
     # 2b. Margins — реальная прибыль (не оборот).
+    # ФОТ для маржи = только бонус механикам по работам (% × OrderWork.total).
+    # Оклады в маржу не включаем сознательно: у каждого тенанта свой график
+    # рабочих дней / отпусков / переработок — про-рейт по дням всё равно
+    # будет приблизительным. Оставляем переменный расход, который точно
+    # привязан к выручке.
     works_revenue = await _works_revenue_range(db, start, end)
     parts_revenue = await _parts_revenue_range(db, start, end)
     parts_cost = await _parts_cost_range(db, start, end)
-    # ФОТ механиков = оклад (про-рейт по дням) + сдельный бонус по работам.
-    days_in_period = (end - start).days + 1
-    mechanic_base_fot = await _mechanic_base_fot_range(db, days_in_period)
-    mechanic_bonus_fot = await _mechanic_bonus_fot_for_works_range(db, start, end)
-    mechanic_fot = mechanic_base_fot + mechanic_bonus_fot
+    mechanic_fot = await _mechanic_bonus_fot_for_works_range(db, start, end)
     total_for_share = works_revenue + parts_revenue
 
     works_margin_pct = (
@@ -737,8 +717,6 @@ async def get_dashboard_stats(
             "works_revenue": round(works_revenue),
             "parts_revenue": round(parts_revenue),
             "mechanic_fot": round(mechanic_fot),
-            "mechanic_base_fot": round(mechanic_base_fot),
-            "mechanic_bonus_fot": round(mechanic_bonus_fot),
             "parts_cost": round(parts_cost),
         },
         "post_load_today_pct": load_today,
