@@ -4,11 +4,11 @@
   base = employee.salary_base                              # полный оклад на период
   works_bonus = SUM(OrderWork.total) WHERE
                 COALESCE(ow.mechanic_id, o.mechanic_id) = employee
-                AND o.status = COMPLETED
+                AND o.status IN ('paid','completed')
                 AND o.completed_at::date в периоде
                 * scheme.works_percentage / 100
   revenue_bonus = SUM(o.total_amount) WHERE o.employee_id=employee
-                  AND o.status = COMPLETED
+                  AND o.status IN ('paid','completed')
                   AND o.completed_at::date в периоде
                   * scheme.revenue_percentage / 100
   total = base + works_bonus + revenue_bonus  (penalty=0)
@@ -105,15 +105,16 @@ async def _calculate(
     # COALESCE(ow.mechanic_id, o.mechanic_id) — если в строке работы не
     # проставлен механик, берём primary mechanic заказа.
     # Фильтр по completed_at (заказ относится к месяцу когда был ЗАКРЫТ,
-    # а не когда был открыт; статус ровно COMPLETED — paid-без-completed
-    # это ещё не закрытый, бонус ещё не причитается).
+    # а не открыт). Статус paid+completed — синхронно с дашбордом
+    # (paid = клиент заплатил, completed = машину отдали; и тот, и другой —
+    # «закрытый» заказ с точки зрения работы механика).
     effective_mech = func.coalesce(OrderWork.mechanic_id, Order.mechanic_id)
     works_sum_val = (await db.execute(
         select(func.coalesce(func.sum(OrderWork.total), 0))
         .join(Order, (Order.id == OrderWork.order_id) & (Order.tenant_id == OrderWork.tenant_id))
         .where(
             effective_mech == body.employee_id,
-            Order.status == "completed",
+            Order.status.in_(["paid", "completed"]),
             func.date(Order.completed_at) >= body.period_start,
             func.date(Order.completed_at) <= body.period_end,
         )
@@ -126,7 +127,7 @@ async def _calculate(
         select(func.coalesce(func.sum(Order.total_amount), 0))
         .where(
             Order.employee_id == body.employee_id,
-            Order.status == "completed",
+            Order.status.in_(["paid", "completed"]),
             func.date(Order.completed_at) >= body.period_start,
             func.date(Order.completed_at) <= body.period_end,
         )
