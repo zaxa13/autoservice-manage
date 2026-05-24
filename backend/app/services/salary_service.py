@@ -3,7 +3,7 @@ from sqlalchemy import func
 from datetime import date
 from decimal import Decimal
 from app.models.salary import Salary, SalaryStatus, SalaryScheme
-from app.models.order import Order, OrderStatus
+from app.models.order import Order, OrderStatus, OrderWork
 from app.models.employee import Employee, EmployeePosition
 from app.schemas.salary import SalaryCalculate, SalarySchemeUpdate, SalarySchemeResponse
 from app.core.exceptions import NotFoundException
@@ -60,16 +60,23 @@ def calculate_salary(db: Session, salary_calculate: SalaryCalculate) -> Salary:
     period_end_str = salary_calculate.period_end.isoformat()
 
     if employee.position == EmployeePosition.MECHANIC:
-        # Механик: % от суммы завершённых заказов где mechanic_id = employee.id
-        completed_sum = db.query(func.sum(Order.total_amount)).filter(
-            Order.mechanic_id == employee.id,
+        # Механик: % от выручки ТОЛЬКО по работам (OrderWork.total), а не от
+        # полного заказа — иначе механик получает процент с запчастей,
+        # которые он не продавал.
+        # Per-work: бонус идёт тому, кто стоит в OrderWork.mechanic_id;
+        # если у строки работ механика нет (null) — fallback на Order.mechanic_id.
+        effective_mech = func.coalesce(OrderWork.mechanic_id, Order.mechanic_id)
+        works_sum = db.query(func.coalesce(func.sum(OrderWork.total), Decimal(0))).join(
+            Order, OrderWork.order_id == Order.id
+        ).filter(
+            effective_mech == employee.id,
             Order.status == OrderStatus.COMPLETED,
             func.date(Order.completed_at) >= period_start_str,
             func.date(Order.completed_at) <= period_end_str
         ).scalar() or Decimal(0)
 
         percentage = scheme.works_percentage if scheme else Decimal(0)
-        bonus = Decimal(str(completed_sum)) * percentage / 100
+        bonus = Decimal(str(works_sum)) * percentage / 100
 
     elif employee.position in (EmployeePosition.MANAGER, EmployeePosition.ADMIN):
         # Менеджер/Админ: % от суммы завершённых заказов где employee_id = employee.id

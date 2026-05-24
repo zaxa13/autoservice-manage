@@ -202,6 +202,9 @@ async def _revenue_by_month(db: AsyncSession, year: int) -> dict[str, float]:
 
 
 async def _avg_check_range(db: AsyncSession, s: date, e: date) -> tuple[float, int]:
+    # Все Order-метрики фильтруются по completed_at — заказ относится к тому
+    # периоду, когда он был закрыт, а не открыт. Заказ может висеть месяцами
+    # и попадает в выручку только когда закрыт.
     row = (
         await db.execute(
             select(
@@ -209,8 +212,8 @@ async def _avg_check_range(db: AsyncSession, s: date, e: date) -> tuple[float, i
                 func.coalesce(func.sum(Order.total_amount), 0),
             ).where(
                 Order.status.in_(["paid", "completed"]),
-                func.date(Order.created_at) >= s,
-                func.date(Order.created_at) <= e,
+                func.date(Order.completed_at) >= s,
+                func.date(Order.completed_at) <= e,
             )
         )
     ).one()
@@ -231,8 +234,8 @@ async def _median_check_range(db: AsyncSession, s: date, e: date) -> float:
                 func.percentile_cont(0.5).within_group(Order.total_amount.asc())
             ).where(
                 Order.status.in_(["paid", "completed"]),
-                func.date(Order.created_at) >= s,
-                func.date(Order.created_at) <= e,
+                func.date(Order.completed_at) >= s,
+                func.date(Order.completed_at) <= e,
             )
         )
     ).scalar()
@@ -241,11 +244,11 @@ async def _median_check_range(db: AsyncSession, s: date, e: date) -> float:
 
 # ── Margins helpers ──────────────────────────────────────────────────────────
 #
-# Все четыре идут по paid/completed заказам в [start..end]. Делим выручку на
-# «работы» и «запчасти» (две отдельные таблицы), считаем ФОТ механиков ТОЛЬКО
-# по работам через works_percentage из их schemes (per-work mechanic → fallback
-# на order.mechanic_id), считаем себестоимость запчастей через
-# parts.purchase_price_last (закупочная цена на момент чтения).
+# Все четыре идут по paid/completed заказам, закрытым (completed_at) в
+# [start..end]. Делим выручку на «работы» и «запчасти» (две отдельные таблицы),
+# считаем ФОТ механиков ТОЛЬКО по работам через works_percentage из их schemes
+# (per-work mechanic → fallback на order.mechanic_id), считаем себестоимость
+# запчастей через parts.purchase_price_last (закупочная цена на момент чтения).
 
 async def _works_revenue_range(db: AsyncSession, s: date, e: date) -> float:
     row = (
@@ -254,8 +257,8 @@ async def _works_revenue_range(db: AsyncSession, s: date, e: date) -> float:
             .join(Order, (OrderWork.order_id == Order.id) & (OrderWork.tenant_id == Order.tenant_id))
             .where(
                 Order.status.in_(["paid", "completed"]),
-                func.date(Order.created_at) >= s,
-                func.date(Order.created_at) <= e,
+                func.date(Order.completed_at) >= s,
+                func.date(Order.completed_at) <= e,
             )
         )
     ).scalar()
@@ -269,8 +272,8 @@ async def _parts_revenue_range(db: AsyncSession, s: date, e: date) -> float:
             .join(Order, (OrderPart.order_id == Order.id) & (OrderPart.tenant_id == Order.tenant_id))
             .where(
                 Order.status.in_(["paid", "completed"]),
-                func.date(Order.created_at) >= s,
-                func.date(Order.created_at) <= e,
+                func.date(Order.completed_at) >= s,
+                func.date(Order.completed_at) <= e,
             )
         )
     ).scalar()
@@ -297,8 +300,8 @@ async def _parts_cost_range(db: AsyncSession, s: date, e: date) -> float:
             .outerjoin(Part, (OrderPart.part_id == Part.id) & (OrderPart.tenant_id == Part.tenant_id))
             .where(
                 Order.status.in_(["paid", "completed"]),
-                func.date(Order.created_at) >= s,
-                func.date(Order.created_at) <= e,
+                func.date(Order.completed_at) >= s,
+                func.date(Order.completed_at) <= e,
             )
         )
     ).scalar()
@@ -356,8 +359,8 @@ async def _mechanic_bonus_fot_for_works_range(db: AsyncSession, s: date, e: date
             )
             .where(
                 Order.status.in_(["paid", "completed"]),
-                func.date(Order.created_at) >= s,
-                func.date(Order.created_at) <= e,
+                func.date(Order.completed_at) >= s,
+                func.date(Order.completed_at) <= e,
             )
         )
     ).scalar()
@@ -586,13 +589,15 @@ async def get_dashboard_stats(
     no_shows_pct = round(no_shows / total_today_appts * 100) if total_today_appts else 0
 
     # 7. Mechanics stats.
+    # Считаем по закрытым заказам (completed_at в периоде) — синхронно с
+    # выручкой/маржой и с тем, как salary_service формирует бонусы.
     period_orders = (
         await db.execute(
             select(Order).where(
                 Order.mechanic_id.is_not(None),
-                Order.status.in_(["in_progress", "ready_for_payment", "paid", "completed"]),
-                func.date(Order.created_at) >= start,
-                func.date(Order.created_at) <= end,
+                Order.status.in_(["paid", "completed"]),
+                func.date(Order.completed_at) >= start,
+                func.date(Order.completed_at) <= end,
             )
         )
     ).scalars().all()
