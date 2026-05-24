@@ -116,6 +116,30 @@ class WipMetric(BaseModel):
     count: int = Field(..., description="Количество заказов в работе")
 
 
+class MarginsMetric(BaseModel):
+    """Маржа — реальная прибыль, не оборот.
+
+    Все три процента — Optional, потому что считаются только если есть
+    выручка по соответствующей категории (защита от деления на ноль).
+    """
+    works_margin_pct: Optional[float] = Field(
+        None,
+        description="Маржа по работам = (works_revenue − mechanic_fot) / works_revenue × 100",
+    )
+    parts_margin_pct: Optional[float] = Field(
+        None,
+        description="Маржа по запчастям = (parts_revenue − parts_cost) / parts_revenue × 100",
+    )
+    works_share_pct: Optional[float] = Field(
+        None,
+        description="Доля работ в выручке = works_revenue / (works + parts) × 100",
+    )
+    works_revenue: float = Field(..., description="Выручка по работам за период")
+    parts_revenue: float = Field(..., description="Выручка по запчастям за период")
+    mechanic_fot: float = Field(..., description="ФОТ механиков по работам за период")
+    parts_cost: float = Field(..., description="Себестоимость проданных запчастей за период")
+
+
 class PipelineDayItem(BaseModel):
     date: str = Field(..., description="Дата в формате ISO")
     day_name: str = Field(..., description="Короткое название дня недели (Пн, Вт, ...)")
@@ -170,6 +194,7 @@ class DashboardStatsResponse(BaseModel):
     median_check: MedianCheckMetric = Field(..., description="Метрика медианного чека")
     orders_count: OrdersCountMetric = Field(..., description="Метрика количества заказов")
     wip: WipMetric = Field(..., description="Заказы в работе: сумма и количество")
+    margins: MarginsMetric = Field(..., description="Маржа — работы / запчасти / доля работ")
     post_load_today_pct: Optional[int] = Field(None, description="Загрузка постов сегодня (%)")
     post_load_tomorrow_pct: Optional[int] = Field(None, description="Загрузка постов завтра (%)")
     pipeline_7d: List[PipelineDayItem] = Field(..., description="Загрузка по дням на 7 дней вперёд")

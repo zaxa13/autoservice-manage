@@ -76,6 +76,15 @@ interface DashboardStats {
   median_check: { value: number; prev_value: number; change_pct: number | null }
   orders_count: { value: number; prev_value: number; change_pct: number | null }
   wip: { amount: number; count: number }
+  margins: {
+    works_margin_pct: number | null
+    parts_margin_pct: number | null
+    works_share_pct: number | null
+    works_revenue: number
+    parts_revenue: number
+    mechanic_fot: number
+    parts_cost: number
+  }
   post_load_today_pct: number | null
   post_load_tomorrow_pct: number | null
   pipeline_7d: PipelineDay[]
@@ -541,6 +550,122 @@ function ChecksAndOrdersSection({
               <Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
                 {wip.count} {pluralizeOrders(wip.count)}
               </Typography>
+            }
+            loading={loading}
+          />
+        </Grid>
+      </Grid>
+    </Box>
+  )
+}
+
+// ── Маржа ────────────────────────────────────────────────────────────────────
+
+// Пороги по «здоровью» маржи — мнение бизнеса, а не данные;
+// держим тут (не на бекенде), потому что это про окраску UI.
+function worksMarginAccent(pct: number | null): string {
+  if (pct === null) return '#94A3B8'
+  if (pct >= 50) return '#10B981'
+  if (pct >= 30) return '#F59E0B'
+  return '#EF4444'
+}
+function partsMarginAccent(pct: number | null): string {
+  if (pct === null) return '#94A3B8'
+  if (pct >= 25) return '#10B981'
+  if (pct >= 15) return '#F59E0B'
+  return '#EF4444'
+}
+function worksShareAccent(pct: number | null): string {
+  if (pct === null) return '#94A3B8'
+  if (pct >= 55) return '#10B981'
+  if (pct >= 40) return '#F59E0B'
+  return '#EF4444'
+}
+
+function fmtPct(pct: number | null): string {
+  if (pct === null) return '—'
+  return `${Math.round(pct)}%`
+}
+
+function MarginsSection({
+  margins, loading,
+}: {
+  margins: DashboardStats['margins']
+  loading: boolean
+}) {
+  const worksAccent = worksMarginAccent(margins.works_margin_pct)
+  const partsAccent = partsMarginAccent(margins.parts_margin_pct)
+  const shareAccent = worksShareAccent(margins.works_share_pct)
+
+  const partsShare = margins.works_share_pct === null
+    ? null
+    : Math.max(0, Math.round(100 - margins.works_share_pct))
+
+  return (
+    <Box sx={{ mb: 3 }}>
+      <Typography sx={{
+        fontSize: 11, fontWeight: 700, color: 'text.secondary',
+        textTransform: 'uppercase', letterSpacing: '0.08em', mb: 1.25,
+      }}>
+        Маржа <Box component="span" sx={{ textTransform: 'none', color: 'text.disabled', fontWeight: 600 }}>
+          (реальная прибыль, не оборот)
+        </Box>
+      </Typography>
+
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={6} md={4}>
+          <MetricCard
+            label="Маржа по работам"
+            description="доля от выручки по работам после ФОТ механиков"
+            value={fmtPct(margins.works_margin_pct)}
+            accent={worksAccent}
+            sub={
+              margins.works_revenue > 0 ? (
+                <Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
+                  работы <Box component="span" sx={{ fontWeight: 600, color: 'text.primary' }}>{fmtMoneyFull(margins.works_revenue)}</Box>
+                  {' − ФОТ '}
+                  <Box component="span" sx={{ fontWeight: 600, color: 'text.primary' }}>{fmtMoneyFull(margins.mechanic_fot)}</Box>
+                </Typography>
+              ) : (
+                <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>нет продаж работ за период</Typography>
+              )
+            }
+            loading={loading}
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={4}>
+          <MetricCard
+            label="Маржа по запчастям"
+            description="доля от выручки по запчастям после закупки"
+            value={fmtPct(margins.parts_margin_pct)}
+            accent={partsAccent}
+            sub={
+              margins.parts_revenue > 0 ? (
+                <Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
+                  запчасти <Box component="span" sx={{ fontWeight: 600, color: 'text.primary' }}>{fmtMoneyFull(margins.parts_revenue)}</Box>
+                  {' − закупка '}
+                  <Box component="span" sx={{ fontWeight: 600, color: 'text.primary' }}>{fmtMoneyFull(margins.parts_cost)}</Box>
+                </Typography>
+              ) : (
+                <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>нет продаж запчастей за период</Typography>
+              )
+            }
+            loading={loading}
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={4}>
+          <MetricCard
+            label="Доля работ в выручке"
+            value={fmtPct(margins.works_share_pct)}
+            accent={shareAccent}
+            sub={
+              partsShare === null
+                ? <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>нет данных за период</Typography>
+                : <Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
+                    остальное — запчасти ({partsShare}%)
+                  </Typography>
             }
             loading={loading}
           />
@@ -1526,6 +1651,15 @@ export default function Dashboard() {
         ordersCount={s?.orders_count ?? { value: 0, prev_value: 0, change_pct: null }}
         wip={s?.wip ?? { amount: 0, count: 0 }}
         period={period}
+        loading={loading}
+      />
+
+      {/* ── Маржа (реальная прибыль, не оборот) ──────────────── */}
+      <MarginsSection
+        margins={s?.margins ?? {
+          works_margin_pct: null, parts_margin_pct: null, works_share_pct: null,
+          works_revenue: 0, parts_revenue: 0, mechanic_fot: 0, parts_cost: 0,
+        }}
         loading={loading}
       />
 

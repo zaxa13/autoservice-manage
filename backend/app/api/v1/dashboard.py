@@ -24,8 +24,10 @@ from app.dependencies import get_current_claims, get_tenant_db
 from app.models.appointment import Appointment
 from app.models.appointment_post import AppointmentPost
 from app.models.employee import Employee
-from app.models.order import Order
+from app.models.order import Order, OrderPart, OrderWork
+from app.models.part import Part
 from app.models.payment import Payment, PaymentStatus
+from app.models.salary import SalaryScheme
 from app.models.setting import Setting
 from app.schemas.responses import DashboardStatsResponse, ErrorResponse
 
@@ -237,6 +239,110 @@ async def _median_check_range(db: AsyncSession, s: date, e: date) -> float:
     return float(row or 0)
 
 
+# ── Margins helpers ──────────────────────────────────────────────────────────
+#
+# Все четыре идут по paid/completed заказам в [start..end]. Делим выручку на
+# «работы» и «запчасти» (две отдельные таблицы), считаем ФОТ механиков ТОЛЬКО
+# по работам через works_percentage из их schemes (per-work mechanic → fallback
+# на order.mechanic_id), считаем себестоимость запчастей через
+# parts.purchase_price_last (закупочная цена на момент чтения).
+
+async def _works_revenue_range(db: AsyncSession, s: date, e: date) -> float:
+    row = (
+        await db.execute(
+            select(func.coalesce(func.sum(OrderWork.total), 0))
+            .join(Order, (OrderWork.order_id == Order.id) & (OrderWork.tenant_id == Order.tenant_id))
+            .where(
+                Order.status.in_(["paid", "completed"]),
+                func.date(Order.created_at) >= s,
+                func.date(Order.created_at) <= e,
+            )
+        )
+    ).scalar()
+    return float(row or 0)
+
+
+async def _parts_revenue_range(db: AsyncSession, s: date, e: date) -> float:
+    row = (
+        await db.execute(
+            select(func.coalesce(func.sum(OrderPart.total), 0))
+            .join(Order, (OrderPart.order_id == Order.id) & (OrderPart.tenant_id == Order.tenant_id))
+            .where(
+                Order.status.in_(["paid", "completed"]),
+                func.date(Order.created_at) >= s,
+                func.date(Order.created_at) <= e,
+            )
+        )
+    ).scalar()
+    return float(row or 0)
+
+
+async def _parts_cost_range(db: AsyncSession, s: date, e: date) -> float:
+    """Себестоимость проданных запчастей: SUM(qty × purchase_price_last).
+
+    Если у Part нет purchase_price_last (NULL) — считаем как 0 (маржа = 100%
+    на эту строку, и в общую сумму закупки не идёт). Это менее агрессивно,
+    чем учитывать продажную цену вместо стоимости — даёт «оптимистичную»
+    маржу, но честнее: лучше не приписывать себе несуществующих расходов.
+    """
+    row = (
+        await db.execute(
+            select(
+                func.coalesce(
+                    func.sum(OrderPart.quantity * func.coalesce(Part.purchase_price_last, 0)),
+                    0,
+                )
+            )
+            .join(Order, (OrderPart.order_id == Order.id) & (OrderPart.tenant_id == Order.tenant_id))
+            .outerjoin(Part, (OrderPart.part_id == Part.id) & (OrderPart.tenant_id == Part.tenant_id))
+            .where(
+                Order.status.in_(["paid", "completed"]),
+                func.date(Order.created_at) >= s,
+                func.date(Order.created_at) <= e,
+            )
+        )
+    ).scalar()
+    return float(row or 0)
+
+
+async def _mechanic_fot_for_works_range(db: AsyncSession, s: date, e: date) -> float:
+    """ФОТ механиков по работам = SUM(ow.total × works_percentage / 100).
+
+    Считаем per-work: если у строки `order_works` есть mechanic_id — берём
+    его, иначе fallback на order.mechanic_id (как делает report_repository).
+    Берём `works_percentage` из его SalaryScheme; если схемы нет — 0.
+    Применяем процент к выручке по работам (не к total заказа): это и есть
+    то, что просит формула «ФОТ механика по этим работам».
+    """
+    eff_mech = func.coalesce(OrderWork.mechanic_id, Order.mechanic_id)
+    row = (
+        await db.execute(
+            select(
+                func.coalesce(
+                    func.sum(
+                        OrderWork.total
+                        * func.coalesce(SalaryScheme.works_percentage, 0)
+                        / 100
+                    ),
+                    0,
+                )
+            )
+            .join(Order, (OrderWork.order_id == Order.id) & (OrderWork.tenant_id == Order.tenant_id))
+            .outerjoin(
+                SalaryScheme,
+                (SalaryScheme.employee_id == eff_mech)
+                & (SalaryScheme.tenant_id == OrderWork.tenant_id),
+            )
+            .where(
+                Order.status.in_(["paid", "completed"]),
+                func.date(Order.created_at) >= s,
+                func.date(Order.created_at) <= e,
+            )
+        )
+    ).scalar()
+    return float(row or 0)
+
+
 async def _calc_post_load(
     db: AsyncSession, posts: list[AppointmentPost], target: date
 ) -> Optional[int]:
@@ -326,6 +432,26 @@ async def get_dashboard_stats(
     avg_check_prev, orders_count_prev = await _avg_check_range(db, prev_start, prev_end)
     median_check = await _median_check_range(db, start, end)
     median_check_prev = await _median_check_range(db, prev_start, prev_end)
+
+    # 2b. Margins — реальная прибыль (не оборот).
+    works_revenue = await _works_revenue_range(db, start, end)
+    parts_revenue = await _parts_revenue_range(db, start, end)
+    parts_cost = await _parts_cost_range(db, start, end)
+    mechanic_fot = await _mechanic_fot_for_works_range(db, start, end)
+    total_for_share = works_revenue + parts_revenue
+
+    works_margin_pct = (
+        round((works_revenue - mechanic_fot) / works_revenue * 100, 1)
+        if works_revenue > 0 else None
+    )
+    parts_margin_pct = (
+        round((parts_revenue - parts_cost) / parts_revenue * 100, 1)
+        if parts_revenue > 0 else None
+    )
+    works_share_pct = (
+        round(works_revenue / total_for_share * 100, 1)
+        if total_for_share > 0 else None
+    )
 
     # 3. WIP — сумма и количество in_progress заказов.
     wip_row = (
@@ -573,6 +699,15 @@ async def get_dashboard_stats(
         "wip": {
             "amount": round(wip_amount),
             "count": wip_count,
+        },
+        "margins": {
+            "works_margin_pct": works_margin_pct,
+            "parts_margin_pct": parts_margin_pct,
+            "works_share_pct": works_share_pct,
+            "works_revenue": round(works_revenue),
+            "parts_revenue": round(parts_revenue),
+            "mechanic_fot": round(mechanic_fot),
+            "parts_cost": round(parts_cost),
         },
         "post_load_today_pct": load_today,
         "post_load_tomorrow_pct": load_tomorrow,
