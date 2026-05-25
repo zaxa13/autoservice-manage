@@ -61,6 +61,15 @@ const METHOD_LABELS: Record<string, string> = {
   yookassa: 'ЮKassa' 
 };
 const FALLBACK_LABELS: Record<string, string> = { completed: 'Завершен', cancelled: 'Отменен' };
+
+// Локальное «yyyy-MM-dd HH:mm» без секунд. Берём локальные компоненты,
+// чтобы не было UTC-сдвига от toISOString.
+function fmtDateTime(iso: string): string {
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return '—';
+  const p = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
 const PAYMENT_STATUS_LABELS: Record<string, string> = { 
   succeeded: 'Проведён', 
   cancelled: 'Отменён', 
@@ -1018,9 +1027,9 @@ export default function Orders() {
                 <TableCell><Chip label={getStatusLabel(o.status)} color={STATUS_COLORS[o.status] || 'default'} size="small" sx={{ fontWeight: 700, borderRadius: 1.5 }} /></TableCell>
                 <TableCell align="right" sx={{ fontWeight: 800 }}>{formatCurrency(o.total_amount)}</TableCell>
                 <TableCell>
-                  <Tooltip title={o.created_at ? new Date(o.created_at).toLocaleString('ru-RU') : ''}>
-                    <Typography variant="caption" color="text.secondary">
-                      {o.created_at ? formatDistanceToNow(new Date(o.created_at), { addSuffix: true, locale: ru }) : '—'}
+                  <Tooltip title={o.created_at ? formatDistanceToNow(new Date(o.created_at), { addSuffix: true, locale: ru }) : ''}>
+                    <Typography variant="caption" color="text.secondary" sx={{ fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
+                      {o.created_at ? fmtDateTime(o.created_at) : '—'}
                     </Typography>
                   </Tooltip>
                 </TableCell>
