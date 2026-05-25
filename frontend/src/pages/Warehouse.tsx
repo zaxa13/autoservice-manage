@@ -271,7 +271,9 @@ export default function Warehouse() {
   useEffect(() => {
     if (receiptDialogOpen) {
       loadSuppliers()
-      setLinePartCache(receiptForm.lines.map(() => null))
+      // НЕ сбрасываем linePartCache здесь — это ломало edit-режим:
+      // openEditReceipt уже устанавливает кэш с данными part из накладной.
+      // «Создать накладную» сама делает setLinePartCache([]) до открытия.
     }
   }, [receiptDialogOpen])
 
