@@ -205,29 +205,31 @@ export default function Orders() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dateFrom, dateTo]);
 
-  // Открытие заказа по ссылке из другой вкладки (?open=orderId)
+  // Открытие заказа по URL-параметру ?open=orderId
+  // Используется как для глубоких ссылок из других вкладок, так и для
+  // сохранения состояния «детальный заказ открыт» при рефреше страницы.
   useEffect(() => {
     const openId = searchParams.get('open');
     if (!openId) return;
-    
+
     const id = parseInt(openId, 10);
     if (!id || isNaN(id)) return;
-    
-    // Если уже обрабатывали этот ID - пропускаем
+
+    // Если уже обрабатывали этот ID — пропускаем (не зацикливаемся).
     if (orderIdFromUrl === id) return;
 
     setOrderIdFromUrl(id);
 
-    // Очищаем параметр из URL
-    setSearchParams({}, { replace: true });
-
-    // Загружаем заказ напрямую по ID
+    // URL НЕ очищаем — он должен оставаться канонической ссылкой на заказ,
+    // чтобы рефреш страницы вернул пользователя сюда же.
     api.get(`/orders/${id}`)
       .then((r) => handleOpenDialog(r.data))
       .catch((err) => {
         console.error('Failed to load order:', err);
         setError('Не удалось загрузить заказ');
         setOrderIdFromUrl(null);
+        // Если заказ не нашли — сбросим URL, чтобы не пытаться открыть снова.
+        setSearchParams({}, { replace: true });
       });
   }, [searchParams, orderIdFromUrl]);
 
@@ -352,6 +354,11 @@ export default function Orders() {
     setEditingWorkIdx(null); setWorksSearchQuery(''); setWorksSearchCategory('');
     if (order) {
       setEditingOrderId(order.id);
+      // Фиксируем заказ в URL, чтобы рефреш страницы открыл его снова.
+      // Если уже стоит ?open=id — не пересоздаём (избегаем history-шума).
+      if (searchParams.get('open') !== String(order.id)) {
+        setSearchParams({ open: String(order.id) }, { replace: true });
+      }
       setSearchingVehicle(true);
       await fetchOrderDetails(order.id);
       await loadOrderPayments(order.id);
@@ -364,8 +371,17 @@ export default function Orders() {
       setPartRowInputs([]); setPartRowResults([]); setPartRowLoading([]);
       setLicensePlateSearch(''); setVinSearch('');
       setInlineMileage('');
+      // Новый заказ — URL без ?open=.
+      if (searchParams.get('open')) setSearchParams({}, { replace: true });
     }
     setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setEditingOrderId(null);
+    setOrderIdFromUrl(null);
+    if (searchParams.get('open')) setSearchParams({}, { replace: true });
   };
 
   const handleOpenEditVehicle = async () => {
@@ -514,7 +530,13 @@ export default function Orders() {
       };
       let id = editingOrderId;
       if (id) await api.put(`/orders/${id}`, payload);
-      else { const res = await api.post('/orders/', payload); id = res.data.id; setEditingOrderId(id); }
+      else {
+        const res = await api.post('/orders/', payload);
+        id = res.data.id;
+        setEditingOrderId(id);
+        // Только что созданный — фиксируем в URL, чтобы рефреш не выкинул на список.
+        if (id) setSearchParams({ open: String(id) }, { replace: true });
+      }
       if (complete && id) {
         const num = orders.find(o => o.id === id)?.number ?? `#${id}`;
         try {
@@ -587,7 +609,7 @@ export default function Orders() {
     const shouldRedirect = actionResult?.redirectOnOk === true && actionResult?.type === 'success';
     setActionResult(null);
     if (shouldRedirect) {
-      setOpenDialog(false);
+      handleCloseDialog();
       loadInitialData();
     }
   };
@@ -966,7 +988,7 @@ export default function Orders() {
       <Dialog open={openDialog} fullScreen PaperProps={{ sx: { bgcolor: '#F8FAFC' } }}>
         <AppBar sx={{ position: 'sticky', bgcolor: '#fff', color: 'text.primary', boxShadow: 'none', borderBottom: '1px solid #E2E8F0', zIndex: 1100 }}>
           <Toolbar>
-            <IconButton edge="start" onClick={() => setOpenDialog(false)} sx={{ mr: 2 }}><ArrowBackRounded /></IconButton>
+            <IconButton edge="start" onClick={handleCloseDialog} sx={{ mr: 2 }}><ArrowBackRounded /></IconButton>
             <Stack direction="row" alignItems="center" spacing={1} sx={{ flex: 1 }}>
               <Typography variant="h6" sx={{ fontWeight: 800 }}>
                 {editingOrderId
@@ -1237,8 +1259,11 @@ export default function Orders() {
               const cachedPart = orderPartCache[idx];
               const stockQty = cachedPart?.stock_quantity ?? 0;
               const needQty = Number(part.quantity) || 0;
-              const stockEmpty = partSelected && stockQty === 0;
-              const stockInsufficient = partSelected && !stockEmpty && needQty > stockQty;
+              // Для закрытых заказов проверка остатков не имеет смысла — запчасти
+              // уже списаны, заказ финализирован. Показываем только без стока-чипа.
+              const orderClosed = ['paid', 'completed', 'cancelled'].includes(formData.status ?? '');
+              const stockEmpty = !orderClosed && partSelected && stockQty === 0;
+              const stockInsufficient = !orderClosed && partSelected && !stockEmpty && needQty > stockQty;
               const rowInput = partRowInputs[idx] ?? '';
               const rowResults = partRowResults[idx] ?? [];
               const rowLoading = partRowLoading[idx] ?? false;
@@ -1253,7 +1278,7 @@ export default function Orders() {
                         <Grid item xs={2} lg={2.5}>
                           <Stack spacing={0.5}>
                             <TextField size="small" fullWidth label="Название" value={cachedPart?.name ?? ''} InputProps={{ readOnly: true }} sx={{ '& .MuiInputBase-input': { cursor: 'default' } }} />
-                            {stockEmpty ? (
+                            {orderClosed ? null : stockEmpty ? (
                               <Chip size="small" color="error" icon={<WarningAmberRounded />} label="Нет на складе" sx={{ fontSize: '0.65rem', height: 20 }} />
                             ) : stockInsufficient ? (
                               <Chip size="small" color="warning" icon={<WarningAmberRounded />} label={`Не хватает: нужно ${needQty}, есть ${stockQty} ${cachedPart?.unit ?? 'шт'}`} sx={{ fontSize: '0.65rem', height: 20 }} />
