@@ -16,6 +16,7 @@ import {
   EditRounded, RestartAltRounded, WarningAmberRounded, HistoryRounded, LocalAtmRounded,
   CreditCardRounded, AccountBalanceWalletRounded, ContactPhoneRounded, SpeedRounded,
   PhoneRounded, PersonRounded, SearchOffRounded, ContentCopyRounded, PrintRounded, DescriptionRounded,
+  ArrowUpwardRounded, ArrowDownwardRounded,
 } from '@mui/icons-material';
 import { formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';
@@ -80,6 +81,18 @@ export default function Orders() {
   const [searchQuery, setSearchQuery] = useState('');
   const [dateFrom, setDateFrom] = useState<string>('');
   const [dateTo, setDateTo] = useState<string>('');
+  // Сортировка списка ЗН. Дефолт — по номеру, новые сверху.
+  // Сохраняется в localStorage, чтобы при возврате не сбрасывалась.
+  type SortBy = 'number' | 'created_at' | 'completed_at';
+  type SortDir = 'asc' | 'desc';
+  const [sortBy, setSortBy] = useState<SortBy>(
+    (localStorage.getItem('orders.sortBy') as SortBy) || 'number'
+  );
+  const [sortDir, setSortDir] = useState<SortDir>(
+    (localStorage.getItem('orders.sortDir') as SortDir) || 'desc'
+  );
+  useEffect(() => { localStorage.setItem('orders.sortBy', sortBy); }, [sortBy]);
+  useEffect(() => { localStorage.setItem('orders.sortDir', sortDir); }, [sortDir]);
   const [deleteOrderConfirm, setDeleteOrderConfirm] = useState<Order | null>(null);
   const [deletingOrder, setDeletingOrder] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -804,8 +817,23 @@ export default function Orders() {
         o.mechanic?.full_name?.toLowerCase().includes(q)
       );
     }
-    return result;
-  }, [orders, selectedStatusFilter, searchQuery]);
+    // Сортировка применяется уже после фильтра.
+    const dir = sortDir === 'asc' ? 1 : -1;
+    const cmpStr = (a?: string | null, b?: string | null) => {
+      // Null/undefined гонит в конец вне зависимости от направления.
+      if (!a && !b) return 0;
+      if (!a) return 1;
+      if (!b) return -1;
+      return a.localeCompare(b, 'ru', { numeric: true }) * dir;
+    };
+    const sorted = [...result].sort((a, b) => {
+      if (sortBy === 'number') return cmpStr(a.number, b.number);
+      if (sortBy === 'created_at') return cmpStr(a.created_at, b.created_at);
+      // completed_at — закрытые сверху/снизу, незакрытые всегда в конец
+      return cmpStr(a.completed_at, b.completed_at);
+    });
+    return sorted;
+  }, [orders, selectedStatusFilter, searchQuery, sortBy, sortDir]);
 
   const handleDeleteOrder = async () => {
     if (!deleteOrderConfirm) return;
@@ -901,6 +929,35 @@ export default function Orders() {
               sx={{ fontWeight: 600, borderRadius: 2, cursor: 'pointer' }}
             />
           )}
+        </Box>
+
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: { md: 'auto' } }}>
+          <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.secondary', textTransform: 'uppercase' }}>
+            Сортировка
+          </Typography>
+          <FormControl size="small" sx={{ minWidth: 180 }}>
+            <Select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as SortBy)}
+              sx={{ fontWeight: 600, fontSize: 13 }}
+            >
+              <MenuItem value="number">По номеру</MenuItem>
+              <MenuItem value="created_at">По дате создания</MenuItem>
+              <MenuItem value="completed_at">По дате закрытия</MenuItem>
+            </Select>
+          </FormControl>
+          <Tooltip title={sortDir === 'desc' ? 'Новые / большие сверху' : 'Старые / меньшие сверху'}>
+            <IconButton
+              size="small"
+              onClick={() => setSortDir(d => d === 'asc' ? 'desc' : 'asc')}
+              sx={{
+                border: '1px solid', borderColor: 'divider', borderRadius: 1.5,
+                color: 'primary.main',
+              }}
+            >
+              {sortDir === 'desc' ? <ArrowDownwardRounded fontSize="small" /> : <ArrowUpwardRounded fontSize="small" />}
+            </IconButton>
+          </Tooltip>
         </Box>
       </Paper>
 
