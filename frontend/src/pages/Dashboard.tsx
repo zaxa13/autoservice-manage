@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import {
   Container, Typography, Box, Grid, Paper, Button, Stack,
-  alpha, Chip, CircularProgress, Tooltip, LinearProgress,
-  Table, TableBody, TableRow, TableCell, TableHead,
+  alpha, CircularProgress, Tooltip, LinearProgress,
   ToggleButton, ToggleButtonGroup, Dialog, DialogTitle,
   DialogContent, DialogActions, TextField, IconButton,
   Popover, Divider,
@@ -12,7 +11,7 @@ import {
   PeopleAltRounded, AddRounded, ArrowForwardRounded,
   TrendingUpRounded, TrendingDownRounded, TrendingFlatRounded,
   WarningAmberRounded, AccountBalanceWalletRounded,
-  EngineeringRounded, DirectionsCarRounded, PersonOffRounded,
+  EngineeringRounded, PersonOffRounded,
   AccessTimeRounded,
   EditRounded, CheckRounded,
   DateRangeRounded, ChevronLeftRounded, ChevronRightRounded,
@@ -123,12 +122,6 @@ interface DashboardStats {
 }
 
 // ── Formatters ────────────────────────────────────────────────────────────────
-
-function fmtMoney(v: number): string {
-  if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(1)} млн ₽`
-  if (v >= 1_000) return `${Math.round(v / 1_000)} тыс ₽`
-  return `${Math.round(v)} ₽`
-}
 
 function fmtMoneyFull(v: number): string {
   return new Intl.NumberFormat('ru-RU', {
@@ -707,61 +700,6 @@ function MarginsSection({
         </Grid>
       </Grid>
     </Box>
-  )
-}
-
-// ── LoadCard ───────────────────────────────────────────────────────────────────
-
-function LoadCard({ title, pct, subtitle, loading }: {
-  title: string; pct: number | null; subtitle: string; loading: boolean
-}) {
-  const color = pct === null ? '#94A3B8' : pct >= 70 ? '#10B981' : pct >= 45 ? '#F59E0B' : '#EF4444'
-  const label = pct === null ? null : pct >= 70 ? 'Хорошо' : pct >= 45 ? 'Средне' : 'Мало'
-  return (
-    <Paper sx={{
-      p: 2.5, height: '100%',
-      borderTop: `3px solid ${color}`,
-      borderRadius: '12px',
-      transition: 'box-shadow 0.2s, transform 0.15s',
-      '&:hover': { boxShadow: `0 8px 24px ${alpha(color, 0.12)}`, transform: 'translateY(-1px)' },
-    }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 2 }}>
-        <Box sx={{ p: 1.1, borderRadius: '10px', bgcolor: alpha(color, 0.1), color, display: 'flex', border: `1px solid ${alpha(color, 0.15)}` }}>
-          <DirectionsCarRounded />
-        </Box>
-        {label && (
-          <Chip label={label} size="small" sx={{ bgcolor: alpha(color, 0.12), color, fontSize: '0.65rem', height: 20, fontWeight: 700 }} />
-        )}
-      </Stack>
-      {loading ? (
-        <CircularProgress size={22} sx={{ mt: 0.5 }} />
-      ) : (
-        <>
-          <Typography variant="h5" sx={{ fontWeight: 800, color, lineHeight: 1.1 }}>
-            {pct === null ? '—' : `${pct}%`}
-          </Typography>
-          {pct !== null && (
-            <LinearProgress
-              variant="determinate"
-              value={pct}
-              sx={{
-                mt: 1, height: 4, borderRadius: 2,
-                bgcolor: alpha(color, 0.15),
-                '& .MuiLinearProgress-bar': { bgcolor: color, borderRadius: 2 },
-              }}
-            />
-          )}
-        </>
-      )}
-      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5, fontSize: 11 }}>
-        {subtitle}
-      </Typography>
-      <Typography variant="caption" color="text.secondary" sx={{
-        display: 'block', mt: 0.5, textTransform: 'uppercase', fontWeight: 700, fontSize: 10, letterSpacing: '0.05em',
-      }}>
-        {title}
-      </Typography>
-    </Paper>
   )
 }
 
@@ -1367,79 +1305,6 @@ function fmtMoneyShort(v: number): string {
   return `${Math.round(v)}`
 }
 
-// ── MechanicsTable ─────────────────────────────────────────────────────────────
-
-function MechanicsTable({ mechanics }: { mechanics: MechanicStat[] }) {
-  if (!mechanics.length) return (
-    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 120 }}>
-      <Typography color="text.secondary" variant="body2">Нет данных за период</Typography>
-    </Box>
-  )
-  const maxRev = mechanics[0]?.revenue || 1
-
-  return (
-    <Table size="small">
-      <TableHead>
-        <TableRow>
-          <TableCell sx={{ fontSize: 10, fontWeight: 700, color: 'text.secondary', py: 0.5, pl: 0 }}>Мастер</TableCell>
-          <TableCell align="center" sx={{ fontSize: 10, fontWeight: 700, color: 'text.secondary', py: 0.5 }}>Нарядов</TableCell>
-          <TableCell align="right" sx={{ fontSize: 10, fontWeight: 700, color: 'text.secondary', py: 0.5 }}>Ср. чек</TableCell>
-          <TableCell align="right" sx={{ fontSize: 10, fontWeight: 700, color: 'text.secondary', py: 0.5, pr: 0 }}>Выработка</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {mechanics.slice(0, 8).map((m, idx) => {
-          const barPct = (m.revenue / maxRev) * 100
-          const vsTeam = m.vs_team_pct
-          const vsColor = vsTeam === null ? 'text.secondary'
-            : vsTeam >= 5 ? '#10B981' : vsTeam <= -5 ? '#EF4444' : 'text.secondary'
-
-          return (
-            <TableRow key={m.id} sx={{ '&:last-child td': { border: 0 } }}>
-              <TableCell sx={{ py: 0.8, pl: 0, pr: 1 }}>
-                <Typography variant="body2" sx={{ fontWeight: idx === 0 ? 700 : 400, fontSize: 13 }}>
-                  {m.name.split(' ').slice(0, 2).join(' ')}
-                </Typography>
-                <LinearProgress
-                  variant="determinate"
-                  value={barPct}
-                  sx={{
-                    height: 2, borderRadius: 1, mt: 0.3,
-                    bgcolor: 'action.disabledBackground',
-                    '& .MuiLinearProgress-bar': {
-                      bgcolor: idx === 0 ? 'success.main' : 'primary.main',
-                      opacity: idx === 0 ? 1 : 0.6,
-                      borderRadius: 1,
-                    },
-                  }}
-                />
-              </TableCell>
-              <TableCell align="center" sx={{ py: 0.8 }}>
-                <Chip label={m.orders_count} size="small" sx={{ height: 18, fontSize: 11, fontWeight: 700 }} />
-              </TableCell>
-              <TableCell align="right" sx={{ py: 0.8 }}>
-                <Stack alignItems="flex-end">
-                  <Typography variant="body2" sx={{ fontSize: 12 }}>{fmtMoney(m.avg_check)}</Typography>
-                  {vsTeam !== null && (
-                    <Typography variant="caption" sx={{ fontSize: 10, color: vsColor, fontWeight: 700 }}>
-                      {vsTeam > 0 ? '+' : ''}{vsTeam}% vs команда
-                    </Typography>
-                  )}
-                </Stack>
-              </TableCell>
-              <TableCell align="right" sx={{ py: 0.8, pr: 0 }}>
-                <Typography variant="body2" sx={{ fontWeight: 700, fontSize: 13 }}>
-                  {fmtMoney(m.revenue)}
-                </Typography>
-              </TableCell>
-            </TableRow>
-          )
-        })}
-      </TableBody>
-    </Table>
-  )
-}
-
 // ── Plan Edit Dialog ───────────────────────────────────────────────────────────
 
 function PlanDialog({
@@ -1981,51 +1846,26 @@ export default function Dashboard() {
 
       {/* ── Analytics Row ─────────────────────────────────────── */}
       {s && !loading && (
-        <Grid container spacing={2.5} sx={{ mb: 3 }}>
+        <Stack spacing={2.5} sx={{ mb: 3 }}>
           {/* Revenue race chart — кумулятивная гонка периода */}
-          <Grid item xs={12} md={8}>
-            <Paper sx={{ p: 2.5, height: '100%' }}>
-              <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 2 }}>
-                Выручка · {s.period_label}
-                <Box component="span" sx={{ ml: 1, fontSize: 11, fontWeight: 600, color: 'text.disabled', textTransform: 'none' }}>
-                  гонка нарастающим итогом
-                </Box>
-              </Typography>
-              <RevenueRaceChart data={s.revenue_cumulative} />
-            </Paper>
-          </Grid>
+          <Paper sx={{ p: 2.5 }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 2 }}>
+              Выручка · {s.period_label}
+              <Box component="span" sx={{ ml: 1, fontSize: 11, fontWeight: 600, color: 'text.disabled', textTransform: 'none' }}>
+                гонка нарастающим итогом
+              </Box>
+            </Typography>
+            <RevenueRaceChart data={s.revenue_cumulative} />
+          </Paper>
 
-          {/* Post load + pipeline */}
-          <Grid item xs={12} md={4}>
-            <Stack spacing={2.5} sx={{ height: '100%' }}>
-              <Grid container spacing={1.5}>
-                <Grid item xs={6}>
-                  <LoadCard title="Загрузка сегодня" pct={s.post_load_today_pct} subtitle="слоты / посты" loading={false} />
-                </Grid>
-                <Grid item xs={6}>
-                  <LoadCard title="Загрузка завтра" pct={s.post_load_tomorrow_pct} subtitle="предварительная" loading={false} />
-                </Grid>
-              </Grid>
-
-              <Paper sx={{ p: 2.5, flex: 1 }}>
-                <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1.5 }}>
-                  Pipeline — 7 дней
-                </Typography>
-                <PipelineBlock data={s.pipeline_7d} />
-              </Paper>
-            </Stack>
-          </Grid>
-        </Grid>
-      )}
-
-      {/* ── Mechanics ─────────────────────────────────────────── */}
-      {s && !loading && (
-        <Paper sx={{ p: 2.5, mb: 3 }}>
-          <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 2 }}>
-            Выработка мастеров · {s.period_label}
-          </Typography>
-          <MechanicsTable mechanics={s.mechanics_stats} />
-        </Paper>
+          {/* Pipeline — 7 дней */}
+          <Paper sx={{ p: 2.5 }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1.5 }}>
+              Pipeline — 7 дней
+            </Typography>
+            <PipelineBlock data={s.pipeline_7d} />
+          </Paper>
+        </Stack>
       )}
 
       {/* ── Quick access ───────────────────────────────────────── */}
