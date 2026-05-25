@@ -52,6 +52,25 @@ interface ChartDay {
   is_future?: boolean
 }
 
+interface CumulativePoint {
+  label: string
+  date: string
+  current_cum: number | null
+  previous_cum: number
+  is_today: boolean
+  is_future: boolean
+}
+
+interface RevenueCumulative {
+  points: CumulativePoint[]
+  plan_total: number | null
+  forecast_eom: number | null
+  prev_period_label: string
+  today_current_cum: number | null
+  today_previous_cum: number | null
+  pace_vs_prev_pct: number | null
+}
+
 interface PipelineDay {
   date: string
   day_name: string
@@ -89,6 +108,7 @@ interface DashboardStats {
   post_load_tomorrow_pct: number | null
   pipeline_7d: PipelineDay[]
   revenue_chart: ChartDay[]
+  revenue_cumulative: RevenueCumulative
   mechanics_stats: MechanicStat[]
   alerts: {
     unpaid_orders_count: number
@@ -973,100 +993,250 @@ function PipelineBlock({ data }: { data: PipelineDay[] }) {
   )
 }
 
-// ── RevenueChart ───────────────────────────────────────────────────────────────
+// ── RevenueRaceChart ─────────────────────────────────────────────────────────
+//
+// Кумулятивная «гонка месяца»: текущий период vs предыдущий, обе линии идут
+// от 0 к концу периода. На фоне — пунктир плана и прогноз-конус до конца
+// месяца. Под графиком — короткая summary-строка: темп vs прошлый период,
+// прогноз и план. Все числа приходят с бекенда, фронт ничего не считает.
 
-function RevenueChart({ data, period }: { data: ChartDay[]; period: Period }) {
-  if (!data.length) return null
-  const maxVal = Math.max(...data.flatMap(d => [d.current, d.previous]), 1)
-  const CHART_H = 90
+const RACE_COLOR_CUR = '#10B981'
+const RACE_COLOR_PREV = '#94A3B8'
+const RACE_COLOR_PLAN = '#3B82F6'
 
-  const prevLabel = period === 'day' ? 'Вчера'
-    : period === 'week' ? 'Прошлая неделя'
-      : period === 'month' ? 'Прошлый месяц'
-        : period === 'year' ? 'Прошлый год'
-          : 'Прошлый квартал'
+function RevenueRaceChart({ data }: { data: RevenueCumulative }) {
+  const points = data.points
+  if (points.length < 2) {
+    return (
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 200 }}>
+        <Typography color="text.secondary" variant="body2">Недостаточно данных за период</Typography>
+      </Box>
+    )
+  }
+
+  // SVG-координатная сетка. ViewBox делаем 800×220, дальше CSS-масштаб
+  // подгонит под фактическую ширину карточки.
+  const W = 800
+  const H = 220
+  const PAD = { l: 56, r: 16, t: 14, b: 28 }
+  const innerW = W - PAD.l - PAD.r
+  const innerH = H - PAD.t - PAD.b
+
+  // Максимум по Y — учитываем план и прогноз тоже, чтобы линии не вылезли.
+  const maxY = Math.max(
+    data.plan_total ?? 0,
+    data.forecast_eom ?? 0,
+    ...points.map(p => p.current_cum ?? 0),
+    ...points.map(p => p.previous_cum),
+    1,
+  )
+
+  const x = (i: number) => PAD.l + (i / (points.length - 1)) * innerW
+  const y = (v: number) => PAD.t + innerH - (v / maxY) * innerH
+
+  // Полилинии. Current — только не-future точки.
+  const curPath = points
+    .map((p, i) => p.current_cum !== null ? `${i === 0 ? 'M' : 'L'} ${x(i)} ${y(p.current_cum)}` : null)
+    .filter(Boolean)
+    .join(' ')
+  const prevPath = points
+    .map((p, i) => `${i === 0 ? 'M' : 'L'} ${x(i)} ${y(p.previous_cum)}`)
+    .join(' ')
+
+  // Прогноз-линия — пунктир от точки «сегодня» до forecast_eom в правом краю.
+  const todayIdx = points.findIndex(p => p.is_today)
+  const forecastPath = (todayIdx >= 0 && data.forecast_eom !== null && points[todayIdx].current_cum !== null)
+    ? `M ${x(todayIdx)} ${y(points[todayIdx].current_cum!)} L ${x(points.length - 1)} ${y(data.forecast_eom)}`
+    : null
+
+  // Ticks: 0 / mid / max по Y; первый/середина/последний по X.
+  const yTicks = [0, maxY / 2, maxY]
+  const xTickIdx = [0, Math.floor((points.length - 1) / 2), points.length - 1]
+
+  const todayPt = todayIdx >= 0 ? points[todayIdx] : null
+  const lastPrev = points[points.length - 1]
+
+  // Цвет темпа: ≥ 0 — зелёный, < 0 — красный, ровно 0 — серый.
+  const pacePct = data.pace_vs_prev_pct
+  const paceColor = pacePct === null ? 'text.secondary'
+    : Math.abs(pacePct) < 0.5 ? 'text.secondary'
+      : pacePct > 0 ? 'success.main' : 'error.main'
 
   return (
     <Box>
-      <Stack direction="row" spacing={2} sx={{ mb: 1.5 }}>
+      {/* Легенда */}
+      <Stack direction="row" spacing={2} flexWrap="wrap" sx={{ mb: 1, rowGap: 0.5 }}>
         <Stack direction="row" alignItems="center" spacing={0.5}>
-          <Box sx={{ width: 10, height: 10, borderRadius: '2px', bgcolor: 'primary.main' }} />
+          <Box sx={{ width: 16, height: 2.5, bgcolor: RACE_COLOR_CUR, borderRadius: 1 }} />
           <Typography variant="caption" color="text.secondary">Текущий период</Typography>
         </Stack>
         <Stack direction="row" alignItems="center" spacing={0.5}>
-          <Box sx={{ width: 10, height: 10, borderRadius: '2px', bgcolor: 'action.disabledBackground' }} />
-          <Typography variant="caption" color="text.secondary">{prevLabel}</Typography>
+          <Box sx={{ width: 16, height: 2.5, bgcolor: RACE_COLOR_PREV, borderRadius: 1 }} />
+          <Typography variant="caption" color="text.secondary">{data.prev_period_label}</Typography>
         </Stack>
+        {data.forecast_eom !== null && (
+          <Stack direction="row" alignItems="center" spacing={0.5}>
+            <Box sx={{
+              width: 16, height: 0,
+              borderTop: `2px dashed ${RACE_COLOR_CUR}`,
+            }} />
+            <Typography variant="caption" color="text.secondary">Прогноз до конца периода</Typography>
+          </Stack>
+        )}
+        {data.plan_total !== null && (
+          <Stack direction="row" alignItems="center" spacing={0.5}>
+            <Box sx={{
+              width: 16, height: 0,
+              borderTop: `2px dashed ${RACE_COLOR_PLAN}`,
+            }} />
+            <Typography variant="caption" color="text.secondary">План: {fmtMoneyFull(data.plan_total)}</Typography>
+          </Stack>
+        )}
       </Stack>
 
-      <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: '4px', height: CHART_H + 24, overflowX: 'auto' }}>
-        {data.map((d) => {
-          const curH = Math.max((d.current / maxVal) * CHART_H, d.current > 0 ? 3 : 0)
-          const prevH = Math.max((d.previous / maxVal) * CHART_H, d.previous > 0 ? 3 : 0)
-          return (
-            <Tooltip
-              key={d.date}
-              title={
-                <Box sx={{ fontSize: 12 }}>
-                  <Box sx={{ fontWeight: 700 }}>{d.label}</Box>
-                  <Box>Факт: {fmtMoneyFull(d.current)}</Box>
-                  <Box sx={{ opacity: 0.75 }}>{prevLabel}: {fmtMoneyFull(d.previous)}</Box>
-                </Box>
-              }
-              arrow
+      {/* График */}
+      <Box sx={{ width: '100%', overflow: 'hidden' }}>
+        <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto', display: 'block' }} preserveAspectRatio="none">
+          {/* Y-сетка + подписи */}
+          {yTicks.map((v, i) => (
+            <g key={i}>
+              <line
+                x1={PAD.l} x2={W - PAD.r} y1={y(v)} y2={y(v)}
+                stroke="#E2E8F0" strokeWidth={1}
+                strokeDasharray={i === 0 ? '' : '3,3'}
+              />
+              <text x={PAD.l - 8} y={y(v) + 4} fontSize={11} fill="#94A3B8" textAnchor="end">
+                {fmtMoneyShort(v)}
+              </text>
+            </g>
+          ))}
+
+          {/* X-подписи */}
+          {xTickIdx.map((idx) => (
+            <text
+              key={idx}
+              x={x(idx)} y={H - PAD.b + 16}
+              fontSize={11} fill="#94A3B8" textAnchor="middle"
             >
-              <Box sx={{ flex: '0 0 auto', minWidth: 14, display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'default' }}>
-                <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: '2px', height: CHART_H }}>
-                  <Box sx={{
-                    width: 7, height: prevH || 2,
-                    bgcolor: 'action.disabledBackground',
-                    borderRadius: '2px 2px 0 0',
-                  }} />
-                  <Box sx={{
-                    width: 7, height: curH || 2,
-                    bgcolor: d.is_future ? alpha('#6366F1', 0.4) : d.is_today ? 'success.main' : 'primary.main',
-                    borderRadius: '2px 2px 0 0',
-                    opacity: d.is_future ? 0.5 : d.is_today ? 1 : 0.8,
-                    border: d.is_future ? '1px dashed' : 'none',
-                    borderColor: 'primary.main',
-                  }} />
-                </Box>
-                {data.length <= 14 && (
-                  <Typography variant="caption" sx={{
-                    fontSize: 8, mt: 0.5,
-                    color: d.is_today ? 'primary.main' : 'text.disabled',
-                    fontWeight: d.is_today ? 700 : 400,
-                    whiteSpace: 'nowrap',
-                  }}>
-                    {d.label.split(' ')[0]}
-                  </Typography>
-                )}
-              </Box>
-            </Tooltip>
-          )
-        })}
+              {points[idx].label.split(' ').slice(0, 2).join(' ')}
+            </text>
+          ))}
+
+          {/* План — горизонтальная пунктирная линия */}
+          {data.plan_total !== null && (
+            <line
+              x1={PAD.l} x2={W - PAD.r}
+              y1={y(data.plan_total)} y2={y(data.plan_total)}
+              stroke={RACE_COLOR_PLAN} strokeWidth={1.5}
+              strokeDasharray="5,4"
+            />
+          )}
+
+          {/* Линия прошлого периода */}
+          <path
+            d={prevPath}
+            fill="none" stroke={RACE_COLOR_PREV}
+            strokeWidth={2} strokeLinejoin="round" strokeLinecap="round"
+          />
+
+          {/* Линия текущего периода (до сегодня) */}
+          {curPath && (
+            <path
+              d={curPath}
+              fill="none" stroke={RACE_COLOR_CUR}
+              strokeWidth={2.5} strokeLinejoin="round" strokeLinecap="round"
+            />
+          )}
+
+          {/* Пунктир-прогноз от сегодня до forecast_eom */}
+          {forecastPath && (
+            <path
+              d={forecastPath}
+              fill="none" stroke={RACE_COLOR_CUR}
+              strokeWidth={2} strokeDasharray="5,4" strokeLinecap="round"
+              opacity={0.7}
+            />
+          )}
+
+          {/* Маркер «сегодня» */}
+          {todayPt && todayPt.current_cum !== null && (
+            <>
+              <line
+                x1={x(todayIdx)} x2={x(todayIdx)}
+                y1={PAD.t} y2={H - PAD.b}
+                stroke={RACE_COLOR_CUR} strokeWidth={1} opacity={0.25}
+                strokeDasharray="2,3"
+              />
+              <circle
+                cx={x(todayIdx)} cy={y(todayPt.current_cum)}
+                r={5} fill={RACE_COLOR_CUR} stroke="#fff" strokeWidth={2}
+              />
+            </>
+          )}
+        </svg>
       </Box>
 
-      <Box sx={{ mt: 1.5, pt: 1.5, borderTop: '1px solid', borderColor: 'divider', display: 'flex', gap: 3, flexWrap: 'wrap' }}>
+      {/* Summary под графиком */}
+      <Stack
+        direction="row" spacing={3}
+        sx={{ mt: 1.5, pt: 1.5, borderTop: '1px solid', borderColor: 'divider', flexWrap: 'wrap', rowGap: 1 }}
+      >
         <Box>
-          <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase', fontSize: 10, fontWeight: 600 }}>
-            Период (факт)
+          <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase', fontSize: 10, fontWeight: 700 }}>
+            На сегодня
           </Typography>
-          <Typography variant="h6" sx={{ fontWeight: 800, lineHeight: 1.1 }}>
-            {fmtMoneyFull(data.reduce((s, d) => s + d.current, 0))}
+          <Typography sx={{ fontWeight: 800, fontSize: 18, lineHeight: 1.1 }}>
+            {fmtMoneyFull(data.today_current_cum ?? 0)}
+          </Typography>
+          {data.today_previous_cum !== null && data.today_previous_cum > 0 && (
+            <Typography variant="caption" color="text.secondary">
+              {data.prev_period_label} на ту же дату: {fmtMoneyFull(data.today_previous_cum)}
+            </Typography>
+          )}
+        </Box>
+
+        {pacePct !== null && (
+          <Box>
+            <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase', fontSize: 10, fontWeight: 700 }}>
+              Темп
+            </Typography>
+            <Typography sx={{ fontWeight: 800, fontSize: 18, lineHeight: 1.1, color: paceColor }}>
+              {pacePct > 0 ? '+' : ''}{pacePct.toFixed(1)}%
+            </Typography>
+            <Typography variant="caption" color="text.secondary">vs {data.prev_period_label.toLowerCase()}</Typography>
+          </Box>
+        )}
+
+        {data.forecast_eom !== null && data.forecast_eom !== data.today_current_cum && (
+          <Box>
+            <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase', fontSize: 10, fontWeight: 700 }}>
+              Прогноз
+            </Typography>
+            <Typography sx={{ fontWeight: 800, fontSize: 18, lineHeight: 1.1, color: RACE_COLOR_CUR }}>
+              {fmtMoneyFull(data.forecast_eom)}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">при текущем темпе</Typography>
+          </Box>
+        )}
+
+        <Box sx={{ ml: 'auto', textAlign: 'right' }}>
+          <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase', fontSize: 10, fontWeight: 700 }}>
+            {data.prev_period_label} (итог)
+          </Typography>
+          <Typography sx={{ fontWeight: 800, fontSize: 18, lineHeight: 1.1, color: 'text.secondary' }}>
+            {fmtMoneyFull(lastPrev.previous_cum)}
           </Typography>
         </Box>
-        <Box>
-          <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase', fontSize: 10, fontWeight: 600 }}>
-            {prevLabel}
-          </Typography>
-          <Typography variant="h6" sx={{ fontWeight: 800, lineHeight: 1.1, color: 'text.secondary' }}>
-            {fmtMoneyFull(data.reduce((s, d) => s + d.previous, 0))}
-          </Typography>
-        </Box>
-      </Box>
+      </Stack>
     </Box>
   )
+}
+
+// Короткий формат денег для оси Y: «50 тыс ₽», «1.2 млн ₽».
+function fmtMoneyShort(v: number): string {
+  if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(1)} млн`
+  if (v >= 1_000) return `${Math.round(v / 1_000)} тыс`
+  return `${Math.round(v)}`
 }
 
 // ── MechanicsTable ─────────────────────────────────────────────────────────────
@@ -1684,13 +1854,16 @@ export default function Dashboard() {
       {/* ── Analytics Row ─────────────────────────────────────── */}
       {s && !loading && (
         <Grid container spacing={2.5} sx={{ mb: 3 }}>
-          {/* Revenue chart */}
+          {/* Revenue race chart — кумулятивная гонка периода */}
           <Grid item xs={12} md={8}>
             <Paper sx={{ p: 2.5, height: '100%' }}>
               <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 2 }}>
                 Выручка · {s.period_label}
+                <Box component="span" sx={{ ml: 1, fontSize: 11, fontWeight: 600, color: 'text.disabled', textTransform: 'none' }}>
+                  гонка нарастающим итогом
+                </Box>
               </Typography>
-              <RevenueChart data={s.revenue_chart} period={s.period} />
+              <RevenueRaceChart data={s.revenue_cumulative} />
             </Paper>
           </Grid>
 

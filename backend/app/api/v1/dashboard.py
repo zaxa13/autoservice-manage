@@ -678,6 +678,62 @@ async def get_dashboard_stats(
     nav_ref = (ref_date or today).isoformat()
     can_go_next = end < today
 
+    # ── Revenue cumulative race-chart ────────────────────────────────────────
+    # Накопительная гонка: текущий период vs предыдущий, обе кумулятивно от
+    # начала. Будущие дни текущего периода — null (рисуем пунктиром-прогнозом
+    # на фронте). Прошлый период всегда рисуется целиком.
+    _prev_period_labels = {
+        "day": "Вчера",
+        "week": "Прошлая неделя",
+        "month": "Прошлый месяц",
+        "quarter": "Прошлый квартал",
+        "year": "Прошлый год",
+        "custom": "Пред. период",
+    }
+    cum_current = 0.0
+    cum_previous = 0.0
+    cum_points = []
+    today_cur_cum: Optional[float] = None
+    today_prev_cum: Optional[float] = None
+    for pt in revenue_chart:
+        is_future_pt = bool(pt.get("is_future"))
+        if not is_future_pt:
+            cum_current += float(pt.get("current") or 0)
+        cum_previous += float(pt.get("previous") or 0)
+        cum_points.append({
+            "label": pt["label"],
+            "date": pt["date"],
+            "current_cum": round(cum_current) if not is_future_pt else None,
+            "previous_cum": round(cum_previous),
+            "is_today": bool(pt.get("is_today")),
+            "is_future": is_future_pt,
+        })
+        # Снимаем накоп на сегодня — для summary-строки под графиком.
+        if pt.get("is_today"):
+            today_cur_cum = round(cum_current)
+            today_prev_cum = round(cum_previous)
+    # Если today не помечен (например, период целиком в прошлом или будущем) —
+    # берём последнюю не-future точку.
+    if today_cur_cum is None and cum_points:
+        last_real = next(
+            (p for p in reversed(cum_points) if not p["is_future"]), None
+        )
+        if last_real is not None:
+            today_cur_cum = last_real["current_cum"]
+            today_prev_cum = last_real["previous_cum"]
+
+    pace_vs_prev_pct = _pct(today_cur_cum or 0, today_prev_cum or 0)
+
+    revenue_cumulative = {
+        "points": cum_points,
+        "plan_total": revenue_plan,
+        "forecast_eom": rev_forecast,
+        "prev_period_label": _prev_period_labels.get(period, "Пред. период"),
+        "today_current_cum": today_cur_cum,
+        "today_previous_cum": today_prev_cum,
+        "pace_vs_prev_pct": pace_vs_prev_pct,
+    }
+
     return {
         "period": period,
         "period_label": period_label,
@@ -723,6 +779,7 @@ async def get_dashboard_stats(
         "post_load_tomorrow_pct": load_tomorrow,
         "pipeline_7d": pipeline_7d,
         "revenue_chart": revenue_chart,
+        "revenue_cumulative": revenue_cumulative,
         "mechanics_stats": mechanics_stats,
         "alerts": {
             "unpaid_orders_count": len(unpaid_rows),

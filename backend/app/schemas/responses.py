@@ -180,6 +180,29 @@ class RevenueChartPoint(BaseModel):
     is_future: bool = Field(False, description="Является ли точка будущей датой")
 
 
+class RevenueCumulativePoint(BaseModel):
+    label: str = Field(..., description="Подпись точки на графике")
+    date: str = Field(..., description="Дата в формате ISO")
+    current_cum: Optional[float] = Field(
+        None,
+        description="Накопленная выручка текущего периода (null для будущих дней)",
+    )
+    previous_cum: float = Field(..., description="Накопленная выручка предыдущего периода")
+    is_today: bool = Field(False, description="Является ли точка сегодняшней")
+    is_future: bool = Field(False, description="Является ли точка будущей датой")
+
+
+class RevenueCumulative(BaseModel):
+    """Данные для «гонки месяца» — кумулятивная выручка current vs previous."""
+    points: List[RevenueCumulativePoint] = Field(..., description="Точки кумулятивных линий")
+    plan_total: Optional[float] = Field(None, description="План на период (горизонтальная линия)")
+    forecast_eom: Optional[float] = Field(None, description="Прогноз на конец периода при текущем темпе")
+    prev_period_label: str = Field(..., description="Подпись для линии предыдущего периода")
+    today_current_cum: Optional[float] = Field(None, description="Накопленная выручка на сегодня")
+    today_previous_cum: Optional[float] = Field(None, description="Накопленная выручка прошлого периода на ту же дату")
+    pace_vs_prev_pct: Optional[float] = Field(None, description="Темп текущего периода относительно прошлого на ту же дату, %")
+
+
 class MechanicStatItem(BaseModel):
     id: int = Field(..., description="ID сотрудника-механика")
     name: str = Field(..., description="ФИО механика")
@@ -204,7 +227,8 @@ class DashboardStatsResponse(BaseModel):
     post_load_today_pct: Optional[int] = Field(None, description="Загрузка постов сегодня (%)")
     post_load_tomorrow_pct: Optional[int] = Field(None, description="Загрузка постов завтра (%)")
     pipeline_7d: List[PipelineDayItem] = Field(..., description="Загрузка по дням на 7 дней вперёд")
-    revenue_chart: List[RevenueChartPoint] = Field(..., description="Данные графика выручки")
+    revenue_chart: List[RevenueChartPoint] = Field(..., description="Данные графика выручки (по дням)")
+    revenue_cumulative: RevenueCumulative = Field(..., description="Кумулятивная гонка: текущий vs прошлый + план + прогноз")
     mechanics_stats: List[MechanicStatItem] = Field(default_factory=list, description="Статистика по механикам")
     alerts: AlertsInfo = Field(..., description="Уведомления и проблемы")
 
