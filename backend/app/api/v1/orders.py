@@ -41,6 +41,7 @@ from app.models.order import Order, OrderPart, OrderStatus, OrderWork
 from app.models.payment import Payment, PaymentLog, PaymentMethod, PaymentStatus
 from app.models.vehicle import Vehicle
 from app.models.vehicle_brand import VehicleBrand, VehicleModel
+from app.models.warehouse import TransactionType, WarehouseItem, WarehouseTransaction
 from app.schemas.payment import Payment as PaymentSchema, PaymentCreate, PaymentLogEntry
 from app.schemas.order import (
     Order as OrderSchema,
@@ -278,6 +279,57 @@ def _resolve_employee_id(claims: TenantClaims) -> int:
             "JWT-токен не содержит employee_id — невозможно создать/завершить заказ"
         )
     return claims.employee_id
+
+
+async def _writeoff_order_parts(
+    db: AsyncSession, order: Order, claims: TenantClaims
+) -> None:
+    """Списать запчасти заказа со склада + создать OUTGOING-движения.
+
+    Idempotent: если по этому заказу уже есть OUTGOING-движения — выходим
+    (списание было раньше). Вызывается при первом переходе заказа в
+    paid/completed; повторные вызовы — безопасный no-op.
+
+    Если у запчасти в order_parts есть part_id, но в warehouse_items
+    карточки нет — пропускаем (продавали «с воздуха», склада не было).
+    Списываем даже в минус (продажа в долг) — admin потом разберётся
+    через корректировку.
+    """
+    already = (await db.execute(
+        select(func.count(WarehouseTransaction.id)).where(
+            WarehouseTransaction.order_id == order.id,
+            WarehouseTransaction.transaction_type == TransactionType.OUTGOING.value,
+        )
+    )).scalar_one()
+    if already > 0:
+        return
+
+    employee_id = _resolve_employee_id(claims)
+
+    parts = (await db.execute(
+        select(OrderPart).where(OrderPart.order_id == order.id)
+    )).scalars().all()
+
+    for op in parts:
+        if op.part_id is None:
+            continue
+        item = (await db.execute(
+            select(WarehouseItem).where(WarehouseItem.part_id == op.part_id)
+        )).scalar_one_or_none()
+        if item is None:
+            continue
+        qty = Decimal(str(op.quantity))
+        item.quantity = Decimal(str(item.quantity)) - qty
+        db.add(WarehouseTransaction(
+            tenant_id=claims.tenant_id,
+            warehouse_item_id=item.id,
+            transaction_type=TransactionType.OUTGOING.value,
+            quantity=qty,
+            price=op.price,
+            order_id=order.id,
+            employee_id=employee_id,
+        ))
+    await db.flush()
 
 
 # ---------------------------------------------------------------------------
@@ -552,6 +604,8 @@ async def complete_order(
     order.status = OrderStatus.COMPLETED.value
     order.completed_at = datetime.now(timezone.utc)
     await db.flush()
+    # Списать запчасти со склада (idempotent — если paid уже списал, no-op).
+    await _writeoff_order_parts(db, order, claims)
     await db.refresh(order)
     return await _serialize_order(db, order, claims, detail=False)
 
@@ -631,10 +685,18 @@ async def create_order_payment(
     # Обновляем paid_amount + статус заказа.
     new_paid = Decimal(str(order.paid_amount)) + Decimal(str(body.amount))
     order.paid_amount = new_paid
+    did_become_paid = False
     if new_paid >= Decimal(str(order.total_amount)) and order.status not in (
         OrderStatus.PAID.value, OrderStatus.COMPLETED.value, OrderStatus.CANCELLED.value
     ):
         order.status = OrderStatus.PAID.value
+        did_become_paid = True
+
+    if did_become_paid:
+        # При первом переходе заказа в paid — списываем запчасти со склада.
+        # Если потом будет /complete — там стоит idempotent-проверка, повторно
+        # не спишет.
+        await _writeoff_order_parts(db, order, claims)
 
     # Cashflow income — если есть активный счёт и системная категория «Оплата заказа».
     account = (await db.execute(
