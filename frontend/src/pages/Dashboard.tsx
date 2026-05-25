@@ -1006,6 +1006,10 @@ const RACE_COLOR_PLAN = '#3B82F6'
 
 function RevenueRaceChart({ data }: { data: RevenueCumulative }) {
   const points = data.points
+  const svgRef = useRef<SVGSVGElement>(null)
+  // Индекс точки под курсором; null = ничего не выбрано (показываем summary).
+  const [hoverIdx, setHoverIdx] = useState<number | null>(null)
+
   if (points.length < 2) {
     return (
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 200 }}>
@@ -1062,6 +1066,39 @@ function RevenueRaceChart({ data }: { data: RevenueCumulative }) {
     : Math.abs(pacePct) < 0.5 ? 'text.secondary'
       : pacePct > 0 ? 'success.main' : 'error.main'
 
+  // ── Hover-логика ───────────────────────────────────────────────────────
+  // Переводим pixel-координату курсора в индекс ближайшей точки данных.
+  const handlePointerMove = (e: React.PointerEvent<SVGRectElement>) => {
+    const svg = svgRef.current
+    if (!svg) return
+    const rect = svg.getBoundingClientRect()
+    // Из пикселей экрана → в координаты viewBox.
+    const vbX = ((e.clientX - rect.left) / rect.width) * W
+    const ratio = (vbX - PAD.l) / innerW
+    const clamped = Math.max(0, Math.min(1, ratio))
+    const idx = Math.round(clamped * (points.length - 1))
+    setHoverIdx(idx)
+  }
+  const handlePointerLeave = () => setHoverIdx(null)
+
+  const hoverPt = hoverIdx !== null ? points[hoverIdx] : null
+  // Tooltip-позиция в процентах от ширины/высоты обёртки — чтобы корректно
+  // позиционироваться внутри гибкого контейнера, а не в viewBox-координатах.
+  const tooltipLeftPct = hoverIdx !== null ? (x(hoverIdx) / W) * 100 : 0
+  // Anchor-Y берём по линии current (если есть данные) или previous.
+  const anchorY = hoverPt
+    ? (hoverPt.current_cum !== null ? y(hoverPt.current_cum) : y(hoverPt.previous_cum))
+    : 0
+  const tooltipTopPct = (anchorY / H) * 100
+  // Flip tooltip-а вправо если он близко к левому краю, иначе влево.
+  const flipRight = tooltipLeftPct < 30
+  const deltaAbs = hoverPt && hoverPt.current_cum !== null
+    ? hoverPt.current_cum - hoverPt.previous_cum
+    : null
+  const deltaPct = hoverPt && hoverPt.current_cum !== null && hoverPt.previous_cum > 0
+    ? ((hoverPt.current_cum - hoverPt.previous_cum) / hoverPt.previous_cum) * 100
+    : null
+
   return (
     <Box>
       {/* Легенда */}
@@ -1095,8 +1132,13 @@ function RevenueRaceChart({ data }: { data: RevenueCumulative }) {
       </Stack>
 
       {/* График */}
-      <Box sx={{ width: '100%', overflow: 'hidden' }}>
-        <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto', display: 'block' }} preserveAspectRatio="none">
+      <Box sx={{ width: '100%', overflow: 'visible', position: 'relative' }}>
+        <svg
+          ref={svgRef}
+          viewBox={`0 0 ${W} ${H}`}
+          style={{ width: '100%', height: 'auto', display: 'block' }}
+          preserveAspectRatio="none"
+        >
           {/* Y-сетка + подписи */}
           {yTicks.map((v, i) => (
             <g key={i}>
@@ -1158,8 +1200,8 @@ function RevenueRaceChart({ data }: { data: RevenueCumulative }) {
             />
           )}
 
-          {/* Маркер «сегодня» */}
-          {todayPt && todayPt.current_cum !== null && (
+          {/* Маркер «сегодня» (только если hover не активен) */}
+          {hoverIdx === null && todayPt && todayPt.current_cum !== null && (
             <>
               <line
                 x1={x(todayIdx)} x2={x(todayIdx)}
@@ -1173,7 +1215,93 @@ function RevenueRaceChart({ data }: { data: RevenueCumulative }) {
               />
             </>
           )}
+
+          {/* ── Hover-индикаторы ── */}
+          {hoverPt && (
+            <>
+              {/* Вертикальная серая линия — guide */}
+              <line
+                x1={x(hoverIdx!)} x2={x(hoverIdx!)}
+                y1={PAD.t} y2={H - PAD.b}
+                stroke="#94A3B8" strokeWidth={1} opacity={0.45}
+              />
+              {/* Кружок на серой линии (прошлый период) */}
+              <circle
+                cx={x(hoverIdx!)} cy={y(hoverPt.previous_cum)}
+                r={4.5} fill={RACE_COLOR_PREV} stroke="#fff" strokeWidth={2}
+              />
+              {/* Кружок на зелёной линии (текущий) — только если есть данные */}
+              {hoverPt.current_cum !== null && (
+                <circle
+                  cx={x(hoverIdx!)} cy={y(hoverPt.current_cum)}
+                  r={5} fill={RACE_COLOR_CUR} stroke="#fff" strokeWidth={2}
+                />
+              )}
+            </>
+          )}
+
+          {/* Невидимая hit-area для отлова мыши — последней, чтобы быть сверху */}
+          <rect
+            x={PAD.l} y={PAD.t}
+            width={innerW} height={innerH}
+            fill="transparent"
+            style={{ cursor: 'crosshair' }}
+            onPointerMove={handlePointerMove}
+            onPointerLeave={handlePointerLeave}
+          />
         </svg>
+
+        {/* Tooltip-оверлей: HTML поверх SVG. Позиционируется через % внутри
+            обёртки-контейнера, поэтому работает на любой ширине. */}
+        {hoverPt && (
+          <Box
+            sx={{
+              position: 'absolute',
+              left: `${tooltipLeftPct}%`,
+              top: `${tooltipTopPct}%`,
+              transform: flipRight
+                ? 'translate(12px, -50%)'
+                : 'translate(calc(-100% - 12px), -50%)',
+              pointerEvents: 'none',
+              bgcolor: '#0F172A',
+              color: '#fff',
+              borderRadius: '8px',
+              px: 1.5, py: 1,
+              fontSize: 12,
+              boxShadow: '0 8px 24px rgba(15,23,42,0.25)',
+              whiteSpace: 'nowrap',
+              zIndex: 5,
+            }}
+          >
+            <Box sx={{ fontWeight: 700, mb: 0.5 }}>{hoverPt.label}</Box>
+            <Stack direction="row" alignItems="center" spacing={0.75} sx={{ mb: 0.25 }}>
+              <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: RACE_COLOR_CUR }} />
+              <Box>Текущий: <b>{hoverPt.current_cum !== null ? fmtMoneyFull(hoverPt.current_cum) : '—'}</b></Box>
+            </Stack>
+            <Stack direction="row" alignItems="center" spacing={0.75}>
+              <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: RACE_COLOR_PREV }} />
+              <Box>{data.prev_period_label}: <b>{fmtMoneyFull(hoverPt.previous_cum)}</b></Box>
+            </Stack>
+            {deltaAbs !== null && (
+              <Box sx={{
+                mt: 0.5, pt: 0.5,
+                borderTop: '1px solid rgba(255,255,255,0.15)',
+                color: deltaAbs > 0 ? '#34D399' : deltaAbs < 0 ? '#F87171' : '#CBD5E1',
+                fontSize: 11, fontWeight: 700,
+              }}>
+                {deltaAbs > 0 ? '+' : ''}{fmtMoneyFull(deltaAbs)}
+                {deltaPct !== null && (
+                  <Box component="span" sx={{ ml: 0.75, opacity: 0.85 }}>
+                    ({deltaPct > 0 ? '+' : ''}{deltaPct.toFixed(1)}%)
+                  </Box>
+                )}
+              </Box>
+            )}
+            {hoverPt.is_future && (
+              <Box sx={{ mt: 0.5, fontSize: 10, opacity: 0.7 }}>прогноз / ещё впереди</Box>
+            )}
+          </Box>
+        )}
       </Box>
 
       {/* Summary под графиком */}
