@@ -212,12 +212,22 @@ async def _serialize_order_parts(
     part_ids = {p.part_id for p in rows if p.part_id}
     pmap = {}
     if part_ids:
+        # Подтягиваем актуальный остаток из warehouse_items одним запросом,
+        # чтобы фронт мог корректно показывать «На складе: N» / «Не хватает»
+        # вместо вечного 0 (которое выглядело как «нет на складе»).
+        stock_map = dict(
+            (await db.execute(
+                select(WarehouseItem.part_id, WarehouseItem.quantity)
+                .where(WarehouseItem.part_id.in_(part_ids))
+            )).all()
+        )
         pmap = {
             p.id: {
                 "id": p.id, "name": p.name, "part_number": p.part_number,
                 "brand": p.brand, "price": p.price,
                 "purchase_price_last": p.purchase_price_last,
-                "unit": p.unit, "category": p.category, "stock_quantity": 0,
+                "unit": p.unit, "category": p.category,
+                "stock_quantity": float(stock_map.get(p.id, 0) or 0),
             }
             for p in (await db.execute(select(PartModel).where(PartModel.id.in_(part_ids)))).scalars()
         }
