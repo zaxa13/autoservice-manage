@@ -837,100 +837,6 @@ function AlertCard({ color, icon, label, onClick, children }: {
   )
 }
 
-// ── Pipeline ───────────────────────────────────────────────────────────────────
-
-function PipelineBlock({ data }: { data: PipelineDay[] }) {
-  const maxAppts = Math.max(...data.map(d => d.appointments_count), 1)
-  const BAR_H = 52
-
-  return (
-    <Box>
-      <Box sx={{ display: 'flex', gap: '6px', alignItems: 'flex-end', height: BAR_H + 44 }}>
-        {data.map((d) => {
-          const barH = Math.max((d.appointments_count / maxAppts) * BAR_H, d.appointments_count > 0 ? 4 : 0)
-          const loadColor = d.load_pct === null ? '#CBD5E1'
-            : d.load_pct >= 70 ? '#10B981'
-              : d.load_pct >= 45 ? '#F59E0B'
-                : '#EF4444'
-
-          return (
-            <Tooltip
-              key={d.date}
-              title={
-                <Box sx={{ fontSize: 12 }}>
-                  <Box sx={{ fontWeight: 700 }}>{d.day_label}</Box>
-                  <Box>Записей: {d.appointments_count}</Box>
-                  <Box sx={{ opacity: 0.8 }}>
-                    Загрузка: {d.load_pct !== null ? `${d.load_pct}%` : '—'}
-                  </Box>
-                </Box>
-              }
-              arrow
-            >
-              <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'default' }}>
-                {/* Load badge */}
-                <Box sx={{
-                  fontSize: 9, fontWeight: 700, color: loadColor,
-                  mb: 0.5, lineHeight: 1,
-                }}>
-                  {d.load_pct !== null ? `${d.load_pct}%` : '—'}
-                </Box>
-
-                {/* Bar */}
-                <Box sx={{ height: BAR_H, display: 'flex', alignItems: 'flex-end' }}>
-                  <Box sx={{
-                    width: '100%', minWidth: 16, height: barH || 2,
-                    bgcolor: d.is_today ? loadColor : alpha(loadColor, 0.5),
-                    borderRadius: '3px 3px 0 0',
-                    border: d.is_today ? `1.5px solid ${loadColor}` : 'none',
-                    transition: 'height 0.3s ease',
-                  }} />
-                </Box>
-
-                {/* Appointments count */}
-                <Typography variant="caption" sx={{
-                  fontSize: 10, mt: 0.3,
-                  fontWeight: d.is_today ? 800 : 400,
-                  color: d.is_today ? 'text.primary' : 'text.secondary',
-                }}>
-                  {d.appointments_count || '—'}
-                </Typography>
-
-                {/* Day name */}
-                <Typography variant="caption" sx={{
-                  fontSize: 9, mt: 0.2,
-                  color: d.is_today ? 'primary.main' : 'text.disabled',
-                  fontWeight: d.is_today ? 700 : 400,
-                }}>
-                  {d.day_name}
-                </Typography>
-
-                {d.is_today && (
-                  <Box sx={{ width: 4, height: 4, borderRadius: '50%', bgcolor: 'primary.main', mt: 0.3 }} />
-                )}
-              </Box>
-            </Tooltip>
-          )
-        })}
-      </Box>
-
-      {/* Legend */}
-      <Stack direction="row" spacing={2} sx={{ mt: 1.5, flexWrap: 'wrap', gap: 1 }}>
-        {[
-          { color: '#10B981', label: '≥70% — норма' },
-          { color: '#F59E0B', label: '45–69% — средне' },
-          { color: '#EF4444', label: '<45% — мало' },
-        ].map(l => (
-          <Stack key={l.label} direction="row" alignItems="center" spacing={0.5}>
-            <Box sx={{ width: 8, height: 8, borderRadius: 1, bgcolor: l.color }} />
-            <Typography variant="caption" color="text.secondary" sx={{ fontSize: 10 }}>{l.label}</Typography>
-          </Stack>
-        ))}
-      </Stack>
-    </Box>
-  )
-}
-
 // ── RevenueRaceChart ─────────────────────────────────────────────────────────
 //
 // Кумулятивная «гонка месяца»: текущий период vs предыдущий, обе линии идут
@@ -1844,28 +1750,17 @@ export default function Dashboard() {
       {/* ── Alerts ────────────────────────────────────────────── */}
       {s && !loading && <AlertsBlock alerts={s.alerts} onNavigate={navigate} />}
 
-      {/* ── Analytics Row ─────────────────────────────────────── */}
+      {/* ── Revenue race chart — кумулятивная гонка периода ───── */}
       {s && !loading && (
-        <Stack spacing={2.5} sx={{ mb: 3 }}>
-          {/* Revenue race chart — кумулятивная гонка периода */}
-          <Paper sx={{ p: 2.5 }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 2 }}>
-              Выручка · {s.period_label}
-              <Box component="span" sx={{ ml: 1, fontSize: 11, fontWeight: 600, color: 'text.disabled', textTransform: 'none' }}>
-                гонка нарастающим итогом
-              </Box>
-            </Typography>
-            <RevenueRaceChart data={s.revenue_cumulative} />
-          </Paper>
-
-          {/* Pipeline — 7 дней */}
-          <Paper sx={{ p: 2.5 }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1.5 }}>
-              Pipeline — 7 дней
-            </Typography>
-            <PipelineBlock data={s.pipeline_7d} />
-          </Paper>
-        </Stack>
+        <Paper sx={{ p: 2.5, mb: 3 }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 2 }}>
+            Выручка · {s.period_label}
+            <Box component="span" sx={{ ml: 1, fontSize: 11, fontWeight: 600, color: 'text.disabled', textTransform: 'none' }}>
+              гонка нарастающим итогом
+            </Box>
+          </Typography>
+          <RevenueRaceChart data={s.revenue_cumulative} />
+        </Paper>
       )}
 
       {/* ── Quick access ───────────────────────────────────────── */}
