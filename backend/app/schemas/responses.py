@@ -93,6 +93,13 @@ class RevenueMetric(BaseModel):
     plan_pct: Optional[float] = Field(None, description="Процент выполнения плана")
 
 
+class CompletedRevenueMetric(BaseModel):
+    """Выручка по начислению — сумма total_amount закрытых ЗН за период."""
+    value: float = Field(..., description="Выручка по закрытым ЗН за период")
+    prev_value: float = Field(..., description="Выручка по закрытым ЗН за прошлый период")
+    change_pct: Optional[float] = Field(None, description="Изменение в процентах")
+
+
 class AvgCheckMetric(BaseModel):
     value: float = Field(..., description="Средний чек за текущий период")
     prev_value: float = Field(..., description="Средний чек за предыдущий период")
@@ -218,7 +225,8 @@ class DashboardStatsResponse(BaseModel):
     period_label: str = Field(..., description="Человекочитаемое название периода")
     nav_ref: str = Field(..., description="Опорная дата навигации (ISO)")
     can_go_next: bool = Field(..., description="Можно ли перейти к следующему периоду")
-    revenue: RevenueMetric = Field(..., description="Метрика выручки")
+    revenue: RevenueMetric = Field(..., description="Поступления — сумма успешных платежей за период")
+    completed_revenue: CompletedRevenueMetric = Field(..., description="Выручка — сумма закрытых ЗН за период")
     avg_check: AvgCheckMetric = Field(..., description="Метрика среднего чека")
     median_check: MedianCheckMetric = Field(..., description="Метрика медианного чека")
     orders_count: OrdersCountMetric = Field(..., description="Метрика количества заказов")

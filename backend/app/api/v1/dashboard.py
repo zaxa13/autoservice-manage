@@ -169,6 +169,21 @@ async def _revenue_range(db: AsyncSession, start: date, end: date) -> float:
     return float(result.scalar() or 0)
 
 
+async def _completed_revenue_range(db: AsyncSession, start: date, end: date) -> float:
+    """Выручка по начислению: сумма total_amount всех ЗН со статусом completed,
+    закрытых в периоде. Не зависит от оплат."""
+    result = await db.execute(
+        select(func.coalesce(func.sum(Order.total_amount), 0))
+        .where(
+            Order.status == "completed",
+            Order.completed_at.isnot(None),
+            func.date(Order.completed_at) >= start,
+            func.date(Order.completed_at) <= end,
+        )
+    )
+    return float(result.scalar() or 0)
+
+
 async def _revenue_by_day(db: AsyncSession, start: date, end: date) -> dict[str, float]:
     rows = (
         await db.execute(
@@ -412,6 +427,8 @@ async def get_dashboard_stats(
     # 1. Revenue.
     rev_current = await _revenue_range(db, start, end)
     rev_prev = await _revenue_range(db, prev_start, prev_end)
+    completed_rev_current = await _completed_revenue_range(db, start, end)
+    completed_rev_prev = await _completed_revenue_range(db, prev_start, prev_end)
     plan_key = f"revenue_plan_{start.year}_{start.month:02d}"
     setting_row = await db.get(Setting, (claims.tenant_id, plan_key))
     revenue_plan = float(setting_row.value) if setting_row and setting_row.value else None
@@ -746,6 +763,11 @@ async def get_dashboard_stats(
             "forecast": rev_forecast,
             "plan": revenue_plan,
             "plan_pct": plan_pct,
+        },
+        "completed_revenue": {
+            "value": round(completed_rev_current),
+            "prev_value": round(completed_rev_prev),
+            "change_pct": _pct(completed_rev_current, completed_rev_prev),
         },
         "avg_check": {
             "value": round(avg_check),

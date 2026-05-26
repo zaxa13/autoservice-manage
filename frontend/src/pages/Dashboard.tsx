@@ -90,6 +90,7 @@ interface DashboardStats {
     plan: number | null
     plan_pct: number | null
   }
+  completed_revenue: { value: number; prev_value: number; change_pct: number | null }
   avg_check: { value: number; prev_value: number; change_pct: number | null }
   median_check: { value: number; prev_value: number; change_pct: number | null }
   orders_count: { value: number; prev_value: number; change_pct: number | null }
@@ -180,6 +181,7 @@ const FORECAST_TITLE: Record<Period, string> = {
 }
 
 const COLOR_FACT = '#10B981'
+const COLOR_COMPLETED = '#0EA5E9'
 const COLOR_FORECAST = '#3B82F6'
 
 function planAccent(pct: number | null): string {
@@ -356,9 +358,10 @@ function PlanProgressBar({ value, plan, pct }: { value: number; plan: number; pc
 }
 
 function MoneyAndPlanSection({
-  revenue, period, loading, isAdmin, onEditPlan,
+  revenue, completedRevenue, period, loading, isAdmin, onEditPlan,
 }: {
   revenue: DashboardStats['revenue']
+  completedRevenue: DashboardStats['completed_revenue']
   period: Period
   loading: boolean
   isAdmin: boolean
@@ -376,6 +379,17 @@ function MoneyAndPlanSection({
         {prevLabel}: <Box component="span" sx={{ fontWeight: 600, color: 'text.primary' }}>{fmtMoneyFull(revenue.prev_value)}</Box>
       </Typography>
       <TrendBadge pct={revenue.change_pct} />
+    </Stack>
+  ) : (
+    <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>нет данных за пред. период</Typography>
+  )
+
+  const completedSub = completedRevenue.prev_value > 0 ? (
+    <Stack direction="row" spacing={0.75} alignItems="center" sx={{ flexWrap: 'wrap' }}>
+      <Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
+        {prevLabel}: <Box component="span" sx={{ fontWeight: 600, color: 'text.primary' }}>{fmtMoneyFull(completedRevenue.prev_value)}</Box>
+      </Typography>
+      <TrendBadge pct={completedRevenue.change_pct} />
     </Stack>
   ) : (
     <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>нет данных за пред. период</Typography>
@@ -432,16 +446,25 @@ function MoneyAndPlanSection({
       </Typography>
 
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid item xs={12} sm={6} md={3}>
           <MetricCard
-            label="Выручка (факт)"
+            label="Поступления"
             value={`${fmtMoneyFull(revenue.value)}`}
             accent={COLOR_FACT}
             sub={factSub}
             loading={loading}
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid item xs={12} sm={6} md={3}>
+          <MetricCard
+            label="Выручка"
+            value={`${fmtMoneyFull(completedRevenue.value)}`}
+            accent={COLOR_COMPLETED}
+            sub={completedSub}
+            loading={loading}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
           <MetricCard
             label={forecastTitle}
             value={revenue.forecast === null ? '—' : fmtMoneyFull(revenue.forecast)}
@@ -450,7 +473,7 @@ function MoneyAndPlanSection({
             loading={loading}
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid item xs={12} sm={6} md={3}>
           {revenue.plan
             ? (
               <MetricCard
@@ -1722,6 +1745,7 @@ export default function Dashboard() {
       {/* ── Деньги и план ───────────────────────────────────── */}
       <MoneyAndPlanSection
         revenue={s?.revenue ?? { value: 0, prev_value: 0, change_pct: null, forecast: null, plan: null, plan_pct: null }}
+        completedRevenue={s?.completed_revenue ?? { value: 0, prev_value: 0, change_pct: null }}
         period={period}
         loading={loading}
         isAdmin={isAdmin}
