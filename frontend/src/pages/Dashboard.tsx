@@ -193,10 +193,9 @@ function planAccent(pct: number | null): string {
 }
 
 function MetricCard({
-  label, description, info, value, accent, sub, loading, action,
+  label, info, value, accent, sub, loading, action,
 }: {
   label: string
-  description?: string
   info?: string
   value: React.ReactNode
   accent: string
@@ -215,7 +214,7 @@ function MetricCard({
         transform: 'translateY(-1px)',
       },
     }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: description ? 0.5 : 1.25 }}>
+      <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 1.25 }}>
         <Stack direction="row" alignItems="center" spacing={0.5}>
           <Typography sx={{
             fontSize: 12, fontWeight: 600,
@@ -237,14 +236,6 @@ function MetricCard({
         </Stack>
         {action}
       </Stack>
-      {description && (
-        <Typography sx={{
-          fontSize: 11, color: 'text.disabled',
-          lineHeight: 1.35, mb: 1,
-        }}>
-          {description}
-        </Typography>
-      )}
       {loading ? (
         <CircularProgress size={20} sx={{ color: accent }} />
       ) : (
@@ -578,7 +569,7 @@ function ChecksAndOrdersSection({
         <Grid item xs={12} sm={6} md={3}>
           <MetricCard
             label="Медианный чек"
-            description="это серединное значение всех заказ-нарядов, без перекоса крупными"
+            info="Серединное значение всех заказ-нарядов: половина чеков выше, половина ниже. В отличие от среднего, не перекашивается одним крупным заказом."
             value={fmtMoneyFull(medianCheck.value)}
             accent={COLOR_MEDIAN}
             sub={medianHint}
@@ -669,8 +660,7 @@ function MarginsSection({
         <Grid item xs={12} sm={6} md={4}>
           <MetricCard
             label="Маржа по работам"
-            info="не считая окладов ваших автомехаников"
-            description="доля от выручки по работам после бонусов механикам"
+            info="Доля от выручки по работам после бонусов механикам. Оклады в расчёт не входят."
             value={fmtPct(margins.works_margin_pct)}
             accent={worksAccent}
             sub={
@@ -691,7 +681,7 @@ function MarginsSection({
         <Grid item xs={12} sm={6} md={4}>
           <MetricCard
             label="Маржа по запчастям"
-            description="доля от выручки по запчастям после закупки"
+            info="Доля от выручки по запчастям после вычета закупочной стоимости."
             value={fmtPct(margins.parts_margin_pct)}
             accent={partsAccent}
             sub={
