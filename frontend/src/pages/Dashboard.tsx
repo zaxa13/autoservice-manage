@@ -458,6 +458,7 @@ function MoneyAndPlanSection({
         <Grid item xs={12} sm={6} md={3}>
           <MetricCard
             label="Выручка"
+            info={'Выручка по начислению: сумма всех ЗН со статусом «Завершён», закрытых в периоде. Не зависит от оплат.'}
             value={`${fmtMoneyFull(completedRevenue.value)}`}
             accent={COLOR_COMPLETED}
             sub={completedSub}
