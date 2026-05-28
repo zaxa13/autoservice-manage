@@ -162,6 +162,12 @@ class OrderDetail(Order):
     mechanic: Optional[Employee] = Field(None, description="Данные механика")
     order_works: List[OrderWork] = Field(default_factory=list, description="Список работ")
     order_parts: List[OrderPart] = Field(default_factory=list, description="Список запчастей")
+
+
+class OrderListResponse(BaseModel):
+    """Пагинированный ответ для списка заказов."""
+    items: List[Order] = Field(..., description="Заказы текущей страницы")
+    total: int = Field(..., description="Общее количество заказов с учётом фильтров")
     recommendations: Optional[str] = Field(None, description="Рекомендации по обслуживанию")
     comments: Optional[str] = Field(None, description="Комментарии к заказу")
 

@@ -47,6 +47,7 @@ from app.schemas.order import (
     Order as OrderSchema,
     OrderCreate,
     OrderDetail,
+    OrderListResponse,
     OrderUpdate,
 )
 from app.schemas.responses import ErrorResponse, LabelValueItem
@@ -457,29 +458,51 @@ def list_statuses() -> list[LabelValueItem]:
 # ---------------------------------------------------------------------------
 # CRUD
 # ---------------------------------------------------------------------------
-@router.get("/", response_model=list[OrderSchema], responses=_auth)
+_SORT_COLUMNS = {
+    "number": Order.number,
+    "created_at": Order.created_at,
+    "completed_at": Order.completed_at,
+}
+
+
+@router.get("/", response_model=OrderListResponse, responses=_auth)
 async def list_orders(
     skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=500),
+    limit: int = Query(20, ge=1, le=500),
     status_filter: Optional[OrderStatus] = Query(None, alias="status"),
     date_from: Optional[date] = Query(None, description="Заказы с created_at ≥ этой даты"),
     date_to: Optional[date] = Query(None, description="Заказы с created_at ≤ этой даты"),
+    sort_by: str = Query("created_at", description="Поле сортировки: number / created_at / completed_at"),
+    sort_dir: str = Query("desc", description="Направление: asc / desc"),
     db: AsyncSession = Depends(get_tenant_db),
     claims: TenantClaims = Depends(get_current_claims),
 ):
-    stmt = select(Order).order_by(Order.created_at.desc())
+    base = select(Order)
     if status_filter:
-        stmt = stmt.where(Order.status == status_filter.value)
+        base = base.where(Order.status == status_filter.value)
     if date_from is not None:
-        stmt = stmt.where(func.date(Order.created_at) >= date_from)
+        base = base.where(func.date(Order.created_at) >= date_from)
     if date_to is not None:
-        stmt = stmt.where(func.date(Order.created_at) <= date_to)
+        base = base.where(func.date(Order.created_at) <= date_to)
     if "mechanic" in claims.roles and not (set(claims.roles) & {"admin", "manager"}):
         if claims.employee_id is not None:
-            stmt = stmt.where(Order.mechanic_id == claims.employee_id)
-    stmt = stmt.offset(skip).limit(limit)
-    rows = list((await db.execute(stmt)).scalars().all())
-    return await _serialize_orders_bulk(db, rows, claims)
+            base = base.where(Order.mechanic_id == claims.employee_id)
+
+    total = await db.scalar(
+        select(func.count()).select_from(base.subquery())
+    )
+
+    sort_col = _SORT_COLUMNS.get(sort_by, Order.created_at)
+    order_clause = sort_col.asc() if sort_dir == "asc" else sort_col.desc()
+    # Стабильный тай-брейкер: id desc — для одинаковых ключей сортировки.
+    page_stmt = (
+        base.order_by(order_clause, Order.id.desc())
+        .offset(skip)
+        .limit(limit)
+    )
+    rows = list((await db.execute(page_stmt)).scalars().all())
+    items = await _serialize_orders_bulk(db, rows, claims)
+    return {"items": items, "total": int(total or 0)}
 
 
 @router.get(

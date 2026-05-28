@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
   Container, Typography, Box, Button, Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, Paper, Dialog, TextField, IconButton, CircularProgress,
+  TableHead, TableRow, TablePagination, Paper, Dialog, TextField, IconButton, CircularProgress,
   Alert, Stack, alpha, AppBar, Toolbar, InputAdornment, Checkbox,
   FormControlLabel, Avatar, Tabs, Tab, Grid, Collapse, MenuItem, FormControl,
   InputLabel, Select, Chip, Tooltip, DialogTitle, DialogContent, DialogContentText, DialogActions,
@@ -102,6 +102,10 @@ export default function Orders() {
   );
   useEffect(() => { localStorage.setItem('orders.sortBy', sortBy); }, [sortBy]);
   useEffect(() => { localStorage.setItem('orders.sortDir', sortDir); }, [sortDir]);
+  // Пагинация. Дефолт — 20 заказов на страницу.
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(20);
+  const [totalOrders, setTotalOrders] = useState(0);
   const [deleteOrderConfirm, setDeleteOrderConfirm] = useState<Order | null>(null);
   const [deletingOrder, setDeletingOrder] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -196,19 +200,27 @@ export default function Orders() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [orderIdFromUrl, setOrderIdFromUrl] = useState<number | null>(null);
 
-  const loadOrders = async (from?: string, to?: string) => {
-    const params: Record<string, string> = {};
-    if (from) params.date_from = from;
-    if (to) params.date_to = to;
+  const loadOrders = async () => {
+    const params: Record<string, string | number> = {
+      skip: page * pageSize,
+      limit: pageSize,
+      sort_by: sortBy,
+      sort_dir: sortDir,
+    };
+    if (dateFrom) params.date_from = dateFrom;
+    if (dateTo) params.date_to = dateTo;
+    if (selectedStatusFilter !== 'all') params.status = selectedStatusFilter;
     const ord = await api.get('/orders/', { params });
-    setOrders(ord.data || []);
+    const data = ord.data || { items: [], total: 0 };
+    setOrders(data.items || []);
+    setTotalOrders(data.total || 0);
   };
 
   const loadInitialData = async () => {
     try {
       setLoading(true);
       const [, emp, st, me] = await Promise.all([
-        loadOrders(dateFrom, dateTo),
+        loadOrders(),
         api.get('/employees/'),
         api.get('/orders/statuses'),
         api.get('/auth/me'),
@@ -220,12 +232,18 @@ export default function Orders() {
 
   useEffect(() => { loadInitialData(); }, []);
 
-  // Перезагрузка при смене даты-фильтра (после инициализации).
+  // Перезагрузка при смене любого серверного параметра (после инициализации).
   useEffect(() => {
     if (loading) return;
-    loadOrders(dateFrom, dateTo).catch(() => setError('Ошибка загрузки заказов'));
+    loadOrders().catch(() => setError('Ошибка загрузки заказов'));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dateFrom, dateTo]);
+  }, [dateFrom, dateTo, selectedStatusFilter, sortBy, sortDir, page, pageSize]);
+
+  // Сброс страницы при смене любого фильтра (но не при смене самой страницы).
+  useEffect(() => {
+    setPage(0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dateFrom, dateTo, selectedStatusFilter, sortBy, sortDir, pageSize]);
 
   // Открытие заказа по URL-параметру ?open=orderId
   // Используется как для глубоких ссылок из других вкладок, так и для
@@ -581,7 +599,7 @@ export default function Orders() {
         setSaveSuccess(true);
         await fetchOrderDetails(id);
       }
-      await loadOrders(dateFrom, dateTo);
+      await loadOrders();
     } catch (err: any) { setError(err.response?.data?.detail || 'Ошибка сохранения'); }
     finally { setSaveLoading(false); }
   };
@@ -812,37 +830,21 @@ export default function Orders() {
     }
   };
 
+  // Фильтр и сортировка — на бэке (status, sort_by, sort_dir, пагинация).
+  // Поиск пока остаётся клиентским — фильтрует только текущую страницу.
+  // Для глобального поиска по всем заказам нужен серверный ?search=… (позже).
   const filteredOrders = useMemo(() => {
-    let result = orders;
-    if (selectedStatusFilter !== 'all') result = result.filter(o => o.status === selectedStatusFilter);
     const q = searchQuery.trim().toLowerCase();
-    if (q) {
-      result = result.filter(o =>
-        o.number?.toLowerCase().includes(q) ||
-        o.vehicle?.license_plate?.toLowerCase().includes(q) ||
-        o.vehicle?.customer?.full_name?.toLowerCase().includes(q) ||
-        o.vehicle?.customer?.phone?.includes(q) ||
-        `${o.vehicle?.brand?.name ?? ''} ${o.vehicle?.model?.name ?? ''}`.toLowerCase().includes(q) ||
-        o.mechanic?.full_name?.toLowerCase().includes(q)
-      );
-    }
-    // Сортировка применяется уже после фильтра.
-    const dir = sortDir === 'asc' ? 1 : -1;
-    const cmpStr = (a?: string | null, b?: string | null) => {
-      // Null/undefined гонит в конец вне зависимости от направления.
-      if (!a && !b) return 0;
-      if (!a) return 1;
-      if (!b) return -1;
-      return a.localeCompare(b, 'ru', { numeric: true }) * dir;
-    };
-    const sorted = [...result].sort((a, b) => {
-      if (sortBy === 'number') return cmpStr(a.number, b.number);
-      if (sortBy === 'created_at') return cmpStr(a.created_at, b.created_at);
-      // completed_at — закрытые сверху/снизу, незакрытые всегда в конец
-      return cmpStr(a.completed_at, b.completed_at);
-    });
-    return sorted;
-  }, [orders, selectedStatusFilter, searchQuery, sortBy, sortDir]);
+    if (!q) return orders;
+    return orders.filter(o =>
+      o.number?.toLowerCase().includes(q) ||
+      o.vehicle?.license_plate?.toLowerCase().includes(q) ||
+      o.vehicle?.customer?.full_name?.toLowerCase().includes(q) ||
+      o.vehicle?.customer?.phone?.includes(q) ||
+      `${o.vehicle?.brand?.name ?? ''} ${o.vehicle?.model?.name ?? ''}`.toLowerCase().includes(q) ||
+      o.mechanic?.full_name?.toLowerCase().includes(q)
+    );
+  }, [orders, searchQuery]);
 
   const handleDeleteOrder = async () => {
     if (!deleteOrderConfirm) return;
@@ -972,12 +974,10 @@ export default function Orders() {
 
       <Box sx={{ mb: 3, borderBottom: '1px solid #E2E8F0' }}>
         <Tabs value={selectedStatusFilter} onChange={(_, v) => setSelectedStatusFilter(v)} variant="scrollable" scrollButtons="auto">
-          <Tab label={`Все (${orders.length})`} value="all" sx={{ fontWeight: 700 }} />
-          {orderStatuses.map(s => {
-            const count = orders.filter(o => o.status === s.value).length;
-            return <Tab key={s.value} label={`${s.label} (${count})`} value={s.value} sx={{ fontWeight: 700 }} />;
-          })}
-          <Tab label={`Завершён (${orders.filter(o => o.status === 'completed').length})`} value="completed" sx={{ fontWeight: 700 }} />
+          <Tab label="Все" value="all" sx={{ fontWeight: 700 }} />
+          {orderStatuses.map(s => (
+            <Tab key={s.value} label={s.label} value={s.value} sx={{ fontWeight: 700 }} />
+          ))}
         </Tabs>
       </Box>
 
@@ -1049,6 +1049,21 @@ export default function Orders() {
             ))}
           </TableBody>
         </Table>
+        <TablePagination
+          component="div"
+          count={totalOrders}
+          page={page}
+          onPageChange={(_, newPage) => setPage(newPage)}
+          rowsPerPage={pageSize}
+          onRowsPerPageChange={(e) => setPageSize(parseInt(e.target.value, 10))}
+          rowsPerPageOptions={[10, 20, 50, 100]}
+          labelRowsPerPage="На странице:"
+          labelDisplayedRows={({ from, to, count }) => `${from}–${to} из ${count}`}
+          sx={{
+            borderTop: '1px solid #E2E8F0',
+            '& .MuiTablePagination-toolbar': { px: 2 },
+          }}
+        />
       </TableContainer>
 
       <Dialog open={openDialog} fullScreen PaperProps={{ sx: { bgcolor: '#F8FAFC' } }}>
