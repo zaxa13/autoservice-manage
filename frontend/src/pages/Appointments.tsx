@@ -1416,8 +1416,8 @@ export default function Appointments() {
       await api.delete(`/appointment-posts/${deletePostConfirm.id}`)
       setDeletePostConfirm(null)
       await fetchPosts()
-    } catch {
-      setError('Ошибка удаления поста')
+    } catch (err: any) {
+      setError(err?.response?.data?.detail || 'Ошибка удаления поста')
     } finally {
       setDeletingPost(false)
     }
@@ -1594,18 +1594,6 @@ export default function Appointments() {
                 onCreateOrder={handleCreateOrder}
               />
             ))}
-            {appointmentsByPost(null).length > 0 && (
-              <PostColumn
-                key="no-post"
-                post={{ id: 0, name: 'Без поста', max_slots: 999, sort_order: -1, created_at: '' }}
-                appointments={appointmentsByPost(null)}
-                postColor="#94A3B8"
-                onAddRecord={() => {}}
-                onDelete={handleDeleteRecord}
-                onStatusChange={handleStatusChange}
-                onCreateOrder={handleCreateOrder}
-              />
-            )}
           </Box>
 
           <DragOverlay>
@@ -1684,9 +1672,14 @@ export default function Appointments() {
         <DialogTitle>Удалить пост?</DialogTitle>
         <DialogContent>
           {deletePostConfirm && (
-            <Typography>
-              Пост «{deletePostConfirm.name}» будет удалён. Записи останутся в системе, но перейдут в колонку «Без поста».
-            </Typography>
+            <Stack spacing={1}>
+              <Typography>
+                Пост «{deletePostConfirm.name}» будет удалён без возможности восстановления.
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Если на посту есть активные записи — удаление не выполнится. Сначала перетяните их на другой пост.
+              </Typography>
+            </Stack>
           )}
         </DialogContent>
         <DialogActions>

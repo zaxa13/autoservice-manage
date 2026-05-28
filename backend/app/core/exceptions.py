@@ -29,3 +29,9 @@ class ForbiddenException(AutoserviceException):
     def __init__(self, detail: str = "Недостаточно прав доступа"):
         super().__init__(status_code=status.HTTP_403_FORBIDDEN, detail=detail)
 
+
+class ConflictException(AutoserviceException):
+    """Конфликт состояния — операция невозможна в текущих условиях"""
+    def __init__(self, detail: str = "Конфликт состояния"):
+        super().__init__(status_code=status.HTTP_409_CONFLICT, detail=detail)
+

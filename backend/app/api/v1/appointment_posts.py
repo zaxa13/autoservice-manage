@@ -2,13 +2,14 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, Response, status
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.exceptions import NotFoundException
+from app.core.exceptions import ConflictException, NotFoundException
 from app.core.permissions import require_manager_or_admin
 from app.core.security import TenantClaims
 from app.dependencies import get_current_claims, get_tenant_db
+from app.models.appointment import Appointment
 from app.models.appointment_post import AppointmentPost
 from app.schemas.appointment_post import (
     AppointmentPost as AppointmentPostSchema,
@@ -20,6 +21,7 @@ from app.schemas.responses import ErrorResponse
 router = APIRouter()
 
 _404 = {404: {"model": ErrorResponse, "description": "Пост не найден"}}
+_409 = {409: {"model": ErrorResponse, "description": "Пост используется записями"}}
 _auth = {401: {"model": ErrorResponse, "description": "Не авторизован"}}
 _write = {**_auth, 403: {"model": ErrorResponse, "description": "Недостаточно прав"}}
 
@@ -93,7 +95,7 @@ async def update_post(
 @router.delete(
     "/{post_id}",
     status_code=status.HTTP_204_NO_CONTENT,
-    responses={**_write, **_404},
+    responses={**_write, **_404, **_409},
 )
 async def delete_post(
     post_id: int,
@@ -103,6 +105,19 @@ async def delete_post(
     p = await db.get(AppointmentPost, (claims.tenant_id, post_id))
     if p is None:
         raise NotFoundException("Пост не найден")
+
+    appt_count = await db.scalar(
+        select(func.count()).select_from(Appointment).where(
+            Appointment.tenant_id == claims.tenant_id,
+            Appointment.post_id == post_id,
+        )
+    )
+    if appt_count:
+        raise ConflictException(
+            "Нельзя удалить пост с активными записями. "
+            "Перетяните записи на другой пост и попробуйте снова."
+        )
+
     await db.delete(p)
     await db.flush()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
