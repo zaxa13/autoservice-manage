@@ -243,6 +243,95 @@ async def _serialize_order_parts(
     ]
 
 
+async def _serialize_orders_bulk(
+    db: AsyncSession, orders: list[Order], claims: TenantClaims
+) -> list[dict]:
+    """Сериализация списка заказов одним батчем: вместо N×5 точечных SELECT
+    делает по одному IN-запросу на связанную таблицу (vehicles, customers,
+    brands, models, mechanics). Используется только в list-режиме (detail=False)."""
+    if not orders:
+        return []
+
+    tenant_id = claims.tenant_id
+    vehicle_ids = list({o.vehicle_id for o in orders})
+    mechanic_ids = list({o.mechanic_id for o in orders if o.mechanic_id})
+
+    vehicles: dict[int, Vehicle] = {}
+    if vehicle_ids:
+        rows = (await db.execute(
+            select(Vehicle).where(
+                Vehicle.tenant_id == tenant_id,
+                Vehicle.id.in_(vehicle_ids),
+            )
+        )).scalars().all()
+        vehicles = {v.id: v for v in rows}
+
+    customer_ids = list({v.customer_id for v in vehicles.values() if v.customer_id})
+    brand_ids = list({v.brand_id for v in vehicles.values() if v.brand_id})
+    model_ids = list({v.model_id for v in vehicles.values() if v.model_id})
+
+    customers: dict[int, Customer] = {}
+    if customer_ids:
+        rows = (await db.execute(
+            select(Customer).where(
+                Customer.tenant_id == tenant_id,
+                Customer.id.in_(customer_ids),
+            )
+        )).scalars().all()
+        customers = {c.id: c for c in rows}
+
+    brands: dict[int, VehicleBrand] = {}
+    if brand_ids:
+        rows = (await db.execute(
+            select(VehicleBrand).where(VehicleBrand.id.in_(brand_ids))
+        )).scalars().all()
+        brands = {b.id: b for b in rows}
+
+    models: dict[int, VehicleModel] = {}
+    if model_ids:
+        rows = (await db.execute(
+            select(VehicleModel).where(VehicleModel.id.in_(model_ids))
+        )).scalars().all()
+        models = {m.id: m for m in rows}
+
+    mechanics: dict[int, Employee] = {}
+    if mechanic_ids:
+        rows = (await db.execute(
+            select(Employee).where(
+                Employee.tenant_id == tenant_id,
+                Employee.id.in_(mechanic_ids),
+            )
+        )).scalars().all()
+        mechanics = {e.id: e for e in rows}
+
+    out: list[dict] = []
+    for o in orders:
+        v = vehicles.get(o.vehicle_id)
+        vehicle_dict = None
+        if v is not None:
+            vehicle_dict = _vehicle_dict(
+                v,
+                customers.get(v.customer_id),
+                brands.get(v.brand_id),
+                models.get(v.model_id),
+            )
+        out.append({
+            "id": o.id,
+            "number": o.number,
+            "vehicle_id": o.vehicle_id,
+            "employee_id": o.employee_id,
+            "mechanic_id": o.mechanic_id,
+            "status": o.status,
+            "total_amount": o.total_amount,
+            "paid_amount": o.paid_amount,
+            "created_at": o.created_at,
+            "completed_at": o.completed_at,
+            "vehicle": vehicle_dict,
+            "mechanic": mechanics.get(o.mechanic_id) if o.mechanic_id else None,
+        })
+    return out
+
+
 async def _serialize_order(
     db: AsyncSession, order: Order, claims: TenantClaims, *, detail: bool
 ) -> dict:
@@ -389,8 +478,8 @@ async def list_orders(
         if claims.employee_id is not None:
             stmt = stmt.where(Order.mechanic_id == claims.employee_id)
     stmt = stmt.offset(skip).limit(limit)
-    rows = (await db.execute(stmt)).scalars().all()
-    return [await _serialize_order(db, o, claims, detail=False) for o in rows]
+    rows = list((await db.execute(stmt)).scalars().all())
+    return await _serialize_orders_bulk(db, rows, claims)
 
 
 @router.get(
