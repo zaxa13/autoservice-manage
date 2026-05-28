@@ -88,6 +88,10 @@ export default function Orders() {
   const [error, setError] = useState('');
   const [selectedStatusFilter, setSelectedStatusFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  // Debounced-значение поиска — то, что реально уходит на бэк.
+  // Сам ввод обновляется мгновенно (плавный UX), а запрос летит через 400 мс
+  // после последнего нажатия.
+  const [searchDebounced, setSearchDebounced] = useState('');
   const [dateFrom, setDateFrom] = useState<string>('');
   const [dateTo, setDateTo] = useState<string>('');
   // Сортировка списка ЗН. Дефолт — по номеру, новые сверху.
@@ -210,6 +214,8 @@ export default function Orders() {
     if (dateFrom) params.date_from = dateFrom;
     if (dateTo) params.date_to = dateTo;
     if (selectedStatusFilter !== 'all') params.status = selectedStatusFilter;
+    const q = searchDebounced.trim();
+    if (q) params.search = q;
     const ord = await api.get('/orders/', { params });
     const data = ord.data || { items: [], total: 0 };
     setOrders(data.items || []);
@@ -232,18 +238,24 @@ export default function Orders() {
 
   useEffect(() => { loadInitialData(); }, []);
 
+  // Debounce ввода в строку поиска: 400 мс после последнего нажатия.
+  useEffect(() => {
+    const t = setTimeout(() => setSearchDebounced(searchQuery), 400);
+    return () => clearTimeout(t);
+  }, [searchQuery]);
+
   // Перезагрузка при смене любого серверного параметра (после инициализации).
   useEffect(() => {
     if (loading) return;
     loadOrders().catch(() => setError('Ошибка загрузки заказов'));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dateFrom, dateTo, selectedStatusFilter, sortBy, sortDir, page, pageSize]);
+  }, [dateFrom, dateTo, selectedStatusFilter, sortBy, sortDir, page, pageSize, searchDebounced]);
 
   // Сброс страницы при смене любого фильтра (но не при смене самой страницы).
   useEffect(() => {
     setPage(0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dateFrom, dateTo, selectedStatusFilter, sortBy, sortDir, pageSize]);
+  }, [dateFrom, dateTo, selectedStatusFilter, sortBy, sortDir, pageSize, searchDebounced]);
 
   // Открытие заказа по URL-параметру ?open=orderId
   // Используется как для глубоких ссылок из других вкладок, так и для
@@ -830,21 +842,9 @@ export default function Orders() {
     }
   };
 
-  // Фильтр и сортировка — на бэке (status, sort_by, sort_dir, пагинация).
-  // Поиск пока остаётся клиентским — фильтрует только текущую страницу.
-  // Для глобального поиска по всем заказам нужен серверный ?search=… (позже).
-  const filteredOrders = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
-    if (!q) return orders;
-    return orders.filter(o =>
-      o.number?.toLowerCase().includes(q) ||
-      o.vehicle?.license_plate?.toLowerCase().includes(q) ||
-      o.vehicle?.customer?.full_name?.toLowerCase().includes(q) ||
-      o.vehicle?.customer?.phone?.includes(q) ||
-      `${o.vehicle?.brand?.name ?? ''} ${o.vehicle?.model?.name ?? ''}`.toLowerCase().includes(q) ||
-      o.mechanic?.full_name?.toLowerCase().includes(q)
-    );
-  }, [orders, searchQuery]);
+  // Все фильтры (status, дата, поиск) и сортировка делаются на бэке.
+  // На фронте просто рендерим то, что пришло.
+  const filteredOrders = orders;
 
   const handleDeleteOrder = async () => {
     if (!deleteOrderConfirm) return;

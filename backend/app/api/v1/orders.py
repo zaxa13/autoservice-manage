@@ -22,7 +22,7 @@ from decimal import Decimal
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
-from sqlalchemy import bindparam, delete, func, select, text
+from sqlalchemy import and_, bindparam, delete, func, or_, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import BadRequestException, NotFoundException
@@ -472,6 +472,7 @@ async def list_orders(
     status_filter: Optional[OrderStatus] = Query(None, alias="status"),
     date_from: Optional[date] = Query(None, description="Заказы с created_at ≥ этой даты"),
     date_to: Optional[date] = Query(None, description="Заказы с created_at ≤ этой даты"),
+    search: Optional[str] = Query(None, description="Подстрока для поиска по номеру ЗН, госномеру, ФИО клиента, телефону, ФИО мастера"),
     sort_by: str = Query("created_at", description="Поле сортировки: number / created_at / completed_at"),
     sort_dir: str = Query("desc", description="Направление: asc / desc"),
     db: AsyncSession = Depends(get_tenant_db),
@@ -487,6 +488,50 @@ async def list_orders(
     if "mechanic" in claims.roles and not (set(claims.roles) & {"admin", "manager"}):
         if claims.employee_id is not None:
             base = base.where(Order.mechanic_id == claims.employee_id)
+
+    q = (search or "").strip()
+    if q:
+        pattern = f"%{q}%"
+        tenant_id = claims.tenant_id
+        # Подзапросы по связанным таблицам — PG превращает их в semi-join,
+        # дубликатов в результате не будет, COUNT остаётся корректным.
+        vehicles_by_plate = (
+            select(Vehicle.id).where(
+                Vehicle.tenant_id == tenant_id,
+                Vehicle.license_plate.ilike(pattern),
+            )
+        )
+        vehicles_by_customer = (
+            select(Vehicle.id)
+            .join(
+                Customer,
+                and_(
+                    Customer.tenant_id == Vehicle.tenant_id,
+                    Customer.id == Vehicle.customer_id,
+                ),
+            )
+            .where(
+                Vehicle.tenant_id == tenant_id,
+                or_(
+                    Customer.full_name.ilike(pattern),
+                    Customer.phone.ilike(pattern),
+                ),
+            )
+        )
+        mechanics_by_name = (
+            select(Employee.id).where(
+                Employee.tenant_id == tenant_id,
+                Employee.full_name.ilike(pattern),
+            )
+        )
+        base = base.where(
+            or_(
+                Order.number.ilike(pattern),
+                Order.vehicle_id.in_(vehicles_by_plate),
+                Order.vehicle_id.in_(vehicles_by_customer),
+                Order.mechanic_id.in_(mechanics_by_name),
+            )
+        )
 
     total = await db.scalar(
         select(func.count()).select_from(base.subquery())
