@@ -469,6 +469,7 @@ function MoneyAndPlanSection({
         <Grid item xs={12} sm={6} md={3}>
           <MetricCard
             label={forecastTitle}
+            info={'Линейный прогноз поступлений до конца периода: текущий факт делим на прошедшие дни и умножаем на длину периода. Грубая оценка по среднему дневному темпу — не учитывает выходные и сезонность.'}
             value={revenue.forecast === null ? '—' : fmtMoneyFull(revenue.forecast)}
             accent={COLOR_FORECAST}
             sub={forecastSub}
