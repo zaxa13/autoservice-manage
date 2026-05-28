@@ -449,6 +449,7 @@ function MoneyAndPlanSection({
         <Grid item xs={12} sm={6} md={3}>
           <MetricCard
             label="Поступления"
+            info={'Касса: сумма всех успешных оплат за период по дате платежа. Статус заказ-наряда не учитывается — деньги пришли, значит попали в поступления.'}
             value={`${fmtMoneyFull(revenue.value)}`}
             accent={COLOR_FACT}
             sub={factSub}
