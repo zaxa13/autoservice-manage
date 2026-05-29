@@ -25,7 +25,9 @@ import {
 } from '@mui/icons-material'
 import { Link as RouterLink } from 'react-router-dom'
 import api from '../services/api'
+import PhoneInput from '../components/PhoneInput'
 import { Vehicle, OrderDetail, BrandRef, ModelRef, Customer } from '../types'
+import { formatPhoneDisplay, isValidRussianPhone } from '../utils/phone'
 
 const ORDER_STATUS_LABELS: Record<string, { label: string; color: 'default' | 'primary' | 'warning' | 'info' | 'success' | 'error' }> = {
   new: { label: 'Новый', color: 'default' },
@@ -269,7 +271,7 @@ function VehicleHistoryDialog({ vehicle, open, onClose }: {
             </Box>
             <Box>
               <Typography variant="subtitle2" sx={{ fontWeight: 700, lineHeight: 1.2 }}>{vehicle.customer.full_name}</Typography>
-              <Typography variant="caption" color="text.secondary">{vehicle.customer.phone}</Typography>
+              <Typography variant="caption" color="text.secondary">{formatPhoneDisplay(vehicle.customer.phone)}</Typography>
             </Box>
             {vehicle.vin && (
               <Box sx={{ ml: 'auto', textAlign: 'right' }}>
@@ -525,7 +527,10 @@ function VehicleCreateDialog({ open, onClose, onCreated }: {
     }
   }
 
-  const canSubmit = vehicle.brand_id && vehicle.model_id && (selectedCustomer || (customer.full_name && customer.phone))
+  const canSubmit =
+    vehicle.brand_id &&
+    vehicle.model_id &&
+    (selectedCustomer || (customer.full_name && isValidRussianPhone(customer.phone)))
 
   const handleCreate = async () => {
     setSaving(true)
@@ -635,16 +640,17 @@ function VehicleCreateDialog({ open, onClose, onCreated }: {
               Владелец
             </Typography>
             <Stack spacing={2}>
-              <TextField
+              <PhoneInput
                 label="Телефон *"
                 size="small"
                 fullWidth
                 value={customer.phone}
-                onChange={(e) => {
-                  setCustomer((c) => ({ ...c, phone: e.target.value }))
+                onChange={(stored) => {
+                  setCustomer((c) => ({ ...c, phone: stored }))
                   setCustomerSearchAttempted(false)
                   setSelectedCustomer(null)
                 }}
+                validate
                 onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleSearchCustomer() } }}
                 InputProps={{
                   endAdornment: (
@@ -675,7 +681,7 @@ function VehicleCreateDialog({ open, onClose, onCreated }: {
                       <Typography variant="caption" color="text.secondary">Найдены клиенты:</Typography>
                       {foundCustomers.map((c) => (
                         <Button key={c.id} variant="outlined" size="small" onClick={() => setSelectedCustomer(c)}>
-                          {c.full_name} · {c.phone}
+                          {c.full_name} · {formatPhoneDisplay(c.phone)}
                         </Button>
                       ))}
                     </Stack>
@@ -1044,7 +1050,7 @@ export default function VehiclesPage() {
                               <Typography variant="body2" color="text.disabled">·</Typography>
                               <PhoneRounded sx={{ fontSize: 13, color: '#94A3B8' }} />
                               <Typography variant="body2" color="text.secondary">
-                                {vehicle.customer.phone}
+                                {formatPhoneDisplay(vehicle.customer.phone)}
                               </Typography>
                             </>
                           )}

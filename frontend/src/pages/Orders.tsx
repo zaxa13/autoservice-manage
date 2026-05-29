@@ -21,8 +21,10 @@ import {
 import { formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import api from '../services/api';
+import PhoneInput from '../components/PhoneInput';
 import type { Order, OrderCreate, Vehicle, Employee, OrderStatusInfo, OrderDetail, VehicleHistoryOrder, User, Customer, CustomerCreate, Part, Work, BrandRef, ModelRef, OrderPayment, PaymentLogEntry } from '../types';
 import { DateField } from '../components/DateField';
+import { formatPhoneDisplay, isValidRussianPhone } from '../utils/phone';
 
 // Категории работ
 const WORK_CATEGORIES: { value: string; label: string; color: string }[] = [
@@ -1020,7 +1022,7 @@ export default function Orders() {
                 <TableCell>
                   <Typography variant="body2" sx={{ fontWeight: 500 }}>{o.vehicle?.customer?.full_name || '—'}</Typography>
                   {o.vehicle?.customer?.phone && (
-                    <Typography variant="caption" color="text.secondary">{o.vehicle.customer.phone}</Typography>
+                    <Typography variant="caption" color="text.secondary">{formatPhoneDisplay(o.vehicle.customer.phone)}</Typography>
                   )}
                 </TableCell>
                 <TableCell>{o.mechanic?.full_name || '—'}</TableCell>
@@ -1136,7 +1138,7 @@ export default function Orders() {
                         {selectedVehicle.customer.phone && (
                           <Stack direction="row" spacing={0.5} alignItems="center">
                             <PhoneRounded sx={{ fontSize: 14, color: 'text.secondary' }} />
-                            <Typography component="a" href={`tel:${selectedVehicle.customer.phone}`} variant="caption" sx={{ fontWeight: 600, color: 'primary.main', textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }} onClick={(e) => e.stopPropagation()}>{selectedVehicle.customer.phone}</Typography>
+                            <Typography component="a" href={`tel:${selectedVehicle.customer.phone}`} variant="caption" sx={{ fontWeight: 600, color: 'primary.main', textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }} onClick={(e) => e.stopPropagation()}>{formatPhoneDisplay(selectedVehicle.customer.phone)}</Typography>
                           </Stack>
                         )}
                       </Stack>
@@ -1500,11 +1502,11 @@ export default function Orders() {
                 <Stack direction="row" spacing={2}><TextField fullWidth label="VIN" value={newVehicleData.vin} onChange={e => setNewVehicleData({...newVehicleData, vin: e.target.value.toUpperCase()})} /><TextField fullWidth label="Пробег" type="number" value={newVehicleData.mileage} onChange={e => setNewVehicleData({...newVehicleData, mileage: e.target.value})} /></Stack>
               </Stack></Grid>
             <Grid item xs={12} md={6}><Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 700 }}>ВЛАДЕЛЕЦ</Typography>
-              <Stack spacing={2}><TextField fullWidth label="Телефон *" value={newCustomerData.phone} onChange={e => {setNewCustomerData({...newCustomerData, phone: e.target.value}); setCustomerSearchAttempted(false);}} InputProps={{ endAdornment: <IconButton onClick={handleSearchCustomer} disabled={searchingCustomer}>{searchingCustomer ? <CircularProgress size={20} /> : <ContactPhoneRounded color="primary" />}</IconButton> }} />
+              <Stack spacing={2}><PhoneInput fullWidth label="Телефон *" value={newCustomerData.phone} onChange={(stored) => {setNewCustomerData({...newCustomerData, phone: stored}); setCustomerSearchAttempted(false);}} validate InputProps={{ endAdornment: <IconButton onClick={handleSearchCustomer} disabled={searchingCustomer}>{searchingCustomer ? <CircularProgress size={20} /> : <ContactPhoneRounded color="primary" />}</IconButton> }} />
                 {selectedCustomer ? (<Paper sx={{ p: 2, bgcolor: alpha('#10B981', 0.05), border: '1px solid #10B981' }}><Typography variant="body1" sx={{ fontWeight: 700 }}>{selectedCustomer.full_name}</Typography><Button size="small" onClick={() => setSelectedCustomer(null)}>Другой</Button></Paper>
                 ) : (<>{customerSearchAttempted && foundCustomers.length > 0 && <Stack spacing={1}>{foundCustomers.map(c => <Button key={c.id} variant="outlined" size="small" onClick={() => setSelectedCustomer(c)}>{c.full_name}</Button>)}</Stack>}<TextField fullWidth label="ФИО *" value={newCustomerData.full_name} onChange={e => setNewCustomerData({...newCustomerData, full_name: e.target.value})} /><TextField fullWidth label="Email" value={newCustomerData.email} onChange={e => setNewCustomerData({...newCustomerData, email: e.target.value})} /></>)}
               </Stack></Grid>
-        </Grid></DialogContent><DialogActions sx={{ p: 3 }}><Button onClick={() => setOpenAddVehicleDialog(false)}>Отмена</Button><Button variant="contained" onClick={handleCreateVehicle} disabled={!newVehicleData.brand_id || !newVehicleData.model_id || (!selectedCustomer && !newCustomerData.full_name)}>Создать</Button></DialogActions></Dialog>
+        </Grid></DialogContent><DialogActions sx={{ p: 3 }}><Button onClick={() => setOpenAddVehicleDialog(false)}>Отмена</Button><Button variant="contained" onClick={handleCreateVehicle} disabled={!newVehicleData.brand_id || !newVehicleData.model_id || (!selectedCustomer && (!newCustomerData.full_name || !isValidRussianPhone(newCustomerData.phone)))}>Создать</Button></DialogActions></Dialog>
 
       <Dialog open={openPaymentDialog} onClose={() => { setOpenPaymentDialog(false); setEditingPaymentId(null); setPaymentAmount(''); }} PaperProps={{ sx: { borderRadius: 3, p: 2, width: 340 } }}>
         <Typography variant="h6" sx={{ mb: 2, fontWeight: 800 }}>

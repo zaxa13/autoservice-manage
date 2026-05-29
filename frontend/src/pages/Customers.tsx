@@ -33,8 +33,10 @@ import {
 import { Link as RouterLink } from 'react-router-dom'
 
 import api from '../services/api'
+import PhoneInput from '../components/PhoneInput'
 import { BRAND, PALETTE, RADIUS, SHADOW, SURFACE } from '../design-tokens'
 import type { Customer, CustomerCreate } from '../types'
+import { formatPhoneDisplay, isValidRussianPhone } from '../utils/phone'
 
 const BATCH_SIZE = 30
 
@@ -106,7 +108,7 @@ function CustomerFormDialog({
     }
   }
 
-  const canSubmit = form.full_name.trim().length > 0 && form.phone.trim().length >= 5
+  const canSubmit = form.full_name.trim().length > 0 && isValidRussianPhone(form.phone)
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: RADIUS.lg } }}>
@@ -153,14 +155,13 @@ function CustomerFormDialog({
             onChange={(e) => setForm((f) => ({ ...f, full_name: e.target.value }))}
             autoFocus
           />
-          <TextField
+          <PhoneInput
             label="Телефон *"
             size="small"
             fullWidth
             value={form.phone}
-            onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
-            placeholder="89001234567"
-            helperText="Формат как в карточке автомобиля — сохраняется как введено"
+            onChange={(stored) => setForm((f) => ({ ...f, phone: stored }))}
+            validate
           />
           <TextField
             label="Email"
@@ -491,7 +492,7 @@ export default function CustomersPage() {
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                           <PhoneRounded sx={{ fontSize: 14, color: PALETTE.slate[400] }} />
                           <Typography variant="body2" color="text.secondary">
-                            {customer.phone}
+                            {formatPhoneDisplay(customer.phone)}
                           </Typography>
                         </Box>
                         {customer.email && (

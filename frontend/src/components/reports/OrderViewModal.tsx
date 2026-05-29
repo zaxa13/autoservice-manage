@@ -22,6 +22,7 @@ import {
 } from '@mui/icons-material'
 import { OrderDetail } from '../../types'
 import api from '../../services/api'
+import { formatPhoneDisplay } from '../../utils/phone'
 
 const fmt = (n: number) =>
   new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB', maximumFractionDigits: 0 }).format(n)
@@ -204,7 +205,7 @@ export default function OrderViewModal({ orderId, open, onClose }: Props) {
                             variant="body2"
                             sx={{ color: 'primary.main', fontWeight: 600, textDecoration: 'none' }}
                           >
-                            {order.vehicle.customer.phone}
+                            {formatPhoneDisplay(order.vehicle.customer.phone)}
                           </Typography>
                         </Stack>
                       )}

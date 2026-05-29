@@ -31,8 +31,10 @@ import {
 import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom'
 
 import api from '../services/api'
+import PhoneInput from '../components/PhoneInput'
 import { BRAND, PALETTE, RADIUS, SHADOW } from '../design-tokens'
 import type { Customer, CustomerCreate, Vehicle } from '../types'
+import { formatPhoneDisplay, isValidRussianPhone } from '../utils/phone'
 
 function EditDialog({
   open,
@@ -94,7 +96,7 @@ function EditDialog({
     }
   }
 
-  const canSubmit = form.full_name.trim().length > 0 && form.phone.trim().length >= 5
+  const canSubmit = form.full_name.trim().length > 0 && isValidRussianPhone(form.phone)
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: RADIUS.lg } }}>
@@ -140,12 +142,13 @@ function EditDialog({
             onChange={(e) => setForm((f) => ({ ...f, full_name: e.target.value }))}
             autoFocus
           />
-          <TextField
+          <PhoneInput
             label="Телефон *"
             size="small"
             fullWidth
             value={form.phone}
-            onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+            onChange={(stored) => setForm((f) => ({ ...f, phone: stored }))}
+            validate
           />
           <TextField
             label="Email"
@@ -298,7 +301,7 @@ export default function CustomerDetailPage() {
                 spacing={3}
                 sx={{ mt: 1.5, flexWrap: 'wrap', rowGap: 1.25 }}
               >
-                <InfoRow icon={<PhoneRounded />} label="Телефон" value={customer.phone} />
+                <InfoRow icon={<PhoneRounded />} label="Телефон" value={formatPhoneDisplay(customer.phone)} />
                 {customer.email && <InfoRow icon={<EmailRounded />} label="Email" value={customer.email} />}
                 {customer.address && <InfoRow icon={<HomeRounded />} label="Адрес" value={customer.address} />}
               </Stack>
