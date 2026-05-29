@@ -29,6 +29,7 @@ import {
   Chip,
   Grid,
   Autocomplete,
+  createFilterOptions,
   InputAdornment,
 } from '@mui/material'
 import { Search as SearchIcon } from '@mui/icons-material'
@@ -101,12 +102,40 @@ export default function Warehouse() {
 
   // Справочник брендов запчастей — глобальный, грузим один раз.
   const [partBrands, setPartBrands] = useState<PartBrand[]>([])
+  const [brandAddingError, setBrandAddingError] = useState('')
   useEffect(() => {
     api.get<PartBrand[]>('/part-brands/').then((r) => setPartBrands(r.data)).catch(() => {})
   }, [])
 
+  // Добавление нового бренда через API. Возвращает созданный (или существующий
+  // при 409) бренд. Локальный кэш partBrands обновляется здесь же.
+  const createPartBrand = async (rawName: string): Promise<PartBrand | null> => {
+    setBrandAddingError('')
+    try {
+      const res = await api.post<PartBrand>('/part-brands/', { name: rawName })
+      setPartBrands((prev) => [...prev, res.data].sort((a, b) => a.name.localeCompare(b.name)))
+      return res.data
+    } catch (e: any) {
+      const detail = e.response?.data?.detail
+      if (e.response?.status === 409 && detail?.code === 'duplicate_brand') {
+        // Гонка / клиент не успел подтянуть свежий список — берём существующий.
+        const existing: PartBrand = { id: detail.existing_id, name: detail.existing_name }
+        setPartBrands((prev) =>
+          prev.some((b) => b.id === existing.id)
+            ? prev
+            : [...prev, existing].sort((a, b) => a.name.localeCompare(b.name)),
+        )
+        setBrandAddingError(`Бренд «${existing.name}» уже есть — выбран автоматически`)
+        return existing
+      }
+      setBrandAddingError(typeof detail === 'string' ? detail : 'Не удалось создать бренд')
+      return null
+    }
+  }
+
   const openPartCard = (item: WarehouseItem) => {
     setPartCardError('')
+    setBrandAddingError('')
     setPartCardItem(item)
     setPartCardForm({
       name: item.part?.name ?? '',
@@ -1204,47 +1233,93 @@ export default function Warehouse() {
               />
             </Grid>
             <Grid item xs={6}>
-              <Autocomplete
-                size="small"
-                options={partBrands}
-                getOptionLabel={(o) => (typeof o === 'string' ? o : o.name)}
-                freeSolo
-                value={
-                  partCardForm.brand_id
-                    ? partBrands.find((b) => b.id === partCardForm.brand_id) ?? null
-                    : partCardForm.brand || null
-                }
-                onChange={(_, newValue) => {
-                  if (newValue && typeof newValue !== 'string') {
-                    setPartCardForm((p) => ({ ...p, brand_id: newValue.id, brand: newValue.name }))
-                  } else {
-                    // freeSolo: пользователь вписал что-то своё.
-                    setPartCardForm((p) => ({
-                      ...p,
-                      brand_id: null,
-                      brand: typeof newValue === 'string' ? newValue : '',
-                    }))
-                  }
-                }}
-                onInputChange={(_, newInput, reason) => {
-                  // Печатает в поле — если стало пусто, очищаем brand_id.
-                  if (reason === 'input') {
-                    const match = partBrands.find((b) => b.name === newInput)
-                    setPartCardForm((p) => ({
-                      ...p,
-                      brand_id: match ? match.id : null,
-                      brand: newInput,
-                    }))
-                  }
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Бренд"
-                    helperText={partCardForm.brand_id ? 'Из справочника' : 'Свободный ввод'}
+              {(() => {
+                // Креативный Autocomplete: если введённого бренда нет в каталоге
+                // (case-insensitive), внизу списка появляется опция «+ Добавить «{ввод}»».
+                // На клик POST /part-brands/ + автовыбор.
+                type AddNew = { inputValue: string; isAddNew: true; name: string }
+                type BrandOption = PartBrand | AddNew
+                const filter = createFilterOptions<BrandOption>({
+                  matchFrom: 'any',
+                  stringify: (o) => ('isAddNew' in o ? o.inputValue : o.name),
+                })
+                const value: BrandOption | null = partCardForm.brand_id
+                  ? partBrands.find((b) => b.id === partCardForm.brand_id) ?? null
+                  : null
+                return (
+                  <Autocomplete<BrandOption, false, false, false>
+                    size="small"
+                    options={partBrands as BrandOption[]}
+                    value={value}
+                    isOptionEqualToValue={(opt, val) =>
+                      'isAddNew' in opt || 'isAddNew' in val ? false : opt.id === val.id
+                    }
+                    getOptionLabel={(o) => ('isAddNew' in o ? o.name : o.name)}
+                    filterOptions={(options, params) => {
+                      const filtered = filter(options, params) as BrandOption[]
+                      const input = params.inputValue.trim()
+                      if (input !== '') {
+                        const exists = (options as PartBrand[]).some(
+                          (o) => o.name.toLowerCase() === input.toLowerCase(),
+                        )
+                        if (!exists) {
+                          filtered.push({
+                            inputValue: input,
+                            isAddNew: true,
+                            name: `+ Добавить «${input}»`,
+                          })
+                        }
+                      }
+                      return filtered
+                    }}
+                    onChange={async (_, newValue) => {
+                      if (newValue && 'isAddNew' in newValue) {
+                        const created = await createPartBrand(newValue.inputValue)
+                        if (created) {
+                          setPartCardForm((p) => ({
+                            ...p,
+                            brand_id: created.id,
+                            brand: created.name,
+                          }))
+                        }
+                      } else if (newValue) {
+                        setBrandAddingError('')
+                        setPartCardForm((p) => ({
+                          ...p,
+                          brand_id: newValue.id,
+                          brand: newValue.name,
+                        }))
+                      } else {
+                        setBrandAddingError('')
+                        setPartCardForm((p) => ({ ...p, brand_id: null, brand: '' }))
+                      }
+                    }}
+                    renderOption={(props, option) => (
+                      <li {...props} key={'isAddNew' in option ? `__add_${option.inputValue}` : option.id}>
+                        {'isAddNew' in option ? (
+                          <Box sx={{ color: 'primary.main', fontWeight: 700 }}>{option.name}</Box>
+                        ) : (
+                          option.name
+                        )}
+                      </li>
+                    )}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Бренд"
+                        error={Boolean(brandAddingError) && brandAddingError.includes('уже есть')}
+                        helperText={
+                          brandAddingError
+                            ? brandAddingError
+                            : partCardForm.brand_id
+                              ? 'Из справочника'
+                              : 'Начните вводить — выберите из списка или добавьте новый'
+                        }
+                      />
+                    )}
                   />
-                )}
-              />
+                )
+              })()}
             </Grid>
             <Grid item xs={6}>
               <TextField
