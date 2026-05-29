@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field, field_validator
 from typing import Optional
 from decimal import Decimal
 from app.models.part import PartCategory
+from app.schemas.part_brand import PartBrandRef
 
 
 def _normalize_article(v: Optional[str]) -> Optional[str]:
@@ -25,7 +26,8 @@ def _normalize_article_required(v: Optional[str]) -> str:
 class PartBase(BaseModel):
     name: str = Field(..., min_length=1, description="Название запчасти")
     part_number: str = Field(..., min_length=1, description="Артикул запчасти (нормализуется: верхний регистр, без пробелов)")
-    brand: Optional[str] = Field(None, description="Бренд / производитель запчасти")
+    brand: Optional[str] = Field(None, description="Бренд (free-text — legacy)")
+    brand_id: Optional[int] = Field(None, description="FK на справочник part_brands")
     price: Decimal = Field(..., ge=0, description="Цена продажи")
     purchase_price_last: Optional[Decimal] = Field(None, ge=0, description="Последняя закупочная цена")
     unit: str = Field("шт", description="Единица измерения")
@@ -44,7 +46,8 @@ class PartCreate(PartBase):
 class PartUpdate(BaseModel):
     name: Optional[str] = Field(None, min_length=1, description="Название запчасти")
     part_number: Optional[str] = Field(None, description="Артикул запчасти")
-    brand: Optional[str] = Field(None, description="Бренд / производитель")
+    brand: Optional[str] = Field(None, description="Бренд (free-text — legacy)")
+    brand_id: Optional[int] = Field(None, description="FK на справочник part_brands")
     price: Optional[Decimal] = Field(None, ge=0, description="Цена продажи")
     purchase_price_last: Optional[Decimal] = Field(None, ge=0, description="Последняя закупочная цена")
     unit: Optional[str] = Field(None, description="Единица измерения")
@@ -63,6 +66,7 @@ class PartUpdate(BaseModel):
 
 class Part(PartBase):
     id: int = Field(..., description="Уникальный ID запчасти")
+    brand_ref: Optional[PartBrandRef] = Field(None, description="Развёрнутый бренд из справочника")
     stock_quantity: int = Field(0, description="Текущий остаток на складе (из warehouse_items)")
 
     class Config:

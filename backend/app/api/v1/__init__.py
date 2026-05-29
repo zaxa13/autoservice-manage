@@ -11,6 +11,7 @@ from app.api.v1 import (
     employees,
     integrations,
     orders,
+    part_brands,
     parts,
     payments,
     reports,
@@ -30,6 +31,7 @@ api_router.include_router(auth.router, prefix="/auth", tags=["Auth"])
 api_router.include_router(customers.router, prefix="/customers", tags=["Клиенты"])
 api_router.include_router(works.router, prefix="/works", tags=["Виды работ"])
 api_router.include_router(parts.router, prefix="/parts", tags=["Запчасти"])
+api_router.include_router(part_brands.router, prefix="/part-brands", tags=["Бренды запчастей"])
 api_router.include_router(suppliers.router, prefix="/suppliers", tags=["Поставщики"])
 api_router.include_router(
     vehicle_brands.router, prefix="/vehicle-brands", tags=["Марки и модели"]

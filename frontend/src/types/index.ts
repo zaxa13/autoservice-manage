@@ -195,11 +195,18 @@ export interface Work {
   category: WorkCategory
 }
 
+export interface PartBrand {
+  id: number
+  name: string
+}
+
 export interface Part {
   id: number
   name: string
   part_number: string
   brand?: string
+  brand_id?: number | null
+  brand_ref?: PartBrand | null
   price: number
   purchase_price_last?: number
   unit: string

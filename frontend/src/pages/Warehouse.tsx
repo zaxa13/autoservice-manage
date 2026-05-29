@@ -54,6 +54,7 @@ import {
   ReceiptLineCreate,
   Supplier,
   Part,
+  PartBrand,
   WarehouseAdjustmentCreate,
 } from '../types'
 
@@ -86,6 +87,7 @@ export default function Warehouse() {
   const [partCardForm, setPartCardForm] = useState({
     name: '',
     part_number: '',
+    brand_id: null as number | null,
     brand: '',
     price: '',
     purchase_price_last: '',
@@ -97,13 +99,20 @@ export default function Warehouse() {
   const [savingPartCard, setSavingPartCard] = useState(false)
   const [partCardError, setPartCardError] = useState('')
 
+  // Справочник брендов запчастей — глобальный, грузим один раз.
+  const [partBrands, setPartBrands] = useState<PartBrand[]>([])
+  useEffect(() => {
+    api.get<PartBrand[]>('/part-brands/').then((r) => setPartBrands(r.data)).catch(() => {})
+  }, [])
+
   const openPartCard = (item: WarehouseItem) => {
     setPartCardError('')
     setPartCardItem(item)
     setPartCardForm({
       name: item.part?.name ?? '',
       part_number: item.part?.part_number ?? '',
-      brand: item.part?.brand ?? '',
+      brand_id: item.part?.brand_id ?? null,
+      brand: item.part?.brand_ref?.name ?? item.part?.brand ?? '',
       price: item.part?.price != null ? String(item.part.price) : '',
       purchase_price_last:
         item.part?.purchase_price_last != null ? String(item.part.purchase_price_last) : '',
@@ -130,7 +139,9 @@ export default function Warehouse() {
       await api.put(`/parts/${partCardItem.part.id}`, {
         name: partCardForm.name.trim(),
         part_number: partCardForm.part_number.trim(),
-        brand: partCardForm.brand.trim() || null,
+        brand_id: partCardForm.brand_id ?? null,
+        // brand-текст шлём только если бренд не из справочника (свободная запись).
+        brand: partCardForm.brand_id ? undefined : partCardForm.brand.trim() || null,
         price: partCardForm.price ? Number(partCardForm.price) : 0,
         purchase_price_last: partCardForm.purchase_price_last
           ? Number(partCardForm.purchase_price_last)
@@ -732,8 +743,8 @@ export default function Warehouse() {
                       sx={{ cursor: 'pointer' }}
                     >
                       <TableCell>{item.part?.name}</TableCell>
-                      <TableCell sx={{ color: item.part?.brand ? 'text.primary' : 'text.disabled' }}>
-                        {item.part?.brand || '—'}
+                      <TableCell sx={{ color: (item.part?.brand_ref?.name || item.part?.brand) ? 'text.primary' : 'text.disabled' }}>
+                        {item.part?.brand_ref?.name || item.part?.brand || '—'}
                       </TableCell>
                       <TableCell>{item.part?.part_number || '—'}</TableCell>
                       <TableCell align="right">{item.quantity}</TableCell>
@@ -1193,12 +1204,46 @@ export default function Warehouse() {
               />
             </Grid>
             <Grid item xs={6}>
-              <TextField
-                fullWidth
+              <Autocomplete
                 size="small"
-                label="Бренд"
-                value={partCardForm.brand}
-                onChange={(e) => setPartCardForm((p) => ({ ...p, brand: e.target.value }))}
+                options={partBrands}
+                getOptionLabel={(o) => (typeof o === 'string' ? o : o.name)}
+                freeSolo
+                value={
+                  partCardForm.brand_id
+                    ? partBrands.find((b) => b.id === partCardForm.brand_id) ?? null
+                    : partCardForm.brand || null
+                }
+                onChange={(_, newValue) => {
+                  if (newValue && typeof newValue !== 'string') {
+                    setPartCardForm((p) => ({ ...p, brand_id: newValue.id, brand: newValue.name }))
+                  } else {
+                    // freeSolo: пользователь вписал что-то своё.
+                    setPartCardForm((p) => ({
+                      ...p,
+                      brand_id: null,
+                      brand: typeof newValue === 'string' ? newValue : '',
+                    }))
+                  }
+                }}
+                onInputChange={(_, newInput, reason) => {
+                  // Печатает в поле — если стало пусто, очищаем brand_id.
+                  if (reason === 'input') {
+                    const match = partBrands.find((b) => b.name === newInput)
+                    setPartCardForm((p) => ({
+                      ...p,
+                      brand_id: match ? match.id : null,
+                      brand: newInput,
+                    }))
+                  }
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Бренд"
+                    helperText={partCardForm.brand_id ? 'Из справочника' : 'Свободный ввод'}
+                  />
+                )}
               />
             </Grid>
             <Grid item xs={6}>

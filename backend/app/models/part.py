@@ -4,6 +4,7 @@ from decimal import Decimal
 
 from sqlalchemy import (
     BigInteger,
+    ForeignKey,
     Identity,
     Index,
     Numeric,
@@ -33,6 +34,11 @@ class Part(Base, TenantMixin):
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     part_number: Mapped[str] = mapped_column(String(100), nullable=False)
     brand: Mapped[str | None] = mapped_column(String(100))
+    brand_id: Mapped[int | None] = mapped_column(
+        BigInteger,
+        ForeignKey("part_brands.id", ondelete="SET NULL"),
+        nullable=True,
+    )
     price: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
     purchase_price_last: Mapped[Decimal | None] = mapped_column(Numeric(10, 2))
     unit: Mapped[str] = mapped_column(String(20), nullable=False, default="шт")
