@@ -153,15 +153,6 @@ class MarginsMetric(BaseModel):
     parts_cost: float = Field(..., description="Себестоимость проданных запчастей за период")
 
 
-class PipelineDayItem(BaseModel):
-    date: str = Field(..., description="Дата в формате ISO")
-    day_name: str = Field(..., description="Короткое название дня недели (Пн, Вт, ...)")
-    day_label: str = Field(..., description="Дата с названием месяца (5 марта)")
-    appointments_count: int = Field(..., description="Количество записей")
-    load_pct: Optional[int] = Field(None, description="Загрузка постов в процентах")
-    is_today: bool = Field(..., description="Является ли день сегодняшним")
-
-
 class StuckOrderItem(BaseModel):
     id: int = Field(..., description="ID заказ-наряда")
     number: str = Field(..., description="Номер заказ-наряда")
@@ -232,9 +223,6 @@ class DashboardStatsResponse(BaseModel):
     orders_count: OrdersCountMetric = Field(..., description="Метрика количества заказов")
     wip: WipMetric = Field(..., description="Заказы в работе: сумма и количество")
     margins: MarginsMetric = Field(..., description="Маржа — работы / запчасти / доля работ")
-    post_load_today_pct: Optional[int] = Field(None, description="Загрузка постов сегодня (%)")
-    post_load_tomorrow_pct: Optional[int] = Field(None, description="Загрузка постов завтра (%)")
-    pipeline_7d: List[PipelineDayItem] = Field(..., description="Загрузка по дням на 7 дней вперёд")
     revenue_chart: List[RevenueChartPoint] = Field(..., description="Данные графика выручки (по дням)")
     revenue_cumulative: RevenueCumulative = Field(..., description="Кумулятивная гонка: текущий vs прошлый + план + прогноз")
     mechanics_stats: List[MechanicStatItem] = Field(default_factory=list, description="Статистика по механикам")

@@ -70,15 +70,6 @@ interface RevenueCumulative {
   pace_vs_prev_pct: number | null
 }
 
-interface PipelineDay {
-  date: string
-  day_name: string
-  day_label: string
-  appointments_count: number
-  load_pct: number | null
-  is_today: boolean
-}
-
 interface DashboardStats {
   period: Period
   period_label: string
@@ -104,9 +95,6 @@ interface DashboardStats {
     mechanic_fot: number
     parts_cost: number
   }
-  post_load_today_pct: number | null
-  post_load_tomorrow_pct: number | null
-  pipeline_7d: PipelineDay[]
   revenue_chart: ChartDay[]
   revenue_cumulative: RevenueCumulative
   mechanics_stats: MechanicStat[]
