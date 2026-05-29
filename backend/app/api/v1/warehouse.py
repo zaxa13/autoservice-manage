@@ -50,6 +50,7 @@ from app.schemas.warehouse import (
     WarehouseAdjustmentCreate,
     WarehouseItem as WarehouseItemSchema,
     WarehouseItemCreate,
+    WarehouseItemUpdate,
     WarehouseTransaction as WarehouseTransactionSchema,
     WarehouseTransactionCreate,
     WarehouseTransactionList,
