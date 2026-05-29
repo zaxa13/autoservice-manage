@@ -111,13 +111,22 @@ async def search_by_phone(
     db: AsyncSession = Depends(get_tenant_db),
     _claims: TenantClaims = Depends(get_current_claims),
 ) -> list[CustomerSchema]:
-    normalized = _normalize_phone(phone)
+    """Подстрочный поиск по телефону, устойчивый к разным форматам хранения.
+
+    Считаем все правдоподобные представления одного и того же номера
+    (`+7XXX`, `8XXX`, `7XXX`, голые цифры) и матчим LIKE по каждому —
+    иначе клиенты, заведённые до маски ввода, не находятся.
+    """
     raw = phone.strip().replace(" ", "").replace("-", "").replace("(", "").replace(")", "")
-    result = await db.execute(
-        select(Customer).where(
-            or_(Customer.phone.like(f"%{normalized}%"), Customer.phone.like(f"%{raw}%"))
-        )
-    )
+    normalized = _normalize_phone(phone)
+    national = normalized[2:] if len(normalized) >= 12 else ""
+
+    patterns: set[str] = {p for p in (normalized, raw) if p}
+    if len(national) == 10 and national.isdigit():
+        patterns.update({"8" + national, "7" + national, national})
+
+    conds = [Customer.phone.like(f"%{p}%") for p in patterns]
+    result = await db.execute(select(Customer).where(or_(*conds)).limit(50))
     return list(result.scalars().all())
 
 
