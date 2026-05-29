@@ -226,6 +226,35 @@ async def create_item(
     return await _serialize_item(db, item, claims)
 
 
+@router.put(
+    "/items/{item_id}",
+    response_model=WarehouseItemSchema,
+    responses={**_write, **_404_item},
+)
+async def update_item(
+    item_id: int,
+    body: WarehouseItemUpdate,
+    db: AsyncSession = Depends(get_tenant_db),
+    claims: TenantClaims = Depends(require_manager_or_admin),
+):
+    """Редактирование min_quantity / location.
+
+    Quantity отдельно — через корректировку (POST /warehouse/adjustment),
+    чтобы каждое изменение остатка попадало в журнал движений.
+    """
+    item = await db.get(WarehouseItem, (claims.tenant_id, item_id))
+    if item is None:
+        raise NotFoundException("Позиция склада не найдена")
+    patch = body.model_dump(exclude_unset=True)
+    # quantity редактировать здесь нельзя — иначе пропадает аудит-след.
+    patch.pop("quantity", None)
+    for k, v in patch.items():
+        setattr(item, k, v)
+    await db.flush()
+    await db.refresh(item)
+    return await _serialize_item(db, item, claims)
+
+
 @router.get(
     "/low-stock",
     response_model=list[WarehouseItemSchema],

@@ -81,6 +81,77 @@ export default function Warehouse() {
   const [adjustmentReason, setAdjustmentReason] = useState('')
   const [savingAdjustment, setSavingAdjustment] = useState(false)
 
+  // Карточка запчасти — клик по строке.
+  const [partCardItem, setPartCardItem] = useState<WarehouseItem | null>(null)
+  const [partCardForm, setPartCardForm] = useState({
+    name: '',
+    part_number: '',
+    brand: '',
+    price: '',
+    purchase_price_last: '',
+    unit: 'шт',
+    category: 'other' as Part['category'],
+    min_quantity: '',
+    location: '',
+  })
+  const [savingPartCard, setSavingPartCard] = useState(false)
+  const [partCardError, setPartCardError] = useState('')
+
+  const openPartCard = (item: WarehouseItem) => {
+    setPartCardError('')
+    setPartCardItem(item)
+    setPartCardForm({
+      name: item.part?.name ?? '',
+      part_number: item.part?.part_number ?? '',
+      brand: item.part?.brand ?? '',
+      price: item.part?.price != null ? String(item.part.price) : '',
+      purchase_price_last:
+        item.part?.purchase_price_last != null ? String(item.part.purchase_price_last) : '',
+      unit: item.part?.unit ?? 'шт',
+      category: (item.part?.category as Part['category']) ?? 'other',
+      min_quantity: String(item.min_quantity ?? 0),
+      location: item.location ?? '',
+    })
+  }
+
+  const handlePartCardSave = async () => {
+    if (!partCardItem || !partCardItem.part) return
+    if (!partCardForm.name.trim()) {
+      setPartCardError('Название обязательно')
+      return
+    }
+    if (!partCardForm.part_number.trim()) {
+      setPartCardError('Артикул обязателен')
+      return
+    }
+    setSavingPartCard(true)
+    setPartCardError('')
+    try {
+      await api.put(`/parts/${partCardItem.part.id}`, {
+        name: partCardForm.name.trim(),
+        part_number: partCardForm.part_number.trim(),
+        brand: partCardForm.brand.trim() || null,
+        price: partCardForm.price ? Number(partCardForm.price) : 0,
+        purchase_price_last: partCardForm.purchase_price_last
+          ? Number(partCardForm.purchase_price_last)
+          : null,
+        unit: partCardForm.unit,
+        category: partCardForm.category,
+      })
+      await api.put(`/warehouse/items/${partCardItem.id}`, {
+        min_quantity: partCardForm.min_quantity ? Number(partCardForm.min_quantity) : 0,
+        location: partCardForm.location.trim() || null,
+      })
+      setPartCardItem(null)
+      loadItems()
+    } catch (e: any) {
+      const detail = e.response?.data?.detail
+      setPartCardError(typeof detail === 'string' ? detail : 'Не удалось сохранить карточку')
+    } finally {
+      setSavingPartCard(false)
+    }
+  }
+
   // Журнал движений
   const [transactions, setTransactions] = useState<WarehouseTransactionList[]>([])
   const [txDateFrom, setTxDateFrom] = useState('')
@@ -637,6 +708,7 @@ export default function Warehouse() {
               <TableHead>
                 <TableRow>
                   <TableCell>Запчасть</TableCell>
+                  <TableCell>Бренд</TableCell>
                   <TableCell>Артикул</TableCell>
                   <TableCell align="right">Кол-во</TableCell>
                   <TableCell align="right">Мин. остаток</TableCell>
@@ -647,14 +719,22 @@ export default function Warehouse() {
               <TableBody>
                 {itemsLoading ? (
                   <TableRow>
-                    <TableCell colSpan={6} align="center" sx={{ py: 3 }}>
+                    <TableCell colSpan={7} align="center" sx={{ py: 3 }}>
                       <CircularProgress size={28} />
                     </TableCell>
                   </TableRow>
                 ) : (
                   items.map((item) => (
-                    <TableRow key={item.id}>
+                    <TableRow
+                      key={item.id}
+                      hover
+                      onClick={() => openPartCard(item)}
+                      sx={{ cursor: 'pointer' }}
+                    >
                       <TableCell>{item.part?.name}</TableCell>
+                      <TableCell sx={{ color: item.part?.brand ? 'text.primary' : 'text.disabled' }}>
+                        {item.part?.brand || '—'}
+                      </TableCell>
                       <TableCell>{item.part?.part_number || '—'}</TableCell>
                       <TableCell align="right">{item.quantity}</TableCell>
                       <TableCell align="right">{item.min_quantity}</TableCell>
@@ -663,7 +743,8 @@ export default function Warehouse() {
                         <Button
                           size="small"
                           startIcon={<EditIcon />}
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.stopPropagation()
                             setAdjustmentItem(item)
                             setAdjustmentOpen(true)
                             setAdjustmentDelta('')
@@ -1067,6 +1148,164 @@ export default function Warehouse() {
           </Table>
         </TableContainer>
       )}
+
+      {/* Карточка запчасти */}
+      <Dialog
+        open={!!partCardItem}
+        onClose={() => setPartCardItem(null)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle sx={{ pb: 1 }}>
+          Карточка запчасти
+          {partCardItem?.part && (
+            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.25 }}>
+              Текущий остаток: <strong>{partCardItem.quantity}</strong> {partCardItem.part.unit}
+              {' · '}
+              ID #{partCardItem.part.id}
+            </Typography>
+          )}
+        </DialogTitle>
+        <DialogContent dividers>
+          <Grid container spacing={2}>
+            {partCardError && (
+              <Grid item xs={12}>
+                <Alert severity="error">{partCardError}</Alert>
+              </Grid>
+            )}
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                size="small"
+                label="Название *"
+                value={partCardForm.name}
+                onChange={(e) => setPartCardForm((p) => ({ ...p, name: e.target.value }))}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                size="small"
+                label="Артикул *"
+                value={partCardForm.part_number}
+                onChange={(e) => setPartCardForm((p) => ({ ...p, part_number: e.target.value }))}
+                helperText="Будет нормализован: верх. регистр без пробелов"
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                size="small"
+                label="Бренд"
+                value={partCardForm.brand}
+                onChange={(e) => setPartCardForm((p) => ({ ...p, brand: e.target.value }))}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                size="small"
+                type="number"
+                label="Цена продажи"
+                value={partCardForm.price}
+                onChange={(e) => setPartCardForm((p) => ({ ...p, price: e.target.value }))}
+                InputProps={{ endAdornment: <Typography variant="caption">₽</Typography> }}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                size="small"
+                type="number"
+                label="Последняя закупка"
+                value={partCardForm.purchase_price_last}
+                onChange={(e) =>
+                  setPartCardForm((p) => ({ ...p, purchase_price_last: e.target.value }))
+                }
+                InputProps={{ endAdornment: <Typography variant="caption">₽</Typography> }}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <FormControl fullWidth size="small">
+                <InputLabel>Ед. изм.</InputLabel>
+                <Select
+                  value={partCardForm.unit}
+                  label="Ед. изм."
+                  onChange={(e) => setPartCardForm((p) => ({ ...p, unit: e.target.value }))}
+                >
+                  <MenuItem value="шт">шт</MenuItem>
+                  <MenuItem value="л">л</MenuItem>
+                  <MenuItem value="кг">кг</MenuItem>
+                  <MenuItem value="компл">компл</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={6}>
+              <FormControl fullWidth size="small">
+                <InputLabel>Категория</InputLabel>
+                <Select
+                  value={partCardForm.category}
+                  label="Категория"
+                  onChange={(e) =>
+                    setPartCardForm((p) => ({ ...p, category: e.target.value as Part['category'] }))
+                  }
+                >
+                  <MenuItem value="engine">Двигатель</MenuItem>
+                  <MenuItem value="transmission">Трансмиссия</MenuItem>
+                  <MenuItem value="suspension">Подвеска</MenuItem>
+                  <MenuItem value="brakes">Тормоза</MenuItem>
+                  <MenuItem value="electrical">Электрика</MenuItem>
+                  <MenuItem value="body">Кузов</MenuItem>
+                  <MenuItem value="consumables">Расходники</MenuItem>
+                  <MenuItem value="other">Прочее</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12}>
+              <Box sx={{ pt: 1, borderTop: '1px dashed', borderColor: 'divider' }}>
+                <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+                  Склад
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                size="small"
+                type="number"
+                label="Мин. остаток"
+                value={partCardForm.min_quantity}
+                onChange={(e) => setPartCardForm((p) => ({ ...p, min_quantity: e.target.value }))}
+                helperText="Триггер «низкий остаток»"
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                size="small"
+                label="Место хранения"
+                value={partCardForm.location}
+                onChange={(e) => setPartCardForm((p) => ({ ...p, location: e.target.value }))}
+                placeholder="A-3-2"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="caption" color="text.secondary">
+                Чтобы изменить количество, используйте «Корректировка» в строке таблицы —
+                операция попадёт в журнал движений.
+              </Typography>
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setPartCardItem(null)} disabled={savingPartCard}>
+            Отмена
+          </Button>
+          <Button variant="contained" onClick={handlePartCardSave} disabled={savingPartCard}>
+            {savingPartCard ? <CircularProgress size={20} /> : 'Сохранить'}
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Диалог корректировки */}
       <Dialog open={adjustmentOpen} onClose={() => setAdjustmentOpen(false)} maxWidth="sm" fullWidth>
