@@ -538,8 +538,26 @@ function VehicleCreateDialog({ open, onClose, onCreated }: {
     try {
       let customerId = selectedCustomer?.id
       if (!customerId) {
-        const res = await api.post('/customers/', customer)
-        customerId = res.data.id
+        try {
+          const res = await api.post('/customers/', customer)
+          customerId = res.data.id
+        } catch (e: any) {
+          const detail = e.response?.data?.detail
+          if (e.response?.status === 409 && detail?.code === 'duplicate_phone') {
+            // Клиент с таким телефоном уже есть — подтягиваем его и подсказываем
+            // пользователю выбрать его как владельца. Авто не создаём, чтобы
+            // пользователь принял осознанное решение.
+            try {
+              const existing = await api.get(`/customers/${detail.existing_customer_id}`)
+              setSelectedCustomer(existing.data)
+            } catch {
+              /* игнор — основное действие: показать ошибку */
+            }
+            setError(`Клиент с таким телефоном уже есть: ${detail.existing_customer_name}. Подставлен как владелец — нажмите «Создать» ещё раз.`)
+            return
+          }
+          throw e
+        }
       }
       const res = await api.post('/vehicles/', {
         brand_id: vehicle.brand_id,
@@ -553,7 +571,8 @@ function VehicleCreateDialog({ open, onClose, onCreated }: {
       onCreated(res.data)
       onClose()
     } catch (e: any) {
-      setError(e.response?.data?.detail || 'Ошибка создания')
+      const detail = e.response?.data?.detail
+      setError(typeof detail === 'string' ? detail : 'Ошибка создания')
     } finally {
       setSaving(false)
     }

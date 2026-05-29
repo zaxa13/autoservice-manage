@@ -561,7 +561,23 @@ export default function Orders() {
     try {
       setSaveLoading(true);
       let cId = selectedCustomer?.id;
-      if (!cId) { const res = await api.post('/customers/', newCustomerData); cId = res.data.id; }
+      if (!cId) {
+        try {
+          const res = await api.post('/customers/', newCustomerData);
+          cId = res.data.id;
+        } catch (e: any) {
+          const detail = e.response?.data?.detail;
+          if (e.response?.status === 409 && detail?.code === 'duplicate_phone') {
+            try {
+              const existing = await api.get(`/customers/${detail.existing_customer_id}`);
+              setSelectedCustomer(existing.data);
+            } catch { /* игнор */ }
+            setError(`Клиент с таким телефоном уже есть: ${detail.existing_customer_name}. Подставлен — повторите создание.`);
+            return;
+          }
+          throw e;
+        }
+      }
       const res = await api.post('/vehicles/', { ...newVehicleData, mileage: Number(newVehicleData.mileage) || 0, customer_id: cId });
       setSelectedVehicle(res.data); setFormData(p => ({ ...p, vehicle_id: res.data.id }));
       setOpenAddVehicleDialog(false);

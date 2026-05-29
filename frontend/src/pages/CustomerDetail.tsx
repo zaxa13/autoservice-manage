@@ -30,6 +30,8 @@ import {
 } from '@mui/icons-material'
 import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom'
 
+type DuplicateInfo = { id: number; name: string }
+
 import api from '../services/api'
 import PhoneInput from '../components/PhoneInput'
 import { BRAND, PALETTE, RADIUS, SHADOW } from '../design-tokens'
@@ -56,10 +58,13 @@ function EditDialog({
   })
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [duplicate, setDuplicate] = useState<DuplicateInfo | null>(null)
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (!open || !customer) return
     setError('')
+    setDuplicate(null)
     setForm({
       full_name: customer.full_name,
       phone: customer.phone,
@@ -74,6 +79,7 @@ function EditDialog({
   const handleSave = async () => {
     setSaving(true)
     setError('')
+    setDuplicate(null)
     try {
       const res = await api.put(`/customers/${customer.id}`, {
         full_name: form.full_name.trim(),
@@ -85,8 +91,11 @@ function EditDialog({
       onSaved(res.data)
       onClose()
     } catch (e: any) {
+      const status = e.response?.status
       const detail = e.response?.data?.detail
-      if (Array.isArray(detail)) {
+      if (status === 409 && detail && typeof detail === 'object' && detail.code === 'duplicate_phone') {
+        setDuplicate({ id: detail.existing_customer_id, name: detail.existing_customer_name })
+      } else if (Array.isArray(detail)) {
         setError(detail[0]?.msg ?? 'Ошибка валидации')
       } else {
         setError(typeof detail === 'string' ? detail : 'Не удалось сохранить клиента')
@@ -131,9 +140,29 @@ function EditDialog({
         </Box>
       </DialogTitle>
 
-      <DialogContent sx={{ pt: 2.5 }}>
-        <Stack spacing={2}>
+      <DialogContent>
+        <Stack spacing={2} sx={{ pt: 1.5 }}>
           {error && <Alert severity="error">{error}</Alert>}
+          {duplicate && (
+            <Alert
+              severity="warning"
+              action={
+                <Button
+                  color="inherit"
+                  size="small"
+                  sx={{ fontWeight: 700 }}
+                  onClick={() => {
+                    onClose()
+                    if (duplicate.id !== customer.id) navigate(`/customers/${duplicate.id}`)
+                  }}
+                >
+                  Открыть
+                </Button>
+              }
+            >
+              Клиент с таким телефоном уже есть: <strong>{duplicate.name}</strong>
+            </Alert>
+          )}
           <TextField
             label="ФИО *"
             size="small"

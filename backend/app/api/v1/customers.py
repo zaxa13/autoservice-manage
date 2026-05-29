@@ -7,7 +7,7 @@
 """
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -28,6 +28,9 @@ router = APIRouter()
 _404 = {404: {"model": ErrorResponse, "description": "Клиент не найден"}}
 _auth = {401: {"model": ErrorResponse, "description": "Не авторизован"}}
 _write = {**_auth, 403: {"model": ErrorResponse, "description": "Недостаточно прав"}}
+_conflict = {
+    409: {"model": ErrorResponse, "description": "Дубликат по телефону"},
+}
 
 
 def _normalize_phone(phone: str) -> str:
@@ -39,6 +42,44 @@ def _normalize_phone(phone: str) -> str:
     if s.startswith("8"):
         return "+7" + s[1:]
     return "+7" + s
+
+
+async def _find_customer_with_same_phone(
+    db: AsyncSession,
+    phone: str,
+    *,
+    exclude_id: int | None = None,
+) -> Customer | None:
+    """Найти клиента с эквивалентным номером телефона.
+
+    Сравнение идёт по всем правдоподобным форматам хранения: каноничный
+    `+7XXXXXXXXXX`, легаси `8XXXXXXXXXX`, `7XXXXXXXXXX`, голые 10 цифр.
+    Тенант-фильтр RLS включён выше по стеку — здесь явный WHERE не нужен.
+    """
+    normalized = _normalize_phone(phone)
+    if len(normalized) < 12:
+        return None
+    national = normalized[2:]
+    if len(national) != 10 or not national.isdigit():
+        return None
+    candidates = {normalized, "8" + national, "7" + national, national}
+    stmt = select(Customer).where(Customer.phone.in_(candidates))
+    if exclude_id is not None:
+        stmt = stmt.where(Customer.id != exclude_id)
+    result = await db.execute(stmt.limit(1))
+    return result.scalar_one_or_none()
+
+
+def _duplicate_phone_error(existing: Customer) -> HTTPException:
+    return HTTPException(
+        status_code=status.HTTP_409_CONFLICT,
+        detail={
+            "code": "duplicate_phone",
+            "message": "Клиент с таким телефоном уже существует",
+            "existing_customer_id": existing.id,
+            "existing_customer_name": existing.full_name,
+        },
+    )
 
 
 @router.get(
@@ -102,13 +143,16 @@ async def get_customer(
     response_model=CustomerSchema,
     status_code=status.HTTP_201_CREATED,
     summary="Создать клиента",
-    responses=_write,
+    responses={**_write, **_conflict},
 )
 async def create_customer(
     body: CustomerCreate,
     db: AsyncSession = Depends(get_tenant_db),
     claims: TenantClaims = Depends(require_manager_or_admin),
 ) -> CustomerSchema:
+    existing = await _find_customer_with_same_phone(db, body.phone)
+    if existing is not None:
+        raise _duplicate_phone_error(existing)
     customer = Customer(tenant_id=claims.tenant_id, **body.model_dump())
     db.add(customer)
     await db.flush()
@@ -120,7 +164,7 @@ async def create_customer(
     "/{customer_id}",
     response_model=CustomerSchema,
     summary="Обновить клиента",
-    responses={**_write, **_404},
+    responses={**_write, **_404, **_conflict},
 )
 async def update_customer(
     customer_id: int,
@@ -131,7 +175,14 @@ async def update_customer(
     customer = await db.get(Customer, (claims.tenant_id, customer_id))
     if customer is None:
         raise NotFoundException("Клиент не найден")
-    for k, v in body.model_dump(exclude_unset=True).items():
+    patch = body.model_dump(exclude_unset=True)
+    if "phone" in patch and patch["phone"]:
+        existing = await _find_customer_with_same_phone(
+            db, patch["phone"], exclude_id=customer_id
+        )
+        if existing is not None:
+            raise _duplicate_phone_error(existing)
+    for k, v in patch.items():
         setattr(customer, k, v)
     await db.flush()
     await db.refresh(customer)
