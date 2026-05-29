@@ -14,8 +14,16 @@ const RUSSIAN_PHONE_DIGITS = 10
 /** Извлечь до 10 цифр национальной части телефона из произвольного ввода. */
 export function parsePhoneDigits(raw: string | null | undefined): string {
   if (!raw) return ''
-  let digits = String(raw).replace(/\D/g, '')
-  // Если ввели/сохранили с кодом страны, отбрасываем ведущий 7 или 8.
+  const s = String(raw).trim()
+  // Каноничный формат хранения `+7XXXXXXXXXX`: национальная часть всегда после `+7`.
+  // Это критично: без явной проверки префикса round-trip ломается, когда
+  // пользователь стирает цифры — обратно прилетают всё новые ведущие `7`.
+  if (s.startsWith('+7')) {
+    return s.slice(2).replace(/\D/g, '').slice(0, RUSSIAN_PHONE_DIGITS)
+  }
+  // Свободный ввод: цифры и разделители. При полном номере с кодом страны
+  // (7/8 + 10 цифр) сбрасываем ведущую цифру. Короткий ввод оставляем как есть.
+  let digits = s.replace(/\D/g, '')
   if (digits.length > RUSSIAN_PHONE_DIGITS && (digits.startsWith('7') || digits.startsWith('8'))) {
     digits = digits.slice(1)
   }
