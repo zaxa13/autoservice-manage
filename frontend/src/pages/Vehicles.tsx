@@ -22,6 +22,7 @@ import {
   ContactPhoneRounded,
   NavigateNextRounded,
   NavigateBeforeRounded,
+  SwapHorizRounded,
 } from '@mui/icons-material'
 import { Link as RouterLink } from 'react-router-dom'
 import api from '../services/api'
@@ -726,6 +727,235 @@ function VehicleCreateDialog({ open, onClose, onCreated }: {
   )
 }
 
+// ── Change owner dialog ────────────────────────────────────────────────────────
+
+function ChangeOwnerDialog({ vehicle, open, onClose, onSaved }: {
+  vehicle: Vehicle | null
+  open: boolean
+  onClose: () => void
+  onSaved: (updated: Vehicle) => void
+}) {
+  const [phone, setPhone] = useState('')
+  const [foundCustomers, setFoundCustomers] = useState<Customer[]>([])
+  const [selected, setSelected] = useState<Customer | null>(null)
+  const [searchAttempted, setSearchAttempted] = useState(false)
+  const [searching, setSearching] = useState(false)
+  const [newName, setNewName] = useState('')
+  const [newEmail, setNewEmail] = useState('')
+  const [createNew, setCreateNew] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+
+  React.useEffect(() => {
+    if (!open) return
+    setPhone('')
+    setFoundCustomers([])
+    setSelected(null)
+    setSearchAttempted(false)
+    setNewName('')
+    setNewEmail('')
+    setCreateNew(false)
+    setError('')
+  }, [open])
+
+  if (!vehicle) return null
+
+  const handleSearch = async () => {
+    if (!isValidRussianPhone(phone)) return
+    setSearching(true)
+    setSearchAttempted(true)
+    setSelected(null)
+    setCreateNew(false)
+    try {
+      const res = await api.get('/customers/search/by-phone', { params: { phone } })
+      const list: Customer[] = res.data || []
+      // Текущий владелец не показывается в результатах — менять на самого себя бессмысленно.
+      const filtered = list.filter((c) => c.id !== vehicle.customer_id)
+      setFoundCustomers(filtered)
+      if (filtered.length === 1) setSelected(filtered[0])
+      if (filtered.length === 0) setCreateNew(true)
+    } catch {
+      setFoundCustomers([])
+    } finally {
+      setSearching(false)
+    }
+  }
+
+  const handleSave = async () => {
+    if (!vehicle) return
+    setSaving(true)
+    setError('')
+    try {
+      let customerId = selected?.id
+      if (!customerId) {
+        // Создаём нового клиента. На 409 (дубль) автоматически подбираем существующего.
+        try {
+          const res = await api.post('/customers/', {
+            full_name: newName.trim(),
+            phone,
+            email: newEmail.trim() || undefined,
+          })
+          customerId = res.data.id
+        } catch (e: any) {
+          const detail = e.response?.data?.detail
+          if (e.response?.status === 409 && detail?.code === 'duplicate_phone') {
+            customerId = detail.existing_customer_id
+          } else {
+            throw e
+          }
+        }
+      }
+      const res = await api.put(`/vehicles/${vehicle.id}`, {
+        brand_id: vehicle.brand_id,
+        model_id: vehicle.model_id,
+        customer_id: customerId,
+      })
+      onSaved(res.data)
+      onClose()
+    } catch (e: any) {
+      const detail = e.response?.data?.detail
+      setError(typeof detail === 'string' ? detail : 'Не удалось сменить владельца')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const canSubmit = selected
+    ? true
+    : createNew && newName.trim().length > 0 && isValidRussianPhone(phone)
+
+  const vehicleLabel = [vehicle.brand?.name, vehicle.model?.name, vehicle.license_plate]
+    .filter(Boolean).join(' · ')
+
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: '16px' } }}>
+      <DialogTitle sx={{ pb: 1.5, borderBottom: '1px solid #F1F5F9' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <Box sx={{
+              width: 40, height: 40,
+              background: 'linear-gradient(135deg, #2DD4BF 0%, #0D9488 100%)',
+              borderRadius: '10px',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <SwapHorizRounded sx={{ color: '#fff', fontSize: 22 }} />
+            </Box>
+            <Box>
+              <Typography variant="h6" sx={{ fontWeight: 800, lineHeight: 1.2 }}>Сменить владельца</Typography>
+              <Typography variant="caption" color="text.secondary">{vehicleLabel}</Typography>
+            </Box>
+          </Box>
+          <IconButton onClick={onClose} size="small"><CloseRounded /></IconButton>
+        </Box>
+      </DialogTitle>
+
+      <DialogContent>
+        <Stack spacing={2} sx={{ pt: 1.5 }}>
+          {error && <Alert severity="error">{error}</Alert>}
+
+          {vehicle.customer && (
+            <Paper variant="outlined" sx={{ p: 1.5, bgcolor: '#F8FAFC' }}>
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontWeight: 700 }}>
+                Сейчас владелец
+              </Typography>
+              <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                {vehicle.customer.full_name}
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                {formatPhoneDisplay(vehicle.customer.phone)}
+              </Typography>
+            </Paper>
+          )}
+
+          <PhoneInput
+            label="Телефон нового владельца *"
+            size="small"
+            fullWidth
+            value={phone}
+            onChange={(stored) => {
+              setPhone(stored)
+              setSearchAttempted(false)
+              setSelected(null)
+              setCreateNew(false)
+            }}
+            validate
+            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleSearch() } }}
+            InputProps={{
+              endAdornment: (
+                <IconButton onClick={handleSearch} disabled={!isValidRussianPhone(phone) || searching} size="small">
+                  {searching ? <CircularProgress size={18} /> : <ContactPhoneRounded color="primary" />}
+                </IconButton>
+              ),
+            }}
+            helperText={!searchAttempted ? 'Введите телефон и нажмите поиск' : undefined}
+          />
+
+          {selected && (
+            <Paper variant="outlined" sx={{
+              p: 1.5,
+              bgcolor: alpha('#10B981', 0.05),
+              borderColor: '#10B981',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            }}>
+              <Box>
+                <Typography variant="body2" sx={{ fontWeight: 700 }}>{selected.full_name}</Typography>
+                <Typography variant="caption" color="text.secondary">Существующий клиент</Typography>
+              </Box>
+              <Button size="small" onClick={() => { setSelected(null); setCreateNew(true) }}>Создать нового</Button>
+            </Paper>
+          )}
+
+          {!selected && searchAttempted && foundCustomers.length > 0 && (
+            <Stack spacing={0.75}>
+              <Typography variant="caption" color="text.secondary">Найдены клиенты:</Typography>
+              {foundCustomers.map((c) => (
+                <Button key={c.id} variant="outlined" size="small" onClick={() => setSelected(c)}>
+                  {c.full_name} · {formatPhoneDisplay(c.phone)}
+                </Button>
+              ))}
+              <Button size="small" onClick={() => setCreateNew(true)} sx={{ alignSelf: 'flex-start', mt: 0.5 }}>
+                Или создать нового
+              </Button>
+            </Stack>
+          )}
+
+          {!selected && createNew && (
+            <Stack spacing={2}>
+              <Typography variant="caption" color="text.secondary">
+                {searchAttempted && foundCustomers.length === 0
+                  ? 'Клиент не найден — создадим нового'
+                  : 'Новый клиент'}
+              </Typography>
+              <TextField
+                label="ФИО *"
+                size="small"
+                fullWidth
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                autoFocus
+              />
+              <TextField
+                label="Email"
+                size="small"
+                fullWidth
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
+              />
+            </Stack>
+          )}
+        </Stack>
+      </DialogContent>
+
+      <DialogActions sx={{ px: 3, pb: 2.5, gap: 1, borderTop: '1px solid #F1F5F9' }}>
+        <Button onClick={onClose} variant="outlined">Отмена</Button>
+        <Button onClick={handleSave} variant="contained" disabled={saving || !canSubmit}>
+          {saving ? <CircularProgress size={20} color="inherit" /> : 'Сменить владельца'}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  )
+}
+
 // ── Main page ──────────────────────────────────────────────────────────────────
 
 const BATCH_SIZE = 30
@@ -738,6 +968,7 @@ export default function VehiclesPage() {
   const [error, setError] = useState('')
   const [historyVehicle, setHistoryVehicle] = useState<Vehicle | null>(null)
   const [editVehicle, setEditVehicle] = useState<Vehicle | null>(null)
+  const [changeOwnerVehicle, setChangeOwnerVehicle] = useState<Vehicle | null>(null)
   const [createOpen, setCreateOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -1064,6 +1295,19 @@ export default function VehiclesPage() {
                               {vehicle.customer.full_name}
                             </Typography>
                           </Tooltip>
+                          <Tooltip title="Сменить владельца">
+                            <IconButton
+                              size="small"
+                              onClick={() => setChangeOwnerVehicle(vehicle)}
+                              sx={{
+                                p: 0.25,
+                                color: '#94A3B8',
+                                '&:hover': { color: '#0D9488', bgcolor: alpha('#0D9488', 0.08) },
+                              }}
+                            >
+                              <SwapHorizRounded sx={{ fontSize: 16 }} />
+                            </IconButton>
+                          </Tooltip>
                           {vehicle.customer.phone && (
                             <>
                               <Typography variant="body2" color="text.disabled">·</Typography>
@@ -1159,6 +1403,16 @@ export default function VehiclesPage() {
           // увидеть новую машину в общем списке.
           handleClearSearch()
           loadBrowsePage(0)
+        }}
+      />
+      <ChangeOwnerDialog
+        vehicle={changeOwnerVehicle}
+        open={!!changeOwnerVehicle}
+        onClose={() => setChangeOwnerVehicle(null)}
+        onSaved={(updated) => {
+          setResults((prev) => prev.map((v) => v.id === updated.id ? { ...v, ...updated } : v))
+          setBrowseVehicles((prev) => prev.map((v) => v.id === updated.id ? { ...v, ...updated } : v))
+          setChangeOwnerVehicle(null)
         }}
       />
     </Box>
