@@ -23,6 +23,7 @@ import {
   NavigateNextRounded,
   NavigateBeforeRounded,
 } from '@mui/icons-material'
+import { Link as RouterLink } from 'react-router-dom'
 import api from '../services/api'
 import { Vehicle, OrderDetail, BrandRef, ModelRef, Customer } from '../types'
 
@@ -1023,9 +1024,21 @@ export default function VehiclesPage() {
                       {vehicle.customer && (
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 1 }}>
                           <PersonRounded sx={{ fontSize: 14, color: '#94A3B8' }} />
-                          <Typography variant="body2" sx={{ fontWeight: 600, color: '#475569' }}>
-                            {vehicle.customer.full_name}
-                          </Typography>
+                          <Tooltip title="Открыть карточку клиента">
+                            <Typography
+                              component={RouterLink}
+                              to={`/customers/${vehicle.customer.id}`}
+                              variant="body2"
+                              sx={{
+                                fontWeight: 700,
+                                color: '#0D9488',
+                                textDecoration: 'none',
+                                '&:hover': { textDecoration: 'underline', color: '#0F766E' },
+                              }}
+                            >
+                              {vehicle.customer.full_name}
+                            </Typography>
+                          </Tooltip>
                           {vehicle.customer.phone && (
                             <>
                               <Typography variant="body2" color="text.disabled">·</Typography>

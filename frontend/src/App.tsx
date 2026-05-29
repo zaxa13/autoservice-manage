@@ -18,6 +18,8 @@ import Suppliers from './pages/Suppliers'
 import Employees from './pages/Employees'
 import Salary from './pages/Salary'
 import Vehicles from './pages/Vehicles'
+import Customers from './pages/Customers'
+import CustomerDetail from './pages/CustomerDetail'
 import Reports from './pages/Reports'
 import Cashflow from './pages/Cashflow'
 
@@ -121,6 +123,22 @@ function AppRoutes() {
         element={
           <PrivateRoute>
             <Vehicles />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/customers"
+        element={
+          <PrivateRoute>
+            <Customers />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/customers/:id"
+        element={
+          <PrivateRoute>
+            <CustomerDetail />
           </PrivateRoute>
         }
       />
