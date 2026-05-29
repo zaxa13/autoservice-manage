@@ -10,18 +10,16 @@ Period bounds — пуре-Python helper (без БД). Aggregations — async �
 """
 from __future__ import annotations
 
-import asyncio
 from calendar import monthrange
 from collections import defaultdict
 from datetime import date, datetime, timedelta, timezone
-from typing import Awaitable, Callable, Optional, TypeVar
+from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import case, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.security import TenantClaims
-from app.database import tenant_session
 from app.dependencies import get_current_claims, get_tenant_db
 from app.models.appointment import Appointment
 from app.models.employee import Employee
@@ -146,20 +144,6 @@ def _pct(current: float, previous: float) -> float | None:
     if not previous:
         return None
     return round((current - previous) / previous * 100, 1)
-
-
-T = TypeVar("T")
-
-
-async def _in_fresh_session(
-    tenant_id, fn: Callable[[AsyncSession], Awaitable[T]]
-) -> T:
-    """Открывает свежую tenant-сессию (новый connection из pgbouncer-pool),
-    выставляет RLS-контекст и выполняет переданный callable. Нужен для
-    конкурентного выполнения метрик через asyncio.gather — основная сессия
-    запроса не thread-safe для нескольких одновременных await db.execute()."""
-    async with tenant_session(tenant_id) as session:
-        return await fn(session)
 
 
 def _dt_range(start: date, end: date) -> tuple[datetime, datetime]:
@@ -438,36 +422,16 @@ async def get_dashboard_stats(
         period, today, ref_date, date_from, date_to
     )
 
-    # Все независимые агрегации стреляем параллельно в отдельных сессиях.
-    # 12 запросов вместо 12 round-trip последовательно — pgbouncer соединения
-    # переиспользуются из пула, реальная конкуренция упирается в PG, который
-    # их обрабатывает почти одновременно. Дашборд из ~200 мс становится ~50 мс.
+    # Все агрегации на одной сессии последовательно. Параллелить через
+    # отдельные tenant_session дороже из-за NullPool + transaction setup
+    # на каждую (BEGIN + set_config + COMMIT × 13 в случае gather). Выгоды
+    # от настоящего фикса (kill func.date() → индексные сканы) хватает.
+    rev_current = await _revenue_range(db, start, end)
+    rev_prev = await _revenue_range(db, prev_start, prev_end)
+    completed_rev_current = await _completed_revenue_range(db, start, end)
+    completed_rev_prev = await _completed_revenue_range(db, prev_start, prev_end)
     plan_key = f"revenue_plan_{start.year}_{start.month:02d}"
-    tid = claims.tenant_id
-
-    (
-        rev_current, rev_prev,
-        completed_rev_current, completed_rev_prev,
-        (avg_check, orders_count), (avg_check_prev, orders_count_prev),
-        median_check, median_check_prev,
-        works_revenue, parts_revenue, parts_cost, mechanic_fot,
-        setting_row,
-    ) = await asyncio.gather(
-        _in_fresh_session(tid, lambda s: _revenue_range(s, start, end)),
-        _in_fresh_session(tid, lambda s: _revenue_range(s, prev_start, prev_end)),
-        _in_fresh_session(tid, lambda s: _completed_revenue_range(s, start, end)),
-        _in_fresh_session(tid, lambda s: _completed_revenue_range(s, prev_start, prev_end)),
-        _in_fresh_session(tid, lambda s: _avg_check_range(s, start, end)),
-        _in_fresh_session(tid, lambda s: _avg_check_range(s, prev_start, prev_end)),
-        _in_fresh_session(tid, lambda s: _median_check_range(s, start, end)),
-        _in_fresh_session(tid, lambda s: _median_check_range(s, prev_start, prev_end)),
-        _in_fresh_session(tid, lambda s: _works_revenue_range(s, start, end)),
-        _in_fresh_session(tid, lambda s: _parts_revenue_range(s, start, end)),
-        _in_fresh_session(tid, lambda s: _parts_cost_range(s, start, end)),
-        _in_fresh_session(tid, lambda s: _mechanic_bonus_fot_for_works_range(s, start, end)),
-        _in_fresh_session(tid, lambda s: s.get(Setting, (tid, plan_key))),
-    )
-
+    setting_row = await db.get(Setting, (claims.tenant_id, plan_key))
     revenue_plan = float(setting_row.value) if setting_row and setting_row.value else None
     plan_pct = round(rev_current / revenue_plan * 100, 1) if revenue_plan else None
 
@@ -484,6 +448,17 @@ async def get_dashboard_stats(
     elif full_end < today:
         rev_forecast = round(rev_current)
 
+    # Avg + median check.
+    avg_check, orders_count = await _avg_check_range(db, start, end)
+    avg_check_prev, orders_count_prev = await _avg_check_range(db, prev_start, prev_end)
+    median_check = await _median_check_range(db, start, end)
+    median_check_prev = await _median_check_range(db, prev_start, prev_end)
+
+    # Margins.
+    works_revenue = await _works_revenue_range(db, start, end)
+    parts_revenue = await _parts_revenue_range(db, start, end)
+    parts_cost = await _parts_cost_range(db, start, end)
+    mechanic_fot = await _mechanic_bonus_fot_for_works_range(db, start, end)
     total_for_share = works_revenue + parts_revenue
 
     works_margin_pct = (
