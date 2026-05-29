@@ -30,6 +30,7 @@ from app.database import sync_tenant_session
 from app.dependencies import get_current_claims, get_tenant_db
 from app.services.pdf_service import generate_receipt_pdf
 from app.models.part import Part
+from app.models.part_brand import PartBrand
 from app.models.supplier import Supplier
 from app.models.warehouse import (
     ReceiptDocument,
@@ -94,10 +95,12 @@ def _resolve_employee_id(claims: TenantClaims) -> int:
     return claims.employee_id
 
 
-def _part_dict(p: Part, stock: int = 0) -> dict:
+def _part_dict(p: Part, stock: int = 0, brand_ref: PartBrand | None = None) -> dict:
     return {
         "id": p.id, "name": p.name, "part_number": p.part_number,
-        "brand": p.brand, "price": p.price,
+        "brand": p.brand, "brand_id": p.brand_id,
+        "brand_ref": ({"id": brand_ref.id, "name": brand_ref.name} if brand_ref else None),
+        "price": p.price,
         "purchase_price_last": p.purchase_price_last,
         "unit": p.unit, "category": p.category, "stock_quantity": stock,
     }
@@ -105,11 +108,12 @@ def _part_dict(p: Part, stock: int = 0) -> dict:
 
 async def _serialize_item(db: AsyncSession, item: WarehouseItem, claims: TenantClaims) -> dict:
     part = await db.get(Part, (claims.tenant_id, item.part_id))
+    brand_ref = await db.get(PartBrand, part.brand_id) if part and part.brand_id else None
     return {
         "id": item.id, "part_id": item.part_id,
         "quantity": item.quantity, "min_quantity": item.min_quantity,
         "location": item.location, "last_updated": item.last_updated,
-        "part": _part_dict(part, int(item.quantity)) if part else None,
+        "part": _part_dict(part, int(item.quantity), brand_ref) if part else None,
     }
 
 
