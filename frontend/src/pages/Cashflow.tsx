@@ -1,19 +1,23 @@
-import { useEffect, useState, useCallback, useRef } from 'react'
+import { useEffect, useMemo, useState, useCallback, useRef } from 'react'
 import {
   Box, Typography, Grid, Card, CardContent, Button, Chip,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Paper, IconButton, Tooltip, Dialog, DialogTitle, DialogContent,
   DialogActions, TextField, MenuItem, Select, InputLabel,
   FormControl, Alert, Tabs, Tab, Divider, Stack, Container,
-  CircularProgress, FormControlLabel, Switch,
+  CircularProgress, FormControlLabel, Switch, TablePagination,
 } from '@mui/material'
 import {
   AddRounded, DeleteRounded, EditRounded, AccountBalanceWalletRounded,
   TrendingUpRounded, TrendingDownRounded, SwapHorizRounded,
   AccountBalanceRounded, LocalAtmRounded, RefreshRounded,
-  FilterListRounded, ArchiveRounded, UnarchiveRounded,
+  ArchiveRounded, UnarchiveRounded,
+  EventRounded, ClearRounded,
 } from '@mui/icons-material'
-import { format, startOfMonth, endOfMonth } from 'date-fns'
+import {
+  format, startOfMonth, endOfMonth, startOfWeek, endOfWeek,
+  startOfYear, endOfYear, subDays,
+} from 'date-fns'
 import { useCashflowStore } from '../store/cashflowStore'
 import { getRoleFromToken } from '../store/authStore'
 import {
@@ -724,24 +728,180 @@ function EditTransactionDialog({ tx, onClose }: EditTxDialogProps) {
   )
 }
 
+// ── Transactions Toolbar (date range + account filter) ──────────────────────
+
+const PAGE_SIZE_OPTIONS = [20, 50, 100]
+
+type DatePreset = 'today' | 'yesterday' | 'week' | 'month' | 'year' | 'all'
+
+interface TransactionsToolbarProps {
+  dateFrom: string
+  dateTo: string
+  onDateFromChange: (v: string) => void
+  onDateToChange: (v: string) => void
+  accountFilter: number | 'all'
+  onAccountFilterChange: (v: number | 'all') => void
+  accounts: CashAccount[]
+}
+
+function applyDatePreset(preset: DatePreset): { from: string; to: string } {
+  const fmt = (d: Date) => format(d, 'yyyy-MM-dd')
+  const today = new Date()
+  switch (preset) {
+    case 'today':     return { from: fmt(today), to: fmt(today) }
+    case 'yesterday': { const y = subDays(today, 1); return { from: fmt(y), to: fmt(y) } }
+    case 'week':      return { from: fmt(startOfWeek(today, { weekStartsOn: 1 })), to: fmt(endOfWeek(today, { weekStartsOn: 1 })) }
+    case 'month':     return { from: fmt(startOfMonth(today)), to: fmt(endOfMonth(today)) }
+    case 'year':      return { from: fmt(startOfYear(today)), to: fmt(endOfYear(today)) }
+    case 'all':       return { from: '', to: '' }
+  }
+}
+
+function TransactionsToolbar({
+  dateFrom, dateTo, onDateFromChange, onDateToChange,
+  accountFilter, onAccountFilterChange, accounts,
+}: TransactionsToolbarProps) {
+  // Определяем какой пресет сейчас активен — для подсветки чипов
+  const activePreset: DatePreset | null = useMemo(() => {
+    if (!dateFrom && !dateTo) return 'all'
+    const presets: DatePreset[] = ['today', 'yesterday', 'week', 'month', 'year']
+    for (const p of presets) {
+      const v = applyDatePreset(p)
+      if (v.from === dateFrom && v.to === dateTo) return p
+    }
+    return null
+  }, [dateFrom, dateTo])
+
+  const handlePreset = (p: DatePreset) => {
+    const v = applyDatePreset(p)
+    onDateFromChange(v.from)
+    onDateToChange(v.to)
+  }
+
+  const presets: { key: DatePreset; label: string }[] = [
+    { key: 'today',     label: 'Сегодня' },
+    { key: 'yesterday', label: 'Вчера' },
+    { key: 'week',      label: 'Неделя' },
+    { key: 'month',     label: 'Месяц' },
+    { key: 'year',      label: 'Год' },
+    { key: 'all',       label: 'Всё' },
+  ]
+
+  return (
+    <Paper
+      sx={{
+        p: 1.5,
+        mb: 2,
+        borderRadius: RADIUS.lg,
+        border: `1px solid ${PALETTE.stone[200]}`,
+        boxShadow: SHADOW.sm,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1.5,
+        flexWrap: 'wrap',
+      }}
+    >
+      {/* Пресеты */}
+      <Stack direction="row" spacing={0.5} flexWrap="wrap" sx={{ rowGap: 0.5 }}>
+        {presets.map(({ key, label }) => (
+          <Chip
+            key={key}
+            label={label}
+            clickable
+            onClick={() => handlePreset(key)}
+            color={activePreset === key ? 'primary' : 'default'}
+            variant={activePreset === key ? 'filled' : 'outlined'}
+            sx={{ fontWeight: 700, borderRadius: RADIUS.full, height: 30 }}
+          />
+        ))}
+      </Stack>
+
+      <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
+
+      {/* Произвольный диапазон */}
+      <TextField
+        size="small"
+        type="date"
+        label="С"
+        value={dateFrom}
+        onChange={(e) => onDateFromChange(e.target.value)}
+        InputLabelProps={{ shrink: true }}
+        InputProps={{
+          startAdornment: <EventRounded sx={{ fontSize: 16, color: PALETTE.stone[500], mr: 0.5 }} />,
+        }}
+        sx={{ minWidth: 165 }}
+      />
+      <TextField
+        size="small"
+        type="date"
+        label="По"
+        value={dateTo}
+        onChange={(e) => onDateToChange(e.target.value)}
+        InputLabelProps={{ shrink: true }}
+        InputProps={{
+          startAdornment: <EventRounded sx={{ fontSize: 16, color: PALETTE.stone[500], mr: 0.5 }} />,
+        }}
+        sx={{ minWidth: 165 }}
+      />
+
+      <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
+
+      {/* Счёт */}
+      <FormControl size="small" sx={{ minWidth: 180 }}>
+        <InputLabel id="cf-account-filter">Счёт</InputLabel>
+        <Select
+          labelId="cf-account-filter"
+          label="Счёт"
+          value={accountFilter}
+          onChange={(e) => onAccountFilterChange(e.target.value as number | 'all')}
+        >
+          <MenuItem value="all">Все счета</MenuItem>
+          {accounts.map((a) => (
+            <MenuItem key={a.id} value={a.id}>{a.name}</MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      {(dateFrom || dateTo || accountFilter !== 'all') && (
+        <Tooltip title="Сбросить фильтры">
+          <IconButton
+            size="small"
+            onClick={() => {
+              onDateFromChange('')
+              onDateToChange('')
+              onAccountFilterChange('all')
+            }}
+            sx={{ color: PALETTE.stone[500] }}
+          >
+            <ClearRounded fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      )}
+    </Paper>
+  )
+}
+
 // ── Transactions Table ────────────────────────────────────────────────────────
 
 interface TransactionsTableProps {
   onDelete: (id: TransactionId) => void
   onEdit: (tx: CashTransaction) => void
   isAdmin: boolean
-  tab: TabIndex
+  page: number
+  pageSize: number
+  onPageChange: (page: number) => void
+  onPageSizeChange: (size: number) => void
 }
 
-function TransactionsTable({ onDelete, onEdit, isAdmin, tab }: TransactionsTableProps) {
+function TransactionsTable({
+  onDelete, onEdit, isAdmin,
+  page, pageSize, onPageChange, onPageSizeChange,
+}: TransactionsTableProps) {
   const { transactions, transactionsTotal, loading } = useCashflowStore()
 
-  const typeFilter = TAB_TYPE_MAP[tab]
-  const visible = typeFilter !== null
-    ? transactions.filter((t) => t.transaction_type === typeFilter)
-    : transactions
+  const showSkeleton = loading && transactions.length === 0
 
-  if (loading) {
+  if (showSkeleton) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
         <CircularProgress />
@@ -749,12 +909,12 @@ function TransactionsTable({ onDelete, onEdit, isAdmin, tab }: TransactionsTable
     )
   }
 
-  if (visible.length === 0) {
+  if (transactionsTotal === 0) {
     return (
       <Box sx={{ textAlign: 'center', py: 6 }}>
-        <Typography color="text.secondary">Операций пока нет</Typography>
+        <Typography color="text.secondary">За выбранный период операций нет</Typography>
         <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
-          Нажмите «Новая операция» чтобы добавить первую запись
+          Поменяйте фильтры или нажмите «Новая операция»
         </Typography>
       </Box>
     )
@@ -772,11 +932,21 @@ function TransactionsTable({ onDelete, onEdit, isAdmin, tab }: TransactionsTable
     return ''
   }
 
+  const rangeFrom = page * pageSize + 1
+  const rangeTo = page * pageSize + transactions.length
+
   return (
     <>
-      <Typography variant="caption" sx={{ ...overlineSx, mb: 1 }}>
-        Показано {visible.length} из {transactionsTotal}
-      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+        <Typography variant="caption" sx={{ ...overlineSx }}>
+          {transactionsTotal > 0
+            ? `Показано ${rangeFrom}–${rangeTo} из ${transactionsTotal}`
+            : `Показано 0 из ${transactionsTotal}`}
+        </Typography>
+        {loading && transactions.length > 0 && (
+          <CircularProgress size={14} sx={{ color: PALETTE.stone[400] }} />
+        )}
+      </Box>
       <TableContainer
         component={Paper}
         sx={{
@@ -800,7 +970,7 @@ function TransactionsTable({ onDelete, onEdit, isAdmin, tab }: TransactionsTable
             </TableRow>
           </TableHead>
           <TableBody>
-            {visible.map((tx) => (
+            {transactions.map((tx) => (
               <TableRow
                 key={tx.id}
                 hover
@@ -862,6 +1032,21 @@ function TransactionsTable({ onDelete, onEdit, isAdmin, tab }: TransactionsTable
             ))}
           </TableBody>
         </Table>
+        <TablePagination
+          component="div"
+          count={transactionsTotal}
+          page={page}
+          onPageChange={(_, newPage) => onPageChange(newPage)}
+          rowsPerPage={pageSize}
+          onRowsPerPageChange={(e) => onPageSizeChange(parseInt(e.target.value, 10))}
+          rowsPerPageOptions={PAGE_SIZE_OPTIONS}
+          labelRowsPerPage="На странице:"
+          labelDisplayedRows={({ from, to, count }) => `${from}–${to} из ${count}`}
+          sx={{
+            borderTop: `1px solid ${PALETTE.stone[200]}`,
+            '& .MuiTablePagination-toolbar': { px: 2 },
+          }}
+        />
       </TableContainer>
     </>
   )
@@ -942,6 +1127,7 @@ function buildConfirmConfig(
 
 export default function Cashflow() {
   const {
+    accounts,
     fetchAccounts, fetchCategories, fetchTransactions,
     fetchSummary, removeTransaction, removeAccount, editAccount, error,
   } = useCashflowStore()
@@ -961,19 +1147,78 @@ export default function Cashflow() {
   const [accError, setAccError] = useState<string | null>(null)
   const accErrorTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const thisMonthFrom = format(startOfMonth(new Date()), "yyyy-MM-dd'T'00:00:00")
-  const thisMonthTo   = format(endOfMonth(new Date()), "yyyy-MM-dd'T'23:59:59")
+  // ── Фильтры списка операций (сервер-сайд) ───────────────────────────────
+  const [dateFrom, setDateFrom] = useState<string>(
+    () => format(startOfMonth(new Date()), 'yyyy-MM-dd'),
+  )
+  const [dateTo, setDateTo] = useState<string>(
+    () => format(endOfMonth(new Date()), 'yyyy-MM-dd'),
+  )
+  const [accountFilter, setAccountFilter] = useState<number | 'all'>('all')
+  const [page, setPage] = useState(0)
+  const [pageSize, setPageSize] = useState<number>(() => {
+    const stored = parseInt(localStorage.getItem('cashflow.pageSize') || '', 10)
+    return PAGE_SIZE_OPTIONS.includes(stored) ? stored : 20
+  })
+
+  useEffect(() => {
+    localStorage.setItem('cashflow.pageSize', String(pageSize))
+  }, [pageSize])
+
+  const transactionTypeFilter = TAB_TYPE_MAP[tab]
+
+  // Готовим datetime-границы для бэкенда (включительно).
+  const apiDateFrom = dateFrom ? `${dateFrom}T00:00:00` : undefined
+  const apiDateTo   = dateTo   ? `${dateTo}T23:59:59`   : undefined
+
+  // Сброс страницы при смене любого фильтра (но не при смене самой страницы).
+  useEffect(() => {
+    setPage(0)
+  }, [dateFrom, dateTo, accountFilter, tab, pageSize])
+
+  // Перезагрузка операций при смене фильтров/страницы.
+  useEffect(() => {
+    fetchTransactions({
+      skip: page * pageSize,
+      limit: pageSize,
+      date_from: apiDateFrom,
+      date_to: apiDateTo,
+      account_id: accountFilter === 'all' ? undefined : accountFilter,
+      transaction_type: transactionTypeFilter ?? undefined,
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, pageSize, apiDateFrom, apiDateTo, accountFilter, transactionTypeFilter])
+
+  // Перезагрузка summary при смене диапазона дат.
+  useEffect(() => {
+    fetchSummary(apiDateFrom, apiDateTo)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [apiDateFrom, apiDateTo])
 
   const loadAll = useCallback(async () => {
     await Promise.all([
       fetchAccounts(),
       fetchCategories(),
-      fetchTransactions({ limit: 100 }),
-      fetchSummary(thisMonthFrom, thisMonthTo),
+      fetchTransactions({
+        skip: page * pageSize,
+        limit: pageSize,
+        date_from: apiDateFrom,
+        date_to: apiDateTo,
+        account_id: accountFilter === 'all' ? undefined : accountFilter,
+        transaction_type: transactionTypeFilter ?? undefined,
+      }),
+      fetchSummary(apiDateFrom, apiDateTo),
     ])
-  }, [fetchAccounts, fetchCategories, fetchTransactions, fetchSummary, thisMonthFrom, thisMonthTo])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetchAccounts, fetchCategories, fetchTransactions, fetchSummary,
+      page, pageSize, apiDateFrom, apiDateTo, accountFilter, transactionTypeFilter])
 
-  useEffect(() => { loadAll() }, [loadAll])
+  // Первая загрузка справочников (операции/summary подтянут эффекты выше).
+  useEffect(() => {
+    fetchAccounts()
+    fetchCategories()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const showAccError = (msg: string) => {
     if (accErrorTimer.current) clearTimeout(accErrorTimer.current)
@@ -1080,26 +1325,35 @@ export default function Cashflow() {
 
       <Divider sx={{ my: 2, borderColor: PALETTE.stone[200] }} />
 
+      {/* ── Фильтры по дате и счёту ── */}
+      <TransactionsToolbar
+        dateFrom={dateFrom}
+        dateTo={dateTo}
+        onDateFromChange={setDateFrom}
+        onDateToChange={setDateTo}
+        accountFilter={accountFilter}
+        onAccountFilterChange={setAccountFilter}
+        accounts={accounts}
+      />
+
       {/* ── Transaction tabs ── */}
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+      <Box sx={{ mb: 2 }}>
         <Tabs value={tab} onChange={(_, v: TabIndex) => setTab(v)}>
           <Tab label="Все операции" />
           <Tab label="Приходы" />
           <Tab label="Расходы" />
           <Tab label="Переводы" />
         </Tabs>
-        <Tooltip title="Фильтры">
-          <IconButton sx={{ color: PALETTE.stone[500] }}>
-            <FilterListRounded />
-          </IconButton>
-        </Tooltip>
       </Box>
 
       <TransactionsTable
         onDelete={(id) => setConfirmState({ variant: 'delete-tx', txId: id })}
         onEdit={setEditTx}
         isAdmin={isAdmin}
-        tab={tab}
+        page={page}
+        pageSize={pageSize}
+        onPageChange={setPage}
+        onPageSizeChange={setPageSize}
       />
 
       {/* ── CRUD Dialogs ── */}
