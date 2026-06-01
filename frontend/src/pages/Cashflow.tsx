@@ -12,12 +12,13 @@ import {
   TrendingUpRounded, TrendingDownRounded, SwapHorizRounded,
   AccountBalanceRounded, LocalAtmRounded, RefreshRounded,
   ArchiveRounded, UnarchiveRounded,
-  EventRounded, ClearRounded,
+  ClearRounded,
 } from '@mui/icons-material'
 import {
   format, startOfMonth, endOfMonth, startOfWeek, endOfWeek,
   startOfYear, endOfYear, subDays,
 } from 'date-fns'
+import { DateField } from '../components/DateField'
 import { useCashflowStore } from '../store/cashflowStore'
 import { getRoleFromToken } from '../store/authStore'
 import {
@@ -818,30 +819,22 @@ function TransactionsToolbar({
 
       <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
 
-      {/* Произвольный диапазон */}
-      <TextField
-        size="small"
-        type="date"
-        label="С"
+      {/* Произвольный диапазон — кастомный календарь в стиле приложения */}
+      <DateField
         value={dateFrom}
-        onChange={(e) => onDateFromChange(e.target.value)}
-        InputLabelProps={{ shrink: true }}
-        InputProps={{
-          startAdornment: <EventRounded sx={{ fontSize: 16, color: PALETTE.stone[500], mr: 0.5 }} />,
-        }}
-        sx={{ minWidth: 165 }}
-      />
-      <TextField
+        onChange={onDateFromChange}
+        label="С"
+        placeholder="Дата начала"
         size="small"
-        type="date"
-        label="По"
+        minWidth={210}
+      />
+      <DateField
         value={dateTo}
-        onChange={(e) => onDateToChange(e.target.value)}
-        InputLabelProps={{ shrink: true }}
-        InputProps={{
-          startAdornment: <EventRounded sx={{ fontSize: 16, color: PALETTE.stone[500], mr: 0.5 }} />,
-        }}
-        sx={{ minWidth: 165 }}
+        onChange={onDateToChange}
+        label="По"
+        placeholder="Дата окончания"
+        size="small"
+        minWidth={210}
       />
 
       <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
@@ -1272,13 +1265,8 @@ export default function Cashflow() {
   return (
     <Container maxWidth={false} sx={{ px: { xs: 2, md: 5 }, py: 2 }}>
       {/* ── Header ── */}
-      <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 3 }}>
-        <Box>
-          <Typography variant="h4" sx={{ fontWeight: 900 }}>Касса</Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25 }}>
-            Учёт денежных потоков · {format(new Date(), 'MMMM yyyy')}
-          </Typography>
-        </Box>
+      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+        <Typography variant="h4" sx={{ fontWeight: 900 }}>Касса</Typography>
         <Stack direction="row" spacing={1} alignItems="center">
           <Tooltip title="Обновить">
             <IconButton onClick={loadAll} sx={{ color: PALETTE.stone[500] }}>
