@@ -74,6 +74,60 @@ async def _scheme_for(db: AsyncSession, employee_id: int) -> SalaryScheme | None
     ).scalar_one_or_none()
 
 
+async def compute_salary_amounts(
+    db: AsyncSession,
+    employee: Employee,
+    period_start,
+    period_end,
+) -> dict:
+    """Чистый расчёт base/works_bonus/revenue_bonus/total за произвольный период.
+
+    Та же формула, что и в `/salary/calculate`, но без записи в БД — нужна для
+    отчётов и предпросмотров. Возвращает Decimal-суммы.
+    """
+    scheme = await _scheme_for(db, employee.id)
+    works_pct = Decimal(str(scheme.works_percentage if scheme else 0))
+    revenue_pct = Decimal(str(scheme.revenue_percentage if scheme else 0))
+    revenue_all_orders = bool(scheme.revenue_all_orders) if scheme else False
+
+    effective_mech = func.coalesce(OrderWork.mechanic_id, Order.mechanic_id)
+    works_sum_val = (await db.execute(
+        select(func.coalesce(func.sum(OrderWork.total), 0))
+        .join(Order, (Order.id == OrderWork.order_id) & (Order.tenant_id == OrderWork.tenant_id))
+        .where(
+            effective_mech == employee.id,
+            Order.status.in_(["paid", "completed"]),
+            func.date(Order.completed_at) >= period_start,
+            func.date(Order.completed_at) <= period_end,
+        )
+    )).scalar() or 0
+    works_sum = Decimal(str(works_sum_val))
+    works_bonus = (works_sum * works_pct / Decimal(100)).quantize(Decimal("0.01"))
+
+    revenue_stmt = (
+        select(func.coalesce(func.sum(Order.total_amount), 0))
+        .where(
+            Order.status.in_(["paid", "completed"]),
+            func.date(Order.completed_at) >= period_start,
+            func.date(Order.completed_at) <= period_end,
+        )
+    )
+    if not revenue_all_orders:
+        revenue_stmt = revenue_stmt.where(Order.employee_id == employee.id)
+    revenue_sum_val = (await db.execute(revenue_stmt)).scalar() or 0
+    revenue_sum = Decimal(str(revenue_sum_val))
+    revenue_bonus = (revenue_sum * revenue_pct / Decimal(100)).quantize(Decimal("0.01"))
+
+    base = Decimal(str(employee.salary_base))
+    total = (base + works_bonus + revenue_bonus).quantize(Decimal("0.01"))
+    return {
+        "base": base,
+        "works_bonus": works_bonus,
+        "revenue_bonus": revenue_bonus,
+        "total": total,
+    }
+
+
 async def _calculate(
     db: AsyncSession, body: SalaryCalculate, claims: TenantClaims
 ) -> Salary:
@@ -102,56 +156,18 @@ async def _calculate(
         await db.delete(existing)
         await db.flush()
 
-    scheme = await _scheme_for(db, body.employee_id)
-    works_pct = Decimal(str(scheme.works_percentage if scheme else 0))
-    revenue_pct = Decimal(str(scheme.revenue_percentage if scheme else 0))
-    revenue_all_orders = bool(scheme.revenue_all_orders) if scheme else False
-
-    # Сумма работ механика за период: per-OrderWork, attribution через
-    # COALESCE(ow.mechanic_id, o.mechanic_id) — если в строке работы не
-    # проставлен механик, берём primary mechanic заказа.
-    effective_mech = func.coalesce(OrderWork.mechanic_id, Order.mechanic_id)
-    works_sum_val = (await db.execute(
-        select(func.coalesce(func.sum(OrderWork.total), 0))
-        .join(Order, (Order.id == OrderWork.order_id) & (Order.tenant_id == OrderWork.tenant_id))
-        .where(
-            effective_mech == body.employee_id,
-            Order.status.in_(["paid", "completed"]),
-            func.date(Order.completed_at) >= body.period_start,
-            func.date(Order.completed_at) <= body.period_end,
-        )
-    )).scalar() or 0
-    works_sum = Decimal(str(works_sum_val))
-    works_bonus = (works_sum * works_pct / Decimal(100)).quantize(Decimal("0.01"))
-
-    # Выручка менеджера: по умолчанию только те заказы, где он указан
-    # ответственным; при revenue_all_orders=True — все закрытые заказы периода.
-    revenue_stmt = (
-        select(func.coalesce(func.sum(Order.total_amount), 0))
-        .where(
-            Order.status.in_(["paid", "completed"]),
-            func.date(Order.completed_at) >= body.period_start,
-            func.date(Order.completed_at) <= body.period_end,
-        )
-    )
-    if not revenue_all_orders:
-        revenue_stmt = revenue_stmt.where(Order.employee_id == body.employee_id)
-    revenue_sum_val = (await db.execute(revenue_stmt)).scalar() or 0
-    revenue_sum = Decimal(str(revenue_sum_val))
-    revenue_bonus = (revenue_sum * revenue_pct / Decimal(100)).quantize(Decimal("0.01"))
-
-    base = Decimal(str(employee.salary_base))
-    total = (base + works_bonus + revenue_bonus).quantize(Decimal("0.01"))
+    amounts = await compute_salary_amounts(db, employee, body.period_start, body.period_end)
+    bonus = (amounts["works_bonus"] + amounts["revenue_bonus"]).quantize(Decimal("0.01"))
 
     salary = Salary(
         tenant_id=claims.tenant_id,
         employee_id=body.employee_id,
         period_start=body.period_start,
         period_end=body.period_end,
-        base_salary=base,
-        bonus=(works_bonus + revenue_bonus).quantize(Decimal("0.01")),
+        base_salary=amounts["base"],
+        bonus=bonus,
         penalty=Decimal(0),
-        total=total,
+        total=amounts["total"],
         status=SalaryStatus.CALCULATED.value,
     )
     db.add(salary)

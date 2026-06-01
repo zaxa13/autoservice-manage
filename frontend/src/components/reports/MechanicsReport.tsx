@@ -1,11 +1,12 @@
 import {
   Box, Paper, Typography, Table, TableBody, TableCell,
-  TableContainer, TableHead, TableRow, Chip, Grid, alpha,
+  TableContainer, TableHead, TableRow, Chip, Grid, alpha, Tooltip,
 } from '@mui/material'
 import {
   BuildRounded,
   EmojiEventsRounded,
   TrendingUpRounded,
+  InfoOutlined,
 } from '@mui/icons-material'
 import { MechanicsReportResponse } from '../../types'
 import { BRAND, PALETTE, iconBoxSx, overlineSx } from '../../design-tokens'
@@ -27,7 +28,15 @@ export default function MechanicsReport({ data }: Props) {
           <Paper elevation={0} sx={{ p: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
             <Box sx={iconBoxSx(BRAND.primary)}><TrendingUpRounded /></Box>
             <Box>
-              <Typography sx={{ ...overlineSx, mb: 0.3 }}>Суммарная выручка</Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.3 }}>
+                <Typography sx={overlineSx}>Суммарная выручка</Typography>
+                <Tooltip
+                  arrow
+                  title="Выручка только по работам из закрытых заказ-нарядов, выполненных автомеханиками. Запчасти и расходники сюда не входят."
+                >
+                  <InfoOutlined sx={{ fontSize: 14, color: 'text.disabled', cursor: 'help' }} />
+                </Tooltip>
+              </Box>
               <Typography variant="h6" sx={{ fontWeight: 900, lineHeight: 1.2 }}>
                 {fmt(data.team_total_revenue)}
               </Typography>
@@ -49,7 +58,15 @@ export default function MechanicsReport({ data }: Props) {
           <Paper elevation={0} sx={{ p: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
             <Box sx={iconBoxSx(PALETTE.amber.main)}><EmojiEventsRounded /></Box>
             <Box>
-              <Typography sx={{ ...overlineSx, mb: 0.3 }}>Средний чек команды</Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.3 }}>
+                <Typography sx={overlineSx}>Средний чек команды</Typography>
+                <Tooltip
+                  arrow
+                  title="Средний чек закрытых заказ-нарядов только по работам автомехаников — не суммарный средний чек заказа (без запчастей и расходников)."
+                >
+                  <InfoOutlined sx={{ fontSize: 14, color: 'text.disabled', cursor: 'help' }} />
+                </Tooltip>
+              </Box>
               <Typography variant="h6" sx={{ fontWeight: 900, lineHeight: 1.2 }}>
                 {fmt(data.team_avg_check)}
               </Typography>

@@ -27,7 +27,7 @@ from app.models.employee import Employee
 from app.models.order import Order, OrderPart, OrderStatus, OrderWork
 from app.models.part import Part
 from app.models.payment import Payment, PaymentMethod, PaymentStatus
-from app.models.salary import Salary
+from app.api.v1.salary import compute_salary_amounts
 from app.models.vehicle import Vehicle
 from app.models.vehicle_brand import VehicleBrand, VehicleModel
 from app.models.warehouse import WarehouseItem
@@ -282,18 +282,6 @@ async def mechanics_report(
         works_sum_by_order = {r[0]: float(r[1] or 0) for r in rows}
         works_cnt_by_order = {r[0]: int(r[2] or 0) for r in rows}
 
-    # Salary за период (если есть).
-    salary_map: dict[int, float] = {}
-    if mechanic_ids:
-        rows = (await db.execute(
-            select(Salary.employee_id, func.sum(Salary.total)).where(
-                Salary.employee_id.in_(mechanic_ids),
-                Salary.period_start >= date_from,
-                Salary.period_end <= date_to,
-            ).group_by(Salary.employee_id)
-        )).all()
-        salary_map = {r[0]: float(r[1] or 0) for r in rows}
-
     emp_map = {}
     if mechanic_ids:
         emp_map = {
@@ -302,6 +290,15 @@ async def mechanics_report(
                 await db.execute(select(Employee).where(Employee.id.in_(mechanic_ids)))
             ).scalars()
         }
+
+    # Зарплата за период — считаем on-the-fly по той же формуле, что и
+    # /salary/calculate. Не фильтруем по сохранённым ведомостям, чтобы
+    # отчёт корректно работал и за произвольный диапазон (например,
+    # «1-15 мая»), даже если ведомость на такой период ещё не закрыта.
+    salary_map: dict[int, float] = {}
+    for mid, emp in emp_map.items():
+        amounts = await compute_salary_amounts(db, emp, date_from, date_to)
+        salary_map[mid] = float(amounts["total"])
 
     mechanics = []
     team_total_revenue = 0.0
