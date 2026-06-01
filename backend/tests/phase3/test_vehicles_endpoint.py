@@ -159,8 +159,10 @@ async def test_list_filter_by_customer(client):
         f"/api/v1/vehicles/?customer_id={refs['customer_id']}", headers=headers
     )
     assert r.status_code == 200
-    assert len(r.json()) == 1
-    assert r.json()[0]["license_plate"] == "А001"
+    body = r.json()
+    assert body["total"] == 1
+    assert len(body["items"]) == 1
+    assert body["items"][0]["license_plate"] == "А001"
 
 
 async def test_search_by_license_plate(client):
@@ -199,5 +201,5 @@ async def test_isolation_between_tenants(client):
     r_b = await client.get(
         "/api/v1/vehicles/", headers={"Authorization": f"Bearer {t_b}"}
     )
-    assert {v["license_plate"] for v in r_a.json()} == {"ALPHA-1"}
-    assert {v["license_plate"] for v in r_b.json()} == {"BETA-1"}
+    assert {v["license_plate"] for v in r_a.json()["items"]} == {"ALPHA-1"}
+    assert {v["license_plate"] for v in r_b.json()["items"]} == {"BETA-1"}

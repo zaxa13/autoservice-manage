@@ -4,6 +4,7 @@ import {
   Card, CardContent, Stack, Chip, Divider, Alert, Button, Paper,
   Dialog, DialogTitle, DialogContent, DialogActions,
   Tooltip, alpha, Collapse, MenuItem, Select, FormControl, InputLabel,
+  TablePagination,
 } from '@mui/material'
 import {
   SearchRounded,
@@ -20,8 +21,6 @@ import {
   SpeedRounded,
   AddRounded,
   ContactPhoneRounded,
-  NavigateNextRounded,
-  NavigateBeforeRounded,
   SwapHorizRounded,
 } from '@mui/icons-material'
 import { Link as RouterLink } from 'react-router-dom'
@@ -958,7 +957,7 @@ function ChangeOwnerDialog({ vehicle, open, onClose, onSaved }: {
 
 // ── Main page ──────────────────────────────────────────────────────────────────
 
-const BATCH_SIZE = 30
+const PAGE_SIZE_OPTIONS = [20, 50, 100]
 
 export default function VehiclesPage() {
   const [inputValue, setInputValue] = useState('')
@@ -972,38 +971,44 @@ export default function VehiclesPage() {
   const [createOpen, setCreateOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  // Browse-режим: страничная пагинация по BATCH_SIZE.
+  // Browse-режим: серверная пагинация по pageSize, как в Orders.
   const [browseVehicles, setBrowseVehicles] = useState<Vehicle[]>([])
   const [browsePage, setBrowsePage] = useState(0)
-  const [browseHasMore, setBrowseHasMore] = useState(false)
+  const [browsePageSize, setBrowsePageSize] = useState<number>(() => {
+    const stored = parseInt(localStorage.getItem('vehicles.pageSize') || '', 10)
+    return PAGE_SIZE_OPTIONS.includes(stored) ? stored : 20
+  })
+  const [browseTotal, setBrowseTotal] = useState(0)
   const [browseLoading, setBrowseLoading] = useState(false)
 
-  const loadBrowsePage = async (page: number) => {
+  useEffect(() => {
+    localStorage.setItem('vehicles.pageSize', String(browsePageSize))
+  }, [browsePageSize])
+
+  const loadBrowsePage = async (page: number, pageSize: number) => {
     setBrowseLoading(true)
     setError('')
     try {
-      // Запрашиваем BATCH_SIZE+1, чтобы понять есть ли следующая страница без
-      // отдельного count-запроса. Лишний элемент в дисплей не пускаем.
-      const res = await api.get('/vehicles/', {
-        params: { skip: page * BATCH_SIZE, limit: BATCH_SIZE + 1 },
+      const res = await api.get<{ items: Vehicle[]; total: number }>('/vehicles/', {
+        params: { skip: page * pageSize, limit: pageSize },
       })
-      const data: Vehicle[] = res.data || []
-      setBrowseHasMore(data.length > BATCH_SIZE)
-      setBrowseVehicles(data.slice(0, BATCH_SIZE))
+      const data = res.data || { items: [], total: 0 }
+      setBrowseVehicles(data.items || [])
+      setBrowseTotal(data.total || 0)
       setBrowsePage(page)
     } catch (e: any) {
       setError(e.response?.data?.detail || 'Ошибка загрузки списка')
       setBrowseVehicles([])
-      setBrowseHasMore(false)
+      setBrowseTotal(0)
     } finally {
       setBrowseLoading(false)
     }
   }
 
   useEffect(() => {
-    loadBrowsePage(0)
+    loadBrowsePage(0, browsePageSize)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [browsePageSize])
 
   const handleSearch = async (q?: string) => {
     const searchQuery = (q ?? inputValue).trim()
@@ -1195,7 +1200,13 @@ export default function VehiclesPage() {
               {searched ? 'Найдено' : 'Все автомобили'}
             </Typography>
             <Chip
-              label={searched ? results.length : `${browsePage * BATCH_SIZE + 1}–${browsePage * BATCH_SIZE + browseVehicles.length}`}
+              label={
+                searched
+                  ? results.length
+                  : browseTotal === 0
+                    ? '0'
+                    : `${browsePage * browsePageSize + 1}–${browsePage * browsePageSize + browseVehicles.length} из ${browseTotal}`
+              }
               size="small"
               sx={{
                 bgcolor: '#0D9488',
@@ -1349,32 +1360,25 @@ export default function VehiclesPage() {
           </Stack>
 
           {/* Пагинация — только в browse-режиме */}
-          {!searched && (browsePage > 0 || browseHasMore) && (
-            <Box sx={{
-              maxWidth: 760, mt: 3, display: 'flex',
-              alignItems: 'center', justifyContent: 'space-between', gap: 2,
-            }}>
-              <Button
-                variant="outlined"
-                startIcon={<NavigateBeforeRounded />}
-                onClick={() => loadBrowsePage(browsePage - 1)}
-                disabled={browsePage === 0 || browseLoading}
-                sx={{ fontWeight: 700, borderRadius: '10px' }}
-              >
-                Назад
-              </Button>
-              <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
-                Страница {browsePage + 1}
-              </Typography>
-              <Button
-                variant="contained"
-                endIcon={<NavigateNextRounded />}
-                onClick={() => loadBrowsePage(browsePage + 1)}
-                disabled={!browseHasMore || browseLoading}
-                sx={{ fontWeight: 700, borderRadius: '10px' }}
-              >
-                {browseLoading ? <CircularProgress size={20} color="inherit" /> : 'Далее'}
-              </Button>
+          {!searched && browseTotal > 0 && (
+            <Box sx={{ maxWidth: 760, mt: 2 }}>
+              <TablePagination
+                component="div"
+                count={browseTotal}
+                page={browsePage}
+                onPageChange={(_, newPage) => loadBrowsePage(newPage, browsePageSize)}
+                rowsPerPage={browsePageSize}
+                onRowsPerPageChange={(e) => setBrowsePageSize(parseInt(e.target.value, 10))}
+                rowsPerPageOptions={PAGE_SIZE_OPTIONS}
+                labelRowsPerPage="На странице:"
+                labelDisplayedRows={({ from, to, count }) => `${from}–${to} из ${count}`}
+                sx={{
+                  borderTop: '1px solid #E2E8F0',
+                  borderRadius: '10px',
+                  bgcolor: '#fff',
+                  '& .MuiTablePagination-toolbar': { px: 2, minHeight: 52 },
+                }}
+              />
             </Box>
           )}
         </Box>
@@ -1402,7 +1406,7 @@ export default function VehiclesPage() {
           // Возвращаемся в browse-режим и подгружаем первую страницу, чтобы
           // увидеть новую машину в общем списке.
           handleClearSearch()
-          loadBrowsePage(0)
+          loadBrowsePage(0, browsePageSize)
         }}
       />
       <ChangeOwnerDialog

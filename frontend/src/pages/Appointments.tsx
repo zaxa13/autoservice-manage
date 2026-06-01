@@ -790,8 +790,10 @@ function ClientSearchField({
           setResult(null)
         } else {
           const customer = res.data[0]
-          const vehiclesRes = await api.get<Vehicle[]>('/vehicles/', { params: { customer_id: customer.id } })
-          setResult({ type: 'customer', customer, vehicles: vehiclesRes.data })
+          const vehiclesRes = await api.get<{ items: Vehicle[]; total: number }>(
+            '/vehicles/', { params: { customer_id: customer.id, limit: 100 } },
+          )
+          setResult({ type: 'customer', customer, vehicles: vehiclesRes.data.items ?? [] })
         }
       }
     } catch {

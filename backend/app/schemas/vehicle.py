@@ -1,5 +1,5 @@
 from pydantic import BaseModel, ConfigDict, Field
-from typing import Optional
+from typing import List, Optional
 from datetime import datetime
 from app.schemas.customer import Customer
 
@@ -56,3 +56,11 @@ class Vehicle(VehicleBase):
     customer: Optional[Customer] = Field(None, description="Данные владельца")
     brand: Optional[BrandRef] = Field(None, description="Марка автомобиля")
     model: Optional[ModelRef] = Field(None, description="Модель автомобиля")
+
+
+class VehicleListResponse(BaseModel):
+    """Пагинированный ответ для списка ТС."""
+    model_config = ConfigDict(from_attributes=True)
+
+    items: List[Vehicle] = Field(..., description="ТС текущей страницы")
+    total: int = Field(..., description="Общее количество ТС с учётом фильтров")

@@ -239,7 +239,7 @@ export default function CustomerDetailPage() {
       .then(([cRes, vRes]) => {
         if (cancelled) return
         setCustomer(cRes.data)
-        setVehicles(vRes.data || [])
+        setVehicles(vRes.data?.items ?? [])
       })
       .catch((e) => {
         if (cancelled) return

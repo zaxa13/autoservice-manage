@@ -12,7 +12,7 @@ from __future__ import annotations
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import or_, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import NotFoundException
@@ -31,6 +31,7 @@ from app.schemas.responses import ErrorResponse
 from app.schemas.vehicle import (
     Vehicle as VehicleSchema,
     VehicleCreate,
+    VehicleListResponse,
     VehicleUpdate,
 )
 
@@ -99,21 +100,23 @@ async def _serialize_many(
     ]
 
 
-@router.get("/", response_model=list[VehicleSchema], responses=_auth)
+@router.get("/", response_model=VehicleListResponse, responses=_auth)
 async def list_vehicles(
     skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=500),
+    limit: int = Query(20, ge=1, le=500),
     customer_id: Optional[int] = Query(None),
     db: AsyncSession = Depends(get_tenant_db),
     _claims: TenantClaims = Depends(get_current_claims),
 ):
-    stmt = select(Vehicle).order_by(Vehicle.id)
+    base = select(Vehicle)
     if customer_id is not None:
-        stmt = stmt.where(Vehicle.customer_id == customer_id)
-    stmt = stmt.offset(skip).limit(limit)
-    result = await db.execute(stmt)
-    vehicles = list(result.scalars().all())
-    return await _serialize_many(db, vehicles)
+        base = base.where(Vehicle.customer_id == customer_id)
+
+    total = await db.scalar(select(func.count()).select_from(base.subquery()))
+    page_stmt = base.order_by(Vehicle.id).offset(skip).limit(limit)
+    vehicles = list((await db.execute(page_stmt)).scalars().all())
+    items = await _serialize_many(db, vehicles)
+    return {"items": items, "total": int(total or 0)}
 
 
 @router.get(
