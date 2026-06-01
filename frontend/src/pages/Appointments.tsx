@@ -41,7 +41,6 @@ import {
   SearchRounded,
   CheckCircleRounded,
   ArrowForwardIosRounded,
-  ArrowBackIosNewRounded,
   ExpandMoreRounded,
   OpenInNewRounded,
   ChevronLeftRounded,
@@ -70,8 +69,9 @@ import {
   OrderCreate,
 } from '../types'
 import {
-  addDays, addMonths, eachDayOfInterval, endOfWeek,
-  format, isSameDay, isSameMonth, parseISO, startOfMonth, startOfWeek, subDays,
+  addDays, addMonths, addWeeks, eachDayOfInterval, endOfWeek, getISOWeek,
+  format, isSameDay, isSameMonth, isWithinInterval, parseISO,
+  startOfMonth, startOfWeek,
 } from 'date-fns'
 import { ru } from 'date-fns/locale'
 
@@ -243,174 +243,6 @@ function MonthCalendar({
   )
 }
 
-
-// ─── Панель навигации по дате ────────────────────────────────────────────────
-
-function DatePanel({
-  selectedDate,
-  onChange,
-}: {
-  selectedDate: string
-  onChange: (d: string) => void
-}) {
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
-  const todayStr = format(new Date(), 'yyyy-MM-dd')
-  const yesterdayStr = format(subDays(new Date(), 1), 'yyyy-MM-dd')
-  const tomorrowStr = format(addDays(new Date(), 1), 'yyyy-MM-dd')
-  const dateObj = parseISO(selectedDate + 'T00:00:00')
-  const weekday = format(dateObj, 'EEEE', { locale: ru })
-  const human = format(dateObj, 'd MMMM yyyy', { locale: ru })
-  const monthYear = format(dateObj, 'LLLL yyyy', { locale: ru })
-
-  const shift = (days: number) => {
-    onChange(format(addDays(dateObj, days), 'yyyy-MM-dd'))
-  }
-
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      const target = e.target as HTMLElement | null
-      const tag = target?.tagName
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || target?.isContentEditable) return
-      if (anchorEl) return
-      if (e.key === 'ArrowLeft') { e.preventDefault(); shift(-1) }
-      else if (e.key === 'ArrowRight') { e.preventDefault(); shift(1) }
-      else if (e.key.toLowerCase() === 't') { e.preventDefault(); onChange(todayStr) }
-    }
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedDate, anchorEl])
-
-  const quickChip = (label: string, value: string, key: string) => {
-    const active = selectedDate === value
-    return (
-      <Chip
-        key={key}
-        label={label}
-        clickable
-        onClick={() => onChange(value)}
-        color={active ? 'primary' : 'default'}
-        variant={active ? 'filled' : 'outlined'}
-        sx={{
-          fontWeight: 700,
-          borderRadius: 2,
-          height: 36,
-          px: 0.5,
-          fontSize: '0.85rem',
-        }}
-      />
-    )
-  }
-
-  return (
-    <Paper
-      sx={{
-        p: 1.5,
-        borderRadius: 3,
-        mb: 2,
-        display: 'flex',
-        alignItems: 'center',
-        gap: 1.5,
-        flexWrap: 'wrap',
-      }}
-    >
-      {/* Стрелка влево */}
-      <Tooltip title="Предыдущий день (←)">
-        <IconButton
-          onClick={() => shift(-1)}
-          sx={{
-            bgcolor: 'action.hover',
-            borderRadius: 2,
-            width: 44, height: 44,
-            '&:hover': { bgcolor: 'action.selected' },
-          }}
-        >
-          <ArrowBackIosNewRounded fontSize="small" />
-        </IconButton>
-      </Tooltip>
-
-      {/* Чипы быстрого выбора */}
-      <Stack direction="row" spacing={0.75}>
-        {quickChip('Вчера', yesterdayStr, 'y')}
-        {quickChip('Сегодня', todayStr, 't')}
-        {quickChip('Завтра', tomorrowStr, 'tm')}
-      </Stack>
-
-      <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
-
-      {/* Текущая дата — крупно, как визуальный якорь */}
-      <Box sx={{ flex: '1 1 auto', minWidth: 180, lineHeight: 1.15 }}>
-        <Typography sx={{ fontWeight: 800, fontSize: '1.15rem', color: 'text.primary' }}>
-          {human}
-        </Typography>
-        <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'capitalize' }}>
-          {weekday}
-        </Typography>
-      </Box>
-
-      {/* Большая явная CTA «Календарь» */}
-      <Tooltip title="Открыть календарь">
-        <Button
-          variant="contained"
-          color="primary"
-          size="large"
-          startIcon={<CalendarMonthRounded />}
-          onClick={(e) => setAnchorEl(e.currentTarget)}
-          sx={{
-            borderRadius: 2,
-            fontWeight: 700,
-            textTransform: 'none',
-            px: 2,
-            py: 1.1,
-            fontSize: '0.95rem',
-            boxShadow: 2,
-          }}
-        >
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', lineHeight: 1.1 }}>
-            <Typography component="span" sx={{ fontWeight: 800, fontSize: '0.95rem', color: 'inherit' }}>
-              Календарь
-            </Typography>
-            <Typography component="span" sx={{ fontSize: '0.7rem', opacity: 0.85, textTransform: 'capitalize' }}>
-              {monthYear}
-            </Typography>
-          </Box>
-        </Button>
-      </Tooltip>
-
-      {/* Стрелка вправо */}
-      <Tooltip title="Следующий день (→)">
-        <IconButton
-          onClick={() => shift(1)}
-          sx={{
-            bgcolor: 'action.hover',
-            borderRadius: 2,
-            width: 44, height: 44,
-            '&:hover': { bgcolor: 'action.selected' },
-          }}
-        >
-          <ArrowForwardIosRounded fontSize="small" />
-        </IconButton>
-      </Tooltip>
-
-      <Popover
-        open={Boolean(anchorEl)}
-        anchorEl={anchorEl}
-        onClose={() => setAnchorEl(null)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        slotProps={{ paper: { sx: { borderRadius: 3, mt: 1, boxShadow: 6 } } }}
-      >
-        <MonthCalendar
-          selectedDate={dateObj}
-          onPick={(d) => {
-            onChange(format(d, 'yyyy-MM-dd'))
-            setAnchorEl(null)
-          }}
-        />
-      </Popover>
-    </Paper>
-  )
-}
 
 // ─── Чип статуса ─────────────────────────────────────────────────────────────
 
@@ -1269,10 +1101,512 @@ function StatusStatsBar({
   )
 }
 
+// ─── Режим просмотра + тулбар ────────────────────────────────────────────────
+
+type ViewMode = 'day' | 'week'
+
+const WEEKDAY_SHORT: Record<number, string> = {
+  1: 'пн', 2: 'вт', 3: 'ср', 4: 'чт', 5: 'пт', 6: 'сб', 0: 'вс',
+}
+
+function getWeekRange(date: Date): { start: Date; end: Date; days: Date[] } {
+  const start = startOfWeek(date, { weekStartsOn: 1 })
+  const end = endOfWeek(date, { weekStartsOn: 1 })
+  const days = eachDayOfInterval({ start, end })
+  return { start, end, days }
+}
+
+function formatWeekRange(start: Date, end: Date): string {
+  // 25 – 31 мая 2026  (если месяцы разные — "29 мая – 4 июня 2026")
+  const sameMonth = start.getMonth() === end.getMonth()
+  const sameYear = start.getFullYear() === end.getFullYear()
+  if (sameMonth) {
+    return `${format(start, 'd', { locale: ru })} – ${format(end, 'd MMMM yyyy', { locale: ru })}`
+  }
+  if (sameYear) {
+    return `${format(start, 'd MMM', { locale: ru })} – ${format(end, 'd MMM yyyy', { locale: ru })}`
+  }
+  return `${format(start, 'd MMM yyyy', { locale: ru })} – ${format(end, 'd MMM yyyy', { locale: ru })}`
+}
+
+function ScheduleToolbar({
+  viewMode,
+  onViewModeChange,
+  selectedDate,
+  onChangeDate,
+}: {
+  viewMode: ViewMode
+  onViewModeChange: (m: ViewMode) => void
+  selectedDate: string
+  onChangeDate: (d: string) => void
+}) {
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
+  const dateObj = parseISO(selectedDate + 'T00:00:00')
+  const today = new Date()
+
+  const { start: weekStart, end: weekEnd } = getWeekRange(dateObj)
+  const todayWeek = getWeekRange(today)
+  const isThisWeek = isSameDay(weekStart, todayWeek.start)
+  const isToday = isSameDay(dateObj, today)
+
+  const shift = (units: number) => {
+    if (viewMode === 'week') {
+      onChangeDate(format(addWeeks(dateObj, units), 'yyyy-MM-dd'))
+    } else {
+      onChangeDate(format(addDays(dateObj, units), 'yyyy-MM-dd'))
+    }
+  }
+
+  const goCurrent = () => {
+    onChangeDate(format(today, 'yyyy-MM-dd'))
+  }
+
+  const monthYear = format(dateObj, 'LLLL yyyy', { locale: ru })
+
+  // Главная подпись/подзаголовок зависит от режима
+  let mainLabel: string
+  let subLabel: string
+  if (viewMode === 'week') {
+    mainLabel = formatWeekRange(weekStart, weekEnd)
+    subLabel = `Неделя ${getISOWeek(dateObj)}`
+  } else {
+    mainLabel = format(dateObj, 'd MMMM yyyy', { locale: ru })
+    subLabel = format(dateObj, 'EEEE', { locale: ru })
+  }
+
+  return (
+    <Paper
+      sx={{
+        p: 1.25,
+        borderRadius: 3,
+        mb: 2,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1.5,
+        flexWrap: 'wrap',
+      }}
+    >
+      {/* Стрелка назад */}
+      <Tooltip title={viewMode === 'week' ? 'Предыдущая неделя' : 'Предыдущий день'}>
+        <IconButton
+          onClick={() => shift(-1)}
+          sx={{
+            border: '1px solid',
+            borderColor: 'divider',
+            borderRadius: '50%',
+            width: 40, height: 40,
+            '&:hover': { bgcolor: 'action.hover' },
+          }}
+        >
+          <ChevronLeftRounded fontSize="small" />
+        </IconButton>
+      </Tooltip>
+
+      {/* "Сегодня" / "Эта неделя" */}
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={goCurrent}
+        disabled={viewMode === 'week' ? isThisWeek : isToday}
+        sx={{
+          borderRadius: 999,
+          textTransform: 'none',
+          fontWeight: 700,
+          fontSize: '0.9rem',
+          px: 2.25,
+          py: 0.9,
+          minWidth: 'auto',
+          '&.Mui-disabled': {
+            background: (t) => alpha(t.palette.primary.main, 0.5),
+            color: '#fff',
+          },
+        }}
+      >
+        {viewMode === 'week' ? 'Эта неделя' : 'Сегодня'}
+      </Button>
+
+      {/* Стрелка вперёд */}
+      <Tooltip title={viewMode === 'week' ? 'Следующая неделя' : 'Следующий день'}>
+        <IconButton
+          onClick={() => shift(1)}
+          sx={{
+            border: '1px solid',
+            borderColor: 'divider',
+            borderRadius: '50%',
+            width: 40, height: 40,
+            '&:hover': { bgcolor: 'action.hover' },
+          }}
+        >
+          <ChevronRightRounded fontSize="small" />
+        </IconButton>
+      </Tooltip>
+
+      <Divider orientation="vertical" flexItem sx={{ mx: 0.5, my: 0.5 }} />
+
+      {/* Главная подпись */}
+      <Box sx={{ flex: '1 1 auto', minWidth: 180, lineHeight: 1.15 }}>
+        <Typography sx={{ fontWeight: 800, fontSize: '1.15rem', color: 'text.primary' }}>
+          {mainLabel}
+        </Typography>
+        <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'capitalize' }}>
+          {subLabel}
+        </Typography>
+      </Box>
+
+      {/* Сегментный переключатель режима */}
+      <Box
+        sx={{
+          display: 'inline-flex',
+          p: 0.4,
+          borderRadius: 999,
+          bgcolor: 'action.hover',
+          gap: 0.25,
+        }}
+      >
+        {(['day', 'week'] as ViewMode[]).map((m) => {
+          const active = viewMode === m
+          return (
+            <Button
+              key={m}
+              onClick={() => onViewModeChange(m)}
+              disableElevation
+              sx={{
+                minWidth: 88,
+                borderRadius: 999,
+                px: 2,
+                py: 0.7,
+                fontWeight: 700,
+                fontSize: '0.85rem',
+                textTransform: 'none',
+                color: active ? 'text.primary' : 'text.secondary',
+                bgcolor: active ? 'background.paper' : 'transparent',
+                boxShadow: active ? 1 : 'none',
+                '&:hover': {
+                  bgcolor: active ? 'background.paper' : 'action.selected',
+                },
+              }}
+            >
+              {m === 'day' ? 'День' : 'Неделя'}
+            </Button>
+          )
+        })}
+      </Box>
+
+      {/* Календарь */}
+      <Tooltip title="Открыть календарь">
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={(e) => setAnchorEl(e.currentTarget)}
+          endIcon={<CalendarMonthRounded />}
+          sx={{
+            borderRadius: 2,
+            fontWeight: 700,
+            textTransform: 'none',
+            px: 2,
+            py: 1.1,
+            lineHeight: 1.1,
+            textAlign: 'left',
+          }}
+        >
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', lineHeight: 1.1 }}>
+            <Typography component="span" sx={{ fontWeight: 800, fontSize: '0.85rem', color: 'inherit' }}>
+              Календарь
+            </Typography>
+            <Typography component="span" sx={{ fontSize: '0.7rem', opacity: 0.9, textTransform: 'capitalize' }}>
+              {monthYear}
+            </Typography>
+          </Box>
+        </Button>
+      </Tooltip>
+
+      <Popover
+        open={Boolean(anchorEl)}
+        anchorEl={anchorEl}
+        onClose={() => setAnchorEl(null)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        slotProps={{ paper: { sx: { borderRadius: 3, mt: 1, boxShadow: 6 } } }}
+      >
+        <MonthCalendar
+          selectedDate={dateObj}
+          onPick={(d) => {
+            onChangeDate(format(d, 'yyyy-MM-dd'))
+            setAnchorEl(null)
+          }}
+        />
+      </Popover>
+    </Paper>
+  )
+}
+
+// ─── Легенда статусов для недельной сетки ────────────────────────────────────
+
+const WEEK_LEGEND: { status: AppointmentStatus; label: string }[] = [
+  { status: 'scheduled', label: 'Записан' },
+  { status: 'in_work',   label: 'В работе' },
+  { status: 'ready',     label: 'Готов' },
+  { status: 'completed', label: 'Завершён' },
+  { status: 'cancelled', label: 'Отменён' },
+]
+
+function StatusLegend() {
+  return (
+    <Stack direction="row" spacing={2} flexWrap="wrap" alignItems="center" sx={{ rowGap: 1 }}>
+      {WEEK_LEGEND.map(({ status, label }) => {
+        const c = STATUS_CONFIG[status].color
+        return (
+          <Stack key={status} direction="row" spacing={0.75} alignItems="center">
+            <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: c }} />
+            <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>
+              {label}
+            </Typography>
+          </Stack>
+        )
+      })}
+    </Stack>
+  )
+}
+
+// ─── Карточка-плитка в недельной сетке ───────────────────────────────────────
+
+function WeekTile({
+  appointment,
+  onClick,
+}: {
+  appointment: Appointment
+  onClick?: () => void
+}) {
+  const status = appointment.status ?? 'scheduled'
+  const color = STATUS_CONFIG[status].color
+  const vehicleName = appointment.vehicle
+    ? [appointment.vehicle.brand?.name, appointment.vehicle.model?.name].filter(Boolean).join(' ').trim()
+    : ''
+  const title =
+    vehicleName ||
+    appointment.customer_name?.split(' ')[0] ||
+    (appointment.description ? appointment.description.split(/[·,]/)[0].trim() : 'Запись')
+
+  // Подзаголовок: статус · время  (компактно)
+  const time = timeToHHMM(appointment.time)
+  const subtitle = status === 'scheduled' && time
+    ? `Записан · ${time}`
+    : appointment.description?.trim()
+      ? appointment.description.trim().slice(0, 32)
+      : STATUS_CONFIG[status].label
+
+  return (
+    <ButtonBase
+      onClick={onClick}
+      sx={{
+        display: 'block',
+        width: '100%',
+        textAlign: 'left',
+        borderRadius: 1.5,
+        bgcolor: color,
+        color: '#fff',
+        px: 1.25,
+        py: 0.85,
+        boxShadow: `0 1px 2px ${alpha(color, 0.35)}`,
+        transition: 'transform 120ms ease, box-shadow 160ms ease',
+        '&:hover': {
+          transform: 'translateY(-1px)',
+          boxShadow: `0 4px 10px ${alpha(color, 0.4)}`,
+        },
+      }}
+    >
+      <Typography sx={{ fontWeight: 700, fontSize: '0.82rem', lineHeight: 1.15, color: '#fff' }} noWrap>
+        {title}
+      </Typography>
+      <Typography sx={{ fontWeight: 500, fontSize: '0.72rem', lineHeight: 1.2, opacity: 0.9, color: '#fff' }} noWrap>
+        {subtitle}
+      </Typography>
+    </ButtonBase>
+  )
+}
+
+// ─── Недельная сетка: посты × дни ────────────────────────────────────────────
+
+function WeekGrid({
+  posts,
+  appointments,
+  weekDays,
+  postColors,
+  onCellClick,
+  onAppointmentClick,
+}: {
+  posts: AppointmentPost[]
+  appointments: Appointment[]
+  weekDays: Date[]
+  postColors: string[]
+  onCellClick: (postId: number, dateISO: string) => void
+  onAppointmentClick?: (a: Appointment) => void
+}) {
+  const todayISO = format(new Date(), 'yyyy-MM-dd')
+
+  // Группировка: postId -> dateISO -> Appointment[]
+  const grouped = (() => {
+    const map = new Map<number, Map<string, Appointment[]>>()
+    for (const a of appointments) {
+      if (a.post_id == null) continue
+      let perDate = map.get(a.post_id)
+      if (!perDate) { perDate = new Map(); map.set(a.post_id, perDate) }
+      const dateKey = a.date
+      const list = perDate.get(dateKey) ?? []
+      list.push(a)
+      perDate.set(dateKey, list)
+    }
+    return map
+  })()
+
+  // 1 колонка для подписи поста + 7 равных колонок для дней
+  const gridTemplate = '180px repeat(7, minmax(140px, 1fr))'
+
+  return (
+    <Paper sx={{ borderRadius: 3, p: 0, overflow: 'hidden' }}>
+      {/* Шапка сетки */}
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: gridTemplate,
+          alignItems: 'center',
+          bgcolor: 'background.paper',
+          borderBottom: '1px solid',
+          borderColor: 'divider',
+        }}
+      >
+        <Box sx={{ px: 2.5, py: 1.75 }}>
+          <Typography variant="overline" sx={{ color: 'text.secondary', fontWeight: 800 }}>
+            Пост
+          </Typography>
+        </Box>
+        {weekDays.map((d) => {
+          const isToday = format(d, 'yyyy-MM-dd') === todayISO
+          const wd = WEEKDAY_SHORT[d.getDay()]
+          return (
+            <Box
+              key={d.toISOString()}
+              sx={{
+                px: 1.5,
+                py: 1.75,
+                display: 'flex',
+                alignItems: 'baseline',
+                gap: 0.75,
+                bgcolor: isToday ? alpha('#10B981', 0.08) : 'transparent',
+                borderLeft: '1px solid',
+                borderColor: 'divider',
+              }}
+            >
+              <Typography
+                variant="overline"
+                sx={{ color: isToday ? 'primary.dark' : 'text.secondary', fontWeight: 800 }}
+              >
+                {wd}
+              </Typography>
+              <Typography
+                sx={{
+                  fontWeight: 800,
+                  fontSize: '1.05rem',
+                  color: isToday ? 'primary.dark' : 'text.primary',
+                  lineHeight: 1,
+                }}
+              >
+                {format(d, 'd')}
+              </Typography>
+            </Box>
+          )
+        })}
+      </Box>
+
+      {/* Тело: строки постов */}
+      {posts.map((post, idx) => {
+        const postColor = postColors[idx]
+        const perDate = grouped.get(post.id)
+        const totalThisWeek = perDate
+          ? Array.from(perDate.values()).reduce((s, arr) => s + arr.length, 0)
+          : 0
+        return (
+          <Box
+            key={post.id}
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: gridTemplate,
+              borderTop: idx === 0 ? 'none' : '1px solid',
+              borderColor: 'divider',
+              minHeight: 96,
+            }}
+          >
+            {/* Подпись поста */}
+            <Box
+              sx={{
+                px: 2.5, py: 1.5,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+                bgcolor: alpha(postColor, 0.04),
+                borderRight: '1px solid',
+                borderColor: 'divider',
+              }}
+            >
+              <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: postColor, flexShrink: 0 }} />
+              <Typography sx={{ fontWeight: 700, fontSize: '0.92rem', color: 'text.primary' }} noWrap>
+                {post.name}
+              </Typography>
+              <Typography sx={{ fontSize: '0.8rem', color: 'text.disabled', fontWeight: 600 }}>
+                {totalThisWeek}
+              </Typography>
+            </Box>
+
+            {/* Ячейки по дням */}
+            {weekDays.map((d) => {
+              const dateISO = format(d, 'yyyy-MM-dd')
+              const list = perDate?.get(dateISO) ?? []
+              const isToday = dateISO === todayISO
+              return (
+                <Box
+                  key={dateISO}
+                  onClick={() => list.length === 0 && onCellClick(post.id, dateISO)}
+                  sx={{
+                    p: 1,
+                    borderLeft: '1px solid',
+                    borderColor: 'divider',
+                    bgcolor: isToday ? alpha('#10B981', 0.05) : 'transparent',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 0.65,
+                    cursor: list.length === 0 ? 'pointer' : 'default',
+                    transition: 'background-color 160ms ease',
+                    '&:hover': {
+                      bgcolor: list.length === 0
+                        ? alpha(postColor, 0.06)
+                        : (isToday ? alpha('#10B981', 0.06) : 'transparent'),
+                    },
+                  }}
+                >
+                  {list
+                    .sort((a, b) => (a.time || '').localeCompare(b.time || ''))
+                    .map((a) => (
+                      <WeekTile
+                        key={a.id}
+                        appointment={a}
+                        onClick={onAppointmentClick ? () => onAppointmentClick(a) : undefined}
+                      />
+                    ))}
+                </Box>
+              )
+            })}
+          </Box>
+        )
+      })}
+    </Paper>
+  )
+}
+
 // ─── Главная страница ─────────────────────────────────────────────────────────
 
 export default function Appointments() {
   const [selectedDate, setSelectedDate] = useState<string>(format(new Date(), 'yyyy-MM-dd'))
+  const [viewMode, setViewMode] = useState<ViewMode>('day')
   const [posts, setPosts] = useState<AppointmentPost[]>([])
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [loading, setLoading] = useState(false)
@@ -1323,14 +1657,22 @@ export default function Appointments() {
     setLoading(true)
     setError('')
     try {
-      const res = await api.get<Appointment[]>('/appointments/', { params: { date: selectedDate } })
+      const params: Record<string, string> = {}
+      if (viewMode === 'week') {
+        const { start, end } = getWeekRange(parseISO(selectedDate + 'T00:00:00'))
+        params.date_from = format(start, 'yyyy-MM-dd')
+        params.date_to = format(end, 'yyyy-MM-dd')
+      } else {
+        params.date = selectedDate
+      }
+      const res = await api.get<Appointment[]>('/appointments/', { params })
       setAppointments(res.data)
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Ошибка загрузки записей')
     } finally {
       setLoading(false)
     }
-  }, [selectedDate])
+  }, [selectedDate, viewMode])
 
   useEffect(() => { fetchPosts() }, [fetchPosts])
   useEffect(() => { fetchAppointments() }, [fetchAppointments])
@@ -1542,10 +1884,15 @@ export default function Appointments() {
         </Button>
       </Stack>
 
-      <DatePanel selectedDate={selectedDate} onChange={setSelectedDate} />
+      <ScheduleToolbar
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        selectedDate={selectedDate}
+        onChangeDate={setSelectedDate}
+      />
 
-      {/* Статистика по статусам */}
-      {appointments.length > 0 && (
+      {/* Статистика по статусам / Легенда */}
+      {viewMode === 'day' && appointments.length > 0 && (
         <StatusStatsBar
           appointments={appointments}
           filter={statusFilter}
@@ -1572,7 +1919,47 @@ export default function Appointments() {
             Создать пост
           </Button>
         </Paper>
-      ) : (
+      ) : viewMode === 'week' ? (() => {
+        const { start: weekStart, end: weekEnd, days: weekDays } =
+          getWeekRange(parseISO(selectedDate + 'T00:00:00'))
+        const weekAppointments = appointments.filter((a) => {
+          const d = parseISO(a.date + 'T00:00:00')
+          return isWithinInterval(d, { start: weekStart, end: weekEnd })
+        })
+        const postColors = posts.map((p, i) => getPostColor(p, i))
+        return (
+          <>
+            <Box sx={{ mb: 1.5, px: 0.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
+              <Typography variant="overline" sx={{ color: 'text.secondary', fontWeight: 800, letterSpacing: '0.08em' }}>
+                Расписание постов · Неделя {getISOWeek(weekStart)} · {formatWeekRange(weekStart, weekEnd)}
+              </Typography>
+              <StatusLegend />
+            </Box>
+            <WeekGrid
+              posts={posts}
+              appointments={weekAppointments}
+              weekDays={weekDays}
+              postColors={postColors}
+              onCellClick={(postId, dateISO) => {
+                // Открываем диалог новой записи на этот пост и день
+                const post = posts.find((p) => p.id === postId)
+                const slotTime = post?.slot_times?.[0] ?? '09:00'
+                setRecordForm({
+                  date: dateISO,
+                  time: slotTime,
+                  customer_name: '',
+                  customer_phone: '',
+                  description: '',
+                  status: 'scheduled',
+                  post_id: postId,
+                  sort_order: 0,
+                })
+                setOpenRecordDialog(true)
+              }}
+            />
+          </>
+        )
+      })() : (
         <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
           <Box sx={{ display: 'flex', gap: 2, overflowX: 'auto', pb: 2 }}>
             {posts.map((post, idx) => (

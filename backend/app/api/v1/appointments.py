@@ -82,18 +82,26 @@ async def _validate_refs(db: AsyncSession, claims: TenantClaims, data: dict) -> 
 @router.get("/", response_model=list[AppointmentSchema], responses=_auth)
 async def list_appointments(
     appointment_date: Optional[date_type] = Query(None, alias="date"),
+    date_from: Optional[date_type] = Query(None),
+    date_to: Optional[date_type] = Query(None),
     skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=500),
+    limit: int = Query(500, ge=1, le=2000),
     db: AsyncSession = Depends(get_tenant_db),
     claims: TenantClaims = Depends(get_current_claims),
 ):
     stmt = select(Appointment).order_by(
+        Appointment.date.asc(),
         Appointment.post_id.asc(),
         Appointment.sort_order.asc(),
         Appointment.time.asc(),
     )
     if appointment_date:
         stmt = stmt.where(Appointment.date == appointment_date)
+    else:
+        if date_from:
+            stmt = stmt.where(Appointment.date >= date_from)
+        if date_to:
+            stmt = stmt.where(Appointment.date <= date_to)
     stmt = stmt.offset(skip).limit(limit)
     rows = (await db.execute(stmt)).scalars().all()
     return [await _serialize(db, a, claims) for a in rows]
