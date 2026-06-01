@@ -169,6 +169,7 @@ export interface SalaryScheme {
   employee_id: number
   works_percentage: number
   revenue_percentage: number
+  revenue_all_orders?: boolean
   updated_at?: string
 }
 

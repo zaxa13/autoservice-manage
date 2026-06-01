@@ -5,6 +5,7 @@ from decimal import Decimal
 
 from sqlalchemy import (
     BigInteger,
+    Boolean,
     Date,
     DateTime,
     ForeignKeyConstraint,
@@ -34,6 +35,12 @@ class SalaryScheme(Base, TenantMixin):
     employee_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
     works_percentage: Mapped[Decimal] = mapped_column(Numeric(5, 2), nullable=False, default=0)
     revenue_percentage: Mapped[Decimal] = mapped_column(Numeric(5, 2), nullable=False, default=0)
+    # Если True — бонус менеджера считается по ВСЕМ закрытым заказам периода
+    # (без фильтра по employee_id). Нужно для маленьких автосервисов, где
+    # заказы могут закрывать админ/коллеги, но бонус всё равно идёт смене.
+    revenue_all_orders: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False, server_default="false"
+    )
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),

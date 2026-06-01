@@ -7,7 +7,14 @@ from app.models.salary import SalaryStatus
 
 class SalarySchemeBase(BaseModel):
     works_percentage: Decimal = Field(0, ge=0, le=100, description="% от суммы работ (для механика)")
-    revenue_percentage: Decimal = Field(0, ge=0, le=100, description="% от личной выручки (для менеджера)")
+    revenue_percentage: Decimal = Field(0, ge=0, le=100, description="% от выручки (для менеджера)")
+    revenue_all_orders: bool = Field(
+        False,
+        description=(
+            "Если True — бонус менеджера считается по ВСЕМ закрытым заказам, "
+            "а не только по тем, где он указан ответственным."
+        ),
+    )
 
 
 class SalarySchemeUpdate(SalarySchemeBase):

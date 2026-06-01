@@ -1,17 +1,22 @@
 """Зарплата — расчёт, ведомости, схема per-employee.
 
-Расчёт (per механик):
-  base = employee.salary_base                              # полный оклад на период
-  works_bonus = SUM(OrderWork.total) WHERE
-                COALESCE(ow.mechanic_id, o.mechanic_id) = employee
-                AND o.status IN ('paid','completed')
-                AND o.completed_at::date в периоде
-                * scheme.works_percentage / 100
-  revenue_bonus = SUM(o.total_amount) WHERE o.employee_id=employee
-                  AND o.status IN ('paid','completed')
-                  AND o.completed_at::date в периоде
-                  * scheme.revenue_percentage / 100
+Расчёт:
+  base = employee.salary_base                                  # оклад за период
+  works_bonus   = SUM(OrderWork.total) * scheme.works_percentage   / 100
+                  где COALESCE(ow.mechanic_id, o.mechanic_id) = employee
+  revenue_bonus = SUM(Order.total_amount) * scheme.revenue_percentage / 100
+                  по умолчанию — где o.employee_id = employee (личная выручка);
+                  если scheme.revenue_all_orders = True — без этого условия
+                  (бонус считается по ВСЕМ закрытым заказам периода — полезно
+                  если заказы закрывают также администраторы/коллеги).
   total = base + works_bonus + revenue_bonus  (penalty=0)
+
+Что значит «закрытый заказ»: формально фильтр — status IN ('paid','completed'),
+НО дополнительно требуется completed_at в диапазоне периода. completed_at
+проставляется ТОЛЬКО при переходе paid → completed (см. orders.complete);
+заказы в статусе paid без завершения имеют completed_at IS NULL и в выборку
+не попадают. Иными словами — фактически бонус считается по тем заказам,
+для которых менеджер нажал «Завершить заказ» в этом периоде.
 
 Idempotent: если расчёт на этот же период уже есть и НЕ выплачен —
 удаляем и считаем заново. PAID-запись трогать нельзя.
@@ -100,14 +105,11 @@ async def _calculate(
     scheme = await _scheme_for(db, body.employee_id)
     works_pct = Decimal(str(scheme.works_percentage if scheme else 0))
     revenue_pct = Decimal(str(scheme.revenue_percentage if scheme else 0))
+    revenue_all_orders = bool(scheme.revenue_all_orders) if scheme else False
 
     # Сумма работ механика за период: per-OrderWork, attribution через
     # COALESCE(ow.mechanic_id, o.mechanic_id) — если в строке работы не
     # проставлен механик, берём primary mechanic заказа.
-    # Фильтр по completed_at (заказ относится к месяцу когда был ЗАКРЫТ,
-    # а не открыт). Статус paid+completed — синхронно с дашбордом
-    # (paid = клиент заплатил, completed = машину отдали; и тот, и другой —
-    # «закрытый» заказ с точки зрения работы механика).
     effective_mech = func.coalesce(OrderWork.mechanic_id, Order.mechanic_id)
     works_sum_val = (await db.execute(
         select(func.coalesce(func.sum(OrderWork.total), 0))
@@ -122,16 +124,19 @@ async def _calculate(
     works_sum = Decimal(str(works_sum_val))
     works_bonus = (works_sum * works_pct / Decimal(100)).quantize(Decimal("0.01"))
 
-    # Личная выручка ответственного менеджера — по тем же правилам.
-    revenue_sum_val = (await db.execute(
+    # Выручка менеджера: по умолчанию только те заказы, где он указан
+    # ответственным; при revenue_all_orders=True — все закрытые заказы периода.
+    revenue_stmt = (
         select(func.coalesce(func.sum(Order.total_amount), 0))
         .where(
-            Order.employee_id == body.employee_id,
             Order.status.in_(["paid", "completed"]),
             func.date(Order.completed_at) >= body.period_start,
             func.date(Order.completed_at) <= body.period_end,
         )
-    )).scalar() or 0
+    )
+    if not revenue_all_orders:
+        revenue_stmt = revenue_stmt.where(Order.employee_id == body.employee_id)
+    revenue_sum_val = (await db.execute(revenue_stmt)).scalar() or 0
     revenue_sum = Decimal(str(revenue_sum_val))
     revenue_bonus = (revenue_sum * revenue_pct / Decimal(100)).quantize(Decimal("0.01"))
 
@@ -280,6 +285,7 @@ async def get_scheme(
             "employee_id": employee_id,
             "works_percentage": Decimal(0),
             "revenue_percentage": Decimal(0),
+            "revenue_all_orders": False,
             "updated_at": None,
         }
     return scheme
@@ -305,11 +311,13 @@ async def upsert_scheme(
             employee_id=employee_id,
             works_percentage=body.works_percentage,
             revenue_percentage=body.revenue_percentage,
+            revenue_all_orders=body.revenue_all_orders,
         )
         db.add(scheme)
     else:
         scheme.works_percentage = body.works_percentage
         scheme.revenue_percentage = body.revenue_percentage
+        scheme.revenue_all_orders = body.revenue_all_orders
     await db.flush()
     await db.refresh(scheme)
     return scheme

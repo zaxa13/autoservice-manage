@@ -3,7 +3,7 @@ import {
   Container, Typography, Box, Button, Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, Paper, Stack, Alert, Tab, Tabs, TextField, CircularProgress,
   Chip, MenuItem, FormControl, InputLabel, Select, Dialog, DialogTitle, DialogContent,
-  DialogActions, Tooltip, IconButton, RadioGroup, FormControlLabel, Radio
+  DialogActions, Tooltip, IconButton, RadioGroup, FormControlLabel, Radio, Checkbox
 } from '@mui/material'
 import {
   CalculateRounded, CheckCircleRounded, EditRounded, PercentRounded, PersonRounded,
@@ -77,6 +77,7 @@ export default function Salary() {
   const [schemeEditId, setSchemeEditId] = useState<number | null>(null)
   const [schemeWorks, setSchemeWorks] = useState('')
   const [schemeRevenue, setSchemeRevenue] = useState('')
+  const [schemeRevenueAllOrders, setSchemeRevenueAllOrders] = useState(false)
   const [savingScheme, setSavingScheme] = useState(false)
 
   // Фильтр по периоду (start/end зарплаты в этом диапазоне)
@@ -172,6 +173,7 @@ export default function Salary() {
     setSchemeEditId(emp.id)
     setSchemeWorks(s?.works_percentage?.toString() ?? '0')
     setSchemeRevenue(s?.revenue_percentage?.toString() ?? '0')
+    setSchemeRevenueAllOrders(Boolean(s?.revenue_all_orders))
   }
 
   const handleSaveScheme = async () => {
@@ -181,6 +183,7 @@ export default function Salary() {
       const r = await api.put(`/salary/scheme/${schemeEditId}`, {
         works_percentage: parseFloat(schemeWorks) || 0,
         revenue_percentage: parseFloat(schemeRevenue) || 0,
+        revenue_all_orders: schemeRevenueAllOrders,
       })
       setSchemes(prev => ({ ...prev, [schemeEditId]: r.data }))
       setSchemeEditId(null)
@@ -470,22 +473,48 @@ export default function Salary() {
                 value={schemeWorks}
                 onChange={e => setSchemeWorks(e.target.value)}
                 InputProps={{ endAdornment: <PercentRounded fontSize="small" color="action" /> }}
-                helperText="Берётся сумма заказов, где механик — данный сотрудник"
+                helperText="Берётся сумма работ заказов, где механик — данный сотрудник"
               />
             ) : (
-              <TextField
-                label="% от личной выручки (выручка менеджера)"
-                size="small"
-                type="number"
-                fullWidth
-                value={schemeRevenue}
-                onChange={e => setSchemeRevenue(e.target.value)}
-                InputProps={{ endAdornment: <PercentRounded fontSize="small" color="action" /> }}
-                helperText="Берётся сумма заказов, где менеджер — данный сотрудник"
-              />
+              <>
+                <TextField
+                  label="% от выручки (для менеджера)"
+                  size="small"
+                  type="number"
+                  fullWidth
+                  value={schemeRevenue}
+                  onChange={e => setSchemeRevenue(e.target.value)}
+                  InputProps={{ endAdornment: <PercentRounded fontSize="small" color="action" /> }}
+                  helperText={
+                    schemeRevenueAllOrders
+                      ? 'Бонус считается по ВСЕМ закрытым заказам периода'
+                      : 'Берётся сумма заказов, где менеджер — данный сотрудник'
+                  }
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={schemeRevenueAllOrders}
+                      onChange={(e) => setSchemeRevenueAllOrders(e.target.checked)}
+                    />
+                  }
+                  label={
+                    <Box>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        Бонус по всем закрытым заказам
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        Учитывать заказы независимо от того, кто указан ответственным
+                      </Typography>
+                    </Box>
+                  }
+                  sx={{ alignItems: 'flex-start', mt: 0.5, mr: 0 }}
+                />
+              </>
             )}
             <Typography variant="caption" color="text.secondary">
-              Зарплата = Оклад + (Сумма завершённых заказов × %) / 100
+              Зарплата = Оклад + (Сумма × %) / 100. Учитываются заказы со статусом
+              «Завершён» (закрытые в этом периоде).
             </Typography>
           </Stack>
         </DialogContent>
