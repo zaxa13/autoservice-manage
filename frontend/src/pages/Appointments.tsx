@@ -1956,6 +1956,11 @@ export default function Appointments() {
                 })
                 setOpenRecordDialog(true)
               }}
+              onAppointmentClick={(a) => {
+                // Drill-down: переход в день, на котором живёт запись
+                setSelectedDate(a.date)
+                setViewMode('day')
+              }}
             />
           </>
         )
