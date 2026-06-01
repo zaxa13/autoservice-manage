@@ -5,7 +5,7 @@
 где заказы могут закрывать админы / коллеги, но бонус должен оставаться у
 ответственного менеджера-смены.
 
-Revision ID: 0015_salary_scheme_revenue_all_orders
+Revision ID: 0015_salary_revenue_all
 Revises: 0014_seed_more_part_brands_v2
 Create Date: 2026-06-01
 """
@@ -13,7 +13,7 @@ from alembic import op
 import sqlalchemy as sa
 
 
-revision = "0015_salary_scheme_revenue_all_orders"
+revision = "0015_salary_revenue_all"
 down_revision = "0014_seed_more_part_brands_v2"
 branch_labels = None
 depends_on = None
