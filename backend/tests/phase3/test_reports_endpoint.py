@@ -291,7 +291,6 @@ async def test_parts_report_with_used_part(client):
     )
     body = r.json()
     assert body["total_parts_revenue"] == 500
-    assert body["total_quantity_sold"] == 1
     assert len(body["top_parts"]) == 1
     assert body["top_parts"][0]["part_number"] == "FIL-001"
 

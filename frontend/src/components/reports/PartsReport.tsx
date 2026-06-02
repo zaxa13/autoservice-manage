@@ -6,7 +6,6 @@ import {
   InventoryRounded,
   WarningAmberRounded,
   TrendingUpRounded,
-  ShoppingCartRounded,
   PercentRounded,
 } from '@mui/icons-material'
 import { PartsReportResponse } from '../../types'
@@ -28,7 +27,7 @@ export default function PartsReport({ data }: Props) {
 
       {/* ── Summary ── */}
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} md={4}>
           <Paper elevation={0} sx={{ p: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
             <Box sx={iconBoxSx(BRAND.primary)}><InventoryRounded /></Box>
             <Box>
@@ -39,7 +38,7 @@ export default function PartsReport({ data }: Props) {
             </Box>
           </Paper>
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} md={4}>
           <Paper elevation={0} sx={{ p: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
             <Box sx={iconBoxSx(PALETTE.green.main)}><TrendingUpRounded /></Box>
             <Box>
@@ -50,24 +49,13 @@ export default function PartsReport({ data }: Props) {
             </Box>
           </Paper>
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} md={4}>
           <Paper elevation={0} sx={{ p: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
             <Box sx={iconBoxSx(PALETTE.amber.main)}><PercentRounded /></Box>
             <Box>
               <Typography sx={{ ...overlineSx, mb: 0.3 }}>Маржинальность</Typography>
               <Typography variant="h6" sx={{ fontWeight: 900, lineHeight: 1.2 }}>
                 {data.total_margin_pct}%
-              </Typography>
-            </Box>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Paper elevation={0} sx={{ p: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Box sx={iconBoxSx(PALETTE.blue.main)}><ShoppingCartRounded /></Box>
-            <Box>
-              <Typography sx={{ ...overlineSx, mb: 0.3 }}>Реализовано (шт.)</Typography>
-              <Typography variant="h6" sx={{ fontWeight: 900, lineHeight: 1.2 }}>
-                {data.total_quantity_sold}
               </Typography>
             </Box>
           </Paper>
@@ -108,7 +96,6 @@ export default function PartsReport({ data }: Props) {
                   <TableCell align="right">Сумма продаж</TableCell>
                   <TableCell align="right">Маржа</TableCell>
                   <TableCell align="right">Марж. %</TableCell>
-                  <TableCell align="right">На складе</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -163,14 +150,6 @@ export default function PartsReport({ data }: Props) {
                           color: marginColor(part.margin_pct),
                         }}
                       />
-                    </TableCell>
-                    <TableCell align="right">
-                      <Typography
-                        variant="body2"
-                        sx={{ fontWeight: 700, color: part.current_stock <= 0 ? PALETTE.red.main : 'text.primary' }}
-                      >
-                        {part.current_stock}
-                      </Typography>
                     </TableCell>
                   </TableRow>
                 ))}

@@ -118,7 +118,6 @@ class PartsReportResponse(BaseModel):
     date_from: str = Field(..., description="Начало периода")
     date_to: str = Field(..., description="Конец периода")
     total_parts_revenue: float = Field(..., description="Общая сумма продаж запчастей")
-    total_quantity_sold: float = Field(..., description="Суммарное количество реализованных запчастей")
     total_parts_cost: float = Field(0, description="Общая себестоимость проданных запчастей")
     total_parts_margin: float = Field(0, description="Общая маржа по запчастям")
     total_margin_pct: float = Field(0, description="Маржинальность в % от общей суммы продаж")

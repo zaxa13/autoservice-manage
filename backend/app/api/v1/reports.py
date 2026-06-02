@@ -506,18 +506,9 @@ async def parts_report(
                 await db.execute(select(Part).where(Part.id.in_(part_ids)))
             ).scalars()
         }
-    # Stock per part.
-    stock_map: dict[int, float] = {}
-    if part_ids:
-        srows = (await db.execute(
-            select(WarehouseItem.part_id, WarehouseItem.quantity)
-            .where(WarehouseItem.part_id.in_(part_ids))
-        )).all()
-        stock_map = {r[0]: float(r[1] or 0) for r in srows}
 
     items = []
     total_revenue = 0.0
-    total_qty = 0.0
     total_cost = 0.0
     for r in rows:
         pid = r[0]
@@ -542,10 +533,9 @@ async def parts_report(
             total_margin=margin,
             margin_pct=round(margin_pct, 1),
             orders_count=int(r[3] or 0),
-            current_stock=stock_map.get(pid, 0.0),
+            current_stock=0.0,
         ))
         total_revenue += rev
-        total_qty += qty
         total_cost += cost
 
     items.sort(key=lambda x: x.total_revenue, reverse=True)
@@ -581,7 +571,6 @@ async def parts_report(
     return PartsReportResponse(
         date_from=str(date_from), date_to=str(date_to),
         total_parts_revenue=total_revenue,
-        total_quantity_sold=total_qty,
         total_parts_cost=total_cost,
         total_parts_margin=total_margin,
         total_margin_pct=round(total_margin_pct, 1),

@@ -652,7 +652,6 @@ export interface PartsReportResponse {
   date_from: string
   date_to: string
   total_parts_revenue: number
-  total_quantity_sold: number
   total_parts_cost: number
   total_parts_margin: number
   total_margin_pct: number
