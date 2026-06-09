@@ -13,6 +13,7 @@ from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from prometheus_fastapi_instrumentator import Instrumentator
 from pydantic import BaseModel, Field
 
 from app.api.v1 import api_router
@@ -84,6 +85,10 @@ async def _flatten_validation_error(request: Request, exc: RequestValidationErro
 
 
 app.include_router(api_router, prefix="/api/v1")
+
+# Prometheus /metrics — собирает http_requests_total, http_request_duration_seconds
+# и пр. handler-метрики. Скрейпит из monitoring/prometheus.yml (job=tenant-app).
+Instrumentator(excluded_handlers=["/metrics", "/health"]).instrument(app).expose(app)
 
 
 @app.get("/health", response_model=HealthResponse, tags=["system"])

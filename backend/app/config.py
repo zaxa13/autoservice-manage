@@ -74,7 +74,7 @@ class Settings(BaseSettings):
     log_service_name: str = "tenant-app"
     log_http_body: bool = True
     log_body_max_bytes: int = 8192
-    log_skip_paths: str = "/health,/docs,/openapi.json,/redoc"
+    log_skip_paths: str = "/health,/metrics,/docs,/openapi.json,/redoc"
 
     model_config = SettingsConfigDict(
         env_file=".env",
