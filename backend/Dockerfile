@@ -14,7 +14,9 @@ WORKDIR /app
 # - gcc + freetype/jpeg/zlib headers — для сборки reportlab 3.x (зависимость xhtml2pdf).
 # - fonts-dejavu-core — TTF с кириллицей (pdf_service ищет DejaVuSans.ttf), иначе
 #   reportlab падает на Helvetica и кириллица рендерится квадратами.
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# apt source → mirror.yandex.ru: deb.debian.org заблокирован с прода (РФ↔debian.org).
+RUN sed -i 's|http://deb.debian.org|http://mirror.yandex.ru|g' /etc/apt/sources.list.d/debian.sources \
+    && apt-get update && apt-get install -y --no-install-recommends \
         gcc \
         libfreetype6-dev \
         libjpeg-dev \
