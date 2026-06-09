@@ -62,15 +62,18 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     DEBUG: bool = False
 
-    # Logging — JSON-формат для Loki/Promtail, флаги для HTTP-боди.
-    # log_http_body включает запись request/response body в логи (с маскировкой
-    # и лимитом размера). По умолчанию выключено — на проде включать осознанно,
-    # т.к. body может содержать PII.
+    # Logging — JSON-формат для Loki/Promtail.
+    # log_http_body=True — пишем request/response body в access-лог (для дебага
+    # клиентских жалоб через Grafana). Чувствительные ключи (password/token/secret/
+    # access_token/refresh_token/api_key) маскируются автоматически — см. SENSITIVE_*
+    # в core/logging.py. Body режется до log_body_max_bytes, оставшееся помечается
+    # truncated=true. Отключить при необходимости через env: log_http_body=false
+    # (lowercase, т.к. case_sensitive=True в SettingsConfigDict).
     log_level: str = "INFO"
     log_format: str = "json"  # json | text
     log_service_name: str = "tenant-app"
-    log_http_body: bool = False
-    log_body_max_bytes: int = 4096
+    log_http_body: bool = True
+    log_body_max_bytes: int = 8192
     log_skip_paths: str = "/health,/docs,/openapi.json,/redoc"
 
     model_config = SettingsConfigDict(

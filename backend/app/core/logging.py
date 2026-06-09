@@ -85,8 +85,9 @@ class _JsonFormatter(jsonlogger.JsonFormatter):
         message_dict: dict[str, Any],
     ) -> None:
         super().add_fields(log_record, record, message_dict)
-        if "timestamp" not in log_record:
-            # asctime у jsonlogger по умолчанию идёт в локальной TZ — заменяем на UTC ISO.
+        # jsonlogger заполняет каждое поле из format-строки значением None если
+        # его нет на LogRecord — поэтому проверяем truthy, а не `not in`.
+        if not log_record.get("timestamp"):
             from datetime import datetime, timezone
 
             log_record["timestamp"] = datetime.now(timezone.utc).isoformat()
@@ -98,9 +99,11 @@ def _build_handler() -> logging.Handler:
     handler = logging.StreamHandler(sys.stdout)
     handler.addFilter(RequestContextFilter())
     if settings.log_format == "json":
-        # rename_fields оставляем как есть, чтобы поля совпадали с Promtail-парсингом.
+        # name убран из формата — оно дублирует logger (оба = record.name).
+        # Promtail парсит поля верхнего уровня; вложенные body/headers сохраняются
+        # как объекты в общей JSON-строке.
         formatter: logging.Formatter = _JsonFormatter(
-            "%(timestamp)s %(level)s %(name)s %(message)s "
+            "%(timestamp)s %(level)s %(message)s "
             "%(service)s %(request_id)s %(tenant_id)s %(owner_id)s"
         )
     else:
