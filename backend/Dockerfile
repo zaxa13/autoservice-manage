@@ -1,7 +1,7 @@
 # Phase 7: production-ready Dockerfile для tenant-app (shared-DB).
 # Запускает alembic upgrade head через entrypoint, потом uvicorn.
 
-FROM python:3.12-slim
+FROM dockerhub.timeweb.cloud/library/python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
