@@ -102,9 +102,12 @@ def _build_handler() -> logging.Handler:
         # name убран из формата — оно дублирует logger (оба = record.name).
         # Promtail парсит поля верхнего уровня; вложенные body/headers сохраняются
         # как объекты в общей JSON-строке.
+        # json_ensure_ascii=False — оставляем кириллицу в логах как есть (читаемо
+        # в Grafana). Loki/Promtail работают с UTF-8.
         formatter: logging.Formatter = _JsonFormatter(
             "%(timestamp)s %(level)s %(message)s "
-            "%(service)s %(request_id)s %(tenant_id)s %(owner_id)s"
+            "%(service)s %(request_id)s %(tenant_id)s %(owner_id)s",
+            json_ensure_ascii=False,
         )
     else:
         formatter = logging.Formatter(
