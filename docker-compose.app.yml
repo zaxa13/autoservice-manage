@@ -17,10 +17,17 @@
 #   curl http://127.0.0.1:8002/health        # {"status":"ok"}
 #   curl http://127.0.0.1:8002/openapi.json  # 200
 
+# logging_domain — promtail relabel'ит этот docker label в Loki label `domain`.
+# В Grafana: {domain="tenant"} = tenant-app + tenant-frontend вместе.
+x-tenant-labels: &tenant-labels
+  labels:
+    logging_domain: tenant
+
 services:
   tenant-app:
     build: ./backend
     container_name: autoworks-tenant-app
+    <<: *tenant-labels
     environment:
       # Рантайм — под tenant_app, через pgbouncer transaction-pool.
       DATABASE_URL: ${DATABASE_URL}
@@ -64,6 +71,7 @@ services:
     # Порт 8003 на сервере занят другим проектом (analytics-app-test).
     build: ./frontend
     container_name: autoworks-tenant-frontend
+    <<: *tenant-labels
     ports:
       - "127.0.0.1:8004:80"
     restart: unless-stopped
