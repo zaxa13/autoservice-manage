@@ -62,6 +62,17 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     DEBUG: bool = False
 
+    # Logging — JSON-формат для Loki/Promtail, флаги для HTTP-боди.
+    # log_http_body включает запись request/response body в логи (с маскировкой
+    # и лимитом размера). По умолчанию выключено — на проде включать осознанно,
+    # т.к. body может содержать PII.
+    log_level: str = "INFO"
+    log_format: str = "json"  # json | text
+    log_service_name: str = "tenant-app"
+    log_http_body: bool = False
+    log_body_max_bytes: int = 4096
+    log_skip_paths: str = "/health,/docs,/openapi.json,/redoc"
+
     model_config = SettingsConfigDict(
         env_file=".env",
         case_sensitive=True,

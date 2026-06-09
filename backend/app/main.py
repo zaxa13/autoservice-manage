@@ -17,12 +17,11 @@ from pydantic import BaseModel, Field
 
 from app.api.v1 import api_router
 from app.config import settings
+from app.core.logging import setup_logging
+from app.core.middleware import HTTPLoggingMiddleware
 from app.database import dispose_engine
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
+setup_logging()
 logger = logging.getLogger(__name__)
 
 
@@ -49,6 +48,8 @@ app = FastAPI(
     redoc_url="/redoc",
     openapi_url="/openapi.json",
 )
+
+app.add_middleware(HTTPLoggingMiddleware)
 
 app.add_middleware(
     CORSMiddleware,
