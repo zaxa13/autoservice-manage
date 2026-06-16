@@ -87,6 +87,9 @@ class TenantClaims(BaseModel):
     employee_id: int | None = None
     sub: str | None = None
     roles: list[str] = Field(default_factory=list)
+    # jti — идентификатор сессии (учёт лимита сессий). Может отсутствовать
+    # у старых токенов и owner-токенов от platform-api.
+    jti: str | None = None
 
     model_config = {"extra": "ignore"}
 
@@ -113,12 +116,14 @@ def create_tenant_token(
     role: str,
     sub: str,
     employee_id: int | None = None,
+    jti: str | None = None,
     expires_delta: Optional[timedelta] = None,
 ) -> str:
     """Выпускает JWT с TenantClaims-совместимой нагрузкой.
 
     Используется login-эндпоинтом tenant-app после успешной аутентификации
-    через `app.lookup_user_for_login`.
+    через `app.lookup_user_for_login`. `jti` — идентификатор сессии для
+    учёта лимита одновременных сессий (если фича включена).
     """
     expire = datetime.utcnow() + (
         expires_delta or timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -132,6 +137,8 @@ def create_tenant_token(
     }
     if employee_id is not None:
         payload["employee_id"] = employee_id
+    if jti is not None:
+        payload["jti"] = jti
     return jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
 

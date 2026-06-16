@@ -27,7 +27,7 @@ interface AuthState {
   user: User | null
   isAuthenticated: boolean
   login: (email: string, password: string) => Promise<void>
-  logout: () => void
+  logout: () => Promise<void>
   setUser: (user: User) => void
   loadUser: () => Promise<void>
 }
@@ -57,7 +57,14 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
 
-  logout: () => {
+  logout: async () => {
+    // Освобождаем сессию на сервере (учёт лимита сессий) ДО удаления токена —
+    // запросу нужен Authorization. Best-effort: не блокируем выход при сбое.
+    try {
+      await api.post('/auth/logout')
+    } catch {
+      // игнорируем — локальный выход выполняем в любом случае
+    }
     localStorage.removeItem('access_token')
     set({ user: null, isAuthenticated: false })
   },

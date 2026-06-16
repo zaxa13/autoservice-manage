@@ -28,6 +28,16 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440
 
+    # Лимит одновременных сессий на тенант (seat-based, по тарифу).
+    # SESSION_LIMIT_ENABLED — kill-switch: false мгновенно возвращает старый
+    # логин без enforcement (на случай инцидента). Лимит читается из
+    # platform.tariff_plans.limits->>'max_sessions'; DEFAULT — fail-safe, если
+    # план/лимит не заданы. SESSION_IDLE_MINUTES — окно простоя, после которого
+    # сессия считается неактивной (закрытая вкладка освобождает место).
+    SESSION_LIMIT_ENABLED: bool = True
+    SESSION_IDLE_MINUTES: int = 30
+    DEFAULT_MAX_SESSIONS: int = 1
+
     # Redis
     REDIS_URL: str = "redis://localhost:6379/0"
 

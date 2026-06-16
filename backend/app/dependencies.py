@@ -9,14 +9,19 @@
 """
 from __future__ import annotations
 
+import logging
 from typing import AsyncIterator
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.config import settings
 from app.core.security import InvalidTokenError, TenantClaims, decode_tenant_token
 from app.database import tenant_session
+from app.services import session_service
+
+logger = logging.getLogger(__name__)
 
 _bearer = HTTPBearer(auto_error=False)
 
@@ -46,4 +51,11 @@ async def get_tenant_db(
 ) -> AsyncIterator[AsyncSession]:
     """Async-сессия с RLS-контекстом для tenant из JWT."""
     async with tenant_session(claims.tenant_id) as session:
+        # Лениво освежаем last_seen сессии (учёт лимита). Best-effort —
+        # ошибка не должна ронять запрос. Троттлинг — внутри SQL (1/мин).
+        if settings.SESSION_LIMIT_ENABLED and claims.jti:
+            try:
+                await session_service.touch(session, claims.jti)
+            except Exception:  # noqa: BLE001
+                logger.debug("session touch failed (ignored)", exc_info=True)
         yield session

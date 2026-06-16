@@ -37,6 +37,7 @@ export default function Login() {
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
   const [error, setError]       = useState('')
+  const [limitMsg, setLimitMsg] = useState('')
   const [loading, setLoading]   = useState(false)
   const navigate = useNavigate()
   const { login: loginUser, isAuthenticated } = useAuthStore()
@@ -48,17 +49,34 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    setLimitMsg('')
     setLoading(true)
     try {
       await loginUser(email, password)
     } catch (err: unknown) {
-      // Сначала достаём detail из ответа бэка ("Неверный email или пароль"),
-      // и только если его нет — фолбэк на err.message. AxiosError —
-      // тоже Error, поэтому проверка instanceof не годится.
-      const detail = (err as { response?: { data?: { detail?: string } } })
-        ?.response?.data?.detail
+      const resp = (err as {
+        response?: { status?: number; data?: { detail?: unknown } }
+      })?.response
+      const detail = resp?.data?.detail
+
+      // 409 — превышен лимит одновременных сессий по тарифу: detail — объект.
+      if (
+        resp?.status === 409 &&
+        detail && typeof detail === 'object' &&
+        (detail as { code?: string }).code === 'session_limit_reached'
+      ) {
+        const d = detail as { message?: string; limit?: number }
+        setLimitMsg(
+          d.message ??
+            'Достигнут лимит одновременных сессий по вашему тарифу. ' +
+              'Закройте сессию на другом устройстве или перейдите на тариф выше.',
+        )
+        return
+      }
+
+      // Обычные ошибки: detail-строка ("Неверный email или пароль") или fallback.
       const fallback = err instanceof Error ? err.message : 'Ошибка входа'
-      setError(detail ?? fallback)
+      setError(typeof detail === 'string' ? detail : fallback)
     } finally {
       setLoading(false)
     }
@@ -255,6 +273,23 @@ export default function Login() {
 
             {error && (
               <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>
+            )}
+
+            {limitMsg && (
+              <Alert severity="warning" sx={{ mb: 3 }}>
+                {limitMsg}
+                <Box sx={{ mt: 1 }}>
+                  <Link
+                    href="https://auto-works.pro/cabinet/plan"
+                    target="_blank"
+                    rel="noopener"
+                    underline="hover"
+                    sx={{ color: BRAND.primary, fontWeight: 600, fontSize: '0.82rem' }}
+                  >
+                    Перейти на тариф выше →
+                  </Link>
+                </Box>
+              </Alert>
             )}
 
             <Box sx={{ animation: 'fadeUp 0.45s cubic-bezier(0.16,1,0.3,1) 0.2s both' }}>

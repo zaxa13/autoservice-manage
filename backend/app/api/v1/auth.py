@@ -11,19 +11,22 @@ from __future__ import annotations
 
 import logging
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, EmailStr
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.config import settings
 from app.core.security import (
     TenantClaims,
     create_tenant_token,
     verify_password,
 )
-from app.database import auth_session
+from app.database import auth_session, tenant_session
 from app.dependencies import get_current_claims, get_tenant_db
 from app.schemas.user import User as UserSchema
+from app.services import session_service
+from app.services.session_service import SessionLimitReached
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +49,7 @@ class TokenResponse(BaseModel):
     status_code=status.HTTP_200_OK,
     summary="Логин: email + password → JWT с tenant_id",
 )
-async def login(body: LoginRequest) -> TokenResponse:
+async def login(body: LoginRequest, request: Request) -> TokenResponse:
     async with auth_session() as session:
         row = (
             await session.execute(
@@ -75,18 +78,66 @@ async def login(body: LoginRequest) -> TokenResponse:
             detail="Учётная запись неактивна",
         )
 
+    # Лимит одновременных сессий на тенант (seat-based, по тарифу).
+    jti = session_service.new_jti()
+    expires_at = session_service.default_expires_at()
+    if settings.SESSION_LIMIT_ENABLED:
+        try:
+            async with tenant_session(row.tenant_id) as db:
+                await session_service.enforce_and_create(
+                    db,
+                    tenant_id=row.tenant_id,
+                    user_id=row.user_id,
+                    jti=jti,
+                    expires_at=expires_at,
+                    ip_address=_client_ip(request),
+                    user_agent=request.headers.get("user-agent"),
+                )
+        except SessionLimitReached as exc:
+            logger.info(
+                "login blocked (session limit): tenant_id=%s %d/%d plan=%s",
+                row.tenant_id, exc.current, exc.limit, exc.plan,
+            )
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail={
+                    "code": "session_limit_reached",
+                    "message": "Достигнут лимит одновременных сессий по вашему тарифу.",
+                    "limit": exc.limit,
+                    "current": exc.current,
+                    "plan": exc.plan,
+                },
+            )
+        except Exception:
+            # Любой непредвиденный сбой учёта сессий НЕ должен блокировать вход
+            # (fail-open): хуже потерять enforcement, чем закрыть всем логин.
+            logger.exception(
+                "session enforcement failed (fail-open allow): tenant_id=%s", row.tenant_id
+            )
+
     token = create_tenant_token(
         tenant_id=row.tenant_id,
         user_id=row.user_id,
         role=row.role,
         sub=body.email,
         employee_id=row.employee_id,
+        jti=jti,
     )
     logger.info(
         "login ok: email=%s tenant_id=%s user_id=%s role=%s",
         body.email, row.tenant_id, row.user_id, row.role,
     )
     return TokenResponse(access_token=token)
+
+
+def _client_ip(request: Request) -> str | None:
+    fwd = request.headers.get("x-forwarded-for")
+    if fwd:
+        return fwd.split(",")[0].strip()[:45]
+    real = request.headers.get("x-real-ip")
+    if real:
+        return real.strip()[:45]
+    return request.client.host if request.client else None
 
 
 @router.get(
@@ -123,3 +174,20 @@ async def me(
             detail="Пользователь не найден",
         )
     return UserSchema(**dict(row))
+
+
+@router.post(
+    "/logout",
+    status_code=status.HTTP_200_OK,
+    summary="Выход: освобождает сессию (учёт лимита сессий)",
+)
+async def logout(
+    claims: TenantClaims = Depends(get_current_claims),
+    db: AsyncSession = Depends(get_tenant_db),
+) -> dict:
+    """Отзывает текущую сессию по jti — освобождает место под лимитом.
+    Токен остаётся валидным до exp (stateless JWT), но место под лимитом
+    освобождается сразу. Идемпотентно."""
+    if claims.jti:
+        await session_service.revoke(db, claims.jti, reason="logout")
+    return {"ok": True}
