@@ -92,8 +92,8 @@ export default function Login() {
 
   // Повторно вводим email+пароль → гасим свои сессии на других устройствах →
   // авто-вход под этими же данными.
-  const handleLogoutOthers = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleLogoutOthers = async () => {
+    if (cLoading) return
     setCError('')
     setCLoading(true)
     try {
@@ -345,8 +345,6 @@ export default function Login() {
 
                 {showLogoutConfirm && (
                   <Box
-                    component="form"
-                    onSubmit={handleLogoutOthers}
                     sx={{
                       border: `1px solid ${PALETTE.stone[300]}`,
                       borderRadius: '12px',
@@ -386,6 +384,7 @@ export default function Login() {
                       placeholder="Пароль"
                       value={cPassword}
                       onChange={(e) => setCPassword(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleLogoutOthers() } }}
                       required
                       autoComplete="current-password"
                       size="small"
@@ -404,7 +403,8 @@ export default function Login() {
 
                     <Box sx={{ display: 'flex', gap: 1.5 }}>
                       <Button
-                        type="submit"
+                        type="button"
+                        onClick={handleLogoutOthers}
                         variant="contained"
                         disabled={cLoading}
                         sx={{ flex: 1, borderRadius: '10px', fontWeight: 700, textTransform: 'none' }}
