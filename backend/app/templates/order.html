@@ -32,9 +32,9 @@
   <tr>
     <td width="14%">Принят:<br><b>{{ created_at }}</b></td>
     <td width="14%">Вид ремонта:<br>&nbsp;</td>
-    <td width="15%">Диспетчер:<br>{{ accepted_by or '&nbsp;' }}</td>
-    <td width="15%">Мастер:<br>{{ mechanic_name or '&nbsp;' }}</td>
-    <td width="14%">Срок исполнения:<br>{{ completed_at or '&nbsp;' }}</td>
+    <td width="15%">Диспетчер:<br>{{ accepted_by or '' }}</td>
+    <td width="15%">Мастер:<br>{{ mechanic_name or '' }}</td>
+    <td width="14%">Срок исполнения:<br>{{ completed_at or '' }}</td>
     <td width="14%" align="center"><b>{{ status_label }}</b></td>
     <td width="14%" align="center">в валюте<br><b>рубли</b></td>
   </tr>
