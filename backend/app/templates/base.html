@@ -131,10 +131,12 @@
 {% block extra_styles %}{% endblock %}
 </head>
 <body>
+  {% block docheader %}
   <div class="header">
     <div class="company-name">{{ company_name }}</div>
     <div class="company-info">{{ company_address }} | Тел: {{ company_phone }} | ИНН: {{ company_inn }}</div>
   </div>
+  {% endblock %}
   {% block content %}{% endblock %}
   <p style="font-size: 8pt; color: #999; text-align: center; margin-top: 20px;">
     Документ сформирован автоматически — {{ generated_at }}
