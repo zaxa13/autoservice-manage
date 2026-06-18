@@ -7,8 +7,10 @@ Wave 3a + 4c:
 - payments (Wave 4c): GET /{id}/payments, POST /{id}/payments —
   ручная оплата (наличные/карта) с авто-созданием cashflow income.
 
+- /print, /print-act — PDF заказ-наряда и акта выполненных работ
+  (pdf_service на sync Session → threadpool + sync_tenant_session).
+
 НЕ мигрировано:
-- /print, /print-act (PDF)
 - payment cancel/edit (отложено)
 - yookassa-эндпоинты (внешняя интеграция)
 
@@ -22,13 +24,16 @@ from decimal import Decimal
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
+from fastapi.concurrency import run_in_threadpool
 from sqlalchemy import and_, bindparam, delete, func, or_, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import BadRequestException, NotFoundException
 from app.core.permissions import require_admin, require_manager_or_admin
 from app.core.security import TenantClaims
+from app.database import sync_tenant_session
 from app.dependencies import get_current_claims, get_tenant_db
+from app.services.pdf_service import generate_act_pdf, generate_order_pdf
 from app.models.cashflow import (
     Account,
     CashTransaction,
@@ -1058,3 +1063,51 @@ async def get_order_payment_log(
         )
         for r in rows
     ]
+
+
+# ---------------------------------------------------------------------------
+# Печать (PDF): заказ-наряд и акт выполненных работ
+# ---------------------------------------------------------------------------
+@router.get("/{order_id}/print", responses={**_auth, **_404})
+async def print_order(
+    order_id: int,
+    db: AsyncSession = Depends(get_tenant_db),
+    claims: TenantClaims = Depends(get_current_claims),
+):
+    """PDF заказ-наряда. pdf_service использует sync Session, поэтому
+    рендерим в threadpool с отдельной sync-сессией под тем же тенантом."""
+    if await db.get(Order, (claims.tenant_id, order_id)) is None:
+        raise NotFoundException("Заказ-наряд не найден")
+
+    def _render() -> bytes:
+        with sync_tenant_session(claims.tenant_id) as sync_db:
+            return generate_order_pdf(sync_db, order_id)
+
+    pdf_bytes = await run_in_threadpool(_render)
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'inline; filename="order-{order_id}.pdf"'},
+    )
+
+
+@router.get("/{order_id}/print-act", responses={**_auth, **_404})
+async def print_order_act(
+    order_id: int,
+    db: AsyncSession = Depends(get_tenant_db),
+    claims: TenantClaims = Depends(get_current_claims),
+):
+    """PDF акта выполненных работ по заказ-наряду."""
+    if await db.get(Order, (claims.tenant_id, order_id)) is None:
+        raise NotFoundException("Заказ-наряд не найден")
+
+    def _render() -> bytes:
+        with sync_tenant_session(claims.tenant_id) as sync_db:
+            return generate_act_pdf(sync_db, order_id)
+
+    pdf_bytes = await run_in_threadpool(_render)
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'inline; filename="act-{order_id}.pdf"'},
+    )
