@@ -8,14 +8,18 @@ from io import BytesIO
 from jinja2 import Environment, FileSystemLoader
 from xhtml2pdf import pisa
 
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session
 
+from app.models.customer import Customer
+from app.models.employee import Employee
 from app.models.order import Order, OrderWork, OrderPart
 from app.models.part import Part
 from app.models.setting import Setting
 from app.models.supplier import Supplier
 from app.models.vehicle import Vehicle
+from app.models.vehicle_brand import VehicleBrand, VehicleModel
 from app.models.warehouse import ReceiptDocument, ReceiptLine
+from app.models.work import Work
 from app.core.exceptions import NotFoundException
 
 # Путь к шаблонам
@@ -164,33 +168,71 @@ def _common_ctx(db: Session) -> dict:
 
 
 def _load_order(db: Session, order_id: int) -> Order:
-    order = (
-        db.query(Order)
-        .options(
-            joinedload(Order.vehicle).joinedload(Vehicle.customer),
-            joinedload(Order.vehicle).joinedload(Vehicle.brand),
-            joinedload(Order.vehicle).joinedload(Vehicle.vehicle_model),
-            joinedload(Order.employee),
-            joinedload(Order.mechanic),
-            joinedload(Order.order_works).joinedload(OrderWork.work),
-            joinedload(Order.order_parts).joinedload(OrderPart.part),
-        )
-        .filter(Order.id == order_id)
-        .first()
-    )
+    order = db.query(Order).filter(Order.id == order_id).first()
     if not order:
         raise NotFoundException("Заказ-наряд не найден")
     return order
 
 
 def _order_context(db: Session, order: Order) -> dict:
-    """Общий контекст для заказ-наряда и акта."""
-    vehicle = order.vehicle
-    customer = vehicle.customer if vehicle else None
+    """Общий контекст для заказ-наряда и акта.
+
+    Модели shared-DB не имеют ORM-relationships (FK по composite-ключу без
+    relationship()), поэтому связанное грузим вручную — как в
+    generate_receipt_pdf."""
+    vehicle = (
+        db.query(Vehicle).filter(Vehicle.id == order.vehicle_id).first()
+        if order.vehicle_id is not None else None
+    )
+    customer = (
+        db.query(Customer).filter(Customer.id == vehicle.customer_id).first()
+        if vehicle and vehicle.customer_id is not None else None
+    )
+    brand = (
+        db.query(VehicleBrand).filter(VehicleBrand.id == vehicle.brand_id).first()
+        if vehicle and vehicle.brand_id is not None else None
+    )
+    model = (
+        db.query(VehicleModel).filter(VehicleModel.id == vehicle.model_id).first()
+        if vehicle and vehicle.model_id is not None else None
+    )
+    accepted_by_emp = (
+        db.query(Employee).filter(Employee.id == order.employee_id).first()
+        if order.employee_id is not None else None
+    )
+    mechanic_emp = (
+        db.query(Employee).filter(Employee.id == order.mechanic_id).first()
+        if order.mechanic_id is not None else None
+    )
+
+    order_works = (
+        db.query(OrderWork)
+        .filter(OrderWork.order_id == order.id)
+        .order_by(OrderWork.id)
+        .all()
+    )
+    order_parts = (
+        db.query(OrderPart)
+        .filter(OrderPart.order_id == order.id)
+        .order_by(OrderPart.id)
+        .all()
+    )
+
+    work_ids = [w.work_id for w in order_works if w.work_id is not None]
+    works_by_id: dict[int, Work] = (
+        {w.id: w for w in db.query(Work).filter(Work.id.in_(work_ids)).all()}
+        if work_ids else {}
+    )
+    part_ids = [p.part_id for p in order_parts if p.part_id is not None]
+    parts_by_id: dict[int, Part] = (
+        {p.id: p for p in db.query(Part).filter(Part.id.in_(part_ids)).all()}
+        if part_ids else {}
+    )
 
     works = []
-    for w in order.order_works:
-        name = w.work.name if w.work else (w.work_name or "—")
+    for w in order_works:
+        wref = works_by_id.get(w.work_id)
+        name = wref.name if wref else (w.work_name or "—")
         works.append({
             "name": name,
             "article": "",
@@ -201,9 +243,10 @@ def _order_context(db: Session, order: Order) -> dict:
         })
 
     parts = []
-    for p in order.order_parts:
-        name = p.part.name if p.part else (p.part_name or "—")
-        article = p.article or (p.part.part_number if p.part else None)
+    for p in order_parts:
+        pref = parts_by_id.get(p.part_id)
+        name = pref.name if pref else (p.part_name or "—")
+        article = p.article or (pref.part_number if pref else None)
         parts.append({
             "name": name,
             "article": article or "",
@@ -213,11 +256,11 @@ def _order_context(db: Session, order: Order) -> dict:
             "total": _fmt(p.total),
         })
 
-    works_total = sum(float(w.total or 0) for w in order.order_works)
-    parts_total = sum(float(p.total or 0) for p in order.order_parts)
+    works_total = sum(float(w.total or 0) for w in order_works)
+    parts_total = sum(float(p.total or 0) for p in order_parts)
 
-    has_work_discounts = any(float(w.discount or 0) > 0 for w in order.order_works)
-    has_part_discounts = any(float(p.discount or 0) > 0 for p in order.order_parts)
+    has_work_discounts = any(float(w.discount or 0) > 0 for w in order_works)
+    has_part_discounts = any(float(p.discount or 0) > 0 for p in order_parts)
 
     status_value = order.status.value if hasattr(order.status, "value") else str(order.status)
 
@@ -230,14 +273,14 @@ def _order_context(db: Session, order: Order) -> dict:
         "customer_name": customer.full_name if customer else "—",
         "customer_phone": customer.phone if customer else "—",
         "customer_address": customer.address if customer else None,
-        "vehicle_brand": vehicle.brand.name if vehicle and vehicle.brand else "—",
-        "vehicle_model": vehicle.vehicle_model.name if vehicle and vehicle.vehicle_model else "",
+        "vehicle_brand": brand.name if brand else "—",
+        "vehicle_model": model.name if model else "",
         "vehicle_year": vehicle.year if vehicle else None,
         "vehicle_plate": vehicle.license_plate if vehicle else None,
         "vehicle_vin": vehicle.vin if vehicle else None,
         "mileage": order.mileage_at_service,
-        "accepted_by": order.employee.full_name if order.employee else None,
-        "mechanic_name": order.mechanic.full_name if order.mechanic else None,
+        "accepted_by": accepted_by_emp.full_name if accepted_by_emp else None,
+        "mechanic_name": mechanic_emp.full_name if mechanic_emp else None,
         "works": works,
         "parts": parts,
         "works_total": _fmt(works_total) if works_total else None,
@@ -246,8 +289,8 @@ def _order_context(db: Session, order: Order) -> dict:
         "works_total_words": _rubles_in_words(works_total) if works_total else None,
         "parts_total_words": _rubles_in_words(parts_total) if parts_total else None,
         "grand_total_words": _rubles_in_words(works_total + parts_total),
-        "works_qty_total": sum(w.quantity for w in order.order_works),
-        "parts_qty_total": sum(p.quantity for p in order.order_parts),
+        "works_qty_total": sum(w.quantity for w in order_works),
+        "parts_qty_total": sum(p.quantity for p in order_parts),
         "has_work_discounts": has_work_discounts,
         "has_part_discounts": has_part_discounts,
         "recommendations": order.recommendations or "",
