@@ -43,6 +43,10 @@ class TokenResponse(BaseModel):
     token_type: str = "bearer"
 
 
+class LogoutOthersResponse(BaseModel):
+    revoked: int
+
+
 @router.post(
     "/login",
     response_model=TokenResponse,
@@ -128,6 +132,63 @@ async def login(body: LoginRequest, request: Request) -> TokenResponse:
         body.email, row.tenant_id, row.user_id, row.role,
     )
     return TokenResponse(access_token=token)
+
+
+@router.post(
+    "/logout-others",
+    response_model=LogoutOthersResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Снять свои активные сессии (аварийный выход с экрана лимита)",
+)
+async def logout_others(body: LoginRequest) -> LogoutOthersResponse:
+    """Гасит ВСЕ активные сессии самого пользователя — освобождает слот,
+    когда вход заблокирован лимитом из-за застрявшей сессии (закрытый
+    браузер / другое устройство).
+
+    На экране лимита пользователь ещё не авторизован, поэтому ручка
+    повторно проверяет email+password (та же логика, что в /login) —
+    нельзя выкинуть чужого, зная только email. Гасим строго свои сессии
+    (по user_id); чужих в тенанте (на мульти-seat тарифах) не трогаем."""
+    async with auth_session() as session:
+        row = (
+            await session.execute(
+                text(
+                    "SELECT user_id, tenant_id, password_hash, is_active "
+                    "FROM app.lookup_user_for_login(:email)"
+                ),
+                {"email": body.email},
+            )
+        ).first()
+
+    if row is None or not verify_password(body.password, row.password_hash):
+        logger.info("logout_others failed (bad creds): email=%s", body.email)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Неверный email или пароль",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    if not row.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Учётная запись неактивна",
+        )
+
+    async with tenant_session(row.tenant_id) as db:
+        res = await db.execute(
+            text(
+                "UPDATE app.user_sessions SET revoked_at = now(), "
+                "revoked_reason = 'logout_others' "
+                "WHERE user_id = :uid AND revoked_at IS NULL"
+            ),
+            {"uid": row.user_id},
+        )
+        revoked = res.rowcount or 0
+
+    logger.info(
+        "logout_others: email=%s tenant_id=%s user_id=%s revoked=%d",
+        body.email, row.tenant_id, row.user_id, revoked,
+    )
+    return LogoutOthersResponse(revoked=revoked)
 
 
 def _client_ip(request: Request) -> str | None:

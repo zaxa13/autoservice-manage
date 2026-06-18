@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { TextField, Button, Typography, Box, CircularProgress, InputAdornment, Alert, Link } from '@mui/material'
 import { PersonOutline, LockOutlined, GarageRounded } from '@mui/icons-material'
 import { useAuthStore } from '../store/authStore'
+import api from '../services/api'
 import { BRAND, FONT, MOTION, PALETTE, SHADOW, SURFACE } from '../design-tokens'
 
 // Abstract SVG — suggests precision instrument / speedometer arc
@@ -39,6 +40,12 @@ export default function Login() {
   const [error, setError]       = useState('')
   const [limitMsg, setLimitMsg] = useState('')
   const [loading, setLoading]   = useState(false)
+  // Аварийный выход с экрана лимита: повторное подтверждение email+пароля
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
+  const [cEmail, setCEmail]       = useState('')
+  const [cPassword, setCPassword] = useState('')
+  const [cError, setCError]       = useState('')
+  const [cLoading, setCLoading]   = useState(false)
   const navigate = useNavigate()
   const { login: loginUser, isAuthenticated } = useAuthStore()
 
@@ -50,6 +57,7 @@ export default function Login() {
     e.preventDefault()
     setError('')
     setLimitMsg('')
+    setShowLogoutConfirm(false)
     setLoading(true)
     try {
       await loginUser(email, password)
@@ -79,6 +87,33 @@ export default function Login() {
       setError(typeof detail === 'string' ? detail : fallback)
     } finally {
       setLoading(false)
+    }
+  }
+
+  // Повторно вводим email+пароль → гасим свои сессии на других устройствах →
+  // авто-вход под этими же данными.
+  const handleLogoutOthers = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setCError('')
+    setCLoading(true)
+    try {
+      await api.post('/auth/logout-others', { email: cEmail, password: cPassword })
+      await loginUser(cEmail, cPassword)
+      // успех → useEffect редиректнёт по isAuthenticated
+    } catch (err: unknown) {
+      const resp = (err as {
+        response?: { status?: number; data?: { detail?: unknown } }
+      })?.response
+      const detail = resp?.data?.detail
+      if (resp?.status === 409) {
+        setCError('Слот всё ещё занят — кто-то вошёл только что. Попробуйте ещё раз.')
+      } else if (resp?.status === 401) {
+        setCError('Неверный email или пароль.')
+      } else {
+        setCError(typeof detail === 'string' ? detail : 'Не удалось закрыть сессии. Попробуйте ещё раз.')
+      }
+    } finally {
+      setCLoading(false)
     }
   }
 
@@ -276,20 +311,120 @@ export default function Login() {
             )}
 
             {limitMsg && (
-              <Alert severity="warning" sx={{ mb: 3 }}>
-                {limitMsg}
-                <Box sx={{ mt: 1 }}>
-                  <Link
-                    href="https://auto-works.pro/cabinet/plan"
-                    target="_blank"
-                    rel="noopener"
-                    underline="hover"
-                    sx={{ color: BRAND.primary, fontWeight: 600, fontSize: '0.82rem' }}
+              <Box sx={{ mb: 3 }}>
+                <Alert severity="warning" sx={{ mb: showLogoutConfirm ? 1.5 : 0 }}>
+                  {limitMsg}
+                  <Box sx={{ mt: 1.5, display: 'flex', flexWrap: 'wrap', gap: 1.5, alignItems: 'center' }}>
+                    {!showLogoutConfirm && (
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        color="warning"
+                        onClick={() => {
+                          setShowLogoutConfirm(true)
+                          setCError('')
+                          setCEmail('')
+                          setCPassword('')
+                        }}
+                        sx={{ borderRadius: '8px', fontWeight: 600, textTransform: 'none' }}
+                      >
+                        Выйти на других устройствах
+                      </Button>
+                    )}
+                    <Link
+                      href="https://auto-works.pro/cabinet/plan"
+                      target="_blank"
+                      rel="noopener"
+                      underline="hover"
+                      sx={{ color: BRAND.primary, fontWeight: 600, fontSize: '0.82rem' }}
+                    >
+                      Перейти на тариф выше →
+                    </Link>
+                  </Box>
+                </Alert>
+
+                {showLogoutConfirm && (
+                  <Box
+                    component="form"
+                    onSubmit={handleLogoutOthers}
+                    sx={{
+                      border: `1px solid ${PALETTE.stone[300]}`,
+                      borderRadius: '12px',
+                      p: 2.5,
+                      bgcolor: PALETTE.stone[50],
+                    }}
                   >
-                    Перейти на тариф выше →
-                  </Link>
-                </Box>
-              </Alert>
+                    <Typography sx={{ fontWeight: 700, fontSize: '0.9rem', color: PALETTE.slate[700], mb: 0.5 }}>
+                      Подтвердите, что это вы
+                    </Typography>
+                    <Typography sx={{ fontSize: '0.8rem', color: PALETTE.slate[500], mb: 2, lineHeight: 1.5 }}>
+                      Введите email и пароль ещё раз — закроем ваши активные сессии на других устройствах и впустим вас.
+                    </Typography>
+
+                    <TextField
+                      fullWidth
+                      type="email"
+                      placeholder="Email"
+                      value={cEmail}
+                      onChange={(e) => setCEmail(e.target.value)}
+                      required
+                      autoComplete="email"
+                      size="small"
+                      sx={{ mb: 1.5 }}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <PersonOutline sx={{ color: PALETTE.stone[400], fontSize: 19 }} />
+                          </InputAdornment>
+                        ),
+                        sx: { borderRadius: '10px', bgcolor: '#fff' },
+                      }}
+                    />
+                    <TextField
+                      fullWidth
+                      type="password"
+                      placeholder="Пароль"
+                      value={cPassword}
+                      onChange={(e) => setCPassword(e.target.value)}
+                      required
+                      autoComplete="current-password"
+                      size="small"
+                      sx={{ mb: 2 }}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <LockOutlined sx={{ color: PALETTE.stone[400], fontSize: 19 }} />
+                          </InputAdornment>
+                        ),
+                        sx: { borderRadius: '10px', bgcolor: '#fff' },
+                      }}
+                    />
+
+                    {cError && <Alert severity="error" sx={{ mb: 2 }}>{cError}</Alert>}
+
+                    <Box sx={{ display: 'flex', gap: 1.5 }}>
+                      <Button
+                        type="submit"
+                        variant="contained"
+                        disabled={cLoading}
+                        sx={{ flex: 1, borderRadius: '10px', fontWeight: 700, textTransform: 'none' }}
+                      >
+                        {cLoading
+                          ? <CircularProgress size={20} color="inherit" />
+                          : 'Закрыть другие сессии и войти'}
+                      </Button>
+                      <Button
+                        variant="text"
+                        onClick={() => setShowLogoutConfirm(false)}
+                        disabled={cLoading}
+                        sx={{ borderRadius: '10px', fontWeight: 600, textTransform: 'none', color: PALETTE.slate[500] }}
+                      >
+                        Отмена
+                      </Button>
+                    </Box>
+                  </Box>
+                )}
+              </Box>
             )}
 
             <Box sx={{ animation: 'fadeUp 0.45s cubic-bezier(0.16,1,0.3,1) 0.2s both' }}>
