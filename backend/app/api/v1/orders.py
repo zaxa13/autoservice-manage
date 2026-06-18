@@ -1071,13 +1071,16 @@ async def get_order_payment_log(
 @router.get("/{order_id}/print", responses={**_auth, **_404})
 async def print_order(
     order_id: int,
-    db: AsyncSession = Depends(get_tenant_db),
     claims: TenantClaims = Depends(get_current_claims),
 ):
     """PDF заказ-наряда. pdf_service использует sync Session, поэтому
-    рендерим в threadpool с отдельной sync-сессией под тем же тенантом."""
-    if await db.get(Order, (claims.tenant_id, order_id)) is None:
-        raise NotFoundException("Заказ-наряд не найден")
+    рендерим в threadpool с отдельной sync-сессией под тем же тенантом.
+
+    Сознательно НЕ зависим от get_tenant_db: его async-сессия держит
+    открытую транзакцию (и серверный коннект pgbouncer) весь запрос, а
+    sync_tenant_session внутри threadpool просит второй коннект — при
+    маленьком пуле это дедлок. Проверку существования делает _load_order
+    внутри generate_*_pdf (кидает 404)."""
 
     def _render() -> bytes:
         with sync_tenant_session(claims.tenant_id) as sync_db:
@@ -1097,12 +1100,10 @@ async def print_order(
 @router.get("/{order_id}/print-act", responses={**_auth, **_404})
 async def print_order_act(
     order_id: int,
-    db: AsyncSession = Depends(get_tenant_db),
     claims: TenantClaims = Depends(get_current_claims),
 ):
-    """PDF акта выполненных работ по заказ-наряду."""
-    if await db.get(Order, (claims.tenant_id, order_id)) is None:
-        raise NotFoundException("Заказ-наряд не найден")
+    """PDF акта выполненных работ. Без get_tenant_db — см. print_order
+    (избегаем дедлока async-коннекта и sync-сессии в threadpool)."""
 
     def _render() -> bytes:
         with sync_tenant_session(claims.tenant_id) as sync_db:

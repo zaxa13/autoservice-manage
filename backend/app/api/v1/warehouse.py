@@ -667,14 +667,14 @@ async def unpost_receipt(
 )
 async def print_receipt(
     receipt_id: int,
-    db: AsyncSession = Depends(get_tenant_db),
     claims: TenantClaims = Depends(get_current_claims),
 ):
     """PDF приходной накладной. pdf_service использует sync Session,
-    поэтому запускаем в threadpool с отдельной sync-сессией под тем же тенантом."""
-    # Лёгкая проверка существования в async-сессии — чтобы 404 пришёл сразу.
-    if await db.get(ReceiptDocument, (claims.tenant_id, receipt_id)) is None:
-        raise NotFoundException("Накладная не найдена")
+    поэтому запускаем в threadpool с отдельной sync-сессией под тем же тенантом.
+
+    Без get_tenant_db: его async-сессия держит открытую транзакцию (коннект
+    pgbouncer) весь запрос, а sync_tenant_session просит второй — при малом
+    пуле дедлок. Проверку существования делает generate_receipt_pdf (404)."""
 
     def _render() -> bytes:
         with sync_tenant_session(claims.tenant_id) as sync_db:
