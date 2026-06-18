@@ -7,8 +7,10 @@ import { useAuthStore } from '../store/authStore'
 // @ts-ignore - Vite добавляет import.meta.env автоматически
 const API_BASE_URL = (import.meta.env as any)?.VITE_API_BASE_URL || '/api/v1'
 
-// Публичные эндпоинты, которые не требуют токена
-const PUBLIC_ENDPOINTS = ['/auth/login', '/auth/register']
+// Публичные эндпоинты, которые не требуют токена. Их 401 — это «неверный
+// email/пароль», а не протухшая сессия, поэтому редиректить на /login нельзя
+// (иначе страница перезагружается и текст ошибки на форме теряется).
+const PUBLIC_ENDPOINTS = ['/auth/login', '/auth/register', '/auth/logout-others']
 
 const api = axios.create({
   baseURL: API_BASE_URL,
