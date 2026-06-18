@@ -1087,7 +1087,10 @@ async def print_order(
     return Response(
         content=pdf_bytes,
         media_type="application/pdf",
-        headers={"Content-Disposition": f'inline; filename="order-{order_id}.pdf"'},
+        headers={
+            "Content-Disposition": f'inline; filename="order-{order_id}.pdf"',
+            "Cache-Control": "no-store",
+        },
     )
 
 
@@ -1109,5 +1112,8 @@ async def print_order_act(
     return Response(
         content=pdf_bytes,
         media_type="application/pdf",
-        headers={"Content-Disposition": f'inline; filename="act-{order_id}.pdf"'},
+        headers={
+            "Content-Disposition": f'inline; filename="act-{order_id}.pdf"',
+            "Cache-Control": "no-store",
+        },
     )

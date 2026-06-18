@@ -723,7 +723,9 @@ export default function Orders() {
   };
 
   const openPdf = (path: string) => {
-    api.get(path, { responseType: 'blob' }).then((res) => {
+    // cache-bust: иначе браузер отдаёт старый PDF из HTTP-кэша (ответ без валидаторов)
+    const sep = path.includes('?') ? '&' : '?';
+    api.get(`${path}${sep}_=${Date.now()}`, { responseType: 'blob' }).then((res) => {
       const url = URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
       window.open(url, '_blank');
     }).catch(() => setError('Ошибка генерации PDF'));
