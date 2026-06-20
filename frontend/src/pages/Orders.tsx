@@ -770,6 +770,19 @@ export default function Orders() {
     if (list[i]) { list[i][f] = v; setFormData({ ...formData, [key]: list }); }
   };
 
+  // Глобальная скидка + «Применить ко всем»: проставляем процент во ВСЕ
+  // существующие строки (работы и запчасти), а не только в новые. Срабатывает
+  // при включении галки и при изменении процента. applyToAll сбрасывается при
+  // открытии заказа, поэтому сохранённые построчные скидки не затираются.
+  useEffect(() => {
+    if (!applyToAll) return;
+    setFormData(prev => ({
+      ...prev,
+      order_works: (prev.order_works || []).map((w: any) => ({ ...w, discount: globalDiscount })),
+      order_parts: (prev.order_parts || []).map((p: any) => ({ ...p, discount: globalDiscount })),
+    }));
+  }, [applyToAll, globalDiscount]);
+
   const setOrderPartLine = (idx: number, part: Part) => {
     setFormData(p => {
       const list = [...(p.order_parts || [])];
