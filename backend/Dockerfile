@@ -28,6 +28,7 @@ RUN sed -i 's|http://deb.debian.org|http://mirror.yandex.ru|g' /etc/apt/sources.
         libgdk-pixbuf-2.0-0 \
         libcairo2 \
         fonts-dejavu-core \
+        fonts-liberation \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
