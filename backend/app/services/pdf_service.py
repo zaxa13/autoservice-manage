@@ -3,10 +3,9 @@
 import os
 from datetime import datetime
 from decimal import Decimal
-from io import BytesIO
 
 from jinja2 import Environment, FileSystemLoader
-from xhtml2pdf import pisa
+from weasyprint import HTML
 
 from sqlalchemy.orm import Session
 
@@ -26,23 +25,22 @@ from app.core.exceptions import NotFoundException
 _TEMPLATE_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "templates")
 _jinja_env = Environment(loader=FileSystemLoader(_TEMPLATE_DIR), autoescape=True)
 
-# Шрифты с поддержкой кириллицы (порядок приоритета)
-_FONT_CANDIDATES = [
-    "/System/Library/Fonts/Supplemental/Arial.ttf",       # macOS
-    "/Library/Fonts/Arial.ttf",                            # macOS (старые версии)
-    "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",     # Linux
-    "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
-]
+# WeasyPrint берёт шрифты из системы (fontconfig). DejaVu Sans с кириллицей
+# ставится в образ (fonts-dejavu-core) и задаётся в CSS base.html.
 
-def _find_font() -> str | None:
-    for path in _FONT_CANDIDATES:
-        if os.path.exists(path):
-            return path
-    return None
-
-_FONT_PATH = _find_font()
+_RU_MONTHS_GEN = (
+    "", "Января", "Февраля", "Марта", "Апреля", "Мая", "Июня",
+    "Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря",
+)
 
 _COMPANY_KEYS = ("company_name", "company_address", "company_phone", "company_inn")
+
+
+def _date_verbose(d) -> str:
+    """Дата прописью в стиле 1С: «28» Мая 2026г."""
+    if not d:
+        return "—"
+    return f"«{d.day:02d}» {_RU_MONTHS_GEN[d.month]} {d.year}г."
 
 _ONES_M  = ['','один','два','три','четыре','пять','шесть','семь','восемь','девять',
             'десять','одиннадцать','двенадцать','тринадцать','четырнадцать','пятнадцать',
@@ -163,7 +161,6 @@ def _common_ctx(db: Session) -> dict:
     return {
         **_company_ctx(db),
         "generated_at": datetime.now().strftime("%d.%m.%Y %H:%M"),
-        "font_path": _FONT_PATH,
     }
 
 
@@ -250,6 +247,7 @@ def _order_context(db: Session, order: Order) -> dict:
         parts.append({
             "name": name,
             "article": article or "",
+            "unit": (pref.unit if pref else None) or "шт",
             "quantity": p.quantity,
             "price": _fmt(p.price),
             "discount": float(p.discount or 0),
@@ -267,18 +265,27 @@ def _order_context(db: Session, order: Order) -> dict:
     ctx = {
         **_common_ctx(db),
         "order_number": order.number,
+        "order_date_verbose": _date_verbose(order.created_at),
         "status_label": STATUS_LABELS.get(status_value, status_value),
         "created_at": order.created_at.strftime("%d.%m.%Y") if order.created_at else "—",
         "completed_at": order.completed_at.strftime("%d.%m.%Y") if order.completed_at else None,
         "customer_name": customer.full_name if customer else "—",
         "customer_phone": customer.phone if customer else "—",
         "customer_address": customer.address if customer else None,
+        # Плательщик = заказчик (отдельной модели плательщика нет). ИНН/Вид
+        # ремонта/Срок/Причина — полей в модели пока нет → пустые ячейки формы.
+        "payer_name": customer.full_name if customer else "—",
+        "payer_inn": "",
+        "repair_type": "",
+        "deadline": "",
+        "reason": "",
         "vehicle_brand": brand.name if brand else "—",
         "vehicle_model": model.name if model else "",
         "vehicle_year": vehicle.year if vehicle else None,
         "vehicle_plate": vehicle.license_plate if vehicle else None,
         "vehicle_vin": vehicle.vin if vehicle else None,
-        "mileage": order.mileage_at_service,
+        # Пробег: «на момент ремонта» из заказа, иначе текущий из карточки авто.
+        "mileage": order.mileage_at_service or (vehicle.mileage if vehicle else None),
         "accepted_by": accepted_by_emp.full_name if accepted_by_emp else None,
         "mechanic_name": mechanic_emp.full_name if mechanic_emp else None,
         "works": works,
@@ -302,11 +309,7 @@ def _order_context(db: Session, order: Order) -> dict:
 def _render_pdf(template_name: str, context: dict) -> bytes:
     template = _jinja_env.get_template(template_name)
     html_string = template.render(**context)
-    buf = BytesIO()
-    result = pisa.CreatePDF(html_string.encode("utf-8"), dest=buf, encoding="utf-8")
-    if result.err:
-        raise RuntimeError(f"Ошибка генерации PDF: {result.err}")
-    return buf.getvalue()
+    return HTML(string=html_string).write_pdf()
 
 
 # ─── Публичные функции ────────────────────────────────────────

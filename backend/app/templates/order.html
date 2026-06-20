@@ -1,189 +1,178 @@
 {% extends "base.html" %}
 
 {% block docheader %}
-<p style="font-size:10pt; margin:0 0 1px 0;"><b>ИСПОЛНИТЕЛЬ:</b> {{ company_name }}</p>
-<p style="font-size:9pt; margin:0 0 6px 0; color:#333;">адрес: {{ company_address }}{% if company_phone and company_phone != '—' %} &nbsp; телефоны: {{ company_phone }}{% endif %}{% if company_inn and company_inn != '—' %} &nbsp; ИНН: {{ company_inn }}{% endif %}</p>
+<p class="zn-exec"><b>ИСПОЛНИТЕЛЬ:</b> {{ company_name }}</p>
+<p class="zn-exec-addr">адрес: {{ company_address }}{% if company_phone and company_phone != '—' %} &nbsp;&nbsp;телефоны: {{ company_phone }}{% endif %}{% if company_inn and company_inn != '—' %} &nbsp;&nbsp;ИНН: {{ company_inn }}{% endif %}</p>
 {% endblock %}
 
 {% block content %}
 
-<h2 style="font-size:13pt; font-weight:bold; margin:8px 0 8px 0;">
-  Заказ-наряд № {{ order_number }} от {{ created_at }}
-</h2>
+<div class="zn-title">Заказ-наряд № {{ order_number }} от {{ order_date_verbose }}</div>
 
-<!-- ===== РЕКВИЗИТЫ ===== -->
-<table border="1" cellspacing="0" cellpadding="4" width="100%" style="font-size:9.5pt; border-collapse:collapse; margin-bottom:6px;">
+<!-- Реквизиты заказчика / авто -->
+<table class="zn-req">
   <tr>
-    <td width="50%"><b>Заказчик:</b> {{ customer_name }}</td>
-    <td width="50%">адрес заказчика: {{ customer_address or '—' }} &nbsp; телефоны: {{ customer_phone }}</td>
+    <td style="width:50%;"><b>Заказчик:</b> {{ customer_name }}</td>
+    <td style="width:50%;">адрес заказчика: {{ customer_address or '—' }} &nbsp;&nbsp;телефоны: {{ customer_phone }}</td>
   </tr>
   <tr>
-    <td colspan="2"><b>Автомобиль:</b> {{ vehicle_brand }} {{ vehicle_model }} &nbsp; гос. номер: <b>{{ vehicle_plate or '—' }}</b> &nbsp; VIN: {{ vehicle_vin or '—' }} &nbsp; год вып. {{ vehicle_year or '—' }} &nbsp; пробег {{ mileage or '—' }}</td>
+    <td colspan="2"><b>Автомобиль:</b> {{ vehicle_brand }} {{ vehicle_model }} &nbsp;&nbsp;гос. номер: <b>{{ vehicle_plate or '—' }}</b> &nbsp;&nbsp;VIN: {{ vehicle_vin or '—' }} &nbsp;&nbsp;год вып. {{ vehicle_year or '—' }} &nbsp;&nbsp;пробег {{ mileage or '—' }}</td>
   </tr>
 </table>
 
-<table border="1" cellspacing="0" cellpadding="4" width="100%" style="font-size:9.5pt; border-collapse:collapse; margin-bottom:6px;">
-  <tr><td><b>Плательщик:</b> {{ customer_name }}</td></tr>
-  <tr><td>ИНН —&nbsp;&nbsp; адрес: {{ customer_address or '—' }} &nbsp; телефоны: {{ customer_phone }}</td></tr>
+<!-- Плательщик -->
+<table class="zn-req">
+  <tr><td><b>Плательщик:</b> {{ payer_name }}</td></tr>
+  <tr><td>ИНН {{ payer_inn }} &nbsp;&nbsp;адрес: {{ customer_address or '—' }} &nbsp;&nbsp;телефоны: {{ customer_phone }}</td></tr>
 </table>
 
-<!-- Строка статуса -->
-<table border="1" cellspacing="0" cellpadding="3" width="100%" style="font-size:8.5pt; border-collapse:collapse; margin-bottom:8px;">
+<!-- Строка статуса: раздельные боксы -->
+<table class="zn-status">
+  <colgroup>
+    <col style="width:14%;"><col style="width:14%;"><col style="width:15%;"><col style="width:15%;">
+    <col style="width:14%;"><col style="width:14%;"><col style="width:14%;">
+  </colgroup>
   <tr>
-    <td width="14%">Принят:<br><b>{{ created_at }}</b></td>
-    <td width="14%">Вид ремонта:<br>&nbsp;</td>
-    <td width="15%">Диспетчер:<br>{{ accepted_by or '' }}</td>
-    <td width="15%">Мастер:<br>{{ mechanic_name or '' }}</td>
-    <td width="14%">Срок исполнения:<br>{{ completed_at or '' }}</td>
-    <td width="14%" align="center"><b>{{ status_label }}</b></td>
-    <td width="14%" align="center">в валюте<br><b>рубли</b></td>
+    <td>Принят:<br><b>{{ created_at }}</b></td>
+    <td>Вид ремонта:<br>{{ repair_type }}</td>
+    <td>Диспетчер:<br>{{ accepted_by or '' }}</td>
+    <td>Мастер:<br>{{ mechanic_name or '' }}</td>
+    <td>Срок исполнения:<br>{{ deadline }}</td>
+    <td class="center"><span class="stamp">{{ status_label }}</span></td>
+    <td class="center dashed">в валюте<br><b>рубли</b></td>
   </tr>
 </table>
 
 <!-- Причина обращения -->
-<p style="font-size:9pt; margin:6px 0 2px 0; color:#333;">Причина обращения</p>
-<table border="1" cellspacing="0" cellpadding="4" width="100%" style="font-size:9.5pt; border-collapse:collapse; margin-bottom:10px;">
-  <tr><td><div style="min-height:16px;">&nbsp;</div></td></tr>
-</table>
+<div class="zn-reason-lbl">Причина обращения</div>
+<div class="zn-reason">{{ reason }}</div>
 
 <!-- ===== РАБОТЫ ===== -->
-<p style="font-size:10pt; font-weight:bold; margin:8px 0 3px 0;">
-  Выполненные работы по заказ-наряду № {{ order_number }} от {{ created_at }}
-</p>
-
-<table border="1" cellspacing="0" cellpadding="3" width="100%" style="font-size:8.5pt; border-collapse:collapse;">
+<div class="zn-tbl-title">Выполненные работы по заказ-наряду № {{ order_number }} от {{ order_date_verbose }}</div>
+<table class="zn-grid">
   <thead>
-    <tr style="background:#e8e8e8; font-weight:bold;">
-      <td width="22" align="center">№</td>
-      <td width="52" align="center">Код</td>
-      <td align="center">Наименование</td>
-      <td width="34" align="center">Кол.оп.</td>
-      <td width="62" align="center">Цена н/ч</td>
-      <td width="42" align="center">Норма</td>
-      <td width="34" align="center">н/ч</td>
-      {% if has_work_discounts %}<td width="38" align="center">Скидка</td>{% endif %}
-      <td width="72" align="center">Всего</td>
-      <td width="48" align="center">в т.ч. НДС</td>
+    <tr>
+      <th style="width:24px;">№</th>
+      <th style="width:54px;">Код</th>
+      <th>Наименование</th>
+      <th style="width:46px;">Кол.оп.</th>
+      <th style="width:66px;">Цена н/ч</th>
+      <th style="width:52px;">Норма</th>
+      <th style="width:40px;">н/ч</th>
+      <th style="width:78px;">Всего</th>
+      <th style="width:56px;">в т.ч. НДС</th>
+    </tr>
+    <tr class="cols">
+      <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th>
     </tr>
   </thead>
   <tbody>
     {% if works %}
       {% for w in works %}
       <tr>
-        <td align="center">{{ loop.index }}</td>
-        <td align="center" style="font-size:8pt;">{{ '%05d'|format(loop.index) }}</td>
+        <td class="c">{{ loop.index }}</td>
+        <td class="c">{{ '%05d'|format(loop.index) }}</td>
         <td>{{ w.name }}</td>
-        <td align="center">{{ w.quantity }}</td>
-        <td align="right">{{ w.price }}</td>
-        <td align="right">{{ '%.3f'|format(w.quantity) }}</td>
-        <td align="center">Руб.</td>
-        {% if has_work_discounts %}<td align="center">{{ w.discount }}%</td>{% endif %}
-        <td align="right"><b>{{ w.total }}</b></td>
-        <td align="right">0.00</td>
+        <td class="c">{{ w.quantity }}</td>
+        <td class="r">{{ w.price }}</td>
+        <td class="r">{{ '%.3f'|format(w.quantity) }}</td>
+        <td class="c">Руб.</td>
+        <td class="r">{{ w.total }}</td>
+        <td class="r">0.00</td>
       </tr>
       {% endfor %}
     {% else %}
-      <tr><td colspan="{{ 10 if has_work_discounts else 9 }}" align="center" style="color:#888;">Работы не добавлены</td></tr>
+      <tr><td colspan="9" class="c" style="color:#888;">Работы не добавлены</td></tr>
     {% endif %}
   </tbody>
   <tfoot>
-    <tr style="background:#f0f0f0; font-weight:bold;">
-      <td colspan="3" align="right">Итого работ:</td>
-      <td align="center">{{ works_qty_total }}</td>
-      <td colspan="{{ 4 if has_work_discounts else 3 }}" align="right">на сумму:</td>
-      <td align="right">{{ works_total or '0.00' }}</td>
-      <td align="right">0.00</td>
+    <tr>
+      <td colspan="3" class="r">Итого работ:</td>
+      <td class="c">{{ works_qty_total }}</td>
+      <td colspan="3" class="r">на сумму:</td>
+      <td class="r">{{ works_total or '0.00' }}</td>
+      <td class="r">0.00</td>
     </tr>
   </tfoot>
 </table>
-{% if works_total_words %}
-<p style="font-size:9pt; margin:2px 0 8px 0;">{{ works_total_words }}</p>
-{% endif %}
+{% if works_total_words %}<div class="zn-words">{{ works_total_words }}</div>{% endif %}
 
 <!-- ===== ЗАПЧАСТИ ===== -->
-<p style="font-size:10pt; font-weight:bold; margin:10px 0 3px 0;">
-  Расходная накладная к заказ-наряду № {{ order_number }} от {{ created_at }}
-</p>
-
-<table border="1" cellspacing="0" cellpadding="3" width="100%" style="font-size:8.5pt; border-collapse:collapse;">
+<div class="zn-tbl-title">Расходная накладная к заказ-наряду № {{ order_number }} от {{ order_date_verbose }}</div>
+<table class="zn-grid">
   <thead>
-    <tr style="background:#e8e8e8; font-weight:bold;">
-      <td width="22" align="center">№</td>
-      <td width="62" align="center">Код</td>
-      <td align="center">Наименование</td>
-      <td width="40" align="center">Кол-во</td>
-      <td width="40" align="center">Ед.изм.</td>
-      <td width="62" align="center">Цена</td>
-      {% if has_part_discounts %}<td width="38" align="center">Скидка</td>{% endif %}
-      <td width="72" align="center">Всего</td>
-      <td width="48" align="center">в т.ч. НДС</td>
+    <tr>
+      <th style="width:24px;">№</th>
+      <th style="width:64px;">Код</th>
+      <th>Наименование</th>
+      <th style="width:50px;">Кол-во</th>
+      <th style="width:48px;">Ед.изм.</th>
+      <th style="width:70px;">Цена</th>
+      <th style="width:78px;">Всего</th>
+      <th style="width:56px;">в т.ч. НДС</th>
+    </tr>
+    <tr class="cols">
+      <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th>
     </tr>
   </thead>
   <tbody>
     {% if parts %}
       {% for p in parts %}
       <tr>
-        <td align="center">{{ loop.index }}</td>
-        <td align="center" style="font-size:8pt;">{{ p.article if p.article else '' }}</td>
+        <td class="c">{{ loop.index }}</td>
+        <td class="c">{{ p.article }}</td>
         <td>{{ p.name }}</td>
-        <td align="center">{{ p.quantity }}</td>
-        <td align="center">шт</td>
-        <td align="right">{{ p.price }}</td>
-        {% if has_part_discounts %}<td align="center">{{ p.discount }}%</td>{% endif %}
-        <td align="right"><b>{{ p.total }}</b></td>
-        <td align="right">0.00</td>
+        <td class="c">{{ p.quantity }}</td>
+        <td class="c">{{ p.unit }}</td>
+        <td class="r">{{ p.price }}</td>
+        <td class="r">{{ p.total }}</td>
+        <td class="r">0.00</td>
       </tr>
       {% endfor %}
     {% else %}
-      <tr><td colspan="{{ 9 if has_part_discounts else 8 }}" align="center" style="color:#888;">Запчасти не добавлены</td></tr>
+      <tr><td colspan="8" class="c" style="color:#888;">Запчасти не добавлены</td></tr>
     {% endif %}
   </tbody>
   <tfoot>
-    <tr style="background:#f0f0f0; font-weight:bold;">
-      <td colspan="3" align="right">Итого материалов:</td>
-      <td align="center">{{ parts_qty_total }}</td>
-      <td colspan="{{ 3 if has_part_discounts else 2 }}" align="right">на сумму:</td>
-      <td align="right">{{ parts_total or '0.00' }}</td>
-      <td align="right">0.00</td>
+    <tr>
+      <td colspan="3" class="r">Итого материалов:</td>
+      <td class="c">{{ parts_qty_total }}</td>
+      <td colspan="2" class="r">на сумму:</td>
+      <td class="r">{{ parts_total or '0.00' }}</td>
+      <td class="r">0.00</td>
     </tr>
   </tfoot>
 </table>
-{% if parts_total_words %}
-<p style="font-size:9pt; margin:2px 0 8px 0;">{{ parts_total_words }}</p>
-{% endif %}
+{% if parts_total_words %}<div class="zn-words">{{ parts_total_words }}</div>{% endif %}
 
 <!-- ===== ИТОГО ===== -->
-<table width="100%" cellspacing="0" cellpadding="3" style="font-size:11pt; margin-top:10px; border-collapse:collapse;">
+<table class="zn-total">
   <tr>
-    <td align="right" style="font-weight:bold;">Итого по заказ-наряду:</td>
-    <td width="120" align="right" style="border:1px solid #333; font-weight:bold; font-size:12pt;">{{ grand_total }}</td>
+    <td class="lbl">Итого по заказ-наряду:</td>
+    <td class="val">{{ grand_total }}</td>
   </tr>
 </table>
-<p style="font-size:10pt; font-weight:bold; margin:4px 0 12px 0;">
-  Всего по заказ-наряду: {{ grand_total_words }}
-</p>
+<div class="zn-total-words">Всего по заказ-наряду: {{ grand_total_words }}</div>
 
 {% if recommendations %}
-<div style="border:1px dashed #999; padding:6px; margin:8px 0; font-size:9pt;">
-  <b>Рекомендации:</b> {{ recommendations }}
-</div>
+<div class="zn-reason"><b>Рекомендации:</b> {{ recommendations }}</div>
 {% endif %}
 
 <!-- Подписи -->
-<table width="100%" cellspacing="0" cellpadding="3" style="font-size:10pt; margin-top:26px;">
+<table class="zn-sign">
   <tr>
-    <td width="50%">&nbsp;</td>
-    <td>Мастер ______________________ /{{ mechanic_name or '' }}/</td>
+    <td style="width:50%;">&nbsp;</td>
+    <td>Мастер ________________________ /{{ mechanic_name or '' }}/</td>
   </tr>
   <tr>
     <td>Дата: {{ created_at }}</td>
-    <td>Заказчик ______________________ /{{ customer_name }}/</td>
+    <td>Заказчик ________________________ /{{ customer_name }}/</td>
   </tr>
 </table>
 
-<p style="font-size:8pt; margin-top:14px; line-height:1.5; color:#444;">
+<div class="zn-warranty">
   <b>Гарантии:</b> Гарантия на работы: слесарные — 30 дней, электрические — 30 дней, оригинальные з/ч — 30 дней.
   Гарантийные обязательства выполняются только при предъявлении заказ-наряда и техпаспорта (доверенности).
-</p>
+</div>
 
 {% endblock %}

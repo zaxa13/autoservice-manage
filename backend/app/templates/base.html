@@ -3,48 +3,35 @@
 <head>
 <meta charset="UTF-8">
 <style>
-  {% if font_path %}
-  @font-face {
-    font-family: DocFont;
-    src: url({{ font_path }});
-  }
-  {% endif %}
   @page {
     size: A4;
-    margin: 15mm 15mm 15mm 15mm;
+    margin: 14mm 14mm 14mm 14mm;
   }
   body {
-    font-family: {% if font_path %}DocFont{% else %}sans-serif{% endif %};
-    font-size: 11pt;
+    font-family: "DejaVu Sans", sans-serif;
+    font-size: 10pt;
     color: #1a1a1a;
     margin: 0;
     padding: 0;
-    line-height: 1.4;
+    line-height: 1.35;
   }
+
+  /* ===== Общие классы (используются receipt.html) ===== */
   .header {
     text-align: center;
     margin-bottom: 14px;
     border-bottom: 2px solid #333;
     padding-bottom: 8px;
   }
-  .company-name {
-    font-size: 16pt;
-    font-weight: bold;
-  }
-  .company-info {
-    font-size: 9pt;
-    color: #555;
-  }
+  .company-name { font-size: 16pt; font-weight: bold; }
+  .company-info { font-size: 9pt; color: #555; }
   .doc-title {
     text-align: center;
     font-size: 14pt;
     font-weight: bold;
     margin: 16px 0 10px 0;
   }
-  .doc-meta {
-    margin-bottom: 12px;
-    font-size: 10pt;
-  }
+  .doc-meta { margin-bottom: 12px; font-size: 10pt; }
   .section-title {
     font-size: 11pt;
     font-weight: bold;
@@ -53,80 +40,89 @@
     background: #eeeeee;
     border-left: 3px solid #333;
   }
-  table.info {
-    width: 100%;
-    font-size: 10pt;
-    margin-bottom: 8px;
-    border-collapse: collapse;
-  }
-  table.info td {
-    padding: 2px 4px;
-    vertical-align: top;
-  }
-  table.info td.label {
-    font-weight: bold;
-    color: #555;
-    white-space: nowrap;
-    width: 140px;
-  }
-  table.data {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 6px 0 12px 0;
-    font-size: 10pt;
-  }
+  table.info { width: 100%; font-size: 10pt; margin-bottom: 8px; border-collapse: collapse; }
+  table.info td { padding: 2px 4px; vertical-align: top; }
+  table.info td.label { font-weight: bold; color: #555; white-space: nowrap; width: 140px; }
+  table.data { width: 100%; border-collapse: collapse; margin: 6px 0 12px 0; font-size: 10pt; }
   table.data th {
-    background: #333333;
-    color: #ffffff;
-    padding: 5px 6px;
-    text-align: left;
-    font-weight: 600;
+    background: #333333; color: #ffffff; padding: 5px 6px;
+    text-align: left; font-weight: 600;
   }
   table.data th.c { text-align: center; width: 28px; }
   table.data th.r { text-align: right; }
-  table.data td {
-    padding: 4px 6px;
-    border-bottom: 1px solid #dddddd;
-  }
+  table.data td { padding: 4px 6px; border-bottom: 1px solid #dddddd; }
   table.data td.c { text-align: center; }
   table.data td.r { text-align: right; white-space: nowrap; }
   table.data tr.alt { background: #fafafa; }
-  .totals {
-    text-align: right;
-    margin: 8px 0;
-    font-size: 11pt;
-  }
-  .totals .row { margin-bottom: 3px; }
+  .totals { text-align: right; margin: 8px 0; font-size: 11pt; }
   .totals .grand {
-    font-size: 13pt;
-    font-weight: bold;
-    border-top: 2px solid #333;
-    padding-top: 5px;
-    margin-top: 5px;
+    font-size: 13pt; font-weight: bold;
+    border-top: 2px solid #333; padding-top: 5px; margin-top: 5px;
   }
-  table.sig {
-    width: 100%;
-    margin-top: 40px;
-    font-size: 10pt;
-    border-collapse: collapse;
-  }
-  table.sig td {
-    width: 50%;
-    padding: 0 10px;
-    vertical-align: top;
-  }
-  .sig-line {
-    border-bottom: 1px solid #333;
-    margin-top: 28px;
-    padding-bottom: 2px;
-  }
-  .note-box {
-    margin-top: 12px;
-    padding: 8px;
-    border: 1px dashed #999;
-    font-size: 10pt;
-  }
+  table.sig { width: 100%; margin-top: 40px; font-size: 10pt; border-collapse: collapse; }
+  table.sig td { width: 50%; padding: 0 10px; vertical-align: top; }
+  .sig-line { border-bottom: 1px solid #333; margin-top: 28px; padding-bottom: 2px; }
+  .note-box { margin-top: 12px; padding: 8px; border: 1px dashed #999; font-size: 10pt; }
   .note-title { font-weight: bold; margin-bottom: 4px; }
+
+  /* ===== 1С заказ-наряд / акт (order.html, act.html) ===== */
+  .zn-exec { font-size: 10.5pt; margin: 0; }
+  .zn-exec-addr { font-size: 9pt; color: #222; margin: 2px 0 14px 0; }
+  .zn-title { font-size: 14pt; font-weight: bold; margin: 4px 0 12px 0; }
+
+  /* Блоки реквизитов — сплошная рамка */
+  table.zn-req { width: 100%; border-collapse: collapse; font-size: 9.5pt; margin-bottom: 12px; }
+  table.zn-req td { border: 1px solid #000; padding: 6px 8px; vertical-align: top; }
+
+  /* Строка статуса — раздельные боксы с зазорами */
+  table.zn-status {
+    width: 100%; border-collapse: separate; border-spacing: 5px 0;
+    font-size: 8.5pt; margin-bottom: 14px; table-layout: fixed;
+  }
+  table.zn-status td {
+    border: 1px solid #000; padding: 6px 7px; vertical-align: top; height: 40px;
+  }
+  table.zn-status td.dashed { border-style: dashed; }
+  table.zn-status td.center { text-align: center; vertical-align: middle; }
+  table.zn-status .stamp { font-weight: bold; font-size: 11pt; }
+
+  /* Причина обращения */
+  .zn-reason-lbl { font-size: 9.5pt; margin: 4px 0 3px 0; }
+  .zn-reason {
+    border: 1px dashed #000; min-height: 30px; padding: 6px 8px;
+    font-size: 9.5pt; margin-bottom: 14px;
+  }
+
+  /* Заголовки секций таблиц */
+  .zn-tbl-title { font-size: 10.5pt; font-weight: bold; margin: 12px 0 4px 0; }
+
+  /* Таблицы работ / материалов */
+  table.zn-grid { width: 100%; border-collapse: collapse; font-size: 9pt; }
+  table.zn-grid th, table.zn-grid td { border: 1px solid #000; padding: 4px 6px; }
+  table.zn-grid thead th {
+    background: #e6e6e6; font-weight: bold; text-align: center; vertical-align: middle;
+  }
+  table.zn-grid thead tr.cols th { font-weight: normal; font-size: 8pt; color: #444; padding: 1px 6px; }
+  table.zn-grid td.c { text-align: center; }
+  table.zn-grid td.r { text-align: right; white-space: nowrap; }
+  table.zn-grid tfoot td { background: #efefef; font-weight: bold; }
+
+  .zn-words { font-size: 9pt; margin: 3px 0 12px 0; }
+
+  /* Итог */
+  table.zn-total { width: 100%; border-collapse: collapse; font-size: 11pt; margin-top: 12px; }
+  table.zn-total td.lbl { text-align: right; font-weight: bold; padding: 4px 10px; }
+  table.zn-total td.val {
+    width: 150px; border: 1px solid #000; text-align: right;
+    font-weight: bold; font-size: 12pt; padding: 6px 10px;
+  }
+  .zn-total-words { font-size: 10pt; font-weight: bold; margin: 6px 0 16px 0; }
+
+  /* Подписи */
+  table.zn-sign { width: 100%; font-size: 10pt; margin-top: 30px; }
+  table.zn-sign td { padding: 8px 0; vertical-align: bottom; }
+
+  .zn-warranty { font-size: 8pt; color: #333; margin-top: 18px; line-height: 1.5; }
 </style>
 {% block extra_styles %}{% endblock %}
 </head>
@@ -138,8 +134,5 @@
   </div>
   {% endblock %}
   {% block content %}{% endblock %}
-  <p style="font-size: 8pt; color: #999; text-align: center; margin-top: 20px;">
-    Документ сформирован автоматически — {{ generated_at }}
-  </p>
 </body>
 </html>
