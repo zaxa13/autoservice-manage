@@ -41,4 +41,7 @@ RUN chmod +x /app/entrypoint.sh
 EXPOSE 8000
 
 ENTRYPOINT ["/app/entrypoint.sh"]
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
+# 1 воркер: сервер RAM-зажат (1.9ГБ, активный swap). Каждый воркер грузит
+# WeasyPrint + шрифты (~190МБ); при 2 воркерах рендер упирался в swap и
+# подвисал на 10-26с. Для нашей нагрузки (async + threadpool) одного хватает.
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]

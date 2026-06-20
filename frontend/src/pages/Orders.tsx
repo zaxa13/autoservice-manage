@@ -728,6 +728,19 @@ export default function Orders() {
     // cache-bust ?_=<ts>: иначе браузер отдаёт старый PDF из HTTP-кэша.
     const sep = path.includes('?') ? '&' : '?';
     const win = window.open('', '_blank');
+    if (win) {
+      // Пока PDF формируется — показываем спиннер вместо белой страницы.
+      win.document.write(
+        '<!doctype html><html><head><meta charset="utf-8"><title>Формируется документ…</title>' +
+        '<style>body{margin:0;height:100vh;display:flex;flex-direction:column;align-items:center;' +
+        'justify-content:center;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#f8fafc}' +
+        '.sp{width:44px;height:44px;border:4px solid #e2e8f0;border-top-color:#0d9488;border-radius:50%;' +
+        'animation:r .8s linear infinite}@keyframes r{to{transform:rotate(360deg)}}' +
+        'p{margin-top:16px;font-size:15px;color:#64748b}</style></head>' +
+        '<body><div class="sp"></div><p>Формируется документ…</p></body></html>'
+      );
+      win.document.close();
+    }
     api.get(`${path}${sep}_=${Date.now()}`, { responseType: 'blob' }).then((res) => {
       const url = URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
       if (win) win.location.href = url;
