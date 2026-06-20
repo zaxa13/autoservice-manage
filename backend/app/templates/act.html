@@ -33,8 +33,8 @@
     <col style="width:16%;"><col style="width:16%;">
   </colgroup>
   <tr>
-    <td>Принят:<br><b>{{ created_at }}</b></td>
-    <td>Завершён:<br><b>{{ completed_at or '—' }}</b></td>
+    <td>Принят:<br>{{ created_at }}</td>
+    <td>Завершён:<br>{{ completed_at or '—' }}</td>
     <td>Диспетчер:<br>{{ accepted_by or '' }}</td>
     <td>Мастер:<br>{{ mechanic_name or '' }}</td>
     <td class="center"><span class="stamp">{{ status_label }}</span></td>
