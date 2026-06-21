@@ -51,14 +51,13 @@
       <th style="width:54px;">Код</th>
       <th>Наименование</th>
       <th style="width:46px;">Кол.оп.</th>
-      <th style="width:66px;">Цена н/ч</th>
-      <th style="width:52px;">Норма</th>
-      <th style="width:40px;">н/ч</th>
+      <th style="width:66px;">Цена</th>
+      <th style="width:52px;">Скидка %</th>
       <th style="width:78px;">Всего</th>
       <th style="width:56px;">в т.ч. НДС</th>
     </tr>
     <tr class="cols">
-      <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th>
+      <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th>
     </tr>
   </thead>
   <tbody>
@@ -70,21 +69,20 @@
         <td>{{ w.name }}</td>
         <td class="c">{{ w.quantity }}</td>
         <td class="r">{{ w.price }}</td>
-        <td class="r">{{ '%.3f'|format(w.quantity) }}</td>
-        <td class="c">Руб.</td>
+        <td class="r">{{ '%g'|format(w.discount) }}</td>
         <td class="r">{{ w.total }}</td>
         <td class="r">0.00</td>
       </tr>
       {% endfor %}
     {% else %}
-      <tr><td colspan="9" class="c" style="color:#888;">Работы не добавлены</td></tr>
+      <tr><td colspan="8" class="c" style="color:#888;">Работы не добавлены</td></tr>
     {% endif %}
   </tbody>
   <tfoot>
     <tr>
       <td colspan="3" class="r">Итого работ:</td>
       <td class="c">{{ works_qty_total }}</td>
-      <td colspan="3" class="r">на сумму:</td>
+      <td colspan="2" class="r">на сумму:</td>
       <td class="r">{{ works_total or '0.00' }}</td>
       <td class="r">0.00</td>
     </tr>
