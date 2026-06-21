@@ -1602,7 +1602,7 @@ export default function Orders() {
             <Select value={paymentMethod} label="Способ" onChange={e => setPaymentMethod(e.target.value)}>
               <MenuItem value="cash">Наличные</MenuItem>
               <MenuItem value="card">Карта</MenuItem>
-              <MenuItem value="yookassa">ЮKassa</MenuItem>
+              <MenuItem value="yookassa" disabled>ЮKassa (в разработке)</MenuItem>
             </Select>
           </FormControl>
           <Stack direction="row" spacing={1} justifyContent="flex-end">
