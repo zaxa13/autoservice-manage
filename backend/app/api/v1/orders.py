@@ -20,7 +20,7 @@ INSERT...ON CONFLICT DO NOTHING + UPDATE...RETURNING. Формат `ЗН-001`.
 from __future__ import annotations
 
 from datetime import date, datetime, timezone
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
@@ -69,11 +69,17 @@ _admin = {**_auth, 403: {"model": ErrorResponse, "description": "Только а
 # Helpers
 # ---------------------------------------------------------------------------
 def _line_total(price, quantity, discount) -> Decimal:
-    """price * quantity * (1 - discount/100)."""
+    """price * quantity * (1 - discount/100), округлённое до целого рубля.
+
+    В системе все денежные суммы — целые рубли (без копеек). Скидка может дать
+    дробь (3999 * 0.9 = 3599.1) — округляем до целого, чтобы итог строки и сумма
+    заказа всегда были целыми. Это единственный источник истины: фронт и печать
+    только показывают сохранённое значение, сами ничего не пересчитывают.
+    """
     p = Decimal(str(price))
     q = Decimal(str(quantity))
     d = Decimal(str(discount or 0))
-    return (p * q * (Decimal(1) - d / Decimal(100))).quantize(Decimal("0.01"))
+    return (p * q * (Decimal(1) - d / Decimal(100))).quantize(Decimal("1"), rounding=ROUND_HALF_UP)
 
 
 async def _next_order_number(db: AsyncSession) -> str:

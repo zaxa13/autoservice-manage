@@ -359,11 +359,16 @@ export default function Orders() {
   const isAdmin = currentUser?.role === 'admin';
   const formatCurrency = (v: unknown): string => new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB', maximumFractionDigits: 0 }).format(Number(v) || 0);
 
+  // Сумма строки = цена × кол-во со скидкой, округлённая до целого рубля.
+  // Та же формула, что и на бэкенде (_line_total) — фронт показывает превью,
+  // но источник истины и сохранённое/печатное значение считает бэкенд.
+  const lineTotal = (price: unknown, quantity: unknown, discount: unknown): number =>
+    Math.round((Number(price) || 0) * (Number(quantity) || 0) * (1 - (Number(discount) || 0) / 100));
+
   const totals = useMemo(() => {
-    const calc = (p: number, q: number, d: number | null | undefined) =>
-      (p * q) * (1 - (d ?? 0) / 100);
-    const w = (formData.order_works || []).reduce((s, x) => s + calc(x.price, x.quantity, x.discount), 0);
-    const p = (formData.order_parts || []).reduce((s, x) => s + calc(x.price, x.quantity, x.discount), 0);
+    // Итог = сумма построчных целых сумм (как на бэкенде: total_amount = Σ line totals).
+    const w = (formData.order_works || []).reduce((s, x) => s + lineTotal(x.price, x.quantity, x.discount), 0);
+    const p = (formData.order_parts || []).reduce((s, x) => s + lineTotal(x.price, x.quantity, x.discount), 0);
     return { works: w, parts: p, grand: w + p };
   }, [formData.order_works, formData.order_parts]);
 
@@ -1385,10 +1390,10 @@ export default function Orders() {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={3} lg={1}><TextField fullWidth size="small" label="Кол-во" type="number" value={work.quantity} onChange={e => updateRow('work', idx, 'quantity', e.target.value)} /></Grid>
-              <Grid item xs={3} lg={1.3}><TextField fullWidth size="small" label="Цена" type="number" value={work.price} onChange={e => updateRow('work', idx, 'price', e.target.value)} InputProps={{ endAdornment: '₽' }} /></Grid>
-              <Grid item xs={3} lg={1}><TextField fullWidth size="small" label="Скидка" type="number" value={work.discount} onChange={e => updateRow('work', idx, 'discount', e.target.value)} InputProps={{ endAdornment: '%' }} /></Grid>
-              <Grid item xs={2} lg={1.2} sx={{ textAlign: 'right' }}><Typography variant="subtitle1" sx={{ fontWeight: 800, color: 'primary.main' }}>{formatCurrency((Number(work.price) * Number(work.quantity)) * (1 - (Number(work.discount) || 0) / 100))}</Typography></Grid>
+              <Grid item xs={3} lg={1}><TextField fullWidth size="small" label="Кол-во" type="number" inputProps={{ min: 0, step: 1 }} value={work.quantity} onChange={e => updateRow('work', idx, 'quantity', e.target.value)} /></Grid>
+              <Grid item xs={3} lg={1.3}><TextField fullWidth size="small" label="Цена" type="number" inputProps={{ min: 0, step: 1 }} value={work.price} onChange={e => updateRow('work', idx, 'price', e.target.value)} InputProps={{ endAdornment: '₽' }} /></Grid>
+              <Grid item xs={3} lg={1}><TextField fullWidth size="small" label="Скидка" type="number" inputProps={{ min: 0, max: 100, step: 1 }} value={work.discount} onChange={e => updateRow('work', idx, 'discount', e.target.value)} InputProps={{ endAdornment: '%' }} /></Grid>
+              <Grid item xs={2} lg={1.2} sx={{ textAlign: 'right' }}><Typography variant="caption" color="text.secondary" sx={{ display: 'block', lineHeight: 1 }}>Всего</Typography><Typography variant="subtitle1" sx={{ fontWeight: 800, color: 'primary.main' }}>{formatCurrency(lineTotal(work.price, work.quantity, work.discount))}</Typography></Grid>
               <Grid item xs={1} lg={0.5}><IconButton color="error" size="small" onClick={() => removeRow('work', idx)}><DeleteOutlineRounded fontSize="small" /></IconButton></Grid>
             </Grid></Paper>))}</Stack></Box>
 
@@ -1426,10 +1431,10 @@ export default function Orders() {
                             )}
                           </Stack>
                         </Grid>
-                        <Grid item xs={1} lg={1}><TextField size="small" fullWidth label="Кол-во" type="number" value={part.quantity} onChange={e => updateRow('part', idx, 'quantity', e.target.value)} /></Grid>
-                        <Grid item xs={2} lg={1.5}><TextField size="small" fullWidth label="Цена (клиент)" type="number" value={part.price} onChange={e => updateRow('part', idx, 'price', e.target.value)} InputProps={{ endAdornment: '₽' }} /></Grid>
-                        <Grid item xs={1} lg={1}><TextField size="small" fullWidth label="Скидка" type="number" value={part.discount} onChange={e => updateRow('part', idx, 'discount', e.target.value)} InputProps={{ endAdornment: '%' }} /></Grid>
-                        <Grid item xs={2} lg={1.5} sx={{ textAlign: 'right' }}><Typography variant="subtitle1" sx={{ fontWeight: 800, color: 'primary.main' }}>{formatCurrency((Number(part.price) * Number(part.quantity)) * (1 - (Number(part.discount) || 0) / 100))}</Typography></Grid>
+                        <Grid item xs={1} lg={1}><TextField size="small" fullWidth label="Кол-во" type="number" inputProps={{ min: 0, step: 1 }} value={part.quantity} onChange={e => updateRow('part', idx, 'quantity', e.target.value)} /></Grid>
+                        <Grid item xs={2} lg={1.5}><TextField size="small" fullWidth label="Цена (клиент)" type="number" inputProps={{ min: 0, step: 1 }} value={part.price} onChange={e => updateRow('part', idx, 'price', e.target.value)} InputProps={{ endAdornment: '₽' }} /></Grid>
+                        <Grid item xs={1} lg={1}><TextField size="small" fullWidth label="Скидка" type="number" inputProps={{ min: 0, max: 100, step: 1 }} value={part.discount} onChange={e => updateRow('part', idx, 'discount', e.target.value)} InputProps={{ endAdornment: '%' }} /></Grid>
+                        <Grid item xs={2} lg={1.5} sx={{ textAlign: 'right' }}><Typography variant="caption" color="text.secondary" sx={{ display: 'block', lineHeight: 1 }}>Всего</Typography><Typography variant="subtitle1" sx={{ fontWeight: 800, color: 'primary.main' }}>{formatCurrency(lineTotal(part.price, part.quantity, part.discount))}</Typography></Grid>
                         <Grid item xs={1}><IconButton size="small" onClick={() => clearPartInOrderLine(idx)} title="Сменить запчасть"><EditRounded fontSize="small" /></IconButton></Grid>
                         <Grid item xs={1}><IconButton color="error" size="small" onClick={() => removeRow('part', idx)} title="Удалить строку"><DeleteOutlineRounded fontSize="small" /></IconButton></Grid>
                       </>
@@ -1490,10 +1495,10 @@ export default function Orders() {
                             )}
                           />
                         </Grid>
-                        <Grid item xs={2} lg={1}><TextField size="small" fullWidth label="Кол-во" type="number" value={part.quantity} onChange={e => updateRow('part', idx, 'quantity', e.target.value)} /></Grid>
-                        <Grid item xs={2} lg={1.5}><TextField size="small" fullWidth label="Цена" type="number" value={part.price} onChange={e => updateRow('part', idx, 'price', e.target.value)} InputProps={{ endAdornment: '₽' }} /></Grid>
-                        <Grid item xs={1} lg={1}><TextField size="small" fullWidth label="Скидка" type="number" value={part.discount} onChange={e => updateRow('part', idx, 'discount', e.target.value)} InputProps={{ endAdornment: '%' }} /></Grid>
-                        <Grid item xs={2} lg={1.5} sx={{ textAlign: 'right' }}><Typography variant="subtitle1" sx={{ fontWeight: 800, color: 'primary.main' }}>{formatCurrency((Number(part.price) * Number(part.quantity)) * (1 - (Number(part.discount) || 0) / 100))}</Typography></Grid>
+                        <Grid item xs={2} lg={1}><TextField size="small" fullWidth label="Кол-во" type="number" inputProps={{ min: 0, step: 1 }} value={part.quantity} onChange={e => updateRow('part', idx, 'quantity', e.target.value)} /></Grid>
+                        <Grid item xs={2} lg={1.5}><TextField size="small" fullWidth label="Цена" type="number" inputProps={{ min: 0, step: 1 }} value={part.price} onChange={e => updateRow('part', idx, 'price', e.target.value)} InputProps={{ endAdornment: '₽' }} /></Grid>
+                        <Grid item xs={1} lg={1}><TextField size="small" fullWidth label="Скидка" type="number" inputProps={{ min: 0, max: 100, step: 1 }} value={part.discount} onChange={e => updateRow('part', idx, 'discount', e.target.value)} InputProps={{ endAdornment: '%' }} /></Grid>
+                        <Grid item xs={2} lg={1.5} sx={{ textAlign: 'right' }}><Typography variant="caption" color="text.secondary" sx={{ display: 'block', lineHeight: 1 }}>Всего</Typography><Typography variant="subtitle1" sx={{ fontWeight: 800, color: 'primary.main' }}>{formatCurrency(lineTotal(part.price, part.quantity, part.discount))}</Typography></Grid>
                         <Grid item xs={1}><IconButton color="error" size="small" onClick={() => removeRow('part', idx)} title="Удалить строку"><DeleteOutlineRounded fontSize="small" /></IconButton></Grid>
                       </>
                     )}

@@ -142,10 +142,14 @@ STATUS_LABELS = {
 
 
 def _fmt(val: Decimal | float | None) -> str:
-    """Форматирование числа: 12345.50 → '12 345.50'."""
+    """Форматирование суммы целыми рублями: 12345 → '12 345'.
+
+    Все суммы в системе целые (без копеек) — печать показывает их без дробной
+    части. Значения приходят уже посчитанными из заказа (источник истины — БД).
+    """
     if val is None:
-        return "0.00"
-    return f"{float(val):,.2f}".replace(",", " ")
+        return "0"
+    return f"{int(round(float(val))):,}".replace(",", " ")
 
 
 def _company_ctx(db: Session) -> dict:
