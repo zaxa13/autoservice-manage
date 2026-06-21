@@ -1395,7 +1395,14 @@ export default function Orders() {
               <Grid item xs={3} lg={1}><TextField fullWidth size="small" label="Скидка" type="number" inputProps={{ min: 0, max: 100, step: 1 }} value={work.discount} onChange={e => updateRow('work', idx, 'discount', e.target.value)} InputProps={{ endAdornment: '%' }} /></Grid>
               <Grid item xs={2} lg={1.2} sx={{ textAlign: 'right' }}><Typography variant="caption" color="text.secondary" sx={{ display: 'block', lineHeight: 1 }}>Всего</Typography><Typography variant="subtitle1" sx={{ fontWeight: 800, color: 'primary.main' }}>{formatCurrency(lineTotal(work.price, work.quantity, work.discount))}</Typography></Grid>
               <Grid item xs={1} lg={0.5}><IconButton color="error" size="small" onClick={() => removeRow('work', idx)}><DeleteOutlineRounded fontSize="small" /></IconButton></Grid>
-            </Grid></Paper>))}</Stack></Box>
+            </Grid></Paper>))}</Stack>
+            {(formData.order_works || []).length > 0 && (
+              <Stack direction="row" justifyContent="flex-end" alignItems="baseline" spacing={1.5} sx={{ mt: 1.5, px: 2 }}>
+                <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 700 }}>Итого работ:</Typography>
+                <Typography variant="h6" sx={{ fontWeight: 800, color: 'primary.main' }}>{formatCurrency(totals.works)}</Typography>
+              </Stack>
+            )}
+          </Box>
 
           <Box><Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1, px: 1 }}><Typography variant="subtitle1" sx={{ fontWeight: 900 }}><ShoppingBagRounded fontSize="small" color="primary" sx={{ verticalAlign: 'middle', mr: 1 }} /> Запчасти</Typography><Button variant="contained" size="small" startIcon={<AddRounded />} onClick={() => addRow('part')}>Добавить строку</Button></Stack>
             <Stack spacing={1}>{(formData.order_parts || []).map((part, idx) => {
@@ -1505,9 +1512,16 @@ export default function Orders() {
                   </Grid>
                 </Paper>
               );
-            })}</Stack></Box>
+            })}</Stack>
+            {(formData.order_parts || []).length > 0 && (
+              <Stack direction="row" justifyContent="flex-end" alignItems="baseline" spacing={1.5} sx={{ mt: 1.5, px: 2 }}>
+                <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 700 }}>Итого запчастей:</Typography>
+                <Typography variant="h6" sx={{ fontWeight: 800, color: 'primary.main' }}>{formatCurrency(totals.parts)}</Typography>
+              </Stack>
+            )}
+          </Box>
 
-          <Collapse in={totals.grand > 0}><Paper sx={{ p: 2, px: 4, borderRadius: 3, border: '2px solid', borderColor: 'primary.main', bgcolor: '#fff' }}><Stack direction="row" justifyContent="space-between" alignItems="center"><Stack direction="row" spacing={4}><Box><Typography variant="caption">Работы</Typography><Typography variant="body1" sx={{ fontWeight: 700 }}>{formatCurrency(totals.works)}</Typography></Box><Box><Typography variant="caption">Запчасти</Typography><Typography variant="body1" sx={{ fontWeight: 700 }}>{formatCurrency(totals.parts)}</Typography></Box></Stack><Box sx={{ textAlign: 'right' }}><Typography variant="caption" color="primary" sx={{ fontWeight: 800 }}>ИТОГО</Typography><Typography variant="h4" sx={{ fontWeight: 950 }}>{formatCurrency(totals.grand)}</Typography></Box></Stack></Paper></Collapse>
+          <Collapse in={totals.grand > 0}><Paper sx={{ p: 2, px: 4, borderRadius: 3, border: '2px solid', borderColor: 'primary.main', bgcolor: '#fff' }}><Stack direction="row" justifyContent="flex-end" alignItems="center" spacing={2}><Typography variant="caption" color="primary" sx={{ fontWeight: 800 }}>ИТОГО</Typography><Typography variant="h4" sx={{ fontWeight: 950 }}>{formatCurrency(totals.grand)}</Typography></Stack></Paper></Collapse>
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
               <Paper sx={{ p: 2, borderRadius: 3, border: '1px solid #E2E8F0', height: '100%', transition: 'all 0.2s ease' }}>
