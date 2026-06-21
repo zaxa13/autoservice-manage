@@ -1418,8 +1418,17 @@ export default function Orders() {
               const rowInput = partRowInputs[idx] ?? '';
               const rowResults = partRowResults[idx] ?? [];
               const rowLoading = partRowLoading[idx] ?? false;
+              // Наличие на складе — компактным значком с подсказкой при наведении
+              // (раньше был широкий чип под названием, ломавший выравнивание строки).
+              const stockIcon = orderClosed ? null : stockEmpty ? (
+                <Tooltip arrow title="Нет на складе"><WarningAmberRounded color="error" fontSize="small" /></Tooltip>
+              ) : stockInsufficient ? (
+                <Tooltip arrow title={`Не хватает: нужно ${needQty}, есть ${stockQty} ${cachedPart?.unit ?? 'шт'}`}><WarningAmberRounded color="warning" fontSize="small" /></Tooltip>
+              ) : (
+                <Tooltip arrow title={`На складе: ${stockQty} ${cachedPart?.unit ?? 'шт'}`}><CheckCircleRounded color="success" fontSize="small" /></Tooltip>
+              );
               return (
-                <Paper key={idx} elevation={0} sx={{ p: 1.5, px: 2, borderRadius: 2, border: '1px solid', borderColor: stockEmpty ? 'error.light' : stockInsufficient ? 'warning.light' : '#E2E8F0', bgcolor: '#fff', '&:hover': { borderColor: stockEmpty ? 'error.main' : stockInsufficient ? 'warning.main' : 'primary.main' } }}>
+                <Paper key={idx} elevation={0} sx={{ py: 0.75, px: 2, borderRadius: 2, border: '1px solid', borderColor: stockEmpty ? 'error.light' : stockInsufficient ? 'warning.light' : '#E2E8F0', bgcolor: '#fff', '&:hover': { borderColor: stockEmpty ? 'error.main' : stockInsufficient ? 'warning.main' : 'primary.main' } }}>
                   <Grid container spacing={2} alignItems="center">
                     {partSelected ? (
                       <>
@@ -1427,16 +1436,7 @@ export default function Orders() {
                           <TextField size="small" fullWidth label="Артикул" value={cachedPart?.part_number ?? ''} InputProps={{ readOnly: true }} sx={{ '& .MuiInputBase-input': { cursor: 'default' } }} />
                         </Grid>
                         <Grid item xs={2} lg={2.5}>
-                          <Stack spacing={0.5}>
-                            <TextField size="small" fullWidth label="Название" value={cachedPart?.name ?? ''} InputProps={{ readOnly: true }} sx={{ '& .MuiInputBase-input': { cursor: 'default' } }} />
-                            {orderClosed ? null : stockEmpty ? (
-                              <Chip size="small" color="error" icon={<WarningAmberRounded />} label="Нет на складе" sx={{ fontSize: '0.65rem', height: 20 }} />
-                            ) : stockInsufficient ? (
-                              <Chip size="small" color="warning" icon={<WarningAmberRounded />} label={`Не хватает: нужно ${needQty}, есть ${stockQty} ${cachedPart?.unit ?? 'шт'}`} sx={{ fontSize: '0.65rem', height: 20 }} />
-                            ) : (
-                              <Chip size="small" color="success" label={`На складе: ${stockQty} ${cachedPart?.unit ?? 'шт'}`} sx={{ fontSize: '0.65rem', height: 20 }} />
-                            )}
-                          </Stack>
+                          <TextField size="small" fullWidth label="Название" value={cachedPart?.name ?? ''} InputProps={{ readOnly: true, endAdornment: stockIcon }} sx={{ '& .MuiInputBase-input': { cursor: 'default' } }} />
                         </Grid>
                         <Grid item xs={1} lg={1}><TextField size="small" fullWidth label="Кол-во" type="number" inputProps={{ min: 0, step: 1 }} value={part.quantity} onChange={e => updateRow('part', idx, 'quantity', e.target.value)} /></Grid>
                         <Grid item xs={2} lg={1.5}><TextField size="small" fullWidth label="Цена (клиент)" type="number" inputProps={{ min: 0, step: 1 }} value={part.price} onChange={e => updateRow('part', idx, 'price', e.target.value)} InputProps={{ endAdornment: '₽' }} /></Grid>
