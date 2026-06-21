@@ -76,7 +76,7 @@
         <td class="r">{{ w.price }}</td>
         <td class="r">{{ '%g'|format(w.discount) }}</td>
         <td class="r">{{ w.total }}</td>
-        <td class="r">0</td>
+        <td class="r">0.00</td>
       </tr>
       {% endfor %}
     {% else %}
@@ -88,8 +88,8 @@
       <td colspan="3" class="r">Итого работ:</td>
       <td class="c">{{ works_qty_total }}</td>
       <td colspan="2" class="r">на сумму:</td>
-      <td class="r">{{ works_total or '0' }}</td>
-      <td class="r">0</td>
+      <td class="r">{{ works_total or '0.00' }}</td>
+      <td class="r">0.00</td>
     </tr>
   </tfoot>
 </table>
@@ -124,7 +124,7 @@
         <td class="c">{{ p.unit }}</td>
         <td class="r">{{ p.price }}</td>
         <td class="r">{{ p.total }}</td>
-        <td class="r">0</td>
+        <td class="r">0.00</td>
       </tr>
       {% endfor %}
     {% else %}
@@ -136,8 +136,8 @@
       <td colspan="3" class="r">Итого материалов:</td>
       <td class="c">{{ parts_qty_total }}</td>
       <td colspan="2" class="r">на сумму:</td>
-      <td class="r">{{ parts_total or '0' }}</td>
-      <td class="r">0</td>
+      <td class="r">{{ parts_total or '0.00' }}</td>
+      <td class="r">0.00</td>
     </tr>
   </tfoot>
 </table>
