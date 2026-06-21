@@ -273,12 +273,12 @@ def _order_context(db: Session, order: Order) -> dict:
         "customer_phone": customer.phone if customer else "—",
         "customer_address": customer.address if customer else None,
         # Плательщик = заказчик (отдельной модели плательщика нет). ИНН/Вид
-        # ремонта/Срок/Причина — полей в модели пока нет → пустые ячейки формы.
+        # ремонта/Срок — полей в модели пока нет → пустые ячейки формы.
         "payer_name": customer.full_name if customer else "—",
         "payer_inn": "",
         "repair_type": "",
         "deadline": "",
-        "reason": "",
+        "reason": order.reason or "",
         "vehicle_brand": brand.name if brand else "—",
         "vehicle_model": model.name if model else "",
         "vehicle_year": vehicle.year if vehicle else None,

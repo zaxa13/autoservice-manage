@@ -16,7 +16,7 @@ import {
   EditRounded, RestartAltRounded, WarningAmberRounded, HistoryRounded, LocalAtmRounded,
   CreditCardRounded, AccountBalanceWalletRounded, ContactPhoneRounded, SpeedRounded,
   PhoneRounded, PersonRounded, SearchOffRounded, ContentCopyRounded, PrintRounded, DescriptionRounded,
-  ArrowUpwardRounded, ArrowDownwardRounded,
+  ArrowUpwardRounded, ArrowDownwardRounded, RecordVoiceOverRounded,
 } from '@mui/icons-material';
 import { formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';
@@ -200,7 +200,7 @@ export default function Orders() {
 
   // --- ФОРМА ЗАКАЗА ---
   const [formData, setFormData] = useState<OrderCreate & { status?: string; employee_id?: number }>({
-    vehicle_id: 0, mechanic_id: undefined, employee_id: undefined, status: 'new', recommendations: '', comments: '', order_works: [], order_parts: []
+    vehicle_id: 0, mechanic_id: undefined, employee_id: undefined, status: 'new', reason: '', recommendations: '', comments: '', order_works: [], order_parts: []
   });
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -382,7 +382,7 @@ export default function Orders() {
       discount: (p.discount ?? 0) as number
     }));
     setFormData({
-      vehicle_id: d.vehicle_id, employee_id: d.employee_id, mechanic_id: d.mechanic_id, status: d.status, recommendations: d.recommendations || '', comments: d.comments || '',
+      vehicle_id: d.vehicle_id, employee_id: d.employee_id, mechanic_id: d.mechanic_id, status: d.status, reason: d.reason || '', recommendations: d.recommendations || '', comments: d.comments || '',
       order_works: (d.order_works || []).map(w => ({ work_name: w.work?.name || (w as any).work_name || '', mechanic_id: w.mechanic_id ?? d.mechanic_id ?? undefined, quantity: w.quantity, price: Number(w.price), discount: (w as any).discount || 0 })),
       order_parts: parts
     });
@@ -420,7 +420,7 @@ export default function Orders() {
       setInlineMileage(order.vehicle?.mileage?.toString() ?? '');
     } else {
       setEditingOrderId(null); setSelectedVehicle(null); setPaidAmountFromServer(0); setPayments([]);
-      setFormData({ vehicle_id: 0, mechanic_id: undefined, employee_id: undefined, status: 'new', order_works: [], order_parts: [], recommendations: '', comments: '' });
+      setFormData({ vehicle_id: 0, mechanic_id: undefined, employee_id: undefined, status: 'new', order_works: [], order_parts: [], reason: '', recommendations: '', comments: '' });
       setOrderPartCache([]);
       setPartRowInputs([]); setPartRowResults([]); setPartRowLoading([]);
       setLicensePlateSearch(''); setVinSearch('');
@@ -1211,6 +1211,11 @@ export default function Orders() {
               )}
             </Paper></Grid>
           </Grid>
+
+          <Paper sx={{ p: 2, borderRadius: 3, border: '1px solid #E2E8F0', bgcolor: '#fff' }}>
+            <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 800, display: 'flex', alignItems: 'center', gap: 1 }}><RecordVoiceOverRounded fontSize="small" color="action" /> Причина обращения</Typography>
+            <TextField fullWidth multiline minRows={1} maxRows={8} variant="outlined" size="small" placeholder="С чем обратился клиент (необязательно)..." value={formData.reason} onChange={e => setFormData({ ...formData, reason: e.target.value })} sx={{ '& .MuiOutlinedInput-root': { transition: 'height 0.15s ease' } }} />
+          </Paper>
 
           {editingOrderId && (
             <Paper sx={{ p: 2, px: 3, borderRadius: 3, border: '1px solid #E2E8F0', bgcolor: '#fff' }}>

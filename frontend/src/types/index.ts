@@ -77,6 +77,7 @@ export interface OrderDetail extends Order {
   mechanic?: Employee
   order_works: OrderWork[]
   order_parts: OrderPart[]
+  reason?: string
   recommendations?: string
   comments?: string
 }
@@ -124,6 +125,7 @@ export interface OrderPartCreate {
 export interface OrderCreate {
   vehicle_id: number
   mechanic_id?: number
+  reason?: string
   recommendations?: string
   comments?: string
   order_works: OrderWorkCreate[]
@@ -135,6 +137,7 @@ export interface OrderUpdate {
   mechanic_id?: number
   status?: OrderStatus
   paid_amount?: number
+  reason?: string
   recommendations?: string
   comments?: string
   order_works?: OrderWorkCreate[]

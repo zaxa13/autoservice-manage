@@ -47,6 +47,7 @@ class Order(Base, TenantMixin):
     total_amount: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False, default=0)
     paid_amount: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False, default=0)
     mileage_at_service: Mapped[int | None] = mapped_column(Integer)
+    reason: Mapped[str | None] = mapped_column(String(2000))
     recommendations: Mapped[str | None] = mapped_column(String(2000))
     comments: Mapped[str | None] = mapped_column(String(2000))
     created_at: Mapped[datetime] = mapped_column(

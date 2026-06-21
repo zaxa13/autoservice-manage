@@ -371,6 +371,7 @@ async def _serialize_order(
         return base
     employee = await db.get(Employee, (claims.tenant_id, order.employee_id))
     base["employee"] = employee
+    base["reason"] = order.reason
     base["recommendations"] = order.recommendations
     base["comments"] = order.comments
     base["order_works"] = await _serialize_order_works(db, order.id)
@@ -609,6 +610,7 @@ async def create_order(
         status=OrderStatus.NEW.value,
         total_amount=total_works + total_parts,
         paid_amount=Decimal(0),
+        reason=body.reason,
         recommendations=body.recommendations,
         comments=body.comments,
     )

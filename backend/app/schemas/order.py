@@ -123,6 +123,7 @@ class OrderBase(BaseModel):
 
 
 class OrderCreate(OrderBase):
+    reason: Optional[str] = Field(None, description="Причина обращения (со слов клиента)")
     recommendations: Optional[str] = Field(None, description="Рекомендации по обслуживанию")
     comments: Optional[str] = Field(None, description="Комментарии к заказу")
     order_works: List[OrderWorkCreate] = Field(default_factory=list, description="Список работ")
@@ -134,6 +135,7 @@ class OrderUpdate(BaseModel):
     mechanic_id: Optional[int] = Field(None, description="ID механика")
     status: Optional[OrderStatus] = Field(None, description="Статус заказ-наряда")
     paid_amount: Optional[Decimal] = Field(None, ge=0, description="Сумма оплаты")
+    reason: Optional[str] = Field(None, description="Причина обращения (со слов клиента)")
     recommendations: Optional[str] = Field(None, description="Рекомендации по обслуживанию")
     comments: Optional[str] = Field(None, description="Комментарии к заказу")
     order_works: Optional[List[OrderWorkCreate]] = Field(None, description="Обновлённый список работ")
@@ -160,6 +162,9 @@ class OrderDetail(Order):
     vehicle: Optional[Vehicle] = Field(None, description="Данные транспортного средства")
     employee: Optional[Employee] = Field(None, description="Данные ответственного сотрудника")
     mechanic: Optional[Employee] = Field(None, description="Данные механика")
+    reason: Optional[str] = Field(None, description="Причина обращения (со слов клиента)")
+    recommendations: Optional[str] = Field(None, description="Рекомендации по обслуживанию")
+    comments: Optional[str] = Field(None, description="Комментарии к заказу")
     order_works: List[OrderWork] = Field(default_factory=list, description="Список работ")
     order_parts: List[OrderPart] = Field(default_factory=list, description="Список запчастей")
 
