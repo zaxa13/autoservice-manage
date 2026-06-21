@@ -1262,8 +1262,8 @@ export default function Orders() {
           <Paper sx={{ px: 3, py: 1, borderRadius: 3, border: '1px solid #E2E8F0' }}><Stack direction="row" spacing={3} alignItems="center"><Typography variant="body2" sx={{ fontWeight: 800 }}>Глобальная скидка:</Typography><TextField type="number" size="small" sx={{ width: 80 }} value={globalDiscount} onChange={e => setGlobalDiscount(parseFloat(e.target.value) || 0)} InputProps={{ endAdornment: '%' }} /><FormControlLabel control={<Checkbox size="small" checked={applyToAll} onChange={e => setApplyToAll(e.target.checked)} />} label="Применить ко всем" /></Stack></Paper>
 
           <Box><Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1, px: 1 }}><Typography variant="subtitle1" sx={{ fontWeight: 900 }}><BuildCircleRounded fontSize="small" color="primary" sx={{ verticalAlign: 'middle', mr: 1 }} /> Работы</Typography><Button variant="contained" size="small" startIcon={<AddRounded />} onClick={() => addRow('work')}>Добавить</Button></Stack>
-            <Stack spacing={1}>{(formData.order_works || []).map((work, idx) => (<Paper key={idx} elevation={0} sx={{ p: 1.5, px: 2, borderRadius: 2, border: '1px solid #E2E8F0', bgcolor: '#fff', '&:hover': { borderColor: 'primary.main' } }}><Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} lg={6} ref={(el) => { workRowRefs.current[idx] = el as HTMLDivElement | null; }}>
+            <Stack spacing={1}>{(formData.order_works || []).map((work, idx) => (<Paper key={idx} elevation={0} sx={{ py: 0.75, px: 2, borderRadius: 2, border: '1px solid #E2E8F0', bgcolor: '#fff', '&:hover': { borderColor: 'primary.main' } }}><Grid container spacing={2} alignItems="center">
+              <Grid item xs={12} lg={5} ref={(el) => { workRowRefs.current[idx] = el as HTMLDivElement | null; }}>
                 {editingWorkIdx === idx && (
                   <Box sx={{ mb: 0.5, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                     <Chip
