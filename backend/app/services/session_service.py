@@ -32,12 +32,18 @@ class SessionLimitReached(Exception):
 
 
 async def _read_plan_limit(db: AsyncSession, tenant_id: uuid.UUID) -> tuple[str | None, int]:
-    """Возвращает (plan_code, max_sessions). Дефолт — DEFAULT_MAX_SESSIONS, если
-    плана/лимита нет (fail-safe в сторону базового тарифа)."""
+    """Возвращает (plan_code, max_sessions). Лимит = кол-во оплаченных мест из
+    подписки (platform.subscriptions.seats). Фолбэк (если подписки/seats нет) —
+    тарифный max_sessions, затем DEFAULT_MAX_SESSIONS. Fail-safe в сторону тарифа."""
     row = (
         await db.execute(
             text(
-                "SELECT lower(t.plan) AS plan, (tp.limits->>'max_sessions')::int AS max_sessions "
+                "SELECT lower(t.plan) AS plan, "
+                "  COALESCE("
+                "    (SELECT s.seats FROM platform.subscriptions s "
+                "     WHERE s.tenant_id = t.id ORDER BY s.created_at DESC LIMIT 1),"
+                "    (tp.limits->>'max_sessions')::int"
+                "  ) AS max_sessions "
                 "FROM platform.tenants t "
                 "LEFT JOIN platform.tariff_plans tp ON tp.code = lower(t.plan) "
                 "WHERE t.id = :tid"
