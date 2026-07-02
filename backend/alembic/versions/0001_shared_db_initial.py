@@ -34,8 +34,19 @@ depends_on = None
 
 
 def _app_table_names() -> list[str]:
-    """Имена таблиц схемы `app` в порядке зависимостей."""
-    return [t.name for t in Base.metadata.sorted_tables if t.schema == "app"]
+    """Имена tenant-scoped таблиц схемы `app` (с колонкой `tenant_id`) в порядке
+    зависимостей — только на них вешается RLS-политика `tenant_isolation`.
+
+    Глобальные справочники (`vehicle_brands`, `vehicle_models`, `part_brands`)
+    не привязаны к тенанту и `tenant_id` не имеют — RLS к ним неприменима
+    (на проде у них политик нет, сверено). Раньше список был «все app-таблицы»,
+    и прогон миграции с нуля падал `column "tenant_id" does not exist` (на проде
+    не всплывало — схема приходила из дампа)."""
+    return [
+        t.name
+        for t in Base.metadata.sorted_tables
+        if t.schema == "app" and "tenant_id" in t.columns
+    ]
 
 
 def upgrade() -> None:
