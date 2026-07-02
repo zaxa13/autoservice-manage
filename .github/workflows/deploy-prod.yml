@@ -1,0 +1,41 @@
+name: deploy-prod
+
+# Деплой прод tenant-app (app.auto-works.pro) при пуше в main. Требует ручного
+# approve через GitHub Environment `production` (Settings → Environments).
+# Миграции — в entrypoint.sh при старте контейнера (ходят в managed PG).
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-prod-tenant
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, vps]
+    environment: production
+    env:
+      DIR: /root/autoservice-manage
+      COMPOSE: docker-compose.app.yml
+      ENVFILE: .env.app
+    steps:
+      - name: Sync repo (main)
+        run: |
+          cd "$DIR"
+          git fetch --prune origin
+          git reset --hard origin/main
+
+      - name: Build + up (миграции в entrypoint)
+        run: |
+          cd "$DIR"
+          docker compose --env-file "$ENVFILE" -f "$COMPOSE" up -d --build
+
+      - name: Health check
+        run: |
+          for i in $(seq 1 20); do
+            curl -fsS http://127.0.0.1:8002/health && exit 0
+            sleep 3
+          done
+          echo "tenant-app prod health failed"; docker logs autoworks-tenant-app --tail 30; exit 1

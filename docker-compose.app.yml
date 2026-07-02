@@ -26,7 +26,9 @@ x-tenant-labels: &tenant-labels
 services:
   tenant-app:
     build: ./backend
-    container_name: autoworks-tenant-app
+    # container_name параметризован: dev → autoworks-tenant-app-dev
+    # (иначе конфликт с прод-контейнером на том же VPS).
+    container_name: ${TENANT_APP_CONTAINER:-autoworks-tenant-app}
     <<: *tenant-labels
     environment:
       # Рантайм — под tenant_app, через pgbouncer transaction-pool.
@@ -63,8 +65,8 @@ services:
       ENVIRONMENT: ${ENVIRONMENT:-production}
     ports:
       # Только localhost — nginx на хосте проксирует /api,/docs,/openapi.json,
-      # /health на :8002.
-      - "127.0.0.1:8002:8000"
+      # /health на :8002 (dev: 8102).
+      - "127.0.0.1:${TENANT_APP_PORT:-8002}:8000"
     networks:
       - shared_db
     restart: unless-stopped
@@ -75,13 +77,15 @@ services:
     # остальное (SPA routes) → frontend :8004. Поэтому здесь не пробрасываем /api.
     # Порт 8003 на сервере занят другим проектом (analytics-app-test).
     build: ./frontend
-    container_name: autoworks-tenant-frontend
+    container_name: ${TENANT_FRONTEND_CONTAINER:-autoworks-tenant-frontend}
     <<: *tenant-labels
     ports:
-      - "127.0.0.1:8004:80"
+      - "127.0.0.1:${TENANT_FRONTEND_PORT:-8004}:80"
     restart: unless-stopped
 
 networks:
+  # Имя параметризовано: prod = sharedb-test_default (managed PG),
+  # dev = sharedb-dev_default (локальный postgres).
   shared_db:
-    name: sharedb-test_default
+    name: ${SHARED_DB_NETWORK:-sharedb-test_default}
     external: true

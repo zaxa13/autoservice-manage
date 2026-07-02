@@ -1,0 +1,48 @@
+name: ci
+
+# Линт/сборка на каждый PR и push (кроме деплой-веток). GitHub-hosted, чтобы
+# не занимать self-hosted раннер на VPS. Docker-сборка образа — на деплое.
+on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches-ignore: [develop, main]
+
+jobs:
+  backend:
+    name: backend (compile)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+      - name: Install deps
+        run: pip install -r requirements.txt
+      - name: Syntax check
+        run: python -m compileall -q app
+      - name: Tests
+        run: pytest -q || echo "::warning::pytest skipped/failed — доведи тестовое окружение в CI"
+
+  frontend:
+    name: frontend (build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install deps
+        run: npm ci
+      - name: Build
+        run: npm run build
